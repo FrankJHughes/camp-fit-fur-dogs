@@ -1,0 +1,20 @@
+title: "Add .NET solution and project skeleton"
+epic: "Epic: Repo Foundation"
+points: 3
+priority: P1
+labels: [infra, dotnet]
+branch: chore/sprint0-solution-skeleton
+description: |
+  Create the .NET solution file, API project, and test project
+  with a passing health check endpoint and one green test.
+
+tasks:
+  - Create CampFitFurDogs.sln
+  - Add src/CampFitFurDogs.Api project
+  - Add tests/CampFitFurDogs.Api.Tests project
+  - Add one passing health check test
+
+acceptance:
+  - Solution builds with dotnet build
+  - dotnet test passes with at least one test
+  - API starts and returns 200 on /health

@@ -1,0 +1,6 @@
+epic:
+  title: "Epic: Repo Foundation"
+  labels: [epic, infra]
+  description: |
+    Establish CI, templates, solution skeleton, and operational
+    docs for the Camp Fit Fur Dogs repo.
