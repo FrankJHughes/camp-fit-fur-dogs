@@ -160,10 +160,12 @@ Keep a short runbook at `docs/runbook.md` with steps to:
 
 ## Ownership and Contacts
 
-- **Product Owner**: Frank  
-- **Scrum Master**: TBD  
-- **Docs Owner**: TBD  
-- **Code Owners**: see `CODEOWNERS` file
+- **Product Owner**: **Frank**  
+- **Scrum Master**: **Frank (temporary)**  
+- **Docs Owner**: **Frank (temporary)**  
+- **Code Owners**: see `CODEOWNERS` file (initially set to Frank for `docs/`, `src/`, `infra/`)
+
+> **Action:** Replace temporary assignments with named team members as soon as hires/volunteers are confirmed. Update `docs/governance.md` and `CODEOWNERS` in the same PR.
 
 ---
 

@@ -1,6 +1,23 @@
-# Require docs owner or PO for docs changes
+# CODEOWNERS
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# Replace @frankjhughes with actual GitHub usernames or teams (e.g., @org/team-name)
+
+# Docs and governance
 /docs/ @frankjhughes
 /docs/decisions/ @frankjhughes
+/docs/process/ @frankjhughes
 
-# Require at least one code owner for source changes
+# Require docs owner for PR templates and workflows
+.github/ @frankjhughes
+
+# Source code and infra
 /src/ @frankjhughes
+/infra/ @frankjhughes
+
+# Require review for public API surface and migrations
+/src/**/Controllers/ @frankjhughes
+/src/**/Api/ @frankjhughes
+/src/**/Migrations/ @frankjhughes
+
+# Default fallback owner for anything not matched above
+* @frankjhughes
