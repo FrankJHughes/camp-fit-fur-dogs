@@ -1,0 +1,19 @@
+title: "Add CONTRIBUTING, PR template, .gitignore"
+epic: "Epic: Repo Foundation"
+points: 2
+priority: P1
+labels: [infra, docs]
+branch: chore/sprint0-contributing-templates
+description: |
+  Add foundational repo documentation: CONTRIBUTING guide,
+  pull request template, and .gitignore for .NET projects.
+
+tasks:
+  - Add CONTRIBUTING.md
+  - Add .github/PULL_REQUEST_TEMPLATE.md
+  - Add .gitignore for .NET
+
+acceptance:
+  - CONTRIBUTING.md exists at repo root
+  - PR template auto-populates on new PRs
+  - .gitignore covers bin/, obj/, .vs/

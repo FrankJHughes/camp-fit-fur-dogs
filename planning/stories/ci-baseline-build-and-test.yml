@@ -1,0 +1,18 @@
+title: "CI: baseline build and test"
+epic: "Epic: Repo Foundation"
+points: 3
+priority: P1
+labels: [infra, ci]
+branch: chore/sprint0-ci-baseline
+description: |
+  Add a minimal GitHub Actions workflow that builds the .NET
+  solution and runs tests on every PR to main.
+
+tasks:
+  - Create .github/workflows/ci.yml
+  - Add restore, build, test steps
+  - Add markdown lint step
+
+acceptance:
+  - Workflow triggers on PRs to main
+  - Passes on a test PR
