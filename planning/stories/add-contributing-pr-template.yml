@@ -7,13 +7,13 @@ branch: chore/sprint0-contributing-templates
 description: |
   Add foundational repo documentation: CONTRIBUTING guide,
   pull request template, and .gitignore for .NET projects.
-
 tasks:
   - Add CONTRIBUTING.md
   - Add .github/PULL_REQUEST_TEMPLATE.md
   - Add .gitignore for .NET
-
 acceptance:
   - CONTRIBUTING.md exists at repo root
   - PR template auto-populates on new PRs
   - .gitignore covers bin/, obj/, .vs/
+created: "2026-03-29T19:27:00Z"
+issue_number: 6
