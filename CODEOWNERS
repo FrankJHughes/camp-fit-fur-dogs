@@ -1,0 +1,6 @@
+# Require docs owner or PO for docs changes
+/docs/ @frankjhughes
+/docs/decisions/ @frankjhughes
+
+# Require at least one code owner for source changes
+/src/ @frankjhughes

@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build outputs
+bin/
+obj/
+
+# Rider
+.idea/
+
+# User-specific
+*.userprefs
+
+# Logs
+*.log
+
+# Secrets
+secrets.json
