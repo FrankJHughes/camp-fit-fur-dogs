@@ -191,8 +191,3 @@ Keep a short runbook at `docs/runbook.md` with steps to:
 - Edit via PR. Include rationale and link to any code changes.  
 - Require one approving review from Docs Owner or Product Owner.  
 - After merge, mention the change in the next sprint review.
-
----
-
-**Initial commit suggestion**  
-`chore(repo): add governance document and docs skeleton`
