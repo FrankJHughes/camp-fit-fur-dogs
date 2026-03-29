@@ -1,14 +1,31 @@
-## Summary
-<!-- Short description of the change -->
+## What
 
-## Related issue
-- Closes #<issue-number>
+<!-- One or two sentences: what does this PR do? -->
 
-## Checklist
-- [ ] Code builds locally
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated when applicable
-- [ ] Docs updated (`docs/`) if behavior changed
-- [ ] CI green
-- [ ] At least one approving review from Code Owner
-- [ ] Changelog updated under `docs/changelog.md` if user-visible
+Closes #<!-- issue number -->
+
+## Why
+
+<!-- Why is this change needed? Link to the story or epic context. -->
+
+## How
+
+<!-- Brief description of the approach. Call out anything non-obvious. -->
+
+## Acceptance Criteria
+
+<!-- Copy from the story manifest and check off what's done. -->
+
+- [ ] ...
+
+## Testing
+
+<!-- How did you verify this works? -->
+
+- [ ] `dotnet build` — zero warnings
+- [ ] `dotnet test` — all pass
+- [ ] Manual verification: <!-- describe -->
+
+## Screenshots
+
+<!-- If applicable. Delete this section if not. -->
