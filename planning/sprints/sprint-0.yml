@@ -3,8 +3,9 @@ sprint:
   title: "Sprint 0 — Repo Foundation"
   start: 2026-03-30
   end: 2026-04-03
-  board: 14  # project number from create-board.sh — update after running it
-
+  board: 14 # project number from create-board.sh — update after running it
+  created: "2026-03-29T19:29:02Z"
+  milestone: 1
 stories:
   - planning/stories/ci-baseline-build-and-test.yml
   - planning/stories/add-contributing-pr-template.yml
