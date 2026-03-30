@@ -1,51 +1,44 @@
 #!/usr/bin/env bash
-# create-epics.sh — Creates GitHub issues for epics defined in YAML files.
+# create-epics.sh — Creates GitHub issues for epics.
 #
 # Usage:
-#   ./create-epics.sh <file.yml>          # single epic
-#   ./create-epics.sh <directory/>        # all epics in directory
-#   ./create-epics.sh epics/*.yml         # glob
-#
-# Prerequisites:
-#   - gh CLI authenticated (gh auth login)
-#   - yq v4+ installed (https://github.com/mikefarah/yq)
+#   ./create-epics.sh [--dry-run] <file.yml|directory/>
 #
 # Idempotent: skips files already stamped with 'epic.created'.
-# Labels are auto-created if they don't already exist in the repo.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/repo.env"
+source "$SCRIPT_DIR/lib.sh"
 
-# --- Functions ---
-
-# Auto-create labels that don't yet exist in the repo.
-# Accepts a comma-separated label string (as produced by yq join).
-ensure_labels() {
-  local labels_csv="$1"
-  [[ -z "$labels_csv" ]] && return 0
-
-  IFS=',' read -ra label_array <<< "$labels_csv"
-  for label in "${label_array[@]}"; do
-    label=$(echo "$label" | xargs)  # trim whitespace
-    [[ -z "$label" ]] && continue
-    if gh label create "$label" --repo "$FULL_REPO" 2>/dev/null; then
-      echo "  🏷  Created label: $label"
-    fi
-  done
+show_help() {
+  echo "Usage: create-epics.sh [--dry-run] <file.yml|directory/>"
+  echo ""
+  echo "Creates GitHub issues for epics defined in YAML manifests."
+  echo "Idempotent — skips files already stamped with 'epic.created'."
+  echo ""
+  echo "Options:"
+  echo "  --dry-run   Show what would be created without making API calls"
+  echo "  --help, -h  Show this help message"
+  echo ""
+  echo "Environment:"
+  echo "  PROJECT_NUMBER  Board number (default: 14, from repo.env)"
+  exit 0
 }
 
 create_epic() {
   local file="$1"
+  CURRENT_FILE="$file"
 
-  # Idempotency check
+  CURRENT_STEP="checking idempotency stamp"
   if yq -e '.epic.created' "$file" &>/dev/null; then
-    echo "⏭  Skipping $(basename "$file") — already created"
+    echo "⏭ Skipping $(basename "$file") — already created"
     return 0
   fi
 
+  CURRENT_STEP="reading manifest"
   local title description labels
   title=$(yq -r '.epic.title' "$file")
   description=$(yq -r '.epic.description // ""' "$file")
@@ -53,21 +46,34 @@ create_epic() {
 
   echo "🔨 Creating epic: $title"
 
-  # Ensure labels exist
   [[ -n "$labels" ]] && ensure_labels "$labels"
 
-  # Create the issue
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "  [dry-run] Would create issue: $title"
+    echo "  [dry-run] Would add to board #$PROJECT_NUMBER"
+    return 0
+  fi
+
+  CURRENT_STEP="creating GitHub issue"
+  local -a label_args=()
+  [[ -n "$labels" ]] && label_args=(--label "$labels")
+
   local issue_url
   issue_url=$(gh issue create \
     --repo "$FULL_REPO" \
     --title "$title" \
     --body "$description" \
-    ${labels:+--label "$labels"})
+    "${label_args[@]}")
 
   local issue_number
   issue_number=$(basename "$issue_url")
 
-  # Stamp the file
+  CURRENT_STEP="adding to project board"
+  require_board
+  add_to_board "$PROJECT_ID" "$issue_number"
+  echo "  📋 Added to board #$PROJECT_NUMBER"
+
+  CURRENT_STEP="stamping manifest"
   local now
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   yq -i ".epic.created = \"$now\" | .epic.issue_number = $issue_number" "$file"
@@ -76,10 +82,13 @@ create_epic() {
 }
 
 # --- Main ---
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
+parse_flags "$@"
+set -- "${REMAINING_ARGS[@]}"
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: create-epics.sh <file.yml|directory/>"
-  exit 1
+  show_help
 fi
 
 for arg in "$@"; do
@@ -90,6 +99,6 @@ for arg in "$@"; do
   elif [[ -f "$arg" ]]; then
     create_epic "$arg"
   else
-    echo "⚠  Not found: $arg"
+    echo "⚠ Not found: $arg"
   fi
 done
