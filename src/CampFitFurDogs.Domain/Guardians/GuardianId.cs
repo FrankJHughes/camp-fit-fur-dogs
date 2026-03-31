@@ -8,10 +8,18 @@ public sealed class GuardianId : ValueObject
 
     private GuardianId(Guid value) => Value = value;
 
-    public static GuardianId New() => throw new NotImplementedException();
+    public static GuardianId New() => new(Guid.NewGuid());
 
-    public static GuardianId From(Guid value) => throw new NotImplementedException();
+    public static GuardianId From(Guid value)
+    {
+        if (value == Guid.Empty)
+            throw new ArgumentException("Id cannot be empty.", nameof(value));
+
+        return new(value);
+    }
 
     protected override IEnumerable<object?> GetEqualityComponents()
-        => throw new NotImplementedException();
+    {
+        yield return Value;
+    }
 }
