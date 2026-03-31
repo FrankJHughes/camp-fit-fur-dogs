@@ -22,3 +22,5 @@ acceptance:
   - Integration test proves at least one cross-layer dependency resolves
   - No circular project references exist
   - dotnet build produces zero warnings
+created: "2026-03-31T00:47:22Z"
+issue_number: 20

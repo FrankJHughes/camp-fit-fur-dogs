@@ -3,7 +3,8 @@ sprint:
   title: "Sprint 1 — Architecture Spine"
   start: 2026-04-04
   end: 2026-04-10
-
+  created: "2026-03-31T00:47:26Z"
+  milestone: 2
 stories:
   - planning/stories/adr-foundation.yml
   - planning/stories/shared-kernel-ddd-building-blocks.yml
