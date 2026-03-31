@@ -1,45 +1,34 @@
 #!/usr/bin/env bash
-# create-stories.sh — Creates GitHub issues for stories defined in YAML files.
+# create-stories.sh — Creates GitHub issues for stories.
 #
 # Usage:
-#   ./create-stories.sh <file.yml>          # single story
-#   ./create-stories.sh <directory/>        # all stories in directory
-#   ./create-stories.sh stories/*.yml       # glob
-#
-# Prerequisites:
-#   - gh CLI authenticated (gh auth login)
-#   - yq v4+ installed (https://github.com/mikefarah/yq)
-#   - Run create-epics.sh first if stories reference epics
+#   ./create-stories.sh [--dry-run] <file.yml|directory/>
 #
 # Idempotent: skips files already stamped with 'created'.
-# Labels are auto-created if they don't already exist in the repo.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/repo.env"
+source "$SCRIPT_DIR/lib.sh"
 
-# --- Functions ---
-
-# Auto-create labels that don't yet exist in the repo.
-# Accepts a comma-separated label string (as produced by yq join).
-ensure_labels() {
-  local labels_csv="$1"
-  [[ -z "$labels_csv" ]] && return 0
-
-  IFS=',' read -ra label_array <<< "$labels_csv"
-  for label in "${label_array[@]}"; do
-    label=$(echo "$label" | xargs)  # trim whitespace
-    [[ -z "$label" ]] && continue
-    if gh label create "$label" --repo "$FULL_REPO" 2>/dev/null; then
-      echo "  🏷  Created label: $label"
-    fi
-  done
+show_help() {
+  echo "Usage: create-stories.sh [--dry-run] <file.yml|directory/>"
+  echo ""
+  echo "Creates GitHub issues for stories defined in YAML manifests."
+  echo "Idempotent — skips files already stamped with 'created'."
+  echo ""
+  echo "Options:"
+  echo "  --dry-run   Show what would be created without making API calls"
+  echo "  --help, -h  Show this help message"
+  echo ""
+  echo "Environment:"
+  echo "  PROJECT_NUMBER  Board number (default: 14, from repo.env)"
+  exit 0
 }
 
-# Search local epic YAML files to find the GitHub issue number for an epic title.
-# Returns the issue number or empty string if not found/not yet created.
+# Search local epic YAMLs for an epic's issue number by title.
 find_epic_issue() {
   local epic_title="$1"
   local epics_dir="$REPO_ROOT/$EPICS_DIR"
@@ -56,24 +45,14 @@ find_epic_issue() {
   echo ""
 }
 
-# Build the GitHub issue body from YAML fields:
-#   - description text
-#   - epic cross-reference (if epic exists)
-#   - tasks as checkboxes
-#   - acceptance criteria as checkboxes
 build_body() {
   local file="$1"
   local body=""
 
-  # Description
   local description
   description=$(yq -r '.description // ""' "$file")
-  if [[ -n "$description" ]]; then
-    body+="$description"
-    body+=$'\n'
-  fi
+  [[ -n "$description" ]] && body+="$description"$'\n'
 
-  # Epic cross-reference
   local epic_title
   epic_title=$(yq -r '.epic // ""' "$file")
   if [[ -n "$epic_title" ]]; then
@@ -86,27 +65,21 @@ build_body() {
     fi
   fi
 
-  # Tasks as checkboxes
   local task_count
   task_count=$(yq -r '.tasks | length' "$file")
   if [[ "$task_count" -gt 0 ]]; then
     body+=$'\n'"## Tasks"$'\n'
     for i in $(seq 0 $((task_count - 1))); do
-      local task
-      task=$(yq -r ".tasks[$i]" "$file")
-      body+="- [ ] $task"$'\n'
+      body+="- [ ] $(yq -r ".tasks[$i]" "$file")"$'\n'
     done
   fi
 
-  # Acceptance criteria as checkboxes
   local ac_count
   ac_count=$(yq -r '.acceptance | length' "$file")
   if [[ "$ac_count" -gt 0 ]]; then
     body+=$'\n'"## Acceptance Criteria"$'\n'
     for i in $(seq 0 $((ac_count - 1))); do
-      local criterion
-      criterion=$(yq -r ".acceptance[$i]" "$file")
-      body+="- [ ] $criterion"$'\n'
+      body+="- [ ] $(yq -r ".acceptance[$i]" "$file")"$'\n'
     done
   fi
 
@@ -115,38 +88,53 @@ build_body() {
 
 create_story() {
   local file="$1"
+  CURRENT_FILE="$file"
 
-  # Idempotency check
+  CURRENT_STEP="checking idempotency stamp"
   if yq -e '.created' "$file" &>/dev/null; then
-    echo "⏭  Skipping $(basename "$file") — already created"
+    echo "⏭ Skipping $(basename "$file") — already created"
     return 0
   fi
 
+  CURRENT_STEP="reading manifest"
   local title labels
   title=$(yq -r '.title' "$file")
   labels=$(yq -r '(.labels // []) | join(",")' "$file")
 
   echo "🔨 Creating story: $title"
 
-  # Ensure labels exist
   [[ -n "$labels" ]] && ensure_labels "$labels"
 
-  # Build issue body
+  CURRENT_STEP="building issue body"
   local body
   body=$(build_body "$file")
 
-  # Create the issue
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "  [dry-run] Would create issue: $title"
+    echo "  [dry-run] Would add to board #$PROJECT_NUMBER"
+    return 0
+  fi
+
+  CURRENT_STEP="creating GitHub issue"
+  local -a label_args=()
+  [[ -n "$labels" ]] && label_args=(--label "$labels")
+
   local issue_url
   issue_url=$(gh issue create \
     --repo "$FULL_REPO" \
     --title "$title" \
     --body "$body" \
-    ${labels:+--label "$labels"})
+    "${label_args[@]}")
 
   local issue_number
   issue_number=$(basename "$issue_url")
 
-  # Stamp the file
+  CURRENT_STEP="adding to project board"
+  require_board
+  add_to_board "$PROJECT_ID" "$issue_number"
+  echo "  📋 Added to board #$PROJECT_NUMBER"
+
+  CURRENT_STEP="stamping manifest"
   local now
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   yq -i ".created = \"$now\" | .issue_number = $issue_number" "$file"
@@ -155,10 +143,13 @@ create_story() {
 }
 
 # --- Main ---
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
+parse_flags "$@"
+set -- "${REMAINING_ARGS[@]}"
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: create-stories.sh <file.yml|directory/>"
-  exit 1
+  show_help
 fi
 
 for arg in "$@"; do
@@ -169,6 +160,6 @@ for arg in "$@"; do
   elif [[ -f "$arg" ]]; then
     create_story "$arg"
   else
-    echo "⚠  Not found: $arg"
+    echo "⚠ Not found: $arg"
   fi
 done
