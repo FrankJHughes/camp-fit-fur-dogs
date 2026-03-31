@@ -5,10 +5,14 @@ priority: P1
 labels: [docs, architecture]
 branch: feature/sprint1-adr-foundation
 description: |
-  Establish an Architecture Decision Record (ADR) practice with a
-  lightweight template and two seed records that capture decisions
-  already made. Future architectural choices will be recorded here
-  before implementation begins.
+  As a developer, I want architecture decisions recorded in lightweight
+  ADRs, so that I can understand why the system is shaped the way it is
+  and evaluate trade-offs when revisiting past choices.
+
+  Establish an Architecture Decision Record practice with a lightweight
+  template and two seed records that capture decisions already made.
+  Future architectural choices will be recorded here before
+  implementation begins.
 tasks:
   - Create docs/adr/ directory
   - Add ADR template (docs/adr/TEMPLATE.md)
@@ -20,5 +24,3 @@ acceptance:
   - ADR-001 records the decision to use ADRs and references the template
   - ADR-002 documents the four-layer DDD structure matching the solution
   - README.md lists all ADRs with status and one-line summary
-created: "2026-03-31T00:46:31Z"
-issue_number: 17
