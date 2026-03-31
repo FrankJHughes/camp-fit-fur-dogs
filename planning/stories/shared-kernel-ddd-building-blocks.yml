@@ -1,0 +1,25 @@
+title: "Shared kernel: DDD building blocks"
+epic: "Epic: Repo Foundation"
+points: 3
+priority: P1
+labels: [dotnet, architecture, domain]
+branch: feature/sprint1-shared-kernel
+description: |
+  Add base types to the SharedKernel project that all domain models
+  will inherit from. These are the building blocks of the domain layer:
+  identity-typed entities, aggregate roots with domain event support,
+  value objects with structural equality, and a repository contract.
+tasks:
+  - Add Entity<TId> base class with identity equality
+  - Add AggregateRoot<TId> extending Entity with domain event collection
+  - Add ValueObject base class with structural equality via GetEqualityComponents()
+  - Add IDomainEvent marker interface
+  - Add IRepository<T> interface (GetById, Add, Update, Delete)
+  - Add unit tests for Entity equality, ValueObject equality, and AggregateRoot event collection
+acceptance:
+  - SharedKernel project contains Entity, AggregateRoot, ValueObject, IDomainEvent, IRepository
+  - Entity equality is based on Id, not reference
+  - ValueObject equality is based on component values
+  - AggregateRoot can register and clear domain events
+  - All building block types have passing unit tests
+  - dotnet build produces zero warnings

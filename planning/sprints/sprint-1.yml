@@ -1,0 +1,11 @@
+sprint:
+  name: "Sprint 1"
+  title: "Sprint 1 — Architecture Spine"
+  start: 2026-04-04
+  end: 2026-04-10
+
+stories:
+  - planning/stories/adr-foundation.yml
+  - planning/stories/shared-kernel-ddd-building-blocks.yml
+  - planning/stories/domain-model-core-aggregates.yml
+  - planning/stories/api-ddd-layer-wiring.yml
