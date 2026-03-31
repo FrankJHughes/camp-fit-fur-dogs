@@ -23,3 +23,5 @@ acceptance:
   - AggregateRoot can register and clear domain events
   - All building block types have passing unit tests
   - dotnet build produces zero warnings
+created: "2026-03-31T00:46:48Z"
+issue_number: 18

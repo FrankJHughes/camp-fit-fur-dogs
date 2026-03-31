@@ -22,3 +22,5 @@ acceptance:
   - Dog holds a GuardianId reference (not a navigation property)
   - All aggregate tests pass
   - dotnet build produces zero warnings
+created: "2026-03-31T00:47:04Z"
+issue_number: 19
