@@ -5,8 +5,13 @@ priority: P1
 labels: [infra, docs]
 branch: chore/sprint0-contributing-templates
 description: |
-  Add foundational repo documentation: CONTRIBUTING guide,
-  pull request template, and .gitignore for .NET projects.
+  As a contributor, I want a CONTRIBUTING guide, PR template,
+  and .gitignore in the repo, so that I can follow consistent
+  contribution practices and keep the working tree clean.
+
+  Includes CONTRIBUTING.md with branching/commit conventions,
+  a pull-request template that auto-populates on new PRs, and
+  a .gitignore tuned for .NET (bin/, obj/, .vs/).
 tasks:
   - Add CONTRIBUTING.md
   - Add .github/PULL_REQUEST_TEMPLATE.md
