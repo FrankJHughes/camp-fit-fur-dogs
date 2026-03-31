@@ -5,8 +5,13 @@ priority: P1
 labels: [infra, dotnet]
 branch: chore/sprint0-solution-skeleton
 description: |
-  Create the .NET solution file, API project, and test project
-  with a passing health check endpoint and one green test.
+  As a developer, I want a .NET solution with an API project,
+  test project, and a passing health check endpoint, so that
+  I have a buildable foundation to develop features against.
+
+  Creates the CampFitFurDogs solution file, the Api project
+  under src/, and Api.Tests under tests/. Ships one green test
+  that verifies the /health endpoint returns 200.
 tasks:
   - Create CampFitFurDogs.sln
   - Add src/CampFitFurDogs.Api project
