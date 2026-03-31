@@ -5,10 +5,15 @@ priority: P2
 labels: [dotnet, infra, architecture]
 branch: feature/sprint1-api-layer-wiring
 description: |
+  As a developer, I want each DDD layer wired through dependency
+  injection at startup, so that the API boots with all layers
+  resolving correctly and I can verify there are no circular
+  references before building features on top.
+
   Wire the DDD layers together through dependency injection in the
   API project. Each layer gets a registration extension method that
   the API host calls at startup. This proves the layer cake compiles
-  and resolves end-to-end without circular references.
+  and resolves end-to-end.
 tasks:
   - Add DomainServiceRegistration extension method in Domain project
   - Add InfrastructureServiceRegistration extension method in Infrastructure project
@@ -22,5 +27,3 @@ acceptance:
   - Integration test proves at least one cross-layer dependency resolves
   - No circular project references exist
   - dotnet build produces zero warnings
-created: "2026-03-31T00:47:22Z"
-issue_number: 20

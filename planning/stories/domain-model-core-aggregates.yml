@@ -5,9 +5,14 @@ priority: P1
 labels: [dotnet, domain]
 branch: feature/sprint1-core-aggregates
 description: |
-  Define the first two aggregate roots — Dog and Guardian — in the
-  Domain project. Each gets a strongly-typed identity value object.
-  These are persistence-ignorant; EF Core mapping comes in a later sprint.
+  As a developer, I want Dog and Guardian aggregate roots with
+  strongly-typed identities, so that the domain model enforces
+  business rules at the type level and prevents invalid state from
+  being constructed.
+
+  Define the first two aggregate roots in the Domain project. Each
+  gets a strongly-typed identity value object. These are
+  persistence-ignorant; EF Core mapping comes in a later sprint.
 tasks:
   - Add DogId value object wrapping Guid
   - Add Dog aggregate root with Name, Breed, DateOfBirth, GuardianId
@@ -22,5 +27,3 @@ acceptance:
   - Dog holds a GuardianId reference (not a navigation property)
   - All aggregate tests pass
   - dotnet build produces zero warnings
-created: "2026-03-31T00:47:04Z"
-issue_number: 19

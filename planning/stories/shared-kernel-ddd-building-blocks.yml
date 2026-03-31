@@ -5,10 +5,15 @@ priority: P1
 labels: [dotnet, architecture, domain]
 branch: feature/sprint1-shared-kernel
 description: |
-  Add base types to the SharedKernel project that all domain models
-  will inherit from. These are the building blocks of the domain layer:
-  identity-typed entities, aggregate roots with domain event support,
-  value objects with structural equality, and a repository contract.
+  As a developer, I want reusable DDD base types in a SharedKernel
+  project, so that all domain models inherit consistent identity
+  equality, structural equality, and domain event support without
+  duplicating foundational logic.
+
+  Add base types that all domain models will inherit from. These are
+  the building blocks of the domain layer: identity-typed entities,
+  aggregate roots with domain event support, value objects with
+  structural equality, and a repository contract.
 tasks:
   - Add Entity<TId> base class with identity equality
   - Add AggregateRoot<TId> extending Entity with domain event collection
@@ -23,5 +28,3 @@ acceptance:
   - AggregateRoot can register and clear domain events
   - All building block types have passing unit tests
   - dotnet build produces zero warnings
-created: "2026-03-31T00:46:48Z"
-issue_number: 18
