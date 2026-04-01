@@ -1,0 +1,13 @@
+id: US-C12
+title: Confirm Destructive Action
+type: edge-case
+source:
+  productFile: /product/stories/customer/US-C12-confirm-destructive-action.md
+capability:
+  primary: Safe Change & Recovery
+emotionalGuarantees: [EG-06]
+definitionOfReady:
+  required: true
+  verified: false
+planning:
+  eligibleForEpic: true
