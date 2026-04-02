@@ -1,0 +1,13 @@
+id: US-C09
+title: Invalid Information Handling
+type: edge-case
+source:
+  productFile: /product/stories/customer/US-C09-invalid-info.md
+capability:
+  primary: Clarity & Guidance
+emotionalGuarantees: [EG-02, EG-14]
+definitionOfReady:
+  required: true
+  verified: false
+planning:
+  eligibleForEpic: true

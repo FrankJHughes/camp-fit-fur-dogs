@@ -1,0 +1,13 @@
+id: US-C01
+title: Create Customer Account
+type: customer-story
+source:
+  productFile: /product/stories/customer/US-C01-create-customer-account.md
+capability:
+  primary: Identity & Ownership
+emotionalGuarantees: [EG-01, EG-02, EG-03]
+definitionOfReady:
+  required: true
+  verified: false
+planning:
+  eligibleForEpic: true
