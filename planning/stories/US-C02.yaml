@@ -8,6 +8,6 @@ capability:
 emotionalGuarantees: [EG-01, EG-04, EG-05]
 definitionOfReady:
   required: true
-  verified: false
+  verified: true
 planning:
   eligibleForEpic: true
