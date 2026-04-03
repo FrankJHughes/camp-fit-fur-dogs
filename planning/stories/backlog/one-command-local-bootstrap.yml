@@ -1,0 +1,30 @@
+title: "One-Command Local Bootstrap"
+epic: "Developer Onboarding"
+points: 3
+priority: P0
+labels: [infra, developer-experience]
+branch: chore/one-command-local-bootstrap
+description: |
+  As a developer who prefers working locally, I want to run a single command
+  that validates my environment, resolves all dependencies, builds the
+  solution, runs the test suite, and prints a readiness report — so that I
+  do not need to know the specific toolchain commands to get started.
+
+  The command must be idempotent and safe to re-run at any time.
+tasks:
+  - Create bootstrap entry point for each supported OS
+  - Add prerequisite validation with actionable error messages
+  - Wire dependency resolution, build, and test execution
+  - Integrate infrastructure dependency startup
+  - Print human-readable readiness summary on completion
+  - Verify idempotency
+  - Document the bootstrap command in README
+acceptance:
+  - A single command exists for each supported OS
+  - Prerequisites are validated with clear messages for missing items
+  - Command resolves, builds, tests, and starts infrastructure
+  - Readiness summary prints pass/fail per check with elapsed time
+  - Command is idempotent
+created: "2026-04-03T21:12:00Z"
+source:
+  productFile: /product/stories/infra/one-command-local-bootstrap.md

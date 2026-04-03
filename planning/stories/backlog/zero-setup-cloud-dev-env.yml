@@ -1,0 +1,30 @@
+title: "Zero-Setup Cloud Development Environment"
+epic: "Developer Onboarding"
+points: 5
+priority: P0
+labels: [infra, developer-experience]
+branch: chore/zero-setup-cloud-dev-env
+description: |
+  As a new contributor, I want to open the repository in a cloud-hosted or
+  containerized environment and land in a fully working setup — SDK installed,
+  tools available, dependencies running, tests passing — so that I can start
+  coding without installing anything on my local machine.
+
+  Environment provisioning should complete in under 5 minutes on a warm
+  cache with zero manual intervention after launch.
+tasks:
+  - Select and configure a cloud or containerized development environment
+  - Include required SDK, CLI tools, and editor extensions in the environment definition
+  - Integrate infrastructure dependency startup into environment provisioning
+  - Wire post-provisioning to restore, build, and test automatically
+  - Add environment launch instructions and badge to README
+  - Verify provisioning completes in under 5 minutes on warm cache
+acceptance:
+  - Opening the repo in the chosen environment produces a ready-to-code workspace
+  - SDK, CLI tools, and extensions are present without manual installation
+  - Dependencies start automatically during provisioning
+  - Restore, build, and test pass without manual intervention
+  - README documents the one-action launch path
+created: "2026-04-03T21:12:00Z"
+source:
+  productFile: /product/stories/infra/zero-setup-cloud-dev-env.md
