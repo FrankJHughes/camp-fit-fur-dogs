@@ -27,3 +27,5 @@ acceptance:
   - Dog holds a GuardianId reference (not a navigation property)
   - All aggregate tests pass
   - dotnet build produces zero warnings
+source:
+  productFile: /product/stories/infra/domain-model-core-aggregates.md

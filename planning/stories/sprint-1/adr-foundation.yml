@@ -24,3 +24,5 @@ acceptance:
   - ADR-001 records the decision to use ADRs and references the template
   - ADR-002 documents the four-layer DDD structure matching the solution
   - README.md lists all ADRs with status and one-line summary
+source:
+  productFile: /product/stories/infra/adr-foundation.md

@@ -22,3 +22,5 @@ acceptance:
   - .gitignore covers bin/, obj/, .vs/
 created: "2026-03-29T19:27:00Z"
 issue_number: 6
+source:
+  productFile: /product/stories/infra/add-contributing-pr-template.md

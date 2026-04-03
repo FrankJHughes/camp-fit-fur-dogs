@@ -25,3 +25,5 @@ acceptance:
   - Force-push to main is rejected
   - Stale approvals are dismissed on new pushes
 created: "2026-04-03T15:51:00Z"
+source:
+  productFile: /product/stories/infra/merge-protection-governance.md
