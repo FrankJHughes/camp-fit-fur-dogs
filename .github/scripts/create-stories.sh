@@ -1,165 +1,349 @@
 #!/usr/bin/env bash
-# create-stories.sh — Creates GitHub issues for stories.
-#
-# Usage:
-#   ./create-stories.sh [--dry-run] <file.yml|directory/>
-#
-# Idempotent: skips files already stamped with 'created'.
-
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/repo.env"
 source "$SCRIPT_DIR/lib.sh"
 
-show_help() {
-  echo "Usage: create-stories.sh [--dry-run] <file.yml|directory/>"
-  echo ""
-  echo "Creates GitHub issues for stories defined in YAML manifests."
-  echo "Idempotent — skips files already stamped with 'created'."
-  echo ""
-  echo "Options:"
-  echo "  --dry-run   Show what would be created without making API calls"
-  echo "  --help, -h  Show this help message"
-  echo ""
-  echo "Environment:"
-  echo "  PROJECT_NUMBER  Board number (default: 14, from repo.env)"
-  exit 0
-}
+parse_flags "$@"
+set -- "${REMAINING_ARGS[@]}"
 
-# Search local epic YAMLs for an epic's issue number by title.
-find_epic_issue() {
-  local epic_title="$1"
-  local epics_dir="$REPO_ROOT/$EPICS_DIR"
+MILESTONE="${MILESTONE:-}"
 
-  for f in "$epics_dir"/*.yml; do
-    [[ -f "$f" ]] || continue
-    local title
-    title=$(yq -r '.epic.title' "$f")
-    if [[ "$title" == "$epic_title" ]]; then
-      yq -r '.epic.issue_number // ""' "$f"
-      return 0
-    fi
-  done
-  echo ""
-}
+# ── Schema 1 body (infra stories with inline fields) ──────────────
 
 build_body() {
   local file="$1"
   local body=""
 
-  local description
-  description=$(yq -r '.description // ""' "$file")
-  [[ -n "$description" ]] && body+="$description"$'\n'
+  local desc
+  desc=$(yq -r '.description // ""' "$file")
+  [[ -n "$desc" ]] && body+="$desc"$'\n\n'
 
-  local epic_title
-  epic_title=$(yq -r '.epic // ""' "$file")
-  if [[ -n "$epic_title" ]]; then
-    local epic_number
-    epic_number=$(find_epic_issue "$epic_title")
-    if [[ -n "$epic_number" ]]; then
-      body+=$'\n'"Part of #${epic_number}"$'\n'
-    else
-      body+=$'\n'"Epic: ${epic_title} *(not yet created)*"$'\n'
-    fi
-  fi
+  local epic
+  epic=$(yq -r '.epic // ""' "$file")
+  [[ -n "$epic" ]] && body+="**Epic:** $epic"$'\n\n'
 
   local task_count
-  task_count=$(yq -r '.tasks | length' "$file")
+  task_count=$(yq '.tasks | length' "$file")
   if [[ "$task_count" -gt 0 ]]; then
-    body+=$'\n'"## Tasks"$'\n'
+    body+="## Tasks"$'\n'
     for i in $(seq 0 $((task_count - 1))); do
       body+="- [ ] $(yq -r ".tasks[$i]" "$file")"$'\n'
     done
+    body+=$'\n'
   fi
 
   local ac_count
-  ac_count=$(yq -r '.acceptance | length' "$file")
+  ac_count=$(yq '.acceptance | length' "$file")
   if [[ "$ac_count" -gt 0 ]]; then
-    body+=$'\n'"## Acceptance Criteria"$'\n'
+    body+="## Acceptance Criteria"$'\n'
     for i in $(seq 0 $((ac_count - 1))); do
       body+="- [ ] $(yq -r ".acceptance[$i]" "$file")"$'\n'
     done
+    body+=$'\n'
   fi
 
   echo "$body"
 }
 
-create_story() {
+# ── Schema 2 body (customer/edge stories → product markdown) ──────
+
+build_body_v2() {
   local file="$1"
-  CURRENT_FILE="$file"
+  local body=""
 
-  CURRENT_STEP="checking idempotency stamp"
-  if yq -e '.created' "$file" &>/dev/null; then
-    echo "⏭ Skipping $(basename "$file") — already created"
-    return 0
+  local story_id type capability egs dor product_file
+  story_id=$(yq -r '.id // ""' "$file")
+  type=$(yq -r '.type // ""' "$file")
+  capability=$(yq -r '.capability.primary // ""' "$file")
+  egs=$(yq -r '(.emotionalGuarantees // []) | join(", ")' "$file")
+  dor=$(yq -r '.definitionOfReady.verified // false' "$file")
+  product_file=$(yq -r '.source.productFile // ""' "$file")
+
+  body+="**Story ID:** $story_id"$'\n'
+  body+="**Type:** $type"$'\n'
+  body+="**Capability:** $capability"$'\n'
+  [[ -n "$egs" ]] && body+="**Emotional Guarantees:** $egs"$'\n'
+  body+="**DoR Verified:** $([ "$dor" == "true" ] && echo "✅" || echo "❌")"$'\n'
+  body+=$'\n---\n\n'
+
+  if [[ -n "$product_file" ]]; then
+    local rel_path="${product_file#/}"
+    if [[ -f "$rel_path" ]]; then
+      body+="$(cat "$rel_path")"
+      body+=$'\n\n---\n\n'
+      body+="**Product Spec:** \`$rel_path\`"$'\n'
+    else
+      echo "  ⚠️  Product file not found: $rel_path" >&2
+      body+="_Product spec not found: \`$rel_path\`_"$'\n'
+    fi
   fi
 
-  CURRENT_STEP="reading manifest"
-  local title labels
-  title=$(yq -r '.title' "$file")
-  labels=$(yq -r '(.labels // []) | join(",")' "$file")
-
-  echo "🔨 Creating story: $title"
-
-  [[ -n "$labels" ]] && ensure_labels "$labels"
-
-  CURRENT_STEP="building issue body"
-  local body
-  body=$(build_body "$file")
-
-  if [[ "$DRY_RUN" == true ]]; then
-    echo "  [dry-run] Would create issue: $title"
-    echo "  [dry-run] Would add to board #$PROJECT_NUMBER"
-    return 0
-  fi
-
-  CURRENT_STEP="creating GitHub issue"
-  local -a label_args=()
-  [[ -n "$labels" ]] && label_args=(--label "$labels")
-
-  local issue_url
-  issue_url=$(gh issue create \
-    --repo "$FULL_REPO" \
-    --title "$title" \
-    --body "$body" \
-    "${label_args[@]}")
-
-  local issue_number
-  issue_number=$(basename "$issue_url")
-
-  CURRENT_STEP="adding to project board"
-  require_board
-  add_to_board "$PROJECT_ID" "$issue_number"
-  echo "  📋 Added to board #$PROJECT_NUMBER"
-
-  CURRENT_STEP="stamping manifest"
-  local now
-  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  yq -i ".created = \"$now\" | .issue_number = $issue_number" "$file"
-
-  echo "✅ Created story: $title → #$issue_number"
+  body+="**Planning YAML:** \`$file\`"$'\n'
+  echo "$body"
 }
 
-# --- Main ---
-[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+# ── Schema 2 labels (derived from .type) ──────────────────────────
+
+derive_labels_v2() {
+  local file="$1"
+  yq -r '.type // ""' "$file"
+}
+
+# ── Issue creation (unified, both schemas) ────────────────────────
+
+create_issue() {
+  local file="$1"
+
+  CURRENT_FILE="$file"
+  CURRENT_STEP="reading YAML"
+
+  local title
+  title=$(yq -r '.title' "$file")
+
+  # Idempotency
+  local existing
+  existing=$(yq -r '.issue_number // ""' "$file")
+  if [[ -n "$existing" && "$existing" != "null" ]]; then
+    echo "  ⏭  Skipping '$title' — already #$existing"
+    return 0
+  fi
+
+  # Detect schema and build accordingly
+  local schema body labels
+  schema=$(detect_schema "$file")
+
+  CURRENT_STEP="building body (schema $schema)"
+  if [[ "$schema" == "2" ]]; then
+    body=$(build_body_v2 "$file")
+    labels=$(derive_labels_v2 "$file")
+    local sid
+    sid=$(yq -r '.id // ""' "$file")
+    [[ -n "$sid" && "$sid" != "null" ]] && title="$sid: $title"
+  else
+    body=$(build_body "$file")
+    labels=$(yq -r '(.labels // []) | join(",")' "$file")
+  fi
+
+  # Body validation
+  if [[ -z "$body" || ${#body} -lt 10 ]]; then
+    echo "  ❌ FAILED: Empty body for '$title' (schema $schema)"
+    echo "     File: $file"
+    exit 1
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "  [dry-run] Would create: $title (schema $schema)"
+    [[ -n "$labels" ]] && echo "    Labels: $labels"
+    [[ -n "$MILESTONE" ]] && echo "    Milestone: $MILESTONE"
+    echo "    Body: ${#body} chars"
+    return
+git checkout main && git pull
+git checkout -b chore/script-schema2-support
+
+# ── 1. Append detect_schema() to lib.sh ────────────────────────────
+
+cat >> .github/scripts/lib.sh << 'LIBEOF'
+
+# ── Schema detection ──────────────────────────────────────────────
+# Returns "1" for infra stories (have inline .description).
+# Returns "2" for customer/edge stories (no .description, use product spec).
+detect_schema() {
+  local file="$1"
+  if yq -e '.description' "$file" &>/dev/null; then
+    echo "1"
+  else
+    echo "2"
+  fi
+}
+LIBEOF
+
+# ── 2. Replace create-stories.sh with Schema 2 support ─────────────
+
+cat > .github/scripts/create-stories.sh << 'CSEOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/repo.env"
+source "$SCRIPT_DIR/lib.sh"
 
 parse_flags "$@"
 set -- "${REMAINING_ARGS[@]}"
 
-if [[ $# -lt 1 ]]; then
-  show_help
-fi
+MILESTONE="${MILESTONE:-}"
 
-for arg in "$@"; do
-  if [[ -d "$arg" ]]; then
-    for file in "$arg"/*.yml; do
-      [[ -f "$file" ]] && create_story "$file"
+# ── Schema 1 body (infra stories with inline fields) ──────────────
+
+build_body() {
+  local file="$1"
+  local body=""
+
+  local desc
+  desc=$(yq -r '.description // ""' "$file")
+  [[ -n "$desc" ]] && body+="$desc"$'\n\n'
+
+  local epic
+  epic=$(yq -r '.epic // ""' "$file")
+  [[ -n "$epic" ]] && body+="**Epic:** $epic"$'\n\n'
+
+  local task_count
+  task_count=$(yq '.tasks | length' "$file")
+  if [[ "$task_count" -gt 0 ]]; then
+    body+="## Tasks"$'\n'
+    for i in $(seq 0 $((task_count - 1))); do
+      body+="- [ ] $(yq -r ".tasks[$i]" "$file")"$'\n'
     done
-  elif [[ -f "$arg" ]]; then
-    create_story "$arg"
-  else
-    echo "⚠ Not found: $arg"
+    body+=$'\n'
   fi
-done
+
+  local ac_count
+  ac_count=$(yq '.acceptance | length' "$file")
+  if [[ "$ac_count" -gt 0 ]]; then
+    body+="## Acceptance Criteria"$'\n'
+    for i in $(seq 0 $((ac_count - 1))); do
+      body+="- [ ] $(yq -r ".acceptance[$i]" "$file")"$'\n'
+    done
+    body+=$'\n'
+  fi
+
+  echo "$body"
+}
+
+# ── Schema 2 body (customer/edge stories → product markdown) ──────
+
+build_body_v2() {
+  local file="$1"
+  local body=""
+
+  local story_id type capability egs dor product_file
+  story_id=$(yq -r '.id // ""' "$file")
+  type=$(yq -r '.type // ""' "$file")
+  capability=$(yq -r '.capability.primary // ""' "$file")
+  egs=$(yq -r '(.emotionalGuarantees // []) | join(", ")' "$file")
+  dor=$(yq -r '.definitionOfReady.verified // false' "$file")
+  product_file=$(yq -r '.source.productFile // ""' "$file")
+
+  body+="**Story ID:** $story_id"$'\n'
+  body+="**Type:** $type"$'\n'
+  body+="**Capability:** $capability"$'\n'
+  [[ -n "$egs" ]] && body+="**Emotional Guarantees:** $egs"$'\n'
+  body+="**DoR Verified:** $([ "$dor" == "true" ] && echo "✅" || echo "❌")"$'\n'
+  body+=$'\n---\n\n'
+
+  if [[ -n "$product_file" ]]; then
+    local rel_path="${product_file#/}"
+    if [[ -f "$rel_path" ]]; then
+      body+="$(cat "$rel_path")"
+      body+=$'\n\n---\n\n'
+      body+="**Product Spec:** \`$rel_path\`"$'\n'
+    else
+      echo "  ⚠️  Product file not found: $rel_path" >&2
+      body+="_Product spec not found: \`$rel_path\`_"$'\n'
+    fi
+  fi
+
+  body+="**Planning YAML:** \`$file\`"$'\n'
+  echo "$body"
+}
+
+# ── Schema 2 labels (derived from .type) ──────────────────────────
+
+derive_labels_v2() {
+  local file="$1"
+  yq -r '.type // ""' "$file"
+}
+
+# ── Issue creation (unified, both schemas) ────────────────────────
+
+create_issue() {
+  local file="$1"
+
+  CURRENT_FILE="$file"
+  CURRENT_STEP="reading YAML"
+
+  local title
+  title=$(yq -r '.title' "$file")
+
+  # Idempotency
+  local existing
+  existing=$(yq -r '.issue_number // ""' "$file")
+  if [[ -n "$existing" && "$existing" != "null" ]]; then
+    echo "  ⏭  Skipping '$title' — already #$existing"
+    return 0
+  fi
+
+  # Detect schema and build accordingly
+  local schema body labels
+  schema=$(detect_schema "$file")
+
+  CURRENT_STEP="building body (schema $schema)"
+  if [[ "$schema" == "2" ]]; then
+    body=$(build_body_v2 "$file")
+    labels=$(derive_labels_v2 "$file")
+    local sid
+    sid=$(yq -r '.id // ""' "$file")
+    [[ -n "$sid" && "$sid" != "null" ]] && title="$sid: $title"
+  else
+    body=$(build_body "$file")
+    labels=$(yq -r '(.labels // []) | join(",")' "$file")
+  fi
+
+  # Body validation
+  if [[ -z "$body" || ${#body} -lt 10 ]]; then
+    echo "  ❌ FAILED: Empty body for '$title' (schema $schema)"
+    echo "     File: $file"
+    exit 1
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "  [dry-run] Would create: $title (schema $schema)"
+    [[ -n "$labels" ]] && echo "    Labels: $labels"
+    [[ -n "$MILESTONE" ]] && echo "    Milestone: $MILESTONE"
+    echo "    Body: ${#body} chars"
+    return 0
+  fi
+
+  CURRENT_STEP="ensuring labels"
+  if [[ -n "$labels" ]]; then
+    ensure_labels "$labels"
+  fi
+
+  CURRENT_STEP="creating issue"
+  local args=("--repo" "$FULL_REPO" "--title" "$title" "--body" "$body")
+  [[ -n "$labels" ]] && args+=("--label" "$labels")
+  [[ -n "$MILESTONE" ]] && args+=("--milestone" "$MILESTONE")
+
+  local url
+  url=$(gh issue create "${args[@]}")
+  local num
+  num=$(echo "$url" | grep -oE '[0-9]+$')
+
+  echo "  ✅ Created #$num: $title"
+
+  CURRENT_STEP="stamping YAML"
+  yq -i ".created = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" "$file"
+  yq -i ".issue_number = $num" "$file"
+
+  if [[ -n "${PROJECT_ID:-}" ]]; then
+    CURRENT_STEP="adding to board"
+    add_to_board "$PROJECT_ID" "$num"
+    echo "  📋 Added to board"
+  fi
+}
+
+# ── Main ──────────────────────────────────────────────────────────
+
+require_board
+
+if [[ $# -gt 0 ]]; then
+  for file in "$@"; do
+    [[ -f "$file" ]] && create_issue "$file" || echo "⚠️  Not found: $file"
+  done
+else
+  for file in "$STORIES_DIR"/*.yml "$STORIES_DIR"/*.yaml; do
+    [[ -f "$file" ]] || continue
+    create_issue "$file"
+  done
+fi

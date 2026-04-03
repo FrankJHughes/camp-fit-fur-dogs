@@ -111,3 +111,15 @@ ensure_labels() {
     fi
   done
 }
+
+# ── Schema detection ──────────────────────────────────────────────
+# Returns "1" for infra stories (have inline .description).
+# Returns "2" for customer/edge stories (no .description, use product spec).
+detect_schema() {
+  local file="$1"
+  if yq -e '.description' "$file" &>/dev/null; then
+    echo "1"
+  else
+    echo "2"
+  fi
+}
