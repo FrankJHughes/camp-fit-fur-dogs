@@ -5,7 +5,7 @@ source:
   productFile: /product/stories/customer/US-C09-invalid-info.md
 capability:
   primary: Clarity & Guidance
-emotionalGuarantees: [EG-02, EG-14]
+emotionalGuarantees: [EG-02, EG-01]
 definitionOfReady:
   required: true
   verified: false
