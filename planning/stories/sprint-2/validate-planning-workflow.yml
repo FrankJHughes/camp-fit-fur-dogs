@@ -13,7 +13,7 @@ acceptance:
   - "Every YAML with source.productFile is checked for file existence"
   - "Sprint manifest entries reference existing story files"
   - "Validation failures block merge with clear error messages"
-epic: "Planning Infrastructure"
+epic: "Backlog Grooming Experience"
 labels:
   - infra
   - ci
@@ -23,3 +23,4 @@ priority: P1
 branch: "chore/validate-planning-workflow"
 source:
   productFile: "/product/stories/infra/validate-planning-workflow.md"
+
