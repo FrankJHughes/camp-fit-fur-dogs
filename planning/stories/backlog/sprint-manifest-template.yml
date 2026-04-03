@@ -1,0 +1,25 @@
+title: "Sprint Manifest Template"
+epic: "Planning Infrastructure"
+points: 1
+priority: P0
+labels: [infra, governance]
+branch: "chore/sprint-manifest-template"
+description: |
+  As a product owner, I want a sprint manifest YAML in planning/sprints/
+  that declares the sprint goal, date range, velocity target, and story
+  references — so that sprint scope is version-controlled, auditable, and
+  machine-readable.
+tasks:
+  - Create manifest template at planning/sprints/_template.yml
+  - Define fields — sprint number, goal, startDate, endDate, velocityTarget, stories
+  - Create Sprint 2 manifest using the template
+  - Reference stories by path — no duplication
+  - Document manifest format in planning/README.md
+acceptance:
+  - Template exists at planning/sprints/_template.yml
+  - Sprint 2 manifest exists with goal, dates, velocity, and story references
+  - Stories referenced by path, not duplicated
+  - Manifest format documented in planning/README.md
+created: "2026-04-03T21:25:00Z"
+source:
+  productFile: /product/stories/infra/sprint-manifest-template.md

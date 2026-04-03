@@ -1,0 +1,26 @@
+title: "Planning Conventions README"
+epic: "Planning Infrastructure"
+points: 1
+priority: P0
+labels: [infra, documentation, governance]
+branch: "chore/planning-conventions-readme"
+description: |
+  As a contributor, I want a planning/README.md that documents the directory
+  structure, naming conventions, story lifecycle, atomic-PR convention, and
+  git hygiene rules — so that I can create and review planning artifacts
+  without re-deriving the process each time.
+tasks:
+  - Draft planning/README.md with directory structure and naming conventions
+  - Document story lifecycle from backlog through sprint execution
+  - Document atomic-PR convention — product spec + story YAML ship together
+  - Document git hygiene — clean-slate branch creation, no amending pushed commits
+  - Document when an ADR is required
+  - Cross-reference from CONTRIBUTING.md
+acceptance:
+  - planning/README.md exists and is discoverable from the repo root README
+  - Directory structure, lifecycle, atomic-PR, and git hygiene are documented
+  - ADR requirement criteria are documented
+  - Cross-referenced from CONTRIBUTING.md
+created: "2026-04-03T21:25:00Z"
+source:
+  productFile: /product/stories/infra/planning-conventions-readme.md
