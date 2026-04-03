@@ -1,29 +1,28 @@
-title: "Story Scaffold Script"
+title: "Story Scaffold Tool"
 epic: "Planning Infrastructure"
 points: 3
 priority: P0
 labels: [infra, tooling, governance]
 branch: "chore/story-scaffold-script"
 description: |
-  As a product owner, I want a script that generates a matched pair of
-  product spec and story YAML from a small number of inputs — so that
-  schema compliance is guaranteed by construction and hand-authoring YAML
-  is never required.
+  As a product owner, I want a tool that generates a matched pair of
+  product spec and story artifact from minimal inputs — so that schema
+  compliance is guaranteed by construction and hand-authoring is never
+  required.
 tasks:
-  - Create scaffold script at a discoverable location
-  - Accept inputs — title, epic, points, priority, labels, type, destination
-  - Generate product spec markdown in the correct subdirectory
-  - Generate story YAML in the correct subdirectory with source.productFile
-  - Verify generated YAML matches the schema of existing stories on main
-  - Ensure idempotency — safe to re-run
-  - Print generated file paths on completion
-  - Document usage in planning/README.md
+  - Create scaffold tool at a discoverable, documented location
+  - Accept minimal inputs sufficient to populate a story
+  - Generate product spec and story artifact in their correct locations
+  - Ensure generated artifacts match the existing schema on main
+  - Include traceability from story artifact to product spec
+  - Verify idempotency
+  - Report created file paths on completion
+  - Document usage in planning or contributor documentation
 acceptance:
-  - Script exists and is documented
-  - Generates matched product spec + story YAML from inputs
-  - Generated YAML matches existing schema with all required fields
-  - source.productFile correctly references the generated product spec
-  - Script is idempotent
+  - Tool exists and is documented
+  - Generates matched product spec + story artifact from minimal inputs
+  - Generated artifacts match existing schema with traceability
+  - Tool is idempotent
 created: "2026-04-03T21:25:00Z"
 source:
   productFile: /product/stories/infra/story-scaffold-script.md
