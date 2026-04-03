@@ -1,30 +1,30 @@
-# Story Scaffold Script
+# Story Scaffold Tool
 
 ## Intent
-A script exists that generates a matched pair of product spec and story
-YAML from a small number of inputs (title, epic, points, priority, labels)
-— so that hand-authoring YAML is never required and schema compliance is
-guaranteed by construction.
+A tool exists that generates a matched pair of product spec and story
+artifact from minimal inputs — so that schema compliance is guaranteed by
+construction and hand-authoring planning artifacts is never required.
 
 ## Value
 Every story created by hand has risked schema mismatch — wrong fields,
-missing source.productFile, inconsistent formatting. A scaffold script
-makes the correct shape the only shape, eliminates copy-paste drift, and
-cuts story creation time from minutes to seconds.
+missing traceability links, inconsistent formatting. A scaffold tool makes
+the correct shape the only shape, eliminates copy-paste drift, and reduces
+story creation time to seconds.
 
 ## Acceptance Criteria
-- [ ] A script exists at a discoverable location (e.g., scripts/ or tools/)
-- [ ] Script accepts inputs: title, epic, points, priority, labels, type (infra or customer), destination (backlog or sprint-N)
-- [ ] Script generates a product spec markdown file in the correct product/stories/ subdirectory
-- [ ] Script generates a story YAML in the correct planning/stories/ subdirectory
-- [ ] Generated YAML matches the schema of existing stories on main (all required fields present)
-- [ ] Generated YAML includes source.productFile pointing to the generated product spec
-- [ ] Script is idempotent — re-running with the same title overwrites cleanly
-- [ ] Script prints the paths of both generated files on completion
-- [ ] README or planning/README.md documents how to use the script
+- [ ] A tool exists at a discoverable, documented location
+- [ ] The tool accepts minimal inputs sufficient to populate a story (e.g., title, epic, points, priority)
+- [ ] The tool generates a product spec in the correct location
+- [ ] The tool generates a story artifact in the correct location
+- [ ] Generated artifacts match the schema of existing stories on main
+- [ ] Generated artifacts include traceability from story to product spec
+- [ ] The tool is idempotent — safe to re-run with the same inputs
+- [ ] The tool reports what it created on completion
+- [ ] Usage is documented in contributor or planning documentation
 
 ## Out of Scope
 - GitHub issue creation (covered by Post-Merge Sprint Bootstrap story)
-- Schema validation (covered by Validate Planning Workflow story)
+- Schema validation enforcement (covered by Validate Planning Workflow story)
+- Prescribing scripting language, file format, or CLI interface
 
 ## Emotional Guarantees: N/A
