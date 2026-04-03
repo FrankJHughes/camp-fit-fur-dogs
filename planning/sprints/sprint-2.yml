@@ -11,3 +11,6 @@ stories:
   - planning/stories/US-C02.yaml
   - planning/stories/US-C03.yaml
   - planning/stories/US-C07.yaml
+  - file: planning/stories/sprint-2/post-merge-sprint-bootstrap.yml
+  - file: planning/stories/sprint-2/validate-planning-workflow.yml
+  - file: planning/stories/sprint-2/planning-runbook.yml

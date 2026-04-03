@@ -1,0 +1,25 @@
+title: "Post-Merge Sprint Bootstrap"
+description: |
+  Define and document a repeatable, scripted sequence that stands up a new sprint
+  after planning artifacts are merged — creating the milestone, populating issues,
+  and verifying the board. This is the P0 gate for Sprint 2 operational readiness.
+tasks:
+  - "Document the sprint standup sequence (clean stamps -> milestone -> issues -> board)"
+  - "Verify idempotency of create-sprint.sh and create-stories.sh scripts"
+  - "Run the full sequence against Sprint 2 and confirm board state"
+  - "Add sequence to planning runbook cross-reference"
+acceptance:
+  - "Sprint standup sequence is documented and executable"
+  - "Re-running the sequence does not create duplicate issues or milestones"
+  - "Board column assignments are verified post-creation"
+  - "Sequence is referenced in the planning runbook"
+epic: "Planning Infrastructure"
+labels:
+  - infra
+  - automation
+  - governance
+points: 5
+priority: P0
+branch: "chore/post-merge-sprint-bootstrap"
+source:
+  productFile: "/product/stories/infra/post-merge-sprint-bootstrap.md"

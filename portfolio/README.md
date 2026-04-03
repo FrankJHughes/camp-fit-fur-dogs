@@ -23,7 +23,7 @@ See [STAKEHOLDER.md](STAKEHOLDER.md) for the full definition.
 ## Quick Links
 
 - [Project Root README](../README.md)
-- [Backlog & Stories](../docs/backlog/)
-- [Architecture Docs](../docs/architecture/)
-- [Governance](../docs/governance/)
-- [GitHub Projects Sprint Board](https://github.com/frankjhughes/camp-fit-fur-dogs/projects/14)
+- [Backlog & Stories](../product/stories/)
+- [Architecture Docs](../docs/adr/)
+- [Governance](../docs/governance.md)
+- [GitHub Projects Sprint Board](https://github.com/users/frankjhughes/projects/14)

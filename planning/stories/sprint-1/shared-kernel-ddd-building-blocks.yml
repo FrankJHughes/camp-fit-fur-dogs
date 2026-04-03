@@ -28,3 +28,5 @@ acceptance:
   - AggregateRoot can register and clear domain events
   - All building block types have passing unit tests
   - dotnet build produces zero warnings
+source:
+  productFile: /product/stories/infra/shared-kernel-ddd-building-blocks.md
