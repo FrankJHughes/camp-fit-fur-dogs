@@ -1,16 +1,27 @@
 sprint:
   name: "Sprint 2"
-  title: "Sprint 2 — Identity & First Dog"
+  title: "Sprint 2 — Planning & DX Infrastructure"
   start: 2026-04-11
   end: 2026-04-24
   created: "2026-04-03T15:51:00Z"
   milestone: 3
+
 stories:
+  # Sprint Planning Experience (11 pts)
   - planning/stories/sprint-2/merge-protection-governance.yml
-  - planning/stories/US-C01.yaml
-  - planning/stories/US-C02.yaml
-  - planning/stories/US-C03.yaml
-  - planning/stories/US-C07.yaml
-  - file: planning/stories/sprint-2/post-merge-sprint-bootstrap.yml
-  - file: planning/stories/sprint-2/validate-planning-workflow.yml
-  - file: planning/stories/sprint-2/planning-runbook.yml
+  - planning/stories/sprint-2/post-merge-sprint-bootstrap.yml
+  - planning/stories/sprint-2/planning-runbook.yml
+  - planning/stories/sprint-2/sprint-manifest-template.yml
+
+  # Backlog Grooming Experience (7 pts)
+  - planning/stories/sprint-2/validate-planning-workflow.yml
+  - planning/stories/sprint-2/planning-conventions-readme.yml
+  - planning/stories/sprint-2/story-scaffold-script.yml
+
+  # Developer Onboarding (15 pts)
+  - planning/stories/sprint-2/dx-architecture-decision.yml
+  - planning/stories/sprint-2/one-command-local-bootstrap.yml
+  - planning/stories/sprint-2/declarative-infra-dependencies.yml
+  - planning/stories/sprint-2/standardized-developer-commands.yml
+  - planning/stories/sprint-2/containerized-dev-environment.yml
+  - planning/stories/sprint-2/consistent-editor-experience.yml

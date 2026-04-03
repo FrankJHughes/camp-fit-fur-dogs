@@ -1,5 +1,5 @@
 title: "Merge Protection Governance"
-epic: "Sprint 2 — Identity & First Dog"
+epic: "Sprint Planning Experience"
 points: 2
 priority: P0
 labels: [infra, governance]
@@ -27,3 +27,4 @@ acceptance:
 created: "2026-04-03T15:51:00Z"
 source:
   productFile: /product/stories/infra/merge-protection-governance.md
+

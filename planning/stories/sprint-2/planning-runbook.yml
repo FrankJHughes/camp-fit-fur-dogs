@@ -13,7 +13,7 @@ acceptance:
   - "Runbook covers all planning phases from spec to board verification"
   - "Troubleshooting section addresses common failures"
   - "Cross-referenced from CONTRIBUTING.md and README.md"
-epic: "Planning Infrastructure"
+epic: "Sprint Planning Experience"
 labels:
   - infra
   - documentation
@@ -23,3 +23,4 @@ priority: P1
 branch: "chore/planning-runbook"
 source:
   productFile: "/product/stories/infra/planning-runbook.md"
+

@@ -6,7 +6,8 @@ sprint:
   created: "2026-03-31T00:47:26Z"
   milestone: 2
 stories:
-  - planning/stories/adr-foundation.yml
-  - planning/stories/shared-kernel-ddd-building-blocks.yml
-  - planning/stories/domain-model-core-aggregates.yml
-  - planning/stories/api-ddd-layer-wiring.yml
+  - planning/stories/sprint-1/adr-foundation.yml
+  - planning/stories/sprint-1/shared-kernel-ddd-building-blocks.yml
+  - planning/stories/sprint-1/domain-model-core-aggregates.yml
+  - planning/stories/sprint-1/api-ddd-layer-wiring.yml
+

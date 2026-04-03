@@ -13,7 +13,7 @@ acceptance:
   - "Re-running the sequence does not create duplicate issues or milestones"
   - "Board column assignments are verified post-creation"
   - "Sequence is referenced in the planning runbook"
-epic: "Planning Infrastructure"
+epic: "Sprint Planning Experience"
 labels:
   - infra
   - automation
@@ -23,3 +23,4 @@ priority: P0
 branch: "chore/post-merge-sprint-bootstrap"
 source:
   productFile: "/product/stories/infra/post-merge-sprint-bootstrap.md"
+
