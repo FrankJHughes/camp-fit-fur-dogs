@@ -24,8 +24,8 @@ hand-authoring YAML, no schema drift, and no orphaned specs.
 ## Capability Map
 | Capability              | Story                         | Location  |
 |-------------------------|-------------------------------|-----------|
-| Documented conventions  | Planning Conventions Document | backlog   |
-| Scaffold tooling        | Story Scaffold Tool           | backlog   |
+| Documented conventions  | Planning Conventions Document | sprint-2  |
+| Scaffold tooling        | Story Scaffold Tool           | sprint-2  |
 | Schema validation       | Validate Planning Workflow    | sprint-2  |
 
 ## Epic
