@@ -1,7 +1,10 @@
 # ADR-003: Developer Experience Toolchain
 
-## Status
-Proposed
+| Field     | Value        |
+|-----------|--------------|
+| Status    | Accepted     |
+| Date      | 2026-04-03   |
+| Deciders  | Frank Hughes |
 
 ## Context
 The Camp Fit Fur Dogs backlog contains five implementation-agnostic developer

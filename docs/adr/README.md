@@ -14,3 +14,4 @@ New ADRs should follow [TEMPLATE.md](TEMPLATE.md).
 |-----|-------|--------|
 | [001](0001-use-lightweight-adrs.md) | Use lightweight ADRs for architecture decisions | Accepted |
 | [002](0002-ddd-layered-architecture.md) | DDD layered architecture with clean separation | Accepted |
+| [003](0003-developer-experience-toolchain.md) | Developer Experience Toolchain | Accepted |
