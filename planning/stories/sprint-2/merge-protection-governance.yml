@@ -24,7 +24,7 @@ acceptance:
   - PRs to main require 1 code-owner approval
   - Force-push to main is rejected
   - Stale approvals are dismissed on new pushes
-created: "2026-04-03T15:51:00Z"
+created: "2026-04-04T01:28:16Z"
 source:
   productFile: /product/stories/infra/merge-protection-governance.md
-
+issue_number: 47

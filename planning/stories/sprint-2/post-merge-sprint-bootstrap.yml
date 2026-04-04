@@ -23,4 +23,5 @@ priority: P0
 branch: "chore/post-merge-sprint-bootstrap"
 source:
   productFile: "/product/stories/infra/post-merge-sprint-bootstrap.md"
-
+created: "2026-04-04T01:28:34Z"
+issue_number: 48

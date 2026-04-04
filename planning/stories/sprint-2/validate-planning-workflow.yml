@@ -23,4 +23,5 @@ priority: P1
 branch: "chore/validate-planning-workflow"
 source:
   productFile: "/product/stories/infra/validate-planning-workflow.md"
-
+created: "2026-04-04T01:29:24Z"
+issue_number: 51

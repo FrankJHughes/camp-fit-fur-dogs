@@ -20,6 +20,7 @@ acceptance:
   - Sprint 2 manifest exists with goal, time boundaries, capacity, and story references
   - Stories are referenced, not duplicated
   - Format documented in planning or contributor documentation
-created: "2026-04-03T21:25:00Z"
+created: "2026-04-04T01:29:08Z"
 source:
   productFile: /product/stories/infra/sprint-manifest-template.md
+issue_number: 50

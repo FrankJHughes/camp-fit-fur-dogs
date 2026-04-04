@@ -22,6 +22,7 @@ acceptance:
   - Debug launch profile starts the API with one action
   - Build and test tasks runnable without a terminal
   - Contribution guide references editor setup
-created: "2026-04-03T21:12:00Z"
+created: "2026-04-04T01:31:47Z"
 source:
   productFile: /product/stories/infra/consistent-editor-experience.md
+issue_number: 59
