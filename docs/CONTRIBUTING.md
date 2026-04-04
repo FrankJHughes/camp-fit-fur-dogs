@@ -1,5 +1,8 @@
 # Contributing to Camp Fit Fur Dogs
 
+> **Planning conventions** â€” for artifact organization, story lifecycle,
+> and naming rules, see [Planning Conventions](../planning/README.md).
+
 Thanks for contributing! This guide keeps our workflow consistent and our history clean.
 
 ---
@@ -24,7 +27,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 <type>: <short summary>
 
-<optional body — what and why, not how>
+<optional body ï¿½ what and why, not how>
 ```
 
 ### Types
