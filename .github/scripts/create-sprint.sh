@@ -5,7 +5,7 @@
 # Usage:
 #   ./create-sprint.sh [--dry-run] <sprint-file.yml>
 #
-# Idempotent: skips if sprint.created is already stamped.
+# Idempotent: skips if sprint.board_synced is already stamped.
 
 set -euo pipefail
 
@@ -19,7 +19,7 @@ show_help() {
   echo ""
   echo "Creates a GitHub milestone for a sprint, creates story issues,"
   echo "assigns them to the milestone, and adds them to the project board."
-  echo "Idempotent — skips if sprint.created is already stamped."
+  echo "Idempotent — skips if sprint.board_synced is already stamped."
   echo ""
   echo "Options:"
   echo "  --dry-run   Show what would be created without making API calls"
@@ -34,9 +34,10 @@ create_sprint() {
   local file="$1"
   CURRENT_FILE="$file"
 
+  # ── Bug 1 fix: check .sprint.board_synced, not .sprint.created ──
   CURRENT_STEP="checking idempotency stamp"
-  if yq -e '.sprint.created' "$file" &>/dev/null; then
-    echo "⏭ Skipping $(basename "$file") — already created"
+  if yq -e '.sprint.board_synced' "$file" &>/dev/null; then
+    echo "⏭ Skipping $(basename "$file") — already synced to board"
     return 0
   fi
 
@@ -79,16 +80,23 @@ create_sprint() {
     return 0
   fi
 
-  CURRENT_STEP="creating milestone"
-  echo "  📌 Creating milestone: $name"
+  # ── Bug 2 fix: check-then-create milestone ──────────────────────
+  CURRENT_STEP="resolving milestone"
+  echo "  📌 Resolving milestone: $name"
   local milestone_number
   milestone_number=$(gh api "repos/$FULL_REPO/milestones" \
-    -X POST \
-    -f title="$name" \
-    -f description="$title" \
-    -f due_on="${end_date}T23:59:59Z" \
-    --jq '.number')
-  echo "  → Milestone #$milestone_number"
+    --jq ".[] | select(.title == \"$name\") | .number")
+  if [[ -z "$milestone_number" ]]; then
+    milestone_number=$(gh api "repos/$FULL_REPO/milestones" \
+      -X POST \
+      -f title="$name" \
+      -f description="$title" \
+      -f due_on="${end_date}T23:59:59Z" \
+      --jq '.number')
+    echo "  → Created milestone #$milestone_number"
+  else
+    echo "  → Found existing milestone #$milestone_number"
+  fi
 
   echo ""
   local story_count
@@ -107,11 +115,14 @@ create_sprint() {
     local story_title
     story_title=$(yq -r '.title' "$full_path")
 
+    # ── Bug 3 fix: check .issue_number, not .created ──────────────
     CURRENT_STEP="creating story: $story_title"
-    if ! yq -e '.created' "$full_path" &>/dev/null; then
+    local existing_issue
+    existing_issue=$(yq -r '.issue_number // ""' "$full_path")
+    if [[ -z "$existing_issue" || "$existing_issue" == "null" ]]; then
       "$SCRIPT_DIR/create-stories.sh" "$full_path"
     else
-      echo "  ⏭ Story already exists: $story_title"
+      echo "  ⏭ Story already exists: $story_title (#$existing_issue)"
     fi
 
     local issue_number
@@ -132,7 +143,7 @@ create_sprint() {
   local now
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   yq -i "
-    .sprint.created = \"$now\"
+    .sprint.board_synced = \"$now\"
     | .sprint.milestone = $milestone_number
   " "$file"
 
