@@ -126,6 +126,49 @@ sync) — those changes do not require a product spec update.
 
 ---
 
+## Sprint Manifest Format
+
+Each sprint has a manifest at `planning/sprints/sprint-<n>.yml`.
+Copy `TEMPLATE.yml` to create a new one.
+
+### Required fields
+
+| Field | Type | Purpose |
+|---|---|---|
+| `sprint.name` | string | Milestone title — must be stable once created |
+| `sprint.title` | string | Human-readable name with theme |
+| `sprint.goal` | string | One or two sentences: what does this sprint achieve? |
+| `sprint.start` | date | First day of the sprint (`YYYY-MM-DD`) |
+| `sprint.end` | date | Last day of the sprint (`YYYY-MM-DD`) |
+| `sprint.capacity` | integer | Total story points committed |
+| `stories` | list | Repo-relative paths to story YAMLs |
+
+### Automation stamps (do not set manually)
+
+| Field | Set by | Purpose |
+|---|---|---|
+| `sprint.created` | `create-sprint.sh` | Timestamp of milestone creation |
+| `sprint.milestone` | `create-sprint.sh` | GitHub Milestone number |
+| `sprint.board_synced` | `create-sprint.sh` | Timestamp of board sync |
+
+### Rules
+
+- Every story committed to the sprint **must** appear in the
+  `stories` array.
+- Group stories by epic with a comment header for readability.
+- The `name` field becomes the GitHub Milestone title — changing it
+  after bootstrap creates a new milestone rather than renaming the
+  existing one.
+- `capacity` is the sum of story points at sprint start.  Do not
+  adjust mid-sprint (track variance in the retrospective instead).
+
+### Pre-convention sprints
+
+Sprint 1 predates this convention and has no manifest file.  Its scope
+is recorded in the GitHub Milestone and project board history.
+
+---
+
 ## When an ADR Is Required
 
 An [Architecture Decision Record](../docs/adr/README.md) is required
