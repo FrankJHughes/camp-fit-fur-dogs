@@ -26,7 +26,7 @@ the platform rather than by memory.
 ## Capability Map
 | Capability              | Story                             | Location  |
 |-------------------------|------------------------------------|-----------|
-| Sprint manifests        | Sprint Manifest                    | backlog   |
+| Sprint manifests        | Sprint Manifest                    | sprint-2  |
 | Planning ceremony       | Planning Runbook                   | sprint-2  |
 | Automatic issue sync    | Post-Merge Sprint Bootstrap        | sprint-2  |
 | Branch governance       | Merge Protection Governance        | sprint-2  |
