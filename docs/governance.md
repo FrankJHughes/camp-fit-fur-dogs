@@ -85,6 +85,34 @@ A story is Ready when:
 - PRs touching `docs/` or ADRs require review by Docs Owner.  
 - Merge only when CI is green and required reviews are complete.
 
+### Branch Protection on `main`
+
+The following rules are enforced via the GitHub branch-protection API
+(applied by `scripts/configure-branch-protection.sh`):
+
+| Setting | Value | Rationale |
+|---|---|---|
+| Require pull request | Yes | All changes flow through PRs — no direct pushes |
+| Required approving reviews | 1 | CODEOWNERS approval required |
+| Dismiss stale reviews | Yes | New pushes invalidate previous approvals |
+| Require status checks (strict) | `Build & Test` | CI must pass on an up-to-date branch |
+| Require CODEOWNERS review | Yes | Critical-path changes need owner sign-off |
+| Allow force-push | No | Protect commit history |
+| Allow deletion | No | Prevent accidental branch removal |
+| Enforce for admins | No | Solo-dev bypass — see rationale below |
+
+> **Solo-dev rationale:** `enforce_admins` is `false` so the sole
+> maintainer can bypass protection in genuine emergencies (e.g., a
+> broken CI pipeline that blocks all PRs).  Every bypass **must** be
+> documented in the next sprint retrospective.
+
+#### Emergency Override Process
+
+1. Confirm the override is necessary and CI cannot be fixed first.
+2. Push directly to `main` with a commit message prefixed `[EMERGENCY]`.
+3. Open a follow-up issue describing the override and root cause.
+4. Discuss in the next sprint retrospective.
+
 ---
 
 ## Architecture Decision Records
@@ -133,7 +161,8 @@ Create an ADR for any nontrivial architectural or process decision that affects 
 
 - **CODEOWNERS** enforces required reviewers for critical paths.  
 - **CI checks** include build, tests, markdown lint, and optional doc coverage checks.  
-- **PR template** includes DoD checklist and changelog reminder.  
+- **PR template** includes DoD checklist and changelog reminder.
+- **Branch protection** on `main` blocks direct pushes, requires passing CI (`Build & Test`), requires CODEOWNERS approval, and dismisses stale reviews.  See *Branch Protection on `main`* above.  
 - Periodic audit: Docs Owner runs an audit every two sprints and opens issues for stale ADRs or missing docs.
 
 ---

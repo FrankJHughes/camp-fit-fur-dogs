@@ -1,31 +1,20 @@
-## What
+## Summary
 
-<!-- One or two sentences: what does this PR do? -->
+<!-- Brief description of what this PR does and why -->
 
 Closes #<!-- issue number -->
 
-## Why
+## Changes
 
-<!-- Why is this change needed? Link to the story or epic context. -->
+<!-- List the key changes -->
 
-## How
+-
 
-<!-- Brief description of the approach. Call out anything non-obvious. -->
+## Merge Checklist
 
-## Acceptance Criteria
-
-<!-- Copy from the story manifest and check off what's done. -->
-
-- [ ] ...
-
-## Testing
-
-<!-- How did you verify this works? -->
-
-- [ ] `dotnet build` — zero warnings
-- [ ] `dotnet test` — all pass
-- [ ] Manual verification: <!-- describe -->
-
-## Screenshots
-
-<!-- If applicable. Delete this section if not. -->
+- [ ] PR description is complete and linked to an issue
+- [ ] CI (`Build & Test`) is passing
+- [ ] Self-review completed
+- [ ] Docs updated (if applicable)
+- [ ] Changelog updated under Unreleased (if user-facing)
+- [ ] No secrets or credentials committed
