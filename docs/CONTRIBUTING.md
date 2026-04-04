@@ -2,6 +2,8 @@
 
 > **Planning conventions** — for artifact organization, story lifecycle,
 > and naming rules, see [Planning Conventions](../planning/README.md).
+> For the end-to-end ceremony, see the
+> [Planning Runbook](runbook.md).
 
 Thanks for contributing! This guide keeps our workflow consistent and our history clean.
 
