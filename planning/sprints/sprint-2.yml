@@ -1,6 +1,11 @@
 sprint:
   name: "Sprint 2"
   title: "Sprint 2 — Planning & DX Infrastructure"
+  goal: |
+    Establish planning infrastructure (conventions, runbook, bootstrap
+    automation) and lay the DX architecture foundation so that future
+    sprints can onboard contributors and ship features efficiently.
+  capacity: 33
   start: 2026-04-11
   end: 2026-04-24
   created: "2026-04-03T15:51:00Z"

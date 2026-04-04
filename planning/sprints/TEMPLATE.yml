@@ -1,0 +1,24 @@
+# Sprint Manifest Template
+# Copy this file to planning/sprints/sprint-<n>.yml and fill in.
+# See: planning/README.md#sprint-manifest-format
+
+sprint:
+  name: "Sprint N"                  # Becomes the GitHub Milestone title
+  title: "Sprint N — Theme"        # Human-readable title with theme
+  goal: |
+    One or two sentences describing the sprint's primary objective.
+  start: YYYY-MM-DD                 # First day of the sprint
+  end: YYYY-MM-DD                   # Last day of the sprint
+  capacity: 0                       # Total story points committed
+
+  # ── Stamps (set by automation — do not fill manually) ──
+  # created: ""
+  # milestone: null
+  # board_synced: ""
+
+stories:
+  # Group stories by epic for readability.
+  # Each entry is a path relative to the repo root.
+
+  # Epic Name (N pts)
+  # - planning/stories/sprint-n/story-slug.yml
