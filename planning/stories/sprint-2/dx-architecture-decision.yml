@@ -26,6 +26,7 @@ acceptance:
   - Each layer maps to a product story
   - Alternatives and trade-offs are documented
   - ADR index is updated
-created: "2026-04-03T21:12:00Z"
+created: "2026-04-04T01:30:17Z"
 source:
   productFile: /product/stories/infra/dx-architecture-decision.md
+issue_number: 54

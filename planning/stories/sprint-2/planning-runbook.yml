@@ -23,4 +23,5 @@ priority: P1
 branch: "chore/planning-runbook"
 source:
   productFile: "/product/stories/infra/planning-runbook.md"
-
+created: "2026-04-04T01:28:51Z"
+issue_number: 49

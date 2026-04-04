@@ -4,20 +4,18 @@ sprint:
   start: 2026-04-11
   end: 2026-04-24
   created: "2026-04-03T15:51:00Z"
-  milestone: 3
-
+  milestone: 4
+  board_synced: "2026-04-04T01:31:53Z"
 stories:
   # Sprint Planning Experience (11 pts)
   - planning/stories/sprint-2/merge-protection-governance.yml
   - planning/stories/sprint-2/post-merge-sprint-bootstrap.yml
   - planning/stories/sprint-2/planning-runbook.yml
   - planning/stories/sprint-2/sprint-manifest-template.yml
-
   # Backlog Grooming Experience (7 pts)
   - planning/stories/sprint-2/validate-planning-workflow.yml
   - planning/stories/sprint-2/planning-conventions-readme.yml
   - planning/stories/sprint-2/story-scaffold-script.yml
-
   # Developer Onboarding (15 pts)
   - planning/stories/sprint-2/dx-architecture-decision.yml
   - planning/stories/sprint-2/one-command-local-bootstrap.yml

@@ -26,6 +26,7 @@ acceptance:
   - Infrastructure starts automatically using shared definitions
   - Restore, build, and test pass without manual intervention
   - README documents the launch path
-created: "2026-04-03T21:12:00Z"
+created: "2026-04-04T01:31:28Z"
 source:
   productFile: /product/stories/infra/containerized-dev-environment.md
+issue_number: 58

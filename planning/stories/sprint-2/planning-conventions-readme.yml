@@ -21,6 +21,7 @@ acceptance:
   - Conventions document exists and is discoverable from the repo root README
   - Covers artifact organization, story lifecycle, atomic-PR, branch hygiene, and ADR criteria
   - Cross-referenced from contributor documentation
-created: "2026-04-03T21:25:00Z"
+created: "2026-04-04T01:29:42Z"
 source:
   productFile: /product/stories/infra/planning-conventions-readme.md
+issue_number: 52
