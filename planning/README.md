@@ -2,7 +2,7 @@
 
 > **Audience:** Anyone creating, reviewing, or syncing planning artifacts.
 > **Scope:** Conventions only — sprint ceremonies are covered by the
-> [Planning Runbook](../product/stories/infra/planning-runbook.md).
+> [Planning Runbook](../docs/runbook.md).
 
 ---
 
