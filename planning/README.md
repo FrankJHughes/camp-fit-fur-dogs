@@ -77,6 +77,9 @@ name, and tasks.
 
 ### 4. Sprint Board
 
+> **Full bootstrap guide:**
+> [Sprint Bootstrap Process](../docs/process/sprint-bootstrap.md)
+
 Automation scripts (`create-sprint.sh`, `create-stories.sh`) read the
 YAML files and create GitHub Issues, assign milestones, apply labels,
 and add items to the project board.  Scripts stamp each YAML with
