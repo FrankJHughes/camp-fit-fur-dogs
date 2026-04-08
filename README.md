@@ -159,3 +159,17 @@ Follow the prompts when opening a PR or issue.
 ## 📄 License
 
 This project is part of a personal portfolio and is not licensed for commercial use.
+
+## Current Status
+
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| Sprint 0 | Repo bootstrap, ADRs, .NET skeleton | ✅ Complete |
+| Sprint 1 | DX toolchain, devcontainer, CI | ✅ Complete |
+| Sprint 2 | Doc audit, planning retirement, backlog grooming | ✅ Complete |
+| Sprint 3 | First customer feature | 📋 Planning |
+
+**Active stories:** 33  |  **Completed:** 3  |  **Retired:** 4  |  **Absorbed:** 2  
+**ADRs:** 10  |  **Next available story:** US-045
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed history.
