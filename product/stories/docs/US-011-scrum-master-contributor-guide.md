@@ -18,7 +18,7 @@ documented in a way that a new SM could pick up and run.
 
 ## Scope
 
-- **docs/contributing/scrum-master-guide.md** — the dedicated
+- **docs/guides/scrum-master-guide.md** — the dedicated
   Scrum Master reference.
 - Linked from the CONTRIBUTING.md hub page.
 
