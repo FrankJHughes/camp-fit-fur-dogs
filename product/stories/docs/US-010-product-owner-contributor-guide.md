@@ -36,7 +36,7 @@ self-contained guide.
 - [ ] Directory convention documented: `product/stories/<domain>/`
       with examples of existing domains (infra, docs).
 - [ ] File naming convention documented: kebab-case matching the
-      story title (e.g., `one-command-local-bootstrap.md`).
+      story title (e.g., `US-005-one-command-local-bootstrap.md`).
 - [ ] Relationship between product story and GitHub issue explained:
       story is authored first, issue is created from the story, issue
       references the story file path.
