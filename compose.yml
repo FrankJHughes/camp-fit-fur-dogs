@@ -1,0 +1,75 @@
+# compose.yml — L1 Declarative Infrastructure Definitions
+# Canonical infrastructure specification consumed by local bootstrap (L3),
+# containerized dev environment (L2), and CI.
+#
+# See: docs/adr/0003-developer-experience-toolchain.md  (Diamond Model)
+#      docs/adr/0004-docker-compose-for-infrastructure.md
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: cffd-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cffd}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cffd_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-campfitfurdogs}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - cffd
+
+  redis:
+    image: redis:7-alpine
+    container_name: cffd-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - cffd
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: cffd-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-cffd}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-cffd_dev}
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - cffd
+
+volumes:
+  pgdata:
+  redisdata:
+  rabbitmqdata:
+
+networks:
+  cffd:
+    driver: bridge
