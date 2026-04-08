@@ -1,0 +1,27 @@
+title: "Planning Runbook"
+description: |
+  Create a living document (docs/runbook.md) that captures the end-to-end planning
+  ceremony — from product spec authoring through YAML creation, script execution,
+  and board verification.
+tasks:
+  - "Draft docs/runbook.md with step-by-step ceremony instructions"
+  - "Cover product spec authoring, YAML creation, schema rules, and script execution"
+  - "Add troubleshooting section for common planning failures"
+  - "Cross-reference from CONTRIBUTING.md and README.md"
+acceptance:
+  - "docs/runbook.md exists with complete ceremony instructions"
+  - "Runbook covers all planning phases from spec to board verification"
+  - "Troubleshooting section addresses common failures"
+  - "Cross-referenced from CONTRIBUTING.md and README.md"
+epic: "Sprint Planning Experience"
+labels:
+  - infra
+  - documentation
+  - governance
+points: 3
+priority: P1
+branch: "chore/planning-runbook"
+source:
+  productFile: "/product/stories/infra/US-022-planning-runbook.md"
+created: "2026-04-04T01:28:51Z"
+issue_number: 49

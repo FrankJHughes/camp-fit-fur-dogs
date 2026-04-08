@@ -1,0 +1,32 @@
+title: "Containerized Development Environment"
+epic: "Developer Onboarding"
+points: 3
+priority: P1
+labels: [infra, developer-experience]
+branch: chore/containerized-dev-environment
+description: |
+  As a developer who prefers containerized environments, I want to open
+  the repository in a dev container and land in a fully working setup —
+  SDK, tools, infrastructure, and passing tests — so that I can start
+  coding without installing anything beyond Docker.
+
+  The containerized environment reuses the shared infrastructure
+  definitions (L1) and standardized commands (L4). Cloud environment
+  compatibility is a side effect, not an explicit goal.
+tasks:
+  - Create a dev container configuration in the repository
+  - Include required SDK, CLI tools, and editor extensions
+  - Reference shared infrastructure definitions for service dependencies
+  - Wire post-create lifecycle hook to call standardized task runner commands
+  - Add environment launch instructions to README
+  - Verify provisioning completes in under 5 minutes on warm cache
+acceptance:
+  - Dev container configuration exists and produces a ready-to-code environment
+  - SDK, CLI tools, and extensions are present without manual installation
+  - Infrastructure starts automatically using shared definitions
+  - Restore, build, and test pass without manual intervention
+  - README documents the launch path
+created: "2026-04-04T01:31:28Z"
+source:
+  productFile: /product/stories/infra/US-002-containerized-dev-environment.md
+issue_number: 58

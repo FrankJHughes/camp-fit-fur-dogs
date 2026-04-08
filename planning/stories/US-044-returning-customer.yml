@@ -1,0 +1,13 @@
+id: US-044
+title: Returning Customer Confidence
+type: emotional-safety
+source:
+  productFile: /product/stories/customer/US-044-returning-customer.md
+capability:
+  primary: Emotional Trust & Respect
+emotionalGuarantees: [EG-04]
+definitionOfReady:
+  required: true
+  verified: false
+planning:
+  eligibleForEpic: false

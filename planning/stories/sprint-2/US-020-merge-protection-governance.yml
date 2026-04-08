@@ -1,0 +1,30 @@
+title: "Merge Protection Governance"
+epic: "Sprint Planning Experience"
+points: 2
+priority: P0
+labels: [infra, governance]
+branch: chore/sprint2-merge-protection
+description: |
+  As a product owner, I want main-branch protection rules enforced
+  so that no code reaches trunk without passing CI and a code-owner
+  review, matching the governance prescribed in docs/governance.md.
+
+  Configures GitHub branch-protection on main: required status check
+  (Build & Test, strict), dismiss stale reviews, require CODEOWNERS
+  approval (1 reviewer), disallow force-pushes and deletions.
+  enforce_admins is false to preserve solo-dev workflow.
+tasks:
+  - Apply branch-protection rule via GitHub API
+  - Verify CI status check name matches workflow job name
+  - Confirm CODEOWNERS review requirement is active
+  - Validate force-push and deletion are blocked
+acceptance:
+  - GitHub API confirms main branch is protected
+  - PRs to main require passing Build & Test status check
+  - PRs to main require 1 code-owner approval
+  - Force-push to main is rejected
+  - Stale approvals are dismissed on new pushes
+created: "2026-04-04T01:28:16Z"
+source:
+  productFile: /product/stories/infra/US-020-merge-protection-governance.md
+issue_number: 47

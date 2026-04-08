@@ -54,7 +54,7 @@ left artifacts behind without cleaning up the previous generation.
 
 - `planning/epics/repo-foundation.yml`
 - `planning/sprints/TEMPLATE.yml`, `sprint-0.yml`, `sprint-1.yml`, `sprint-2.yml`
-- `planning/stories/US-C01.yaml` through `US-C18.yaml`
+- `planning/stories/US-027-create-customer-account.yml` through `US-044-returning-customer.yml`
 - `planning/stories/sprint-0/` (3 YAML files)
 - `planning/stories/sprint-1/` (4 YAML files)
 - `planning/stories/sprint-2/` (12 YAML files)

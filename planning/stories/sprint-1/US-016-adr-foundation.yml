@@ -1,0 +1,28 @@
+title: "ADR foundation"
+epic: "Epic: Repo Foundation"
+points: 2
+priority: P1
+labels: [docs, architecture]
+branch: feature/sprint1-adr-foundation
+description: |
+  As a developer, I want architecture decisions recorded in lightweight
+  ADRs, so that I can understand why the system is shaped the way it is
+  and evaluate trade-offs when revisiting past choices.
+
+  Establish an Architecture Decision Record practice with a lightweight
+  template and two seed records that capture decisions already made.
+  Future architectural choices will be recorded here before
+  implementation begins.
+tasks:
+  - Create docs/adr/ directory
+  - Add ADR template (docs/adr/TEMPLATE.md)
+  - Write ADR-001 "Use lightweight ADRs for architecture decisions"
+  - Write ADR-002 "DDD layered architecture with clean separation"
+  - Add a README index in docs/adr/README.md linking all ADRs
+acceptance:
+  - docs/adr/ directory exists with template and two seed ADRs
+  - ADR-001 records the decision to use ADRs and references the template
+  - ADR-002 documents the four-layer DDD structure matching the solution
+  - README.md lists all ADRs with status and one-line summary
+source:
+  productFile: /product/stories/infra/US-016-adr-foundation.md

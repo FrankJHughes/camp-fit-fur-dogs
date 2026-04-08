@@ -28,7 +28,7 @@ scripts read these files to create and sync GitHub artifacts.
 ### Files
 
 - **Lowercase kebab-case** for all planning YAML files
-  (e.g., `merge-protection-governance.yml`)
+  (e.g., `US-020-merge-protection-governance.yml`)
 - File names match the story slug used in branch names and issue titles
 - Use `.yml` (not `.yaml`) for consistency with existing artifacts
 

@@ -1,0 +1,13 @@
+id: US-040
+title: Reassurance on Failure
+type: emotional-safety
+source:
+  productFile: /product/stories/customer/US-040-reassurance.md
+capability:
+  primary: Clarity & Guidance
+emotionalGuarantees: [EG-02]
+definitionOfReady:
+  required: true
+  verified: false
+planning:
+  eligibleForEpic: false
