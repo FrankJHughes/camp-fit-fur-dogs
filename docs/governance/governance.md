@@ -57,7 +57,7 @@ Every story or PR must satisfy the Definition of Done before merge:
 - **Docs**: Public API changes documented; relevant `docs/` updated.  
 - **CI**: All CI checks pass.  
 - **Review**: At least one approving review from a Code Owner.  
-- **Changelog**: User‑facing changes added to `docs/changelog.md` under Unreleased.
+- **Changelog**: User‑facing changes added to `CHANGELOG.md` under Unreleased.
 
 ---
 
@@ -118,7 +118,7 @@ The following rules are enforced via the GitHub branch-protection API
 ## Architecture Decision Records
 
 **Location**  
-`docs/decisions/`
+`docs/adr/`
 
 **ADR Template**  
 - **Title**: short descriptive title.  
@@ -136,8 +136,8 @@ Create an ADR for any nontrivial architectural or process decision that affects 
 ## Documentation Rules
 
 - All behavior changes must update `docs/` in the same PR.  
-- Keep `docs/governance.md` and ADRs up to date.  
-- Use `docs/changelog.md` for user‑visible changes. Follow Keep a Changelog style.  
+- Keep `docs/governance/governance.md` and ADRs up to date.  
+- Use `CHANGELOG.md` for user‑visible changes. Follow Keep a Changelog style.  
 - Lint markdown in CI. Docs changes require the same review process as code.
 
 ---
@@ -145,7 +145,7 @@ Create an ADR for any nontrivial architectural or process decision that affects 
 ## Security and Secrets
 
 - Never commit secrets to the repo. Use GitHub Secrets for CI and hosting credentials.  
-- Follow least privilege for cloud resources. Document required roles and permissions in `docs/runbook.md`.
+- Follow least privilege for cloud resources. Document required roles and permissions in `docs/runbooks/runbook.md`.
 
 ---
 
@@ -169,7 +169,7 @@ Create an ADR for any nontrivial architectural or process decision that affects 
 
 ## Change Process for Governance
 
-- Propose a change by opening a PR that updates `docs/governance.md` or adds an ADR.  
+- Propose a change by opening a PR that updates `docs/governance/governance.md` or adds an ADR.  
 - PR must include rationale and link to any related code changes.  
 - Changes require one approving review from Docs Owner or Product Owner.  
 - After merge, announce the change in the sprint review and update any affected templates.
@@ -178,7 +178,7 @@ Create an ADR for any nontrivial architectural or process decision that affects 
 
 ## Runbook and Incident Basics
 
-Keep a short runbook at `docs/runbook.md` with steps to:
+Keep a short runbook at `docs/runbooks/runbook.md` with steps to:
 
 - Reproduce common local issues.  
 - Run migrations and seed demo data.  
@@ -194,23 +194,23 @@ Keep a short runbook at `docs/runbook.md` with steps to:
 - **Docs Owner**: **Frank (temporary)**  
 - **Code Owners**: see `CODEOWNERS` file (initially set to Frank for `docs/`, `src/`, `infra/`)
 
-> **Action:** Replace temporary assignments with named team members as soon as hires/volunteers are confirmed. Update `docs/governance.md` and `CODEOWNERS` in the same PR.
+> **Action:** Replace temporary assignments with named team members as soon as hires/volunteers are confirmed. Update `docs/governance/governance.md` and `CODEOWNERS` in the same PR.
 
 ---
 
 ## Where to Find Things
 
-- **Governance**: `docs/governance.md`  
-- **ADRs**: `docs/decisions/`  
-- **DoD**: `docs/process/definition-of-done.md`  
-- **Changelog**: `docs/changelog.md`  
-- **Runbook**: `docs/runbook.md`
+- **Governance**: `docs/governance/governance.md`  
+- **ADRs**: `docs/adr/`  
+- **DoD**: `(see Definition of Done above)`  
+- **Changelog**: `CHANGELOG.md`  
+- **Runbook**: `docs/runbooks/runbook.md`
 
 ---
 
 ## Quick Start Checklist for Contributors
 
-- Read `docs/governance.md` and relevant ADRs before making changes.  
+- Read `docs/governance/governance.md` and relevant ADRs before making changes.  
 - Create a small, focused PR that updates code and docs together.  
 - Fill the PR template checklist and link the story.  
 - Request review from the appropriate Code Owner.
