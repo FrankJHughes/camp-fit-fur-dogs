@@ -1,0 +1,23 @@
+{
+  "name": "Camp Fit Fur Dogs",
+  "dockerComposeFile": ["../compose.yml", "docker-compose.yml"],
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "make all",
+  "forwardPorts": [5432, 6379, 5672, 15672],
+  "portsAttributes": {
+    "5432": { "label": "PostgreSQL" },
+    "6379": { "label": "Redis" },
+    "5672": { "label": "RabbitMQ" },
+    "15672": { "label": "RabbitMQ Management" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig"
+      ]
+    }
+  }
+}
