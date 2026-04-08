@@ -1,0 +1,31 @@
+title: "API: DDD layer wiring and dependency injection"
+epic: "Epic: Repo Foundation"
+points: 2
+priority: P2
+labels: [dotnet, infra, architecture]
+branch: feature/sprint1-api-layer-wiring
+description: |
+  As a developer, I want each DDD layer wired through dependency
+  injection at startup, so that the API boots with all layers
+  resolving correctly and I can verify there are no circular
+  references before building features on top.
+
+  Wire the DDD layers together through dependency injection in the
+  API project. Each layer gets a registration extension method that
+  the API host calls at startup. This proves the layer cake compiles
+  and resolves end-to-end.
+tasks:
+  - Add DomainServiceRegistration extension method in Domain project
+  - Add InfrastructureServiceRegistration extension method in Infrastructure project
+  - Add ApplicationServiceRegistration extension method in Application project
+  - Wire all three into Program.cs
+  - Add an integration test that builds the host and resolves a domain service
+acceptance:
+  - Each DDD layer has a single AddXxx(IServiceCollection) extension method
+  - Program.cs calls all three registration methods
+  - API starts without DI resolution errors
+  - Integration test proves at least one cross-layer dependency resolves
+  - No circular project references exist
+  - dotnet build produces zero warnings
+source:
+  productFile: /product/stories/infra/US-019-api-ddd-layer-wiring.md

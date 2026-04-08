@@ -1,0 +1,26 @@
+title: "Sprint Manifest"
+epic: "Sprint Planning Experience"
+points: 1
+priority: P0
+labels: [infra, governance]
+branch: "chore/sprint-manifest-template"
+description: |
+  As a product owner, I want a reusable manifest format for each sprint
+  that declares the sprint goal, time boundaries, capacity target, and
+  story references — so that sprint scope is version-controlled, auditable,
+  and machine-readable.
+tasks:
+  - Create a reusable manifest template
+  - Define manifest content — sprint goal, time boundaries, capacity, story references
+  - Reference stories by location rather than duplicating content
+  - Create Sprint 2 manifest using the template
+  - Document manifest format in planning or contributor documentation
+acceptance:
+  - Reusable manifest template exists and is documented
+  - Sprint 2 manifest exists with goal, time boundaries, capacity, and story references
+  - Stories are referenced, not duplicated
+  - Format documented in planning or contributor documentation
+created: "2026-04-04T01:29:08Z"
+source:
+  productFile: /product/stories/infra/US-023-sprint-manifest-template.md
+issue_number: 50

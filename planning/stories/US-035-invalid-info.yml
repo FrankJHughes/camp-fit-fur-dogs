@@ -1,0 +1,13 @@
+id: US-035
+title: Invalid Information Handling
+type: edge-case
+source:
+  productFile: /product/stories/customer/US-035-invalid-info.md
+capability:
+  primary: Clarity & Guidance
+emotionalGuarantees: [EG-02, EG-01]
+definitionOfReady:
+  required: true
+  verified: false
+planning:
+  eligibleForEpic: true

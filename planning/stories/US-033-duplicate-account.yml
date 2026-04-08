@@ -1,0 +1,13 @@
+id: US-033
+title: Duplicate Account Attempt
+type: edge-case
+source:
+  productFile: /product/stories/customer/US-033-duplicate-account.md
+capability:
+  primary: Identity & Ownership
+emotionalGuarantees: [EG-02]
+definitionOfReady:
+  required: true
+  verified: true
+planning:
+  eligibleForEpic: true
