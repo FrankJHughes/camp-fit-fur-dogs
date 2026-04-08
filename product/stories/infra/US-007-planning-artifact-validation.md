@@ -40,7 +40,7 @@ no longer exist.
 |-------------|------|
 | Validation script | `scripts/validate-planning.sh` |
 | CI workflow step | `.github/workflows/build-and-test.yml` (new job or step) |
-| Product story | `product/stories/infra/planning-artifact-validation.md` |
+| Product story | `product/stories/infra/US-007-planning-artifact-validation.md` |
 
 ## Acceptance Criteria
 

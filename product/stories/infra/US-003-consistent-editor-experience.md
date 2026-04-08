@@ -30,4 +30,4 @@ None — this layer is independent of all other Diamond Model layers.
 
 ## Decision Record
 
-See [ADR-0008](../../../docs/adr/0008-consistent-editor-experience.md).
+See [ADR-0008](../../../docs/adr/0008-US-003-consistent-editor-experience.md).

@@ -62,9 +62,9 @@ left artifacts behind without cleaning up the previous generation.
 **Stale product stories — superseded by updated versions:**
 
 - `product/stories/infra/story.doc-architecture.md` (replaced by this story)
-- `product/stories/infra/story.ci-sprint-readiness.md` (subsumed by `planning-artifact-validation.md`)
-- `product/stories/infra/story-scaffold-script.md` (superseded by `story-scaffold-tool.md`)
-- `product/stories/infra/validate-planning-workflow.md` (superseded by `planning-artifact-validation.md`)
+- `product/stories/infra/story.ci-sprint-readiness.md` (subsumed by `US-007-planning-artifact-validation.md`)
+- `product/stories/infra/story-scaffold-script.md` (superseded by `US-006-story-scaffold-tool.md`)
+- `product/stories/infra/validate-planning-workflow.md` (superseded by `US-007-planning-artifact-validation.md`)
 
 ### Emotional Safety Guarantees
 

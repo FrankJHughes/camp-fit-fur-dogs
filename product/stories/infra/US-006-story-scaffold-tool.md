@@ -34,7 +34,7 @@ the friction of creating a new story to a single command.
 - `product/stories/<domain>/` — new domains as needed
 
 File naming: kebab-case matching the story title
-(e.g., `one-command-local-bootstrap.md`).
+(e.g., `US-005-one-command-local-bootstrap.md`).
 
 ### Prior Art
 
@@ -50,7 +50,7 @@ this tool should follow for consistency.
 | PowerShell scaffold script | `scripts/New-Story.ps1` |
 | Story template | `product/stories/_template.md` |
 | Makefile target | `make new-story` (wraps bash script) |
-| Product story | `product/stories/infra/story-scaffold-tool.md` |
+| Product story | `product/stories/infra/US-006-story-scaffold-tool.md` |
 
 ## Acceptance Criteria
 

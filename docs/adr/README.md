@@ -18,5 +18,5 @@ New ADRs should follow [TEMPLATE.md](TEMPLATE.md).
 | [0004](0004-docker-compose-for-infrastructure.md) | Docker Compose for Infrastructure Definitions | Accepted |
 | [0005](0005-makefile-for-standardized-commands.md) | Makefile for Standardized Developer Commands | Accepted |
 | [0006](0006-dev-container-for-development.md) | Dev Container for Containerized Development Environment | Accepted |
-| [0007](0007-one-command-local-bootstrap.md) | One-Command Local Bootstrap | Accepted |
-| [0008](0008-consistent-editor-experience.md) | Consistent Editor Experience | Accepted |
+| [0007](0007-US-005-one-command-local-bootstrap.md) | One-Command Local Bootstrap | Accepted |
+| [0008](0008-US-003-consistent-editor-experience.md) | Consistent Editor Experience | Accepted |

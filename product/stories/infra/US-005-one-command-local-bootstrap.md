@@ -34,4 +34,4 @@ I can go from clone to coding without reading a setup guide.
 
 ## Decision Record
 
-See [ADR-0007](../../../docs/adr/0007-one-command-local-bootstrap.md).
+See [ADR-0007](../../../docs/adr/0007-US-005-one-command-local-bootstrap.md).
