@@ -54,6 +54,21 @@ a living demonstration of how to build, document, and govern a modern software s
 
 ---
 
+## 📈 Current Status
+
+> **Last completed:** Sprint 2 — Planning & DX Infrastructure
+> **Stories shipped:** 18 across 3 sprints  |  **Velocity:** 33/33 in Sprint 2
+> **Backlog health:** 44 stories, zero stale issues, unified naming convention
+> **Current focus:** Documentation cleanup (US-008), customer feature stories
+
+| Sprint | Dates | Theme | Stories | Velocity |
+|--------|-------|-------|---------|----------|
+| Sprint 0 | Mar 30 – Apr 3 | Repo Foundation | 3 | 3/3 |
+| Sprint 1 | Apr 4 – Apr 10 | Architecture Spine | 4 | 4/4 |
+| Sprint 2 | Apr 11 – Apr 24 | Planning & DX Infrastructure | 11 | 33/33 |
+
+📋 [Full Changelog](CHANGELOG.md) · 📊 [Sprint Reviews](docs/sprint-reviews/)
+
 ## 🗂️ Repository Structure
 
 ```
