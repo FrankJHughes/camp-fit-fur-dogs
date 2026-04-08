@@ -25,7 +25,7 @@ This guide lives primarily in two places:
 
 - **README.md § Getting Started** — the first thing a developer sees.
   Brief, opinionated, two onboarding paths.
-- **docs/contributing/developer-guide.md** — the deep reference.
+- **docs/guides/developer-guide.md** — the deep reference.
   Everything a developer needs after the first build passes.
 
 CONTRIBUTING.md becomes a hub page that routes each role to its
@@ -96,9 +96,9 @@ dedicated guide.
 ### CONTRIBUTING.md — Hub
 
 - [ ] CONTRIBUTING.md restructured as a role-routing hub:
-      - Developer → `docs/contributing/developer-guide.md`
-      - Product Owner → `docs/contributing/product-owner-guide.md`
-      - Scrum Master → `docs/contributing/scrum-master-guide.md`
+      - Developer → `docs/guides/developer-guide.md`
+      - Product Owner → `docs/guides/product-owner-guide.md`
+      - Scrum Master → `docs/guides/scrum-master-guide.md`
 - [ ] Each link includes a one-sentence description of what the
       guide covers.
 

@@ -22,7 +22,7 @@ self-contained guide.
 
 ## Scope
 
-- **docs/contributing/product-owner-guide.md** — the dedicated
+- **docs/guides/product-owner-guide.md** — the dedicated
   Product Owner reference.
 - Linked from the CONTRIBUTING.md hub page.
 

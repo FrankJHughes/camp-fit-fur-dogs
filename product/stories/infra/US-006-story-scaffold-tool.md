@@ -30,7 +30,7 @@ the friction of creating a new story to a single command.
 
 - `product/stories/infra/` — infrastructure stories
 - `product/stories/docs/` — documentation stories
-- `product/stories/features/` — feature stories
+- `product/stories/customer/` — feature stories
 - `product/stories/<domain>/` — new domains as needed
 
 File naming: kebab-case matching the story title
