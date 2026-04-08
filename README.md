@@ -1,5 +1,5 @@
-# 🐾 Camp Fit Fur Dogs  
-### A Story‑First, Emotionally‑Safe Product Built with Modern Engineering Discipline
+# :paw_prints: Camp Fit Fur Dogs
+### A Story-First, Emotionally-Safe Product Built with Modern Engineering Discipline
 
 <p align="center">
 
@@ -37,139 +37,143 @@
 
 ---
 
-## 🧭 Overview
+## Overview
 
-Camp Fit Fur Dogs is a **portfolio‑grade software project** demonstrating:
+Camp Fit Fur Dogs is a **portfolio-grade software project** demonstrating:
 
-- Product ownership  
-- Architecture clarity  
-- Agile process leadership  
-- Emotional‑safety‑driven design  
-- Disciplined engineering practices  
-- Backlog‑as‑Code planning  
-- Developer‑friendly governance  
+- Product ownership and story-first design
+- Architecture clarity (DDD layered architecture)
+- Agile process leadership
+- Emotional-safety-driven design
+- Disciplined engineering practices
+- Developer-friendly governance
+- Reproducible developer onboarding
 
-The repo itself is part of the product:  
+The repo itself is part of the product:
 a living demonstration of how to build, document, and govern a modern software system with intention.
 
 ---
 
-## 🗂️ Repository Structure
+## Repository Structure
 
 ```
 camp-fit-fur-dogs/
-│
-├── src/                     # Application code
-│
-├── docs/                    # Architecture, governance, backlog, diagrams
-│   ├── architecture/
-│   ├── backlog/
-│   └── governance/
-│
-├── planning/                # Backlog-as-Code YAML
-│
-├── portfolio/               # Employer-facing artifacts
-│   ├── STAKEHOLDER.md
-│   ├── USE-CASES.md
-│   ├── SURFACING-STRATEGY.md
-│   ├── case-studies/
-│   ├── demos/
-│   ├── presentations/
-│   └── screenshots/
-│
-├── .github/
-│   ├── workflows/           # CI/CD pipelines
-│   ├── actions/             # Custom GitHub Actions
-│   └── PULL_REQUEST_TEMPLATE.md
-│
-└── README.md                # You are here
+|
++-- src/                        # Application code (DDD layers)
+|   +-- CampFitFurDogs.Api/
+|   +-- CampFitFurDogs.Application/
+|   +-- CampFitFurDogs.Domain/
+|   +-- CampFitFurDogs.Infrastructure/
+|   +-- CampFitFurDogs.SharedKernel/
+|
++-- tests/                      # Mirror of src/ for unit tests
+|
++-- docs/                       # Documentation hub
+|   +-- adr/                    # Architecture Decision Records
+|   +-- governance/             # Governance model
+|   +-- runbooks/               # Operational runbooks
+|   +-- sprint-reviews/         # Sprint review records
+|
++-- product/                    # Product artifacts
+|   +-- VISION.md
+|   +-- briefs/
+|   +-- capabilities/
+|   +-- definition-of-ready/
+|   +-- emotional-guarantees/
+|   +-- stories/                # Product backlog (story files)
+|       +-- customer/
+|       +-- docs/
+|       +-- infra/
+|
++-- portfolio/                  # Employer-facing artifacts
+|
++-- .devcontainer/              # Dev container configuration
++-- .github/                    # CI workflows, PR template
++-- .vscode/                    # Editor settings
++-- CHANGELOG.md
++-- CONTRIBUTING.md
++-- CODEOWNERS
++-- Makefile
++-- compose.yml
++-- bootstrap.ps1 / bootstrap.sh
++-- README.md                   # You are here
 ```
 
 ---
 
-## 📘 Key Documentation
+## Key Documentation
 
-### **Product & Planning**
-- **Backlog & Stories**  
-  `./docs/backlog/`
+### Product
+- **Product Vision** — `product/VISION.md`
+- **Product Backlog (Stories)** — `product/stories/`
+- **Emotional Guarantees** — `product/emotional-guarantees/`
+- **Definition of Ready** — `product/definition-of-ready/`
 
-- **Backlog‑as‑Code (Planning YAML)**  
-  `./planning/`
+### Architecture & Governance
+- **ADRs** — `docs/adr/` (10 accepted decisions)
+- **Governance Model** — `docs/governance/governance.md`
+- **Sprint Reviews** — `docs/sprint-reviews/`
 
-- **Governance Model**  
-  `./docs/governance/`
+### Developer Experience
+- **Contributing Guide** — `CONTRIBUTING.md`
+- **Runbooks** — `docs/runbooks/`
+- **Documentation Hub** — `docs/README.md`
 
-### **Architecture**
-- **Architecture Overview**  
-  `./docs/architecture/`
-
-- **Diagrams & Technical Narratives**  
-  `./docs/architecture/diagrams/`
-
-### **Portfolio Layer (Employer‑Facing)**
-- **Stakeholder Definition**  
-  `./portfolio/STAKEHOLDER.md`
-
-- **Portfolio Use Cases**  
-  `./portfolio/USE-CASES.md`
-
-- **Surfacing Strategy**  
-  `./portfolio/SURFACING-STRATEGY.md`
-
-- **Case Studies**  
-  `./portfolio/case-studies/`
+### Portfolio (Employer-Facing)
+- **Stakeholder Definition** — `portfolio/STAKEHOLDER.md`
+- **Use Cases** — `portfolio/USE-CASES.md`
+- **Surfacing Strategy** — `portfolio/SURFACING-STRATEGY.md`
 
 ---
 
-## 🛠️ Engineering Practices
+## Engineering Practices
 
 This repository demonstrates:
 
-- **Backlog‑as‑Code** with YAML → GitHub Issues syncing  
-- **Deterministic CI/CD** with GitHub Actions  
-- **Explicit merge governance**  
-- **Architecture‑first development**  
-- **Story‑first product design**  
-- **Reproducible developer onboarding**  
-- **Strict markdown fencing discipline**  
-- **Clear separation of product vs portfolio artifacts**
+- **Story-first product design** with emotional safety guarantees
+- **DDD layered architecture** with SharedKernel, Domain, Application, Infrastructure, API
+- **Deterministic CI/CD** with GitHub Actions
+- **Explicit merge governance** with branch protection and CODEOWNERS
+- **Reproducible developer onboarding** via devcontainer and bootstrap scripts
+- **Architecture Decision Records** for traceable technical choices
+- **Strict markdown fencing discipline** in all technical artifacts
 
 ---
 
-## 📊 Sprint Board
+## Sprint Board
 
-GitHub Projects Sprint Board:  
+GitHub Projects Sprint Board:
 https://github.com/frankjhughes/camp-fit-fur-dogs/projects/14
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-This project uses:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
-- PR templates  
-- Issue templates  
-- Automated checks  
-- Governance rules  
-
-Follow the prompts when opening a PR or issue.
+- Branch naming and commit conventions
+- 2-step story workflow (story file + GitHub Issue)
+- PR review and merge process
+- Story naming convention (ADR-0009)
 
 ---
 
-## 📄 License
+## License
 
 This project is part of a personal portfolio and is not licensed for commercial use.
+
+---
 
 ## Current Status
 
 | Sprint | Focus | Status |
 |--------|-------|--------|
-| Sprint 0 | Repo bootstrap, ADRs, .NET skeleton | ✅ Complete |
-| Sprint 1 | DX toolchain, devcontainer, CI | ✅ Complete |
-| Sprint 2 | Doc audit, planning retirement, backlog grooming | ✅ Complete |
-| Sprint 3 | First customer feature | 📋 Planning |
+| Sprint 0 | Repo bootstrap, .NET skeleton, CI baseline | Completed |
+| Sprint 1 | DDD architecture vertical (SharedKernel, Domain, API wiring) | Completed |
+| Sprint 2 | DX toolchain, doc audit, planning retirement, backlog grooming | Completed |
+| Sprint 3 | First customer feature | Planning |
 
-**Active stories:** 33  |  **Completed:** 3  |  **Retired:** 4  |  **Absorbed:** 2  
-**ADRs:** 10  |  **Next available story:** US-045
+**Backlog:** 22 stories remaining | **Completed:** 17 | **Retired:** 2 | **Absorbed:** 2
+**ADRs:** 10 | **Next available story:** US-045
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed history.
