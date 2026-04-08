@@ -20,3 +20,4 @@ New ADRs should follow [TEMPLATE.md](TEMPLATE.md).
 | [0006](0006-dev-container-for-development.md) | Dev Container for Containerized Development Environment | Accepted |
 | [0007](0007-US-005-one-command-local-bootstrap.md) | One-Command Local Bootstrap | Accepted |
 | [0008](0008-US-003-consistent-editor-experience.md) | Consistent Editor Experience | Accepted |
+| [0010](0010-retire-planning-yaml-infrastructure.md) | Retire Planning YAML Infrastructure | Accepted |
