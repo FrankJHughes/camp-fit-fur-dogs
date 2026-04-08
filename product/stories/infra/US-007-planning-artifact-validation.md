@@ -51,8 +51,10 @@ no longer exist.
       `## User Story` and `## Acceptance Criteria`.
 - [ ] Files missing required sections produce a clear error message
       identifying the file and the missing section.
-- [ ] File naming is validated as kebab-case (lowercase, hyphens,
-      no spaces or special characters).
+- [ ] File naming is validated as `US-{NNN}-{kebab-title}.md` — a
+      `US-` prefix, three-digit zero-padded number, hyphen, then
+      kebab-case title (lowercase, hyphens, no spaces or special
+      characters). See US-012 for the canonical naming convention.
 
 ### ADR Validation
 
@@ -106,6 +108,7 @@ no longer exist.
 - CI workflow (`.github/workflows/build-and-test.yml`, merged).
 - Established planning artifact format from Sprint 2 shipped stories
   and ADRs (ADR-0001 through ADR-0008).
+- US-012 naming convention (PRs #78, #79, merged) for `US-{NNN}` pattern.
 
 ## Open Questions
 

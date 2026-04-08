@@ -33,7 +33,8 @@ the friction of creating a new story to a single command.
 - `product/stories/features/` — feature stories
 - `product/stories/<domain>/` — new domains as needed
 
-File naming: kebab-case matching the story title
+File naming: `US-{NNN}-{kebab-title}.md` — a zero-padded three-digit
+story number followed by the kebab-case title
 (e.g., `US-005-one-command-local-bootstrap.md`).
 
 ### Prior Art
@@ -58,6 +59,9 @@ this tool should follow for consistency.
 
 - [ ] Accepts `--title` (required) — used for file name and User
       Story heading.
+- [ ] Accepts `--id` (required) — zero-padded three-digit story
+      number (e.g., `045`). Used as the `US-{NNN}` prefix in the
+      generated file name.
 - [ ] Accepts `--domain` (required) — target subdirectory under
       `product/stories/` (e.g., `infra`, `docs`, `features`).
 - [ ] Accepts `--role` (optional, default: `developer`) — pre-fills
@@ -69,10 +73,11 @@ this tool should follow for consistency.
 
 ### Story Generation
 
-- [ ] Creates `product/stories/<domain>/<kebab-title>.md` with all
-      standard sections populated as fill-in prompts.
-- [ ] Converts title to kebab-case for file naming
-      (e.g., "My Feature" → `my-feature.md`).
+- [ ] Creates `product/stories/<domain>/US-<id>-<kebab-title>.md`
+      with all standard sections populated as fill-in prompts.
+- [ ] Converts title to kebab-case and prepends the `US-<id>-`
+      prefix (e.g., `--id 045 --title "My Feature"` →
+      `US-045-my-feature.md`).
 - [ ] Creates the domain directory if it does not exist.
 - [ ] Refuses to overwrite an existing file unless `--force` is
       provided — prints a clear message with the existing file path.
@@ -100,14 +105,15 @@ this tool should follow for consistency.
 
 ### Makefile Integration
 
-- [ ] `make new-story TITLE="My Feature" DOMAIN=features` invokes
-      the bash script with the provided arguments.
+- [ ] `make new-story ID=045 TITLE="My Feature" DOMAIN=features`
+      invokes the bash script with the provided arguments.
 - [ ] `make new-story` with no arguments prints usage help.
 
 ## Dependencies
 
 - Diamond Model L4 — Makefile (Issue #57, merged) for `make` target.
 - Established story format from Sprint 2 shipped stories.
+- US-012 naming convention (PRs #78, #79, merged) for `US-{NNN}` pattern.
 
 ## Open Questions
 
