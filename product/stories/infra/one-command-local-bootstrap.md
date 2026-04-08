@@ -1,30 +1,37 @@
 # One-Command Local Bootstrap
 
-## Intent
-A developer who prefers working locally runs a single command that validates
-their environment, starts infrastructure services via container orchestration,
-builds the solution, runs the test suite, and prints a readiness report —
-without needing to know the specific toolchain commands.
+**Issue:** #55
+**Layer:** L5 – One-Command Onboarding (Diamond Model, ADR-003)
 
-## Value
-Local development is the primary onboarding path. The bootstrap command
-catches mismatches early (wrong SDK version, Docker not running, ports
-unavailable) instead of letting them surface as cryptic errors mid-setup.
-Infrastructure runs in containers using the same declarative definitions
-as the containerized environment and CI — one specification, zero divergence.
+## User Story
+
+As a developer cloning the repo for the first time, I want a single
+command that validates my environment, starts infrastructure, builds
+the solution, runs all tests, and prints a readiness report — so that
+I can go from clone to coding without reading a setup guide.
 
 ## Acceptance Criteria
-- [ ] A single entry-point command exists for each supported OS
-- [ ] The command checks for required prerequisites — including a container runtime — and prints actionable messages for anything missing
-- [ ] Infrastructure services start using the shared declarative definitions
-- [ ] The command calls the standardized task runner for restore, build, and test
-- [ ] Final output is a human-readable readiness summary (pass/fail per check, elapsed time)
-- [ ] The command is idempotent — safe to re-run at any time
-- [ ] README documents the bootstrap command as the primary getting-started path
 
-## Out of Scope
-- Automatic installation of system-level prerequisites (e.g., SDKs, container runtimes)
-- Prescribing scripting language or specific tooling
-- Containerized code execution (covered by Containerized Development Environment)
+- [ ] A platform-native bootstrap script exists for each supported OS
+      (`bootstrap.sh` for Linux/macOS/WSL, `bootstrap.ps1` for Windows).
+- [ ] The script validates prerequisites and exits early with clear
+      install instructions if anything is missing.
+- [ ] Infrastructure starts automatically using shared definitions
+      from `compose.yml`.
+- [ ] Restore, build, and test run without manual intervention.
+- [ ] A readiness report prints service endpoints, pipeline status,
+      and elapsed time.
+- [ ] The command is idempotent — running it again produces the same
+      result without side effects.
+- [ ] README documents the bootstrap command.
 
-## Emotional Guarantees: N/A
+## Dependencies
+
+- **L1 – Shared infrastructure definitions** (Issue #56, ADR-0004):
+  `docker compose up -d --wait` starts services from `compose.yml`.
+- **L4 – Standardized developer commands** (Issue #57, ADR-0005):
+  `bootstrap.sh` calls `make all` for the build/test pipeline.
+
+## Decision Record
+
+See [ADR-0007](../../../docs/adr/0007-one-command-local-bootstrap.md).
