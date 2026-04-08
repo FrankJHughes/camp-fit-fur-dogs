@@ -2,9 +2,10 @@
 
 ## User Story
 
-As a team member, I want a step-by-step planning runbook — so that
-anyone can create stories, start sprints, run ceremonies, and close
-sprints independently, without relying on tribal knowledge.
+As a team member, I want a comprehensive planning and process runbook
+— so that anyone can create stories, run ceremonies, manage governance
+artifacts, and close sprints independently, without relying on tribal
+knowledge.
 
 ## Context
 
@@ -17,17 +18,18 @@ sources of truth (ADR-0010):
 | GitHub Issues + Board | The WHEN — sprint assignment, status, points | GitHub Projects |
 | ADRs | The WHY — architecture decisions | `docs/adr/` |
 
-During Sprints 0–2, planning ceremonies were performed ad hoc by the
-Product Owner. The runbook codifies these ceremonies so that any team
-member can execute them, reducing bus-factor risk and onboarding time.
+This runbook consolidates all planning, process, and governance
+knowledge into a single reference. It absorbs content previously
+scoped to separate PO and SM guides (US-010, US-011) to eliminate
+overlap and ensure every fact lives in one place.
 
 ### What Has Changed
 
-This story replaces an earlier version that targeted a YAML-based
-planning pipeline (product spec → YAML authoring → schema rules →
-script execution → board verification). That pipeline was retired
-by ADR-0010. The planning workflow is now two steps: write a product
-story, create a GitHub Issue.
+- Replaces YAML-era planning runbook (Sprint 2 version).
+- Absorbs US-010 (Product Owner Contributor Guide) — AC patterns,
+  story sizing, backlog prioritization.
+- Absorbs US-011 (Scrum Master Contributor Guide) — DoR, DoD,
+  ceremony facilitation, governance artifacts, impediment tracking.
 
 ## Scope
 
@@ -51,6 +53,29 @@ story, create a GitHub Issue.
       and links to ADR-0009.
 - [ ] Lists the available story domains (`infra`, `docs`, `customer`)
       and when to use each.
+- [ ] Documents when a story requires a companion ADR (technology
+      or tool selection, structural patterns, cross-cutting
+      constraints).
+
+### Acceptance Criteria Patterns *(absorbed from US-010)*
+
+- [ ] Explains what makes AC testable: observable, binary
+      (pass/fail), independent of implementation details.
+- [ ] Provides 3–5 examples of well-written AC with annotations
+      explaining why they work.
+- [ ] Provides 3–5 anti-pattern examples (vague language, compound
+      conditions, implementation-coupled) with corrected versions.
+- [ ] Documents the emotional safety guarantee section — when to
+      include it, how to write guarantees that are verifiable.
+
+### Story Sizing and Prioritization *(absorbed from US-010)*
+
+- [ ] Explains the point scale used by the project and what each
+      level represents (complexity, not time).
+- [ ] Documents prioritization criteria: customer value, technical
+      dependency, risk reduction, team capacity.
+- [ ] Explains how to split stories that exceed the sprint capacity
+      threshold.
 
 ### Sprint Planning
 
@@ -61,6 +86,34 @@ story, create a GitHub Issue.
       4. Verify total capacity does not exceed team velocity.
 - [ ] Explains how to set sprint goals that are specific and
       measurable.
+- [ ] Documents board column flow (Backlog → Ready → In Progress →
+      In Review → Done) and what triggers each transition.
+
+### Definition of Ready *(absorbed from US-011)*
+
+- [ ] Provides a DoR checklist that a story must satisfy before
+      entering a sprint:
+      - Product story file exists with all required sections.
+      - AC are testable and reviewed.
+      - Dependencies are identified and unblocked.
+      - Points are assigned.
+      - GitHub Issue exists and is linked to the milestone.
+- [ ] Documents how to push back when a story does not meet DoR
+      (move to backlog, add "needs-refinement" label, note the gap).
+
+### Definition of Done *(absorbed from US-011)*
+
+- [ ] Provides a DoD checklist that a story must satisfy before
+      closing:
+      - All AC pass.
+      - PR is squash-merged to main.
+      - Branch is deleted.
+      - CI passes on main after merge.
+      - GitHub Issue is closed.
+      - Sprint review entry is drafted (if sprint boundary).
+      - No regressions introduced (existing tests pass).
+- [ ] Documents the distinction between "merged" and "done" — a
+      story is not done until post-merge verification is complete.
 
 ### Sprint Execution
 
@@ -71,6 +124,20 @@ story, create a GitHub Issue.
 - [ ] Documents the PR review and merge process.
 - [ ] Links to `CONTRIBUTING.md` for commit message conventions.
 
+### Ceremony Facilitation *(absorbed from US-011)*
+
+- [ ] Documents sprint review format: What Shipped table, Key
+      Decisions, Metrics, What Went Well, What Could Improve,
+      Next Sprint Focus.
+- [ ] Documents retrospective approach: what formats to use
+      (Start/Stop/Continue, 4Ls, timeline), how to capture
+      action items, how to track follow-through.
+- [ ] Documents refinement cadence: when to groom, how many
+      stories to refine per session, exit criteria for a
+      grooming session.
+- [ ] Documents async standup format for solo/distributed work:
+      what was done, what's next, any blockers.
+
 ### Sprint Closure
 
 - [ ] Documents how to close a sprint:
@@ -79,9 +146,17 @@ story, create a GitHub Issue.
       2. Add a new section to `CHANGELOG.md` with all changes.
       3. Update the "Current Status" section in `README.md`.
       4. Close the GitHub Milestone.
-- [ ] Explains the sprint review document format (What Shipped,
-      Key Decisions, Metrics, What Went Well, What Could Improve,
-      Next Sprint Focus).
+
+### Governance Artifacts *(absorbed from US-011)*
+
+- [ ] Documents the ADR lifecycle: when to create, required
+      sections, review process, status transitions (Proposed →
+      Accepted → Superseded/Deprecated).
+- [ ] Documents branch protection rules and who can override.
+- [ ] Documents the merge checklist: CI green, PR approved,
+      no unresolved conversations, squash-merge only.
+- [ ] References `docs/governance/governance.md` for role
+      definitions and ceremony schedules.
 
 ### Backlog Grooming
 
@@ -92,6 +167,14 @@ story, create a GitHub Issue.
       Issue as "not planned," note the reason).
 - [ ] Documents how to mark a story as fulfilled (close the Issue,
       optionally update the story file with completion status).
+
+### Impediment Tracking *(absorbed from US-011)*
+
+- [ ] Documents how to flag a blocked story (add "blocked" label,
+      note the blocker in the Issue, escalate if needed).
+- [ ] Documents escalation paths: technical blockers (spike story),
+      external blockers (document and defer), scope disputes
+      (PO decision).
 
 ### Troubleshooting
 
@@ -114,15 +197,18 @@ story, create a GitHub Issue.
 - `docs/sprint-reviews/_template.md` (merged).
 - `CHANGELOG.md` (merged).
 - `CONTRIBUTING.md` with story workflow section (merged).
+- `docs/governance/governance.md` (merged).
 
 ## Open Questions
 
 - Should the runbook include a "Sprint 0 from Scratch" section for
   bootstrapping a brand-new project, or focus only on steady-state
   sprints?
-- Should the runbook cover how to add a new story domain directory,
-  or is that self-evident from the convention?
+- Should the retrospective section include specific templates (e.g.,
+  a markdown retro template in `docs/sprint-reviews/`)?
 
 ## Decision Record
 
 - ADR-0010: [Retire Planning YAML Infrastructure](../../docs/adr/0010-retire-planning-yaml-infrastructure.md)
+- US-010 absorbed: Product Owner Contributor Guide (retired).
+- US-011 absorbed: Scrum Master Contributor Guide (retired).
