@@ -104,25 +104,25 @@ camp-fit-fur-dogs/
 ## Key Documentation
 
 ### Product
-- **Product Vision** — `product/VISION.md`
-- **Product Backlog (Stories)** — `product/stories/`
-- **Emotional Guarantees** — `product/emotional-guarantees/`
-- **Definition of Ready** — `product/definition-of-ready/`
+- **Product Vision** — [`product/VISION.md`](product/VISION.md)
+- **Product Backlog (Stories)** — [`product/stories/`](product/stories/)
+- **Emotional Guarantees** — [`product/emotional-guarantees/`](product/emotional-guarantees/)
+- **Definition of Ready** — [`product/definition-of-ready/`](product/definition-of-ready/)
 
 ### Architecture & Governance
-- **ADRs** — `docs/adr/` (10 accepted decisions)
-- **Governance Model** — `docs/governance/governance.md`
-- **Sprint Reviews** — `docs/sprint-reviews/`
+- **ADRs** — [`docs/adr/`](docs/adr/) (10 accepted decisions)
+- **Governance Model** — [`docs/governance/governance.md`](docs/governance/governance.md)
+- **Sprint Reviews** — [`docs/sprint-reviews/`](docs/sprint-reviews/)
 
 ### Developer Experience
-- **Contributing Guide** — `CONTRIBUTING.md`
-- **Runbooks** — `docs/runbooks/`
-- **Documentation Hub** — `docs/README.md`
+- **Contributing Guide** — [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- **Runbooks** — [`docs/runbooks/`](docs/runbooks/)
+- **Documentation Hub** — [`docs/README.md`](docs/README.md)
 
 ### Portfolio (Employer-Facing)
-- **Stakeholder Definition** — `portfolio/STAKEHOLDER.md`
-- **Use Cases** — `portfolio/USE-CASES.md`
-- **Surfacing Strategy** — `portfolio/SURFACING-STRATEGY.md`
+- **Stakeholder Definition** — [`portfolio/STAKEHOLDER.md`](portfolio/STAKEHOLDER.md)
+- **Use Cases** — [`portfolio/USE-CASES.md`](portfolio/USE-CASES.md)
+- **Surfacing Strategy** — [`portfolio/SURFACING-STRATEGY.md`](portfolio/SURFACING-STRATEGY.md)
 
 ---
 
@@ -142,8 +142,7 @@ This repository demonstrates:
 
 ## Sprint Board
 
-GitHub Projects Sprint Board:
-https://github.com/frankjhughes/camp-fit-fur-dogs/projects/14
+[GitHub Projects Sprint Board](https://github.com/frankjhughes/camp-fit-fur-dogs/projects/14)
 
 ---
 
@@ -174,9 +173,9 @@ Customer features are unblocked.
 
 | Milestone | Goal | Stories | Status |
 |-----------|------|---------|--------|
-| [M1: First Customer Vertical](../../milestones) | Create account, register dog, view profile | 3 | Not started |
-| [M2: Complete Dog Management](../../milestones) | Full dog CRUD with graceful edge cases | 7 | Not started |
-| [M3: Portfolio Showcase](../../milestones) | Docs, tooling, onboarding ready for review | 4 | Not started |
+| [M1: First Customer Vertical](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) | Create account, register dog, view profile | 3 | Not started |
+| [M2: Complete Dog Management](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) | Full dog CRUD with graceful edge cases | 7 | Not started |
+| [M3: Portfolio Showcase](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) | Docs, tooling, onboarding ready for review | 4 | Not started |
 
 **22 stories remaining** across 3 milestones | **17 completed** | **10 ADRs** | Next story: US-045
 
