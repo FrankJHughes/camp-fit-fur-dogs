@@ -37,5 +37,26 @@ public class CreateCustomerTests : IClassFixture<WebApplicationFactory<Program>>
         body!.CustomerId.Should().NotBe(Guid.Empty);
     }
 
+    [Fact]
+    public async Task CreateCustomer_ShouldReturn409_WhenEmailAlreadyExists()
+    {
+        var request = new
+        {
+            FirstName = "Frank",
+            LastName = "Hughes",
+            Email = "duplicate@example.com",
+            Phone = "555-1234",
+            Password = "SuperSecure123!"
+        };
+
+        // First creation
+        var first = await _client.PostAsJsonAsync("/api/customers", request);
+        first.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Second creation
+        var second = await _client.PostAsJsonAsync("/api/customers", request);
+        second.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
     public sealed record CreateCustomerResponse(Guid CustomerId);
 }
