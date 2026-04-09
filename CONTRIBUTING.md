@@ -1,76 +1,47 @@
 # Contributing to Camp Fit Fur Dogs
 
-Thanks for contributing! This guide keeps our workflow consistent and our history clean.
+Welcome! This project uses role-based contributor guides. Find yours
+below and you'll have everything you need to start contributing.
 
----
+## Choose Your Role
 
-## Branch Naming
+### 🛠️ [Developer Guide](docs/guides/developer-guide.md)
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Feature | `feature/<story-slug>` | `feature/ci-baseline-build-and-test` |
-| Bug fix | `fix/<description>` | `fix/test-runner-timeout` |
-| Docs | `docs/<description>` | `docs/contributing-and-pr-template` |
-| Chore | `chore/<description>` | `chore/planning-timestamps` |
+Clone the repo, build the app, write code, and ship PRs.
 
-Always branch from `main`. Keep branch names lowercase, kebab-case.
+Covers: prerequisites, project structure, architecture, branch
+workflow, testing, PR process, and ADRs.
 
----
+### 📋 [Product Owner Guide](docs/guides/product-owner-guide.md)
 
-## Commit Messages
+Write stories, manage the backlog, apply emotional guarantees, and
+run refinement.
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
+Covers: story authoring format, naming conventions, acceptance
+criteria, emotional guarantees, Definition of Ready, backlog
+management, and milestone prioritization.
 
-```
-<type>: <short summary>
+### 🏃 [Scrum Master Guide](docs/guides/scrum-master-guide.md)
 
-<optional body � what and why, not how>
-```
+Run sprint ceremonies, manage the board, create issues from stories,
+and maintain project artifacts.
 
-### Types
+Covers: sprint planning, 2-step issue workflow, board management,
+sprint review/retro, milestone management, and merge governance.
 
-| Type | When |
-|------|------|
-| `feat` | New functionality |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `chore` | Tooling, config, maintenance |
-| `test` | Adding or updating tests |
-| `refactor` | Code change that neither fixes nor adds |
+## Quick Links
 
-### Rules
+| Resource | Location |
+|----------|----------|
+| Backlog (story files) | [`product/stories/`](product/stories/) |
+| Definition of Ready | [`product/definition-of-ready/`](product/definition-of-ready/) |
+| Emotional Guarantees | [`product/emotional-guarantees/`](product/emotional-guarantees/) |
+| Architecture Decisions | [`docs/adr/`](docs/adr/) |
+| Sprint Reviews | [`docs/sprint-reviews/`](docs/sprint-reviews/) |
+| Governance | [`docs/governance/`](docs/governance/) |
+| Project Board | [GitHub Projects](https://github.com/users/frankjhughes/projects/14) |
 
-- Subject line: imperative mood, no period, = 72 characters
-- Body: wrap at 72 characters, explain *what* and *why*
-- Reference the issue: `Closes #N` in the PR body, not the commit
+## Code of Conduct
 
----
-
-## Pull Request Workflow
-
-1. **One story = one PR.** Don't bundle unrelated changes.
-2. **Fill out the PR template.** Every section exists for a reason.
-3. **Self-review before requesting review.** Read the diff as if you didn't write it.
-4. **Squash-merge into `main`.** Keep the history linear.
-5. **Delete the branch after merge.**
-
----
-
-## Definition of Done
-
-A story is done when:
-
-- [ ] Code compiles with zero warnings
-- [ ] All tests pass
-- [ ] PR template is filled out completely
-- [ ] PR is squash-merged into `main`
-- [ ] CI badge is green
-
----
-
-## Story Workflow
-
-1. Write `product/stories/<domain>/US-NNN-title.md` — commit via PR.
-2. Run: `gh issue create --title "US-NNN: Title" --milestone "Sprint N" --body "See product/stories/..."`
-
-The product story is the spec. The GitHub Issue is the tracker. The board auto-populates.
+Be kind. Be constructive. Assume good intent. Every contributor —
+regardless of experience level — deserves respect and clear feedback.
