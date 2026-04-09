@@ -166,14 +166,20 @@ This project is part of a personal portfolio and is not licensed for commercial 
 
 ## Current Status
 
-| Sprint | Focus | Status |
-|--------|-------|--------|
-| Sprint 0 | Repo bootstrap, .NET skeleton, CI baseline | Completed |
-| Sprint 1 | DDD architecture vertical (SharedKernel, Domain, API wiring) | Completed |
-| Sprint 2 | DX toolchain, doc audit, planning retirement, backlog grooming | Completed |
-| Sprint 3 | First customer feature | Planning |
+**Engineering foundation is complete.** DDD architecture, CI pipeline,
+developer environment, and governance shipped across Sprints 0-2.
+Customer features are unblocked.
 
-**Backlog:** 22 stories remaining | **Completed:** 17 | **Retired:** 2 | **Absorbed:** 2
-**ADRs:** 10 | **Next available story:** US-045
+### Milestone Progress
 
-See [CHANGELOG.md](CHANGELOG.md) for detailed history.
+| Milestone | Goal | Stories | Status |
+|-----------|------|---------|--------|
+| [M1: First Customer Vertical](../../milestones) | Create account, register dog, view profile | 3 | Not started |
+| [M2: Complete Dog Management](../../milestones) | Full dog CRUD with graceful edge cases | 7 | Not started |
+| [M3: Portfolio Showcase](../../milestones) | Docs, tooling, onboarding ready for review | 4 | Not started |
+
+**22 stories remaining** across 3 milestones | **17 completed** | **10 ADRs** | Next story: US-045
+
+[Milestone Tracker](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) ·
+[Sprint History](CHANGELOG.md) ·
+[Sprint Board](https://github.com/frankjhughes/camp-fit-fur-dogs/projects/14)
