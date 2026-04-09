@@ -8,7 +8,7 @@
 ## Principles
 
 1. **Zero-hop discoverability** — every key artifact is reachable from
-   the repo root `README.md` within one click.
+   the repo root [`README.md`](../README.md) within one click.
 2. **Layered depth** — surface a summary first, link to detail second.
    Respect evaluator time.
 3. **Living proof** — link to the actual milestone tracker, CI runs, and
@@ -24,10 +24,10 @@ Each milestone unlocks a new level of demonstrable capability:
 
 | Milestone | What an Evaluator Sees | Key Artifacts |
 |-----------|----------------------|---------------|
-| M0 (done) | Engineering foundation, architecture, CI, governance | `docs/adr/`, `.github/workflows/`, `CONTRIBUTING.md` |
-| M1 | First working feature end-to-end through DDD layers | `src/`, domain tests, API endpoints |
+| M0 (done) | Engineering foundation, architecture, CI, governance | [`docs/adr/`](../docs/adr/), [`.github/workflows/`](../.github/workflows/), [`CONTRIBUTING.md`](../CONTRIBUTING.md) |
+| M1 | First working feature end-to-end through DDD layers | [`src/`](../src/), domain tests, API endpoints |
 | M2 | Product maturity — edge cases handled with emotional safety | Product stories, sprint reviews, test coverage |
-| M3 | Fully documented, tooled, onboardable project | `docs/runbooks/`, developer guide, scaffold tool |
+| M3 | Fully documented, tooled, onboardable project | [`docs/runbooks/`](../docs/runbooks/), developer guide, scaffold tool |
 
 The milestone tracker is the single source of truth for project progress:
 https://github.com/frankjhughes/camp-fit-fur-dogs/milestones
@@ -38,22 +38,22 @@ https://github.com/frankjhughes/camp-fit-fur-dogs/milestones
 
 | Channel | What to Surface | Link Target |
 |---------|----------------|-------------|
-| Repo root `README.md` | Milestone progress table, architecture summary | Milestone tracker, `portfolio/README.md` |
+| Repo root [`README.md`](../README.md) | Milestone progress table, architecture summary | Milestone tracker, [`portfolio/README.md`](README.md) |
 | LinkedIn Featured section | Repo link with milestone status callout | Repo root |
 | Resume / CV | Repo URL + current milestone + one-line description | Repo root |
 | GitHub Profile README | Pinned repo with descriptive tagline | Repo root |
-| Portfolio website (future) | Embedded milestone progress, case study pages | Milestone tracker, `portfolio/` |
+| Portfolio website (future) | Embedded milestone progress, case study pages | Milestone tracker, [`portfolio/`](.) |
 
 ---
 
 ## Repo Root README Additions
 
-The repo root `README.md` includes:
+The repo root [`README.md`](../README.md) includes:
 
 - **Milestone Progress** table with links to GitHub Milestones
-- **Sprint History** link to `CHANGELOG.md`
+- **Sprint History** link to [`CHANGELOG.md`](../CHANGELOG.md)
 - **Sprint Board** link to GitHub Projects
-- **Portfolio** section linking to `portfolio/README.md`
+- **Portfolio** section linking to [`portfolio/README.md`](README.md)
 
 ---
 
@@ -73,8 +73,8 @@ The repo root `README.md` includes:
 ## Anti-Patterns to Avoid
 
 - **Dead links** — CI should lint internal markdown links.
-- **Orphaned artifacts** — every file in `portfolio/` must be linked from
-  the portfolio `README.md`.
+- **Orphaned artifacts** — every file in [`portfolio/`](.) must be linked from
+  the portfolio [`README.md`](../README.md).
 - **Sprint-centric communication** — stakeholders care about capability
   milestones ("can it register a dog?"), not timeboxes ("Sprint 3 ended").
 - **Stale milestone counts** — README status section must stay current
