@@ -39,6 +39,14 @@ public sealed class Customer
         PhoneNumber phone,
         PasswordHash passwordHash)
     {
+        ArgumentNullException.ThrowIfNull(firstName);
+        ArgumentNullException.ThrowIfNull(lastName);
+
+        if (string.IsNullOrWhiteSpace(firstName))
+            throw new ArgumentException("First name cannot be empty.", nameof(firstName));
+        if (string.IsNullOrWhiteSpace(lastName))
+            throw new ArgumentException("Last name cannot be empty.", nameof(lastName));
+
         return new Customer(
             CustomerId.New(),
             firstName,

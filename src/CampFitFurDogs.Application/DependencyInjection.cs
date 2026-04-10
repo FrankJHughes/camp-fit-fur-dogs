@@ -13,7 +13,7 @@ public static class DependencyInjection
             ICommandHandler<CreateCustomerCommand, Guid>,
             CreateCustomerHandler>();
 
-        services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
+        services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 
         return services;
     }

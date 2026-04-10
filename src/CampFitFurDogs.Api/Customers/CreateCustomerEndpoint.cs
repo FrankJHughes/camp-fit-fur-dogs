@@ -19,8 +19,33 @@ public static class CreateCustomerEndpoint
             }
             catch (EmailAlreadyExistsException)
             {
-                return Results.Conflict(new { Error = "Email already exists." });
+                return Results.Conflict(new
+                {
+                    Error = "An account with this email already exists. You can sign in or use a different email."
+                });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return Results.BadRequest(new
+                {
+                    Error = FormatValidationMessage(ex.ParamName)
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return Results.BadRequest(new
+                {
+                    Error = ex.Message.Split(" (Parameter")[0]
+                });
             }
         });
     }
+
+    private static string FormatValidationMessage(string? paramName) =>
+        paramName switch
+        {
+            "firstName" => "A first name is needed to create your account.",
+            "lastName"  => "A last name is needed to create your account.",
+            _           => "Please check the information you provided and try again."
+        };
 }
