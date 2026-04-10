@@ -19,3 +19,7 @@ obj/
 # Secrets
 secrets.json
 .env
+
+# Temporary files
+temp-output.txt
+temp.ps1
