@@ -21,15 +21,20 @@ request workflow.
 git clone https://github.com/frankjhughes/camp-fit-fur-dogs.git
 cd camp-fit-fur-dogs
 
-# Bootstrap the local environment
-./dx.ps1 bootstrap
+# Restore dependencies
+dotnet restore
 
-# Start the app
-./dx.ps1 up
+# Start local infrastructure (PostgreSQL)
+docker compose up -d
+
+# Run the API
+dotnet run --project src/CampFitFurDogs.Api
 ```
 
-The `dx.ps1` script is the single entry point for all developer
-commands. Run `./dx.ps1 help` to see available commands.
+> **Note:** A unified developer experience script is planned but not yet
+> implemented. See US-025 (DX Architecture Decision) for status. Until
+> then, use the standard `dotnet` and `docker compose` commands shown in
+> this guide.
 
 ## Project Structure
 
@@ -159,7 +164,7 @@ Name test methods to describe the scenario:
 Run tests before pushing:
 
 ```powershell
-./dx.ps1 test
+dotnet test --verbosity normal
 ```
 
 ## Pull Request Process
