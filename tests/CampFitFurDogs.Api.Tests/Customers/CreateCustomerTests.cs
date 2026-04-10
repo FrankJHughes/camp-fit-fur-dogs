@@ -1,16 +1,17 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 using CampFitFurDogs.Api;
 
 namespace CampFitFurDogs.Api.Tests.Customers;
 
-public class CreateCustomerTests : IClassFixture<CampFitFurDogsApiFactory>
+public class CreateCustomerTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
 
-    public CreateCustomerTests(CampFitFurDogsApiFactory factory)
+    public CreateCustomerTests(WebApplicationFactory<Program> factory)
     {
         _client = factory.CreateClient();
     }
