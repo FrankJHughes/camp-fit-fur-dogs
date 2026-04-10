@@ -1,21 +1,14 @@
 using CampFitFurDogs.Api.Customers;
-
 using CampFitFurDogs.Application;
-using CampFitFurDogs.Application.Abstractions;
-using CampFitFurDogs.Application.Customers.CreateCustomer;
-
 using CampFitFurDogs.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddApplicationServices()
-    .AddInfrastructureServices();
+    .AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddOpenApi();
-
-builder.Services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
-builder.Services.AddTransient<ICommandHandler<CreateCustomerCommand, Guid>, CreateCustomerHandler>();
 
 var app = builder.Build();
 
