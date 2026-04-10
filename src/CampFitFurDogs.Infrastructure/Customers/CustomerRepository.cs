@@ -23,5 +23,6 @@ public sealed class CustomerRepository : ICustomerRepository
     public async Task AddAsync(Customer customer, CancellationToken ct)
     {
         await _db.Customers.AddAsync(customer, ct);
+        await _db.SaveChangesAsync(ct);
     }
 }

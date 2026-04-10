@@ -32,6 +32,10 @@ public sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             email.Property(e => e.Value)
                 .HasColumnName("email")
                 .IsRequired();
+
+            // PostgreSQL requires explicit owned-property indexing
+            email.HasIndex(e => e.Value)
+                 .IsUnique();
         });
 
         builder.OwnsOne(c => c.Phone, phone =>
@@ -48,8 +52,5 @@ public sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
                 .IsRequired();
         });
 
-        // PostgreSQL requires explicit owned-property indexing
-        builder.HasIndex("Email")
-            .IsUnique();
     }
 }
