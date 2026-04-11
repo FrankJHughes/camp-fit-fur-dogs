@@ -6,23 +6,35 @@ All notable changes to this project will be documented in this file.
 
 ### Completed Stories
 
-| Story  | Title                    | Issue |
-|--------|--------------------------|-------|
-| US-027 | Create Customer Account  | #96   |
-| US-028 | Register Dog             | #109  |
-| US-029 | View Dog Profile         | #97   |
+| Story  | Title                        | Issue |
+|--------|------------------------------|-------|
+| US-009 | Developer Contributor Guide  | #98   |
+| US-027 | Create Customer Account      | #96   |
+| US-028 | Register Dog                 | #109  |
+| US-029 | View Dog Profile             | #97   |
+| US-045 | Product Owner Workflow Guide | #99   |
+| US-046 | Scrum Master Workflow Guide  | #100  |
 
 ### Added
 
 - `POST /api/customers` — create customer account (US-027)
 - `POST /api/dogs` — register a dog under a customer (US-028)
 - `GET /api/dogs/{id}` — view dog profile with ownership guard (US-029)
+- CQRS command pipeline: `ICommand`, `ICommandHandler`, `ICommandDispatcher`
 - CQRS query pipeline: `IQuery<TResponse>`, `IQueryHandler`, `IQueryDispatcher`
 - `Endpoints.cs` single entry point with `MapGroup` consolidation
+- `docs/guides/developer-guide.md` (US-009)
+- `docs/guides/product-owner-guide.md` (US-045)
+- `docs/guides/scrum-master-guide.md` (US-046)
+- `CONTRIBUTING.md` rewritten as role-routing hub
+- Backlog stories US-047 through US-050
 
 ### Changed
 
-- Endpoint routing refactored from individual `Map*` calls in `Program.cs` to grouped `MapEndpoints()` pattern
+- README: milestone progress table, clickable file paths, dx.ps1 → CLI commands
+- `portfolio/USE-CASES.md` and `portfolio/SURFACING-STRATEGY.md`: milestone-driven rewrite, clickable paths
+- `docs/README.md`: added Roadmap section
+- Developer guide: added TDD section, fixed dx.ps1 references
 
 ## [Sprint 2] — 2026-04-08
 
