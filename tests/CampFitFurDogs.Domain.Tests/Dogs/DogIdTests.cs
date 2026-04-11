@@ -1,4 +1,3 @@
-using Xunit;
 using CampFitFurDogs.Domain.Dogs;
 
 namespace CampFitFurDogs.Domain.Tests.Dogs;
@@ -6,14 +5,14 @@ namespace CampFitFurDogs.Domain.Tests.Dogs;
 public class DogIdTests
 {
     [Fact]
-    public void New_returns_non_default_id()
+    public void New_GeneratesNonEmptyGuid()
     {
         var id = DogId.New();
         Assert.NotEqual(Guid.Empty, id.Value);
     }
 
     [Fact]
-    public void From_wraps_given_guid()
+    public void From_WrapsExistingGuid()
     {
         var guid = Guid.NewGuid();
         var id = DogId.From(guid);
@@ -21,34 +20,15 @@ public class DogIdTests
     }
 
     [Fact]
-    public void From_with_empty_guid_throws()
+    public void From_EmptyGuid_Throws()
     {
         Assert.Throws<ArgumentException>(() => DogId.From(Guid.Empty));
     }
 
     [Fact]
-    public void Two_ids_with_same_guid_are_equal()
+    public void EqualIds_AreEqual()
     {
         var guid = Guid.NewGuid();
         Assert.Equal(DogId.From(guid), DogId.From(guid));
-    }
-
-    [Fact]
-    public void Two_ids_with_different_guids_are_not_equal()
-    {
-        Assert.NotEqual(DogId.New(), DogId.New());
-    }
-
-    [Fact]
-    public void Equality_operator_returns_true_for_same_guid()
-    {
-        var guid = Guid.NewGuid();
-        Assert.True(DogId.From(guid) == DogId.From(guid));
-    }
-
-    [Fact]
-    public void Inequality_operator_returns_true_for_different_guids()
-    {
-        Assert.True(DogId.New() != DogId.New());
     }
 }

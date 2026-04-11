@@ -1,6 +1,6 @@
-namespace CampFitFurDogs.Domain.Dogs;
-
 using CampFitFurDogs.SharedKernel;
+
+namespace CampFitFurDogs.Domain.Dogs;
 
 public sealed class DogId : ValueObject
 {
@@ -13,9 +13,8 @@ public sealed class DogId : ValueObject
     public static DogId From(Guid value)
     {
         if (value == Guid.Empty)
-            throw new ArgumentException("Id cannot be empty.", nameof(value));
-
-        return new(value);
+            throw new ArgumentException("DogId cannot be empty.", nameof(value));
+        return new DogId(value);
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

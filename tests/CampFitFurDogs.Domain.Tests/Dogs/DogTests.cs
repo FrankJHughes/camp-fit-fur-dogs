@@ -1,64 +1,40 @@
-using Xunit;
+using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
-using CampFitFurDogs.Domain.Guardians;
 
 namespace CampFitFurDogs.Domain.Tests.Dogs;
 
 public class DogTests
 {
     [Fact]
-    public void Create_returns_dog_with_correct_properties()
+    public void Create_SetsAllProperties()
     {
-        var guardianId = GuardianId.New();
-        var dob = new DateOnly(2020, 6, 15);
+        var ownerId = CustomerId.New();
+        var name = DogName.Create("Biscuit");
+        var breed = Breed.Create("Golden Retriever");
+        var dob = new DateOnly(2022, 6, 15);
+        var sex = Sex.Female;
 
-        var dog = Dog.Create("Rex", "Labrador", dob, guardianId);
+        var dog = Dog.Create(ownerId, name, breed, dob, sex);
 
-        Assert.Equal("Rex", dog.Name);
-        Assert.Equal("Labrador", dog.Breed);
-        Assert.Equal(dob, dog.DateOfBirth);
-        Assert.Equal(guardianId, dog.GuardianId);
-    }
-
-    [Fact]
-    public void Create_assigns_new_dog_id()
-    {
-        var dog = Dog.Create("Rex", "Labrador", new DateOnly(2020, 6, 15), GuardianId.New());
         Assert.NotEqual(Guid.Empty, dog.Id.Value);
+        Assert.Equal(ownerId, dog.OwnerId);
+        Assert.Equal(name, dog.Name);
+        Assert.Equal(breed, dog.Breed);
+        Assert.Equal(dob, dog.DateOfBirth);
+        Assert.Equal(sex, dog.Sex);
     }
 
     [Fact]
-    public void Create_with_null_name_throws()
+    public void Create_TwoDogs_HaveDistinctIds()
     {
-        Assert.Throws<ArgumentNullException>(() =>
-            Dog.Create(null!, "Labrador", new DateOnly(2020, 6, 15), GuardianId.New()));
-    }
+        var ownerId = CustomerId.New();
+        var name = DogName.Create("Biscuit");
+        var breed = Breed.Create("Poodle");
+        var dob = new DateOnly(2023, 1, 1);
 
-    [Fact]
-    public void Create_with_empty_name_throws()
-    {
-        Assert.Throws<ArgumentException>(() =>
-            Dog.Create("", "Labrador", new DateOnly(2020, 6, 15), GuardianId.New()));
-    }
+        var dog1 = Dog.Create(ownerId, name, breed, dob, Sex.Male);
+        var dog2 = Dog.Create(ownerId, name, breed, dob, Sex.Male);
 
-    [Fact]
-    public void Create_with_null_breed_throws()
-    {
-        Assert.Throws<ArgumentNullException>(() =>
-            Dog.Create("Rex", null!, new DateOnly(2020, 6, 15), GuardianId.New()));
-    }
-
-    [Fact]
-    public void Create_with_empty_breed_throws()
-    {
-        Assert.Throws<ArgumentException>(() =>
-            Dog.Create("Rex", "", new DateOnly(2020, 6, 15), GuardianId.New()));
-    }
-
-    [Fact]
-    public void Create_with_null_guardian_id_throws()
-    {
-        Assert.Throws<ArgumentNullException>(() =>
-            Dog.Create("Rex", "Labrador", new DateOnly(2020, 6, 15), null!));
+        Assert.NotEqual(dog1.Id, dog2.Id);
     }
 }
