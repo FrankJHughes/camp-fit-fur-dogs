@@ -1,6 +1,6 @@
 using CampFitFurDogs.Domain.Dogs;
 
-namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
+namespace CampFitFurDogs.Application.Tests.Fakes;
 
 public class FakeDogRepository : IDogRepository
 {
@@ -11,4 +11,11 @@ public class FakeDogRepository : IDogRepository
         Dogs.Add(dog);
         return Task.CompletedTask;
     }
+
+    public Task<Dog?> GetByIdAsync(DogId id, CancellationToken cancellationToken = default)
+    {
+        var dog = Dogs.FirstOrDefault(d => d.Id == id);
+        return Task.FromResult(dog);
+    }
+
 }

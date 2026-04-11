@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
+using CampFitFurDogs.Application.Dogs.GetDogProfile;
 
 namespace CampFitFurDogs.Application;
 
@@ -19,6 +20,12 @@ public static class DependencyInjection
             RegisterDogHandler>();
 
         services.AddScoped<ICommandDispatcher, CommandDispatcher>();
+
+        services.AddTransient<
+            IQueryHandler<GetDogProfileQuery, DogProfileResponse>,
+            GetDogProfileHandler>();
+
+        services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 
         return services;
     }

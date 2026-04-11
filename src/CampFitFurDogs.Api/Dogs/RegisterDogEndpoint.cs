@@ -7,7 +7,7 @@ public static class RegisterDogEndpoint
 {
     public static void MapRegisterDog(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/dogs", async (
+        app.MapPost("/", async (
             RegisterDogCommand cmd,
             ICommandDispatcher dispatcher) =>
         {

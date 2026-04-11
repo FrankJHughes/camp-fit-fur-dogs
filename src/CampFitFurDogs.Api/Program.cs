@@ -1,5 +1,4 @@
-using CampFitFurDogs.Api.Customers;
-using CampFitFurDogs.Api.Dogs;
+using CampFitFurDogs.Api;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
 
@@ -23,7 +22,6 @@ app.UseHttpsRedirection();
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }))
     .WithName("HealthCheck");
 
-app.MapCreateCustomer();
-app.MapRegisterDog();
+app.MapEndpoints();
 
 app.Run();

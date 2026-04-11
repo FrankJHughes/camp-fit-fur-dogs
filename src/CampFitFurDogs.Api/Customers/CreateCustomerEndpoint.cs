@@ -8,7 +8,7 @@ public static class CreateCustomerEndpoint
 {
     public static void MapCreateCustomer(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/customers", async (
+        app.MapPost("/", async (
             CreateCustomerCommand cmd,
             ICommandDispatcher dispatcher) =>
         {
@@ -45,7 +45,7 @@ public static class CreateCustomerEndpoint
         paramName switch
         {
             "firstName" => "A first name is needed to create your account.",
-            "lastName"  => "A last name is needed to create your account.",
-            _           => "Please check the information you provided and try again."
+            "lastName" => "A last name is needed to create your account.",
+            _ => "Please check the information you provided and try again."
         };
 }

@@ -6,11 +6,11 @@ using CampFitFurDogs.Api;
 
 namespace CampFitFurDogs.Api.Tests.Customers;
 
-public class CreateCustomerTests : IClassFixture<CampFitFurDogsApiFactory>
+public class CreateCustomerEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
 {
     private readonly HttpClient _client;
 
-    public CreateCustomerTests(CampFitFurDogsApiFactory factory)
+    public CreateCustomerEndpointTests(CampFitFurDogsApiFactory factory)
     {
         _client = factory.CreateClient();
     }
