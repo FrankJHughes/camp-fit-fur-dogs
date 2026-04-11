@@ -1,3 +1,5 @@
+using CampFitFurDogs.SharedKernel;
+
 namespace CampFitFurDogs.Domain.Customers;
 
 public sealed class CustomerId : ValueObject
