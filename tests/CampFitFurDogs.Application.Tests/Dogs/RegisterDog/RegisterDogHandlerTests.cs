@@ -1,4 +1,5 @@
 using CampFitFurDogs.Application.Dogs.RegisterDog;
+using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Dogs;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
