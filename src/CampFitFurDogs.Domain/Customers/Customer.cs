@@ -1,8 +1,10 @@
+using CampFitFurDogs.SharedKernel;
+
 namespace CampFitFurDogs.Domain.Customers;
 
-public sealed class Customer
+public sealed class Customer : AggregateRoot<CustomerId>
 {
-    public CustomerId Id { get; }
+    // public CustomerId Id { get; }
     public string FirstName { get; }
     public string LastName { get; }
     public Email Email { get; }
@@ -10,7 +12,7 @@ public sealed class Customer
     public PasswordHash PasswordHash { get; }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    private Customer()
+    private Customer() : base(default!)
     {
         // For EF Core
     }
@@ -22,9 +24,8 @@ public sealed class Customer
         string lastName,
         Email email,
         PhoneNumber phone,
-        PasswordHash passwordHash)
+        PasswordHash passwordHash) : base(id)
     {
-        Id = id;
         FirstName = firstName;
         LastName = lastName;
         Email = email;

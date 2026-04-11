@@ -1,30 +1,30 @@
-namespace CampFitFurDogs.Domain.Dogs;
-
-using CampFitFurDogs.Domain.Guardians;
+using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.SharedKernel;
+
+namespace CampFitFurDogs.Domain.Dogs;
 
 public sealed class Dog : AggregateRoot<DogId>
 {
-    public string Name { get; private set; }
-    public string Breed { get; private set; }
+    public CustomerId OwnerId { get; private set; } = default!;
+    public DogName Name { get; private set; } = default!;
+    public Breed Breed { get; private set; } = default!;
     public DateOnly DateOfBirth { get; private set; }
-    public GuardianId GuardianId { get; private set; }
+    public Sex Sex { get; private set; }
 
-    private Dog(DogId id, string name, string breed, DateOnly dateOfBirth, GuardianId guardianId)
+    private Dog() { }
+
+    private Dog(DogId id, CustomerId ownerId, DogName name, Breed breed, DateOnly dateOfBirth, Sex sex)
         : base(id)
     {
+        OwnerId = ownerId;
         Name = name;
         Breed = breed;
         DateOfBirth = dateOfBirth;
-        GuardianId = guardianId;
+        Sex = sex;
     }
 
-    public static Dog Create(string name, string breed, DateOnly dateOfBirth, GuardianId guardianId)
+    public static Dog Create(CustomerId ownerId, DogName name, Breed breed, DateOnly dateOfBirth, Sex sex)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        ArgumentException.ThrowIfNullOrWhiteSpace(breed);
-        ArgumentNullException.ThrowIfNull(guardianId);
-
-        return new Dog(DogId.New(), name, breed, dateOfBirth, guardianId);
+        return new Dog(DogId.New(), ownerId, name, breed, dateOfBirth, sex);
     }
 }

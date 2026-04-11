@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Customers.CreateCustomer;
+using CampFitFurDogs.Application.Dogs.RegisterDog;
 
 namespace CampFitFurDogs.Application;
 
@@ -12,6 +13,10 @@ public static class DependencyInjection
         services.AddTransient<
             ICommandHandler<CreateCustomerCommand, Guid>,
             CreateCustomerHandler>();
+
+        services.AddTransient<
+            ICommandHandler<RegisterDogCommand, Guid>,
+            RegisterDogHandler>();
 
         services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 

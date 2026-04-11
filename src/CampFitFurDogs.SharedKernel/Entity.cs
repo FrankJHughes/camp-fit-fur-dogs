@@ -1,26 +1,36 @@
 namespace CampFitFurDogs.SharedKernel;
 
-public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
+public abstract class Entity<TId> where TId : notnull
 {
-    public TId Id { get; protected set; }
+    public TId Id { get; protected set; } = default!;
 
-    protected Entity(TId id) => Id = id;
+    protected Entity() { }
 
-    public override bool Equals(object? obj) => Equals(obj as Entity<TId>);
-
-    public bool Equals(Entity<TId>? other)
+    protected Entity(TId id)
     {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        if (GetType() != other.GetType()) return false;
-        return Id.Equals(other.Id);
+        Id = id;
     }
 
-    public override int GetHashCode() => Id.GetHashCode();
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Entity<TId> other)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+        if (GetType() != other.GetType())
+            return false;
+        if (EqualityComparer<TId>.Default.Equals(Id, default!) ||
+            EqualityComparer<TId>.Default.Equals(other.Id, default!))
+            return false;
+        return EqualityComparer<TId>.Default.Equals(Id, other.Id);
+    }
+
+    public override int GetHashCode() =>
+        EqualityComparer<TId>.Default.GetHashCode(Id);
 
     public static bool operator ==(Entity<TId>? left, Entity<TId>? right) =>
-        left is null ? right is null : left.Equals(right);
+        Equals(left, right);
 
     public static bool operator !=(Entity<TId>? left, Entity<TId>? right) =>
-        !(left == right);
+        !Equals(left, right);
 }

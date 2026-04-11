@@ -1,4 +1,5 @@
 using CampFitFurDogs.Api.Customers;
+using CampFitFurDogs.Api.Dogs;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
 
@@ -23,5 +24,6 @@ app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }))
     .WithName("HealthCheck");
 
 app.MapCreateCustomer();
+app.MapRegisterDog();
 
 app.Run();
