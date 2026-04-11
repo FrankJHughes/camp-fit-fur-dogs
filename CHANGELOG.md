@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Completed Stories
+
+| Story  | Title                    | Issue |
+|--------|--------------------------|-------|
+| US-027 | Create Customer Account  | #96   |
+| US-028 | Register Dog             | #109  |
+| US-029 | View Dog Profile         | #97   |
+
+### Added
+
+- `POST /api/customers` — create customer account (US-027)
+- `POST /api/dogs` — register a dog under a customer (US-028)
+- `GET /api/dogs/{id}` — view dog profile with ownership guard (US-029)
+- CQRS query pipeline: `IQuery<TResponse>`, `IQueryHandler`, `IQueryDispatcher`
+- `Endpoints.cs` single entry point with `MapGroup` consolidation
+
+### Changed
+
+- Endpoint routing refactored from individual `Map*` calls in `Program.cs` to grouped `MapEndpoints()` pattern
+
 ## [Sprint 2] — 2026-04-08
 
 ### Completed Stories
