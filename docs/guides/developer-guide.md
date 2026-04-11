@@ -272,9 +272,16 @@ Browse the full list at [`docs/adr/`](../../docs/adr/).
 
 Be kind. Be constructive. Assume good intent. Every contributor — regardless of experience level — deserves respect and clear feedback.
 
+
+## Conventions
+
+Project-wide conventions, standing rules, and lessons learned are maintained in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md). This file is read automatically by GitHub Copilot and should be reviewed at the start of every AI-assisted session.
+
+When your PR introduces or changes a convention, update `copilot-instructions.md` in the same PR — not as a follow-up.
 ## Getting Help
 
 - Open a GitHub Discussion for questions.
 - Tag `@FrankJHughes` for architecture or process questions.
 - Check the [Product Owner Guide](product-owner-guide.md) for story and backlog questions.
 - Check the [Scrum Master Guide](scrum-master-guide.md) for sprint and board questions.
+

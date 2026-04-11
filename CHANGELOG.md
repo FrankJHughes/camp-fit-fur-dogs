@@ -4,13 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- `.github/copilot-instructions.md` — living conventions document (standing rules, PR conventions, architecture patterns, tooling, lessons learned)
+- Sprint review closing checklist in `docs/sprint-reviews/_template.md`
+- Conventions maintenance sections in all three contributor guides
+## [Sprint 3] — 2026-04-11
+
 ### Completed Stories
 
 | Story  | Title                        | Issue |
 |--------|------------------------------|-------|
 | US-009 | Developer Contributor Guide  | #98   |
-| US-027 | Create Customer Account      | #96   |
-| US-028 | Register Dog                 | #109  |
+| US-027 | Create Customer Account      | #95   |
+| US-028 | Register Dog                 | #96   |
 | US-029 | View Dog Profile             | #97   |
 | US-045 | Product Owner Workflow Guide | #99   |
 | US-046 | Scrum Master Workflow Guide  | #100  |
@@ -148,3 +155,5 @@ All notable changes to this project will be documented in this file.
 - `global.json` pinning .NET SDK version
 - Product vision, capability themes, emotional guarantees, definition of ready
 - 44 product stories across infra, docs, and customer domains
+
+

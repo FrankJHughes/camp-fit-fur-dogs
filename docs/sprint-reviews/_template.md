@@ -35,3 +35,9 @@
 ## Next Sprint Focus
 
 > _One-sentence focus for the next sprint._
+
+## Closing Checklist
+
+- [ ] CHANGELOG `[Unreleased]` promoted to `[Sprint N]`
+- [ ] `.github/copilot-instructions.md` reviewed for staleness
+- [ ] Lessons learned from retro added to conventions

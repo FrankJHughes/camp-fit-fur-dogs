@@ -316,6 +316,14 @@ When priorities shift:
 2. Update the milestone description if the goal changed.
 3. Document the change in the next sprint review.
 
+
+## Conventions Maintenance
+
+Project conventions live in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md). The Product Owner is responsible for ensuring that:
+
+- Story acceptance criteria reference relevant conventions when applicable
+- New process decisions from retrospectives are captured as standing rules or lessons learned
+- The conventions document stays aligned with the product backlog and Definition of Ready
 ## Getting Help
 
 - Check the [Scrum Master Guide](scrum-master-guide.md) for sprint
@@ -323,3 +331,4 @@ When priorities shift:
 - Check the [Developer Guide](developer-guide.md) for code and PR
   workflow.
 - Tag `@FrankJHughes` for backlog or prioritization questions.
+
