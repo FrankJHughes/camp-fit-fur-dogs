@@ -17,10 +17,4 @@ public sealed class DogRepository : IDogRepository
         await _db.Dogs.AddAsync(dog, cancellationToken);
         await _db.SaveChangesAsync(cancellationToken);
     }
-
-    public async Task<Dog?> GetByIdAsync(DogId id, CancellationToken cancellationToken = default)
-    {
-        return await _db.Dogs.FindAsync([id, cancellationToken], cancellationToken);
-    }
-
 }

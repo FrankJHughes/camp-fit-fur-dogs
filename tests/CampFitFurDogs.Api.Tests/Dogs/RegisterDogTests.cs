@@ -4,11 +4,11 @@ using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
+public class RegisterDogTests : IClassFixture<CampFitFurDogsApiFactory>
 {
     private readonly HttpClient _client;
 
-    public RegisterDogEndpointTests(CampFitFurDogsApiFactory factory)
+    public RegisterDogTests(CampFitFurDogsApiFactory factory)
     {
         _client = factory.CreateClient();
     }
