@@ -5,14 +5,12 @@ using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Infrastructure.Data.Configurations;
 
-public sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
+public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer, CustomerId>
 {
-    public void Configure(EntityTypeBuilder<Customer> builder)
+    protected override string TableName => "customers";
+
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Customer> builder)
     {
-        builder.ToTable("customers");
-
-        builder.HasKey(c => c.Id);
-
         builder.Property(c => c.Id)
             .HasConversion(
                 id => id.Value,
@@ -51,6 +49,5 @@ public sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
                 .HasColumnName("password_hash")
                 .IsRequired();
         });
-
     }
 }
