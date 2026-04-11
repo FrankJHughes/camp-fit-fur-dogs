@@ -135,7 +135,6 @@ The repo ships a ready-made hook in `hooks/`. Install it once after cloning:
 
 ```powershell
 Copy-Item hooks/pre-push .git/hooks/pre-push
-git update-index --chmod=+x .git/hooks/pre-push
 ```
 
 After this, `git push origin main` will be rejected locally with a clear message before the push ever hits the network.
