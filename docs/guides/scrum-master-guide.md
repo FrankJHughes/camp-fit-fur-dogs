@@ -359,6 +359,16 @@ gh label create "sprint:4" --color "0E8A16" `
 
 Use consistent colors per sprint for visual distinction on the board.
 
+
+## Conventions Review
+
+At each sprint closing, review [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md) for staleness:
+
+- Do the standing rules still match how the team works?
+- Did the retrospective surface lessons learned that should be added?
+- Are there conventions in the document that are no longer relevant?
+
+Include any updates in the sprint closing PR.
 ## Getting Help
 
 - Check the [Product Owner Guide](product-owner-guide.md) for story
@@ -366,3 +376,4 @@ Use consistent colors per sprint for visual distinction on the board.
 - Check the [Developer Guide](developer-guide.md) for code and PR
   workflow.
 - Tag `@FrankJHughes` for process or governance questions.
+
