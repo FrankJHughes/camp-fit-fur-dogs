@@ -28,6 +28,8 @@ All notable changes to this project will be documented in this file.
 - `docs/guides/scrum-master-guide.md` (US-046)
 - `CONTRIBUTING.md` rewritten as role-routing hub
 - Backlog stories US-047 through US-050
+- `hooks/pre-push` — local guardrail blocking direct pushes to `main`
+- Developer guide: "Source control safety" section with two-layer protection model
 
 ### Changed
 

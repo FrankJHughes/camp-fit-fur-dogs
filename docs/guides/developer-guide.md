@@ -120,6 +120,28 @@ Types match branch types: `feature`, `fix`, `docs`, `infra`, `refactor`.
 5. Address CODEOWNERS review feedback.
 6. Squash-merge after approval.
 
+### Source control safety
+
+Direct pushes to `main` are blocked at two levels:
+
+| Layer | What it stops | Setup |
+|-------|---------------|-------|
+| **GitHub branch rule** | Any push to `main` without a PR — including admins | Settings → Branches → `main` → "Require a pull request before merging" + "Do not allow bypassing" |
+| **Local pre-push hook** | Push attempt before it leaves your machine (instant feedback) | One-time setup below |
+
+#### Installing the pre-push hook
+
+The repo ships a ready-made hook in `hooks/`. Install it once after cloning:
+
+```powershell
+Copy-Item hooks/pre-push .git/hooks/pre-push
+git update-index --chmod=+x .git/hooks/pre-push
+```
+
+After this, `git push origin main` will be rejected locally with a clear message before the push ever hits the network.
+
+> **Note:** `.git/hooks/` is not tracked by Git, so every contributor must run the install step once. The source of truth is `hooks/pre-push` in the repo root.
+
 ## Building and Running
 
 ```powershell
