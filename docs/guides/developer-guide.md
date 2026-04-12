@@ -1,4 +1,4 @@
-# Developer Contributor Guide
+﻿# Developer Contributor Guide
 
 Welcome to Camp Fit Fur Dogs. This guide covers everything you need to clone the repo, run the app locally, and ship code through our pull request workflow.
 
@@ -11,6 +11,57 @@ Welcome to Camp Fit Fur Dogs. This guide covers everything you need to clone the
 | PowerShell | 7+ | Developer experience scripts |
 | Git | 2.x | Source control |
 | GitHub CLI (`gh`) | 2.x | Issue and PR management |
+
+## First-Time Setup
+
+Complete these steps once after installing the prerequisites. They configure
+your local environment so the Dev Container, tests, and hooks work on every
+boot.
+
+### Docker Desktop (Windows)
+
+Docker Desktop does not start automatically by default. The Dev Container and
+Testcontainers both require the Docker daemon to be running.
+
+1. Open Docker Desktop.
+2. Go to **Settings > General**.
+3. Enable **Start Docker Desktop when you sign in to your computer**.
+4. Confirm the engine is running:
+
+```powershell
+docker version
+```
+
+Both **Client** and **Server** sections should appear. If you see
+`failed to connect to the docker API`, the engine has not finished starting â€”
+wait a few seconds and retry.
+
+> **Note:** If Docker Desktop was just installed and `docker version` still
+> fails after a restart, verify that WSL 2 is enabled (`wsl --status`) and
+> up to date (`wsl --update`).
+
+### Git identity
+
+VS Code forwards your host-level Git identity into the Dev Container. Set it
+once so commits are attributed correctly:
+
+```powershell
+git config --global user.name "Your Name"
+git config --global user.email "your-email@example.com"
+```
+
+### Git hooks
+
+The repo ships a `pre-push` hook in `hooks/`. Point Git at it so the hook
+runs automatically:
+
+```powershell
+git config core.hooksPath hooks
+```
+
+> **Note:** The Dev Container's `postCreateCommand` runs this automatically
+> inside the container. You only need to run it manually on your host if you
+> push from outside the Dev Container.
 
 ## Getting Started
 

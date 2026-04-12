@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -12,6 +12,14 @@ All notable changes to this project will be documented in this file.
 - ADR-0011: CQRS Command/Query Pipelines (US-051)
 - ADR-0011: CQRS Command/Query Pipelines (US-051)
 - ADR-0012: Frontend Technology — React with Next.js (US-055)
+- `.gitattributes` — enforces LF line endings repo-wide; eliminates CRLF phantom diffs in Dev Container
+- First-Time Setup section in `docs/guides/developer-guide.md` (Docker Desktop auto-start, Git identity, hooks)
+
+### Changed
+
+- `.devcontainer/devcontainer.json` — adds `TESTCONTAINERS_RYUK_DISABLED` and `TESTCONTAINERS_HOST_OVERRIDE` for docker-outside-of-docker Testcontainers compatibility
+- Root `.gitignore` — moves `node_modules/` and `.next/` to `src/frontend/.gitignore`; adds scratch file exclusions
+
 ## [Sprint 3] — 2026-04-11
 
 ### Completed Stories
