@@ -1,9 +1,9 @@
-{
+﻿{
   "name": "Camp Fit Fur Dogs",
   "dockerComposeFile": ["../compose.yml", "docker-compose.yml"],
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "make all",
+  "postCreateCommand": "git config core.hooksPath hooks && make all",
   "forwardPorts": [5432, 6379, 5672, 15672],
   "portsAttributes": {
     "5432": { "label": "PostgreSQL" },
@@ -19,5 +19,13 @@
         "editorconfig.editorconfig"
       ]
     }
+  }
+,
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "containerEnv": {
+    "TESTCONTAINERS_RYUK_DISABLED": "true",
+    "TESTCONTAINERS_HOST_OVERRIDE": "host.docker.internal"
   }
 }
