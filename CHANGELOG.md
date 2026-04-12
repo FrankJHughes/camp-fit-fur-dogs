@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - `.github/copilot-instructions.md` — living conventions document (standing rules, PR conventions, architecture patterns, tooling, lessons learned)
 - Sprint review closing checklist in `docs/sprint-reviews/_template.md`
 - Conventions maintenance sections in all three contributor guides
+- ADR-0011: CQRS Command/Query Pipelines (US-051)
+- ADR-0011: CQRS Command/Query Pipelines (US-051)
 - ADR-0012: Frontend Technology — React with Next.js (US-055)
 ## [Sprint 3] — 2026-04-11
 
