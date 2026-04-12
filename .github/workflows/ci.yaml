@@ -22,5 +22,21 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'src/frontend/package-lock.json'
+
       - name: Build & Test
         run: make all
+
+      - name: Frontend install
+        run: make frontend-install
+
+      - name: Frontend lint
+        run: make frontend-lint
+
+      - name: Frontend build
+        run: make frontend-build
