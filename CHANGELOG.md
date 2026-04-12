@@ -160,3 +160,4 @@ All notable changes to this project will be documented in this file.
 - 44 product stories across infra, docs, and customer domains
 
 
+- Next.js project scaffold with API proxy and health-check landing page (US-056)
