@@ -31,3 +31,18 @@ infra-down: ## Stop infrastructure services
 	docker compose down
 
 all: restore build test ## Full pipeline: restore > build > test
+# ── Frontend ──────────────────────────────────────────────────
+
+.PHONY: frontend-install frontend-build frontend-lint frontend-dev
+
+frontend-install:
+	npm ci --prefix src/frontend
+
+frontend-build: frontend-install
+	npm run build --prefix src/frontend
+
+frontend-lint: frontend-install
+	npm run lint --prefix src/frontend
+
+frontend-dev:
+	npm run dev --prefix src/frontend
