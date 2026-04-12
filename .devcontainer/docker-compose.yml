@@ -1,10 +1,10 @@
-services:
+﻿services:
   devcontainer:
     build:
-      context: .
+      context: .devcontainerdevcontainer
       dockerfile: Dockerfile
     volumes:
-      - ..:/workspace:cached
+      - .:/workspace:cached
     command: sleep infinity
     depends_on:
       postgres:
