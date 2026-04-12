@@ -1,4 +1,4 @@
-# :paw_prints: Camp Fit Fur Dogs
+﻿# :paw_prints: Camp Fit Fur Dogs
 ### A Story-First, Emotionally-Safe Product Built with Modern Engineering Discipline
 
 <p align="center">
@@ -58,6 +58,9 @@ a living demonstration of how to build, document, and govern a modern software s
 
 ```
 camp-fit-fur-dogs/
+|
++-- frontend/                   # Next.js frontend
+|   +-- src/                    # App source
 |
 +-- src/                        # Application code (DDD layers)
 |   +-- CampFitFurDogs.Api/
