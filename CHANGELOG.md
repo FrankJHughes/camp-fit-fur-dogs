@@ -17,8 +17,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Frontend relocated from `src/frontend/` to `frontend/src/` for role-based monorepo layout
+
 - `.devcontainer/devcontainer.json` — adds `TESTCONTAINERS_RYUK_DISABLED` and `TESTCONTAINERS_HOST_OVERRIDE` for docker-outside-of-docker Testcontainers compatibility
-- Root `.gitignore` — moves `node_modules/` and `.next/` to `src/frontend/.gitignore`; adds scratch file exclusions
+- Root `.gitignore` — moves `node_modules/` and `.next/` to `frontend/src/.gitignore`; adds scratch file exclusions
 
 ## [Sprint 3] — 2026-04-11
 

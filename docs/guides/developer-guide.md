@@ -89,6 +89,8 @@ dotnet run --project src/CampFitFurDogs.Api
 
 ```
 camp-fit-fur-dogs/
+├── frontend/
+│   └── src/                            # Next.js app
 ├── src/
 │   ├── CampFitFurDogs.Api/             # ASP.NET Core host, controllers, middleware
 │   ├── CampFitFurDogs.Application/     # Use cases, command/query handlers
