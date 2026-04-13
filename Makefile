@@ -1,4 +1,4 @@
-﻿.DEFAULT_GOAL := help
+.DEFAULT_GOAL := help
 
 # -- Configuration ----------------------------------------------------------
 CONFIGURATION ?= Release
@@ -36,13 +36,13 @@ all: restore build test ## Full pipeline: restore > build > test
 .PHONY: frontend-install frontend-build frontend-lint frontend-dev
 
 frontend-install:
-	npm ci --prefix frontend/src
+	npm ci --prefix frontend
 
 frontend-build: frontend-install
-	npm run build --prefix frontend/src
+	npm run build --prefix frontend
 
 frontend-lint: frontend-install
-	npm run lint --prefix frontend/src
+	npm run lint --prefix frontend
 
 frontend-dev:
-	npm run dev --prefix frontend/src
+	npm run dev --prefix frontend

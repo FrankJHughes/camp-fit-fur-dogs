@@ -1,11 +1,17 @@
-﻿# Normalize all text to LF in the repo; check out as LF on every OS.
-* text=auto eol=lf
+# Default — auto-normalize to LF in the repo, native on checkout
+* text=auto
+
+# Force LF for files that must have Unix line endings
+*.sh text eol=lf
+hooks/* text eol=lf
+*.mjs text eol=lf
+*.mts text eol=lf
 
 # Windows batch files require CRLF to execute.
 *.cmd  text eol=crlf
 *.bat  text eol=crlf
 
-# Binary files â€” no conversion.
+# Binary files — no conversion.
 *.png  binary
 *.jpg  binary
 *.jpeg binary
