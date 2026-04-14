@@ -10,7 +10,7 @@ This is the first feature that lets a customer interact with the system beyond a
 
 ## Acceptance Criteria
 
-- [ ] React form component with fields: dog name, breed, weight, notes.
+- [ ] React form component with fields: dog name, breed, date of birth, sex.
 - [ ] Client-side validation for required fields and data types.
 - [ ] Form submits to the existing RegisterDog API endpoint via the typed API client (US-102).
 - [ ] Success feedback displayed after successful registration.
@@ -39,4 +39,8 @@ This is the first feature that lets a customer interact with the system beyond a
 - Uses the typed API client from US-102 (not raw fetch).
 - Test infrastructure from US-103 must be in place before TDD can begin.
 - `customerId` is a route parameter today; becomes session/token-derived when auth lands. The form, validation, API client call, handler, domain logic, and tests all stay the same.
-- **Demo sentence:** Navigate to a customer's page, click 'Add Dog', fill in name/breed/weight, submit — see the dog in the database.
+- **Demo sentence:** Navigate to a customer's page, click 'Add Dog', fill in name/breed/date of birth/sex, submit — see the dog in the database.
+
+## AC Revision History
+
+- **April 14, 2026:** Form fields updated from `name, breed, weight, notes` to `name, breed, dateOfBirth, sex` to match the `RegisterDogCommand` backend contract (US-028).
