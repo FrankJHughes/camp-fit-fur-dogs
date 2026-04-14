@@ -38,13 +38,30 @@ Three triggers, zero new ceremonies:
 
 - `main` requires a pull request — no direct pushes.
 - Approval requirement is disabled (solo repo — can't approve your own PR).
-- Local pre-push hook provides a second safety layer. Install with:
+- Local pre-push hook (`hooks/pre-push`) provides a second safety layer.
+- Hooks are activated via `core.hooksPath hooks/` — **not** copied into `.git/hooks/`.
+- The devcontainer sets this automatically (`postCreateCommand`). For local setup:
 
 ```powershell
-Copy-Item hooks/pre-push .git/hooks/pre-push
+git config core.hooksPath hooks/
 ```
 
-> **Note:** Do not run `git update-index --chmod=+x` on `.git/hooks/` files — that command only works on tracked files. Git on Windows executes hooks via the shebang regardless of the executable bit.
+### Line Endings
+
+CRLF line endings break shebang lines in git hooks and shell scripts on Windows. Two layers enforce correct endings:
+
+- **`.gitattributes`** — repo-level, enforced for everyone:
+  - `hooks/*`, `*.sh`, `*.mjs`, `*.mts` → LF (Unix scripts)
+  - `*.cmd`, `*.bat` → CRLF (Windows batch files)
+  - Binary files (`*.png`, `*.jpg`, etc.) → no conversion
+- **`.editorconfig`** — editor-level, catches new files:
+  - Default `end_of_line = lf` for all files
+  - VS Code respects `.editorconfig` natively
+
+> **If a hook fails with `cannot exec`**, the most likely cause is CRLF line endings. Fix with:
+> ```powershell
+> (Get-Content hooks/pre-push -Raw) -replace "`r`n", "`n" | Set-Content -Path hooks/pre-push -NoNewline -Encoding utf8NoBOM
+> ```
 
 ### Branching Model
 
@@ -72,6 +89,7 @@ Conventional commits:
 - **Always include `Closes #<issue-number>`** in the PR body when an issue exists.
 - **Always include the 6-item merge checklist** from `.github/PULL_REQUEST_TEMPLATE.md` — `gh pr create --body` bypasses the template entirely, so embed it manually.
 - Use **four-backtick outer fences** whenever a code block contains inner code fences. Fence collisions are a recurring issue in PowerShell scripts that embed markdown PR bodies.
+- Use **single-quoted here-strings** (`@'...'@`) in PowerShell when the PR body contains backticks. Double-quoted here-strings (`@"..."@`) interpret backticks as escape characters, corrupting inline code.
 
 ### Merge Checklist
 
@@ -116,11 +134,48 @@ Consolidated into `Endpoints.cs` using the `MapGroup` pattern.
 
 ---
 
+## Frontend
+
+### Technology
+
+- **Framework:** React with Next.js (ADR-0012 pending — US-055)
+- **Runtime:** Node 22 (installed via devcontainer feature)
+
+### Project Layout
+
+```
+frontend/
+├── package.json          # Dependencies and scripts
+├── tsconfig.json         # TypeScript config
+├── vitest.config.mts     # Test runner config
+├── next.config.mjs       # Next.js config
+├── src/                  # Application source code only
+│   └── app/
+└── test/                 # Test files — mirrors src/ structure
+    └── app/
+```
+
+Configs live at `frontend/`. Source in `frontend/src/`. Tests in `frontend/test/`. This layout ensures `node_modules` is an ancestor of both `src/` and `test/` for correct module resolution.
+
+### Testing Stack
+
+- **Test runner:** Vitest 3 + jsdom environment
+- **Assertions:** React Testing Library + jest-dom (`toBeInTheDocument`, etc.)
+- **Path aliases:** `vite-tsconfig-paths` resolves `@/*` aliases in tests
+
+```bash
+cd frontend
+npm test -- --run
+```
+
+---
+
 ## Tooling
 
 - **Primary shell:** PowerShell on Windows. Provide all scripts in PowerShell.
 - **Git Bash (MINGW64):** Available but not preferred.
 - **IDE:** Scripts and commands should be copy-pasteable from conversation into terminal.
+- **Editor config:** `.editorconfig` at repo root — LF line endings, UTF-8, consistent indentation. VS Code respects it natively.
 
 ---
 
@@ -137,6 +192,8 @@ Consolidated into `Endpoints.cs` using the `MapGroup` pattern.
 | Sprint | Lesson | Mitigation |
 |--------|--------|------------|
 | 3 | Accidental direct push to `main` | Added branch protection rule + local pre-push hook |
-| 3 | `git update-index --chmod=+x` fails on `.git/hooks/` | Removed from docs — copy alone is sufficient |
+| 3 | `git update-index --chmod=+x` fails on `.git/hooks/` files | Removed from docs — hooks now live in tracked `hooks/` dir with `core.hooksPath` |
 | 3 | CHANGELOG had PR numbers instead of Issue numbers | Added standing rule to always use Issue numbers |
 | 3 | `gh pr create --body` bypasses PR template | Added standing rule to always embed merge checklist manually |
+| 4 | CRLF line endings broke pre-push hook shebang on Windows | Added `.gitattributes` LF enforcement for `hooks/*` and `*.sh`; added `.editorconfig` |
+| 4 | PowerShell double-quoted here-strings corrupt backticks in PR bodies | Added standing rule to use single-quoted here-strings (`@'...'@`) for PR bodies |
