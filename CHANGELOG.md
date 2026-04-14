@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - ADR-0012: Frontend Technology — React with Next.js (US-055)
 - `.gitattributes` — enforces LF line endings repo-wide; eliminates CRLF phantom diffs in Dev Container
 - First-Time Setup section in `docs/guides/developer-guide.md` (Docker Desktop auto-start, Git identity, hooks)
+- Frontend API client with typed error handling and unit test suite (see `frontend/CHANGELOG.md`)
 
 ### Changed
 
