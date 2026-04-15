@@ -181,11 +181,11 @@ Targets are scoped by stack. Bare names are aggregates that run both.
 
 | Target | Purpose |
 |---|---|
-| `api-restore` | Restore NuGet packages |
-| `api-build` | Build the .NET solution |
-| `api-test` | Run backend tests |
-| `api-clean` | Remove backend build artifacts |
-| `api-up` | Run the API |
+| `backend-restore` | Restore NuGet packages |
+| `backend-build` | Build the .NET solution |
+| `backend-test` | Run backend tests |
+| `backend-clean` | Remove backend build artifacts |
+| `backend-up` | Run the API |
 | `frontend-install` | Install frontend dependencies (`npm ci`) |
 | `frontend-build` | Build the frontend |
 | `frontend-test` | Run frontend tests |
@@ -193,10 +193,10 @@ Targets are scoped by stack. Bare names are aggregates that run both.
 | `frontend-clean` | Remove `.next` and `node_modules` |
 | `frontend-up` | Start the frontend dev server |
 | `infra-up` / `infra-down` | Start / stop Docker containers |
-| `restore` | `api-restore` + `frontend-install` |
-| `build` | `api-build` + `frontend-build` |
-| `test` | `api-test` + `frontend-test` |
-| `clean` | `api-clean` + `frontend-clean` |
+| `restore` | `backend-restore` + `frontend-install` |
+| `build` | `backend-build` + `frontend-build` |
+| `test` | `backend-test` + `frontend-test` |
+| `clean` | `backend-clean` + `frontend-clean` |
 | `all` | Full pipeline: `restore` > `build` > `test` |
 | `dev` | Start full stack (infra + API + frontend). Ctrl+C kills all. |
 | `dev-down` | Stop Docker containers |
@@ -223,4 +223,4 @@ Targets are scoped by stack. Bare names are aggregates that run both.
 | 3 | `gh pr create --body` bypasses PR template | Added standing rule to always embed merge checklist manually |
 | 4 | CRLF line endings broke pre-push hook shebang on Windows | Added `.gitattributes` LF enforcement for `hooks/*` and `*.sh`; added `.editorconfig` |
 | 4 | PowerShell double-quoted here-strings corrupt backticks in PR bodies | Added standing rule to use single-quoted here-strings (`@'...'@`) for PR bodies |
-| 4 | Makefile targets (`restore`, `build`, `test`, `clean`) only covered backend | Scoped all targets by stack (`api-*`, `frontend-*`). Bare names are aggregates. Naming convention: `*-up` / `*-down` for services. |
+| 4 | Makefile targets (`restore`, `build`, `test`, `clean`) only covered backend | Scoped all targets by stack (`backend-*`, `frontend-*`). Bare names are aggregates. `backend-up` includes `infra-up`. Naming convention: `*-up` / `*-down` for services. |
