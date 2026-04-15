@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "Camp Fit Fur Dogs",
   "dockerComposeFile": [
     "../compose.yml",
@@ -6,7 +6,7 @@
   ],
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "git config core.hooksPath hooks && make all",
+  "postCreateCommand": "git config core.hooksPath hooks && make restore",
   "forwardPorts": [
     5432,
     6379,

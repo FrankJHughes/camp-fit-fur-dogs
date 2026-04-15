@@ -5,6 +5,7 @@
 # See: docs/adr/0003-developer-experience-toolchain.md  (Diamond Model)
 #      docs/adr/0004-docker-compose-for-infrastructure.md
 
+name: camp-fit-fur-dogs
 services:
   postgres:
     image: postgres:17-alpine
@@ -19,7 +20,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -36,7 +37,7 @@ services:
     volumes:
       - redisdata:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -57,7 +58,7 @@ services:
     volumes:
       - rabbitmqdata:/var/lib/rabbitmq
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      test: [ "CMD", "rabbitmq-diagnostics", "check_port_connectivity" ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -69,6 +70,7 @@ volumes:
   pgdata:
   redisdata:
   rabbitmqdata:
+
 
 networks:
   cffd:

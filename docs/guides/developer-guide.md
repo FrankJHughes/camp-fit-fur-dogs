@@ -1,4 +1,4 @@
-﻿# Developer Contributor Guide
+# Developer Contributor Guide
 
 Welcome to Camp Fit Fur Dogs. This guide covers everything you need to clone the repo, run the app locally, and ship code through our pull request workflow.
 
@@ -10,6 +10,9 @@ Welcome to Camp Fit Fur Dogs. This guide covers everything you need to clone the
 | Docker Desktop | Latest | Container runtime for local services |
 | PowerShell | 7+ | Developer experience scripts |
 | Git | 2.x | Source control |
+| Node.js | 22 LTS+ | Frontend runtime |
+| Node.js | 22 LTS+ | Frontend runtime |
+| Node.js | 22 LTS+ | Frontend runtime |
 | GitHub CLI (`gh`) | 2.x | Issue and PR management |
 
 ## First-Time Setup
@@ -70,20 +73,16 @@ git config core.hooksPath hooks
 git clone https://github.com/frankjhughes/camp-fit-fur-dogs.git
 cd camp-fit-fur-dogs
 
-# Restore dependencies
-dotnet restore
+# Restore all dependencies (backend + frontend)
+make restore
 
-# Start local infrastructure (PostgreSQL)
-docker compose up -d
-
-# Run the API
-dotnet run --project src/CampFitFurDogs.Api
+# Start everything (infrastructure, API, frontend)
+make dev
 ```
 
-> **Note:** A unified developer experience script is planned but not yet
-> implemented. See US-025 (DX Architecture Decision) for status. Until
-> then, use the standard `dotnet` and `docker compose` commands shown in
-> this guide.
+> **Tip:** `make dev` starts Docker containers, backgrounds the API, and
+> runs the frontend dev server. Press **Ctrl+C** to stop everything.
+> Run `make help` to see all available targets.
 
 ## Project Structure
 
@@ -197,23 +196,30 @@ After this, `git push origin main` will be rejected locally with a clear message
 ## Building and Running
 
 ```powershell
-# Full build
-dotnet build
+# Full build (backend + frontend)
+make build
 
-# Run the API (with hot reload)
-dotnet watch --project src/CampFitFurDogs.Api
+# Start full stack (infra + API + frontend)
+make dev
 
-# Run all tests
-dotnet test
+# Run just the API
+make api-up
 
-# Start local infrastructure
-docker compose up -d
+# Run just the frontend
+make frontend-up
 
-# Tear down local containers
-docker compose down
+# Run all tests (backend + frontend)
+make test
+
+# Start / stop infrastructure only
+make infra-up
+make infra-down
 
 # Reset local database (destroy volume and recreate)
-docker compose down -v && docker compose up -d
+docker compose down -v && make infra-up
+
+# Clean everything
+make clean
 ```
 
 ## Test-Driven Development (TDD)
@@ -259,7 +265,14 @@ Name test methods to describe the scenario: `CreateAccount_WithDuplicateEmail_Re
 Run tests before pushing:
 
 ```powershell
-dotnet test --verbosity normal
+# All tests (backend + frontend)
+make test
+
+# Backend only
+make api-test
+
+# Frontend only
+make frontend-test
 ```
 
 ## Pull Request Process
@@ -277,7 +290,7 @@ dotnet test --verbosity normal
 Before requesting review, confirm:
 
 - [ ] Code compiles with zero warnings.
-- [ ] All tests pass locally (`dotnet test`).
+- [ ] All tests pass locally (`make test`).
 - [ ] New code has tests covering the happy path and key edge cases.
 - [ ] No unrelated changes bundled into the PR.
 - [ ] Commit history is clean (squash fixups before review).
