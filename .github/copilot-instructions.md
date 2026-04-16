@@ -132,6 +132,15 @@ Writes and reads are separated at the application layer:
 
 Consolidated into `Endpoints.cs` using the `MapGroup` pattern.
 
+### Identity Resolution
+
+Endpoints never accept user identity (e.g., `OwnerId`) from the request body. Identity is resolved server-side via `ICurrentUserService`.
+
+- **Abstraction:** `ICurrentUserService` lives in the Application layer (`Application/Abstractions/`).
+- **Production:** `DummyCurrentUserService` (Infrastructure) returns a hardcoded placeholder. Replace with a real implementation when authentication lands — the replacement will need `Scoped` lifetime (reads from `HttpContext`).
+- **Tests:** `TestCurrentUserService` (Api.Tests) exposes a settable `CurrentUserId`. The test factory overrides the DI registration so tests control which user the endpoint sees.
+- **Pattern:** Endpoint binds a DTO (e.g., `RegisterDogRequest`), injects `ICurrentUserService`, and constructs the command by combining both.
+
 ---
 
 ## Frontend
