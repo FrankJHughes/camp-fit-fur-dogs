@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
-
+using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Infrastructure.Data;
 
 namespace CampFitFurDogs.Api.Tests;
@@ -12,6 +12,8 @@ public class CampFitFurDogsApiFactory : WebApplicationFactory<Program>, IAsyncLi
 {
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:17-alpine")
         .Build();
+
+    public TestCurrentUserService TestUserService { get; } = new();
 
     public async Task InitializeAsync()
     {
@@ -31,12 +33,17 @@ public class CampFitFurDogsApiFactory : WebApplicationFactory<Program>, IAsyncLi
             // Remove the app's Npgsql registration
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-            if (descriptor != null)
-                services.Remove(descriptor);
+            if (descriptor != null) services.Remove(descriptor);
 
             // Point at the Testcontainers PostgreSQL instance
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(_postgres.GetConnectionString()));
+
+            // Override ICurrentUserService with test double
+            var userServiceDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(ICurrentUserService));
+            if (userServiceDescriptor != null) services.Remove(userServiceDescriptor);
+            services.AddSingleton<ICurrentUserService>(TestUserService);
 
             // Create schema from EF model
             var sp = services.BuildServiceProvider();

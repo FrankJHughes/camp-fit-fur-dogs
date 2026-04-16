@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -15,10 +15,15 @@ All notable changes to this project will be documented in this file.
 - `.gitattributes` — enforces LF line endings repo-wide; eliminates CRLF phantom diffs in Dev Container
 - First-Time Setup section in `docs/guides/developer-guide.md` (Docker Desktop auto-start, Git identity, hooks)
 - Frontend API client with typed error handling and unit test suite (see `frontend/CHANGELOG.md`)
+- `ICurrentUserService` abstraction for server-side identity resolution (#118)
+- `RegisterDogRequest` API DTO — request body no longer includes `OwnerId` (#118)
+- `DummyCurrentUserService` pre-auth placeholder in Infrastructure (#118)
+- `ApiTestHelpers` shared test utilities for owner/dog creation (#118)
 
 ### Changed
 
 - Frontend relocated from `src/frontend/` to `frontend/src/` for role-based monorepo layout
+- `POST /api/dogs` endpoint resolves owner identity from `ICurrentUserService` instead of request body (#118)
 
 - `.devcontainer/devcontainer.json` — adds `TESTCONTAINERS_RYUK_DISABLED` and `TESTCONTAINERS_HOST_OVERRIDE` for docker-outside-of-docker Testcontainers compatibility
 - Root `.gitignore` — moves `node_modules/` and `.next/` to `frontend/src/.gitignore`; adds scratch file exclusions

@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CampFitFurDogs.Api\CampFitFurDogs.Api.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
   </ItemGroup>
 
 </Project>

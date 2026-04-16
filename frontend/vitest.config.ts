@@ -6,6 +6,7 @@ export default defineConfig({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   plugins: [tsconfigPaths(), react()] as any,
   test: {
+    testTimeout: 15000,
     projects: [
       {
         extends: true,
@@ -13,7 +14,7 @@ export default defineConfig({
           name: 'unit',
           environment: 'node',
           globals: true,
-          include: ['./test/lib/**/*.test.ts'],
+          include: ['./test/lib/**/*.test.ts', './test/api/**/*.test.ts'],
         },
       },
       {
@@ -24,6 +25,16 @@ export default defineConfig({
           globals: true,
           setupFiles: ['./test/setup.ts'],
           include: ['./test/app/**/*.test.{ts,tsx}', './test/components/**/*.test.{ts,tsx}'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'integration',
+          environment: 'jsdom',
+          globals: true,
+          setupFiles: ['./test/setup.ts'],
+          include: ['./test/integration/**/*.test.{ts,tsx}'],
         },
       },
     ],

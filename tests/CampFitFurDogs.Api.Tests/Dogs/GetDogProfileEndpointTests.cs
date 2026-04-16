@@ -1,58 +1,21 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
 public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
 {
     private readonly HttpClient _client;
+    private readonly TestCurrentUserService _testUserService;
 
     public GetDogProfileEndpointTests(CampFitFurDogsApiFactory factory)
     {
         _client = factory.CreateClient();
+        _testUserService = factory.TestUserService;
     }
 
-    // ── Helpers ──
-
-    private async Task<Guid> CreateOwnerAsync()
-    {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = $"owner-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var body = await response.Content.ReadFromJsonAsync<OwnerResponse>();
-        return body!.CustomerId;
-    }
-
-    private async Task<Guid> RegisterDogAsync(Guid ownerId)
-    {
-        var request = new
-        {
-            OwnerId = ownerId,
-            Name = "Biscuit",
-            Breed = "Golden Retriever",
-            DateOfBirth = "2022-06-15",
-            Sex = "Female"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
-        return body!.DogId;
-    }
-
-    private sealed record OwnerResponse(Guid CustomerId);
-    private sealed record RegisterDogResponse(Guid DogId);
     private sealed record DogProfileResponse(
         Guid Id, Guid OwnerId, string Name, string Breed,
         DateOnly DateOfBirth, string Sex);
@@ -62,8 +25,8 @@ public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory
     [Fact]
     public async Task GetDogProfile_ExistingDogOwnedByCustomer_Returns200WithProfile()
     {
-        var ownerId = await CreateOwnerAsync();
-        var dogId = await RegisterDogAsync(ownerId);
+        var ownerId = await CreateOwnerAsync(_client);
+        var dogId = await RegisterDogAsync(_client, _testUserService, ownerId);
 
         var response = await _client.GetAsync($"/api/dogs/{dogId}?customerId={ownerId}");
 
@@ -94,9 +57,9 @@ public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory
     [Fact]
     public async Task GetDogProfile_DogNotOwnedByCustomer_Returns404()
     {
-        var ownerA = await CreateOwnerAsync();
-        var dogId = await RegisterDogAsync(ownerA);
-        var ownerB = await CreateOwnerAsync();
+        var ownerA = await CreateOwnerAsync(_client);
+        var dogId = await RegisterDogAsync(_client, _testUserService, ownerA);
+        var ownerB = await CreateOwnerAsync(_client);
 
         var response = await _client.GetAsync(
             $"/api/dogs/{dogId}?customerId={ownerB}");
