@@ -22,5 +22,5 @@ New ADRs should follow [TEMPLATE.md](TEMPLATE.md).
 | [0008](0008-consistent-editor-experience.md) | Consistent Editor Experience | Accepted |
 | [0009](0009-story-naming-convention.md) | Story Naming Convention | Accepted |
 | [0010](0010-retire-planning-yaml-infrastructure.md) | Retire Planning YAML Infrastructure | Accepted |
-
+| [0011](0011-cqrs-command-query-pipelines.md) | CQRS Command/Query Pipelines | Accepted |
 | [0012](0012-frontend-technology-react-nextjs.md) | Frontend Technology — React with Next.js | Accepted |
