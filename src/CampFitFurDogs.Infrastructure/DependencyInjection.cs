@@ -8,6 +8,7 @@ using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Infrastructure.Dogs;
+using CampFitFurDogs.Application.Abstractions;
 
 namespace CampFitFurDogs.Infrastructure;
 
@@ -22,6 +23,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IDogRepository, DogRepository>();
+        services.AddSingleton<ICurrentUserService, DummyCurrentUserService>();
 
         return services;
     }

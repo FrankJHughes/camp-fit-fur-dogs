@@ -7,10 +7,12 @@ namespace CampFitFurDogs.Api.Tests.Dogs;
 public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
 {
     private readonly HttpClient _client;
+    private readonly TestCurrentUserService _testUserService;
 
     public GetDogProfileEndpointTests(CampFitFurDogsApiFactory factory)
     {
         _client = factory.CreateClient();
+        _testUserService = factory.TestUserService;
     }
 
     // ── Helpers ──
@@ -35,9 +37,10 @@ public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory
 
     private async Task<Guid> RegisterDogAsync(Guid ownerId)
     {
+        _testUserService.CurrentUserId = ownerId;
+
         var request = new
         {
-            OwnerId = ownerId,
             Name = "Biscuit",
             Breed = "Golden Retriever",
             DateOfBirth = "2022-06-15",

@@ -7,15 +7,17 @@ namespace CampFitFurDogs.Api.Tests.Dogs;
 public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
 {
     private readonly HttpClient _client;
+    private readonly TestCurrentUserService _testUserService;
 
     public RegisterDogEndpointTests(CampFitFurDogsApiFactory factory)
     {
         _client = factory.CreateClient();
+        _testUserService = factory.TestUserService;
     }
 
-    // ── Helper: create a customer so we have a valid OwnerId ──
+    // ── Helper: create a customer and set as current user ──
 
-    private async Task<Guid> CreateOwnerAsync()
+    private async Task<Guid> CreateAndSetOwnerAsync()
     {
         var request = new
         {
@@ -30,7 +32,9 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var body = await response.Content.ReadFromJsonAsync<OwnerResponse>();
-        return body!.CustomerId;
+        var ownerId = body!.CustomerId;
+        _testUserService.CurrentUserId = ownerId;
+        return ownerId;
     }
 
     private sealed record OwnerResponse(Guid CustomerId);
@@ -41,11 +45,10 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
     [Fact]
     public async Task RegisterDog_ShouldReturn201AndDogId()
     {
-        var ownerId = await CreateOwnerAsync();
+        await CreateAndSetOwnerAsync();
 
         var request = new
         {
-            OwnerId = ownerId,
             Name = "Biscuit",
             Breed = "Golden Retriever",
             DateOfBirth = "2022-06-15",
@@ -55,7 +58,6 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
         var response = await _client.PostAsJsonAsync("/api/dogs", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-
         var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
         body.Should().NotBeNull();
         body!.DogId.Should().NotBe(Guid.Empty);
@@ -64,11 +66,10 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
     [Fact]
     public async Task RegisterDog_ShouldHaveLocationHeader()
     {
-        var ownerId = await CreateOwnerAsync();
+        await CreateAndSetOwnerAsync();
 
         var request = new
         {
-            OwnerId = ownerId,
             Name = "Maple",
             Breed = "Poodle",
             DateOfBirth = "2023-03-10",
@@ -87,11 +88,10 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
     [Fact]
     public async Task RegisterDog_WithEmptyName_Returns400()
     {
-        var ownerId = await CreateOwnerAsync();
+        await CreateAndSetOwnerAsync();
 
         var request = new
         {
-            OwnerId = ownerId,
             Name = "",
             Breed = "Labrador",
             DateOfBirth = "2021-01-01",
@@ -99,18 +99,16 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
         };
 
         var response = await _client.PostAsJsonAsync("/api/dogs", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task RegisterDog_WithEmptyBreed_Returns400()
     {
-        var ownerId = await CreateOwnerAsync();
+        await CreateAndSetOwnerAsync();
 
         var request = new
         {
-            OwnerId = ownerId,
             Name = "Biscuit",
             Breed = "",
             DateOfBirth = "2021-01-01",
@@ -118,18 +116,16 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
         };
 
         var response = await _client.PostAsJsonAsync("/api/dogs", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task RegisterDog_WithInvalidSex_Returns400()
     {
-        var ownerId = await CreateOwnerAsync();
+        await CreateAndSetOwnerAsync();
 
         var request = new
         {
-            OwnerId = ownerId,
             Name = "Biscuit",
             Breed = "Poodle",
             DateOfBirth = "2023-01-01",
@@ -137,7 +133,6 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
         };
 
         var response = await _client.PostAsJsonAsync("/api/dogs", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
@@ -146,11 +141,10 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
     [Fact]
     public async Task RegisterDog_SuccessResponse_DoesNotExposeInternals()
     {
-        var ownerId = await CreateOwnerAsync();
+        await CreateAndSetOwnerAsync();
 
         var request = new
         {
-            OwnerId = ownerId,
             Name = "Biscuit",
             Breed = "Beagle",
             DateOfBirth = "2022-08-20",
@@ -168,11 +162,10 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
     [Fact]
     public async Task RegisterDog_ErrorResponse_DoesNotExposeInternals()
     {
-        var ownerId = await CreateOwnerAsync();
+        await CreateAndSetOwnerAsync();
 
         var request = new
         {
-            OwnerId = ownerId,
             Name = "",
             Breed = "Beagle",
             DateOfBirth = "2022-08-20",
@@ -186,5 +179,28 @@ public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
         body.Should().NotContainEquivalentOf("innerException");
         body.Should().NotContainEquivalentOf("ArgumentException");
         body.Should().NotContainEquivalentOf("NullReferenceException");
+    }
+
+    // ── ICurrentUserService: no OwnerId in request body ──
+
+    [Fact]
+    public async Task RegisterDog_WithoutOwnerId_ShouldReturn201_WhenIdentityFromServer()
+    {
+        await CreateAndSetOwnerAsync();
+
+        var request = new
+        {
+            Name = "ServerIdentityDog",
+            Breed = "Golden Retriever",
+            DateOfBirth = "2022-06-15",
+            Sex = "Female"
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/dogs", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
+        body.Should().NotBeNull();
+        body!.DogId.Should().NotBe(Guid.Empty);
     }
 }
