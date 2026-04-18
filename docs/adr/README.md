@@ -24,3 +24,6 @@ New ADRs should follow [TEMPLATE.md](TEMPLATE.md).
 | [0010](0010-retire-planning-yaml-infrastructure.md) | Retire Planning YAML Infrastructure | Accepted |
 | [0011](0011-cqrs-command-query-pipelines.md) | CQRS Command/Query Pipelines | Accepted |
 | [0012](0012-frontend-technology-react-nextjs.md) | Frontend Technology — React with Next.js | Accepted |
+| [0013](0013-server-side-identity-resolution.md) | Identity Resolution for ICurrentUserService | Accepted |
+| [0014](0014-dispatcher-pipeline.md) | Application Dispatcher Pipeline | Accepted |
+| [0015](0015-convention-based-auto-registration.md) | Convention-Based Auto-Registration | Accepted |

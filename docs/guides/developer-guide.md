@@ -1,353 +1,367 @@
-# Developer Contributor Guide
+# Developer Guide
 
-Welcome to Camp Fit Fur Dogs. This guide covers everything you need to clone the repo, run the app locally, and ship code through our pull request workflow.
+Welcome to Camp Fit Fur Dogs. This guide provides the high‑level orientation you need to work effectively in the codebase. It explains how to set up your environment, how the repository is organized, and where to find the detailed architectural rules that govern the system.
 
-## Prerequisites
+For all architecture, purity, and slice‑level rules, see the companion documents in:
+
+```
+docs/guides/developer/
+```
+
+---
+
+## 1. Prerequisites
+
+Install the following tools:
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | .NET SDK | 9.0+ | Build and run the API |
-| Docker Desktop | Latest | Container runtime for local services |
-| PowerShell | 7+ | Developer experience scripts |
+| Docker Desktop | Latest | Local container runtime |
+| PowerShell | 7+ | Developer scripts |
 | Git | 2.x | Source control |
-| Node.js | 22 LTS+ | Frontend runtime |
-| Node.js | 22 LTS+ | Frontend runtime |
 | Node.js | 22 LTS+ | Frontend runtime |
 | GitHub CLI (`gh`) | 2.x | Issue and PR management |
 
-## First-Time Setup
+---
 
-Complete these steps once after installing the prerequisites. They configure
-your local environment so the Dev Container, tests, and hooks work on every
-boot.
+## 2. First‑Time Setup
 
-### Docker Desktop (Windows)
+### 2.1 Docker Desktop (Windows)
 
-Docker Desktop does not start automatically by default. The Dev Container and
-Testcontainers both require the Docker daemon to be running.
+Docker must be running for Dev Containers and Testcontainers.
 
-1. Open Docker Desktop.
-2. Go to **Settings > General**.
-3. Enable **Start Docker Desktop when you sign in to your computer**.
-4. Confirm the engine is running:
+1. Open Docker Desktop  
+2. Settings → General  
+3. Enable **Start Docker Desktop when you sign in**  
+4. Verify:
 
 ```powershell
 docker version
 ```
 
-Both **Client** and **Server** sections should appear. If you see
-`failed to connect to the docker API`, the engine has not finished starting â€”
-wait a few seconds and retry.
+If the daemon isn’t ready, wait a few seconds and retry.
 
-> **Note:** If Docker Desktop was just installed and `docker version` still
-> fails after a restart, verify that WSL 2 is enabled (`wsl --status`) and
-> up to date (`wsl --update`).
+### 2.2 Git Identity
 
-### Git identity
-
-VS Code forwards your host-level Git identity into the Dev Container. Set it
-once so commits are attributed correctly:
+VS Code forwards your host Git identity into the Dev Container:
 
 ```powershell
 git config --global user.name "Your Name"
-git config --global user.email "your-email@example.com"
+git config --global user.email "you@example.com"
 ```
 
-### Git hooks
+---
 
-The repo ships a `pre-push` hook in `hooks/`. Point Git at it so the hook
-runs automatically:
+## 3. Repository Structure
+
+The solution uses a clean, layered architecture with vertical slices:
+
+```
+src/
+  CampFitFurDogs.Api/
+  CampFitFurDogs.Application/
+  CampFitFurDogs.Domain/
+  CampFitFurDogs.Infrastructure/
+  CampFitFurDogs.SharedKernel/
+
+tests/
+  CampFitFurDogs.Api.Tests/
+  CampFitFurDogs.Application.Tests/
+  CampFitFurDogs.Domain.Tests/
+  CampFitFurDogs.Infrastructure.Tests/
+```
+
+For a full explanation of slice anatomy and layer responsibilities, see:
+
+- **Folder Structure** — `developer/folder-structure.md`
+
+---
+
+## 4. Working in the Codebase
+
+### 4.1 Vertical Slice Workflow
+
+Each feature spans:
+
+- Abstractions (commands, queries, results)
+- Application (handlers, validators)
+- Domain (entities, value objects, domain events)
+- Infrastructure (repositories)
+- API (endpoints)
+
+See:
+
+- **Abstractions Contract** — `developer/abstractions-contract.md`
+- **Dispatcher Pipeline** — `developer/dispatcher-pipeline.md`
+- **API Endpoint Purity** — `developer/api-endpoint-purity.md`
+
+### 4.2 Domain Modeling
+
+Domain logic lives in the Domain layer:
+
+- Entities  
+- Value objects  
+- Domain events  
+- Invariants  
+
+See:
+
+- **Domain Events** — `developer/domain-events.md`
+- **Shared Kernel** — `developer/shared-kernel.md`
+
+### 4.3 Testing
+
+Tests enforce both correctness and architectural purity.
+
+See:
+
+- **Test Architecture** — `developer/test-architecture.md`
+- **Purity Rules** — `developer/purity-rules.md`
+
+---
+
+## 5. Development Workflow
+
+### 5.1 Branching
+
+Follow the project’s branching conventions:
+
+- Create a feature branch per story  
+- Never commit directly to `main`  
+- Use GitHub Issues only when a story enters a sprint  
+
+### 5.2 Running the App
+
+Inside the Dev Container:
 
 ```powershell
-git config core.hooksPath hooks
+make run
 ```
 
-> **Note:** The Dev Container's `postCreateCommand` runs this automatically
-> inside the container. You only need to run it manually on your host if you
-> push from outside the Dev Container.
-
-## Getting Started
+### 5.3 Running Tests
 
 ```powershell
-# Clone the repo
-git clone https://github.com/frankjhughes/camp-fit-fur-dogs.git
-cd camp-fit-fur-dogs
-
-# Restore all dependencies (backend + frontend)
-make restore
-
-# Start everything (infrastructure, API, frontend)
-make dev
-```
-
-> **Tip:** `make dev` starts Docker containers, backgrounds the API, and
-> runs the frontend dev server. Press **Ctrl+C** to stop everything.
-> Run `make help` to see all available targets.
-
-## Project Structure
-
-```
-camp-fit-fur-dogs/
-├── frontend/
-│   └── src/                            # Next.js app
-├── src/
-│   ├── CampFitFurDogs.Api/             # ASP.NET Core host, controllers, middleware
-│   ├── CampFitFurDogs.Application/     # Use cases, command/query handlers
-│   ├── CampFitFurDogs.Domain/          # Aggregates, entities, value objects, domain events
-│   └── CampFitFurDogs.Infrastructure/  # EF Core, repos, external service adapters
-├── tests/
-│   ├── CampFitFurDogs.Domain.Tests/
-│   └── CampFitFurDogs.Api.Tests/
-├── product/
-│   ├── stories/                        # Backlog (the source of truth)
-│   ├── definition-of-ready/
-│   └── emotional-guarantees/
-├── docs/
-│   ├── adr/                            # Architecture Decision Records
-│   ├── sprint-reviews/                 # Sprint review documents
-│   ├── governance/                     # Process governance
-│   └── guides/                         # ← You are here
-├── CONTRIBUTING.md                     # Role-routing hub
-├── CODEOWNERS                          # PR review assignments
-└── CHANGELOG.md                        # Release history
-```
-
-## Architecture
-
-The codebase follows Domain-Driven Design with four layers. Dependencies point inward — Domain has zero external references.
-
-```
-Api → Application → Domain
- └→ Infrastructure → Domain
-```
-
-- **Domain** — aggregates, value objects, domain events, repository interfaces. No framework dependencies.
-- **Application** — command and query handlers that orchestrate domain logic. References Domain only.
-- **Infrastructure** — EF Core DbContext, repository implementations, external adapters. References Domain for interface contracts.
-- **Api** — ASP.NET Core host, controllers, middleware, DI composition root. References all layers.
-
-### Key conventions
-
-- One aggregate per file, named after the aggregate root.
-- Value objects are `record` types in the aggregate's namespace.
-- Repository interfaces live in Domain; implementations in Infrastructure.
-- No reflection, no magic strings — explicit, compile-time-safe bindings.
-
-## Development Workflow
-
-### Branch naming
-
-```
-<type>/<short-description>
-```
-
-| Type | When |
-|------|------|
-| `feature/` | New user-facing capability |
-| `fix/` | Bug fix |
-| `docs/` | Documentation only |
-| `infra/` | CI/CD, tooling, config |
-| `refactor/` | Internal restructuring |
-
-Examples: `feature/us-027-create-customer-account`, `docs/sprint-3-stories`, `infra/ci-pipeline`.
-
-### Commit messages
-
-Use conventional-style commits:
-
-```
-<type>: <short summary>
-
-<optional body explaining why, not what>
-```
-
-Types match branch types: `feature`, `fix`, `docs`, `infra`, `refactor`.
-
-### Development loop
-
-1. Pull latest `main`.
-2. Create a feature branch from `main`.
-3. Make small, focused commits.
-4. Push and open a PR against `main`.
-5. Address CODEOWNERS review feedback.
-6. Squash-merge after approval.
-
-### Source control safety
-
-Direct pushes to `main` are blocked at two levels:
-
-| Layer | What it stops | Setup |
-|-------|---------------|-------|
-| **GitHub branch rule** | Any push to `main` without a PR — including admins | Settings → Branches → `main` → "Require a pull request before merging" + "Do not allow bypassing" |
-| **Local pre-push hook** | Push attempt before it leaves your machine (instant feedback) | One-time setup below |
-
-#### Installing the pre-push hook
-
-The repo ships a ready-made hook in `hooks/`. Install it once after cloning:
-
-```powershell
-Copy-Item hooks/pre-push .git/hooks/pre-push
-```
-
-After this, `git push origin main` will be rejected locally with a clear message before the push ever hits the network.
-
-> **Note:** `.git/hooks/` is not tracked by Git, so every contributor must run the install step once. The source of truth is `hooks/pre-push` in the repo root.
-
-## Building and Running
-
-```powershell
-# Full build (backend + frontend)
-make build
-
-# Start full stack (infra + API + frontend)
-make dev
-
-# Run just the API
-make api-up
-
-# Run just the frontend
-make frontend-up
-
-# Run all tests (backend + frontend)
 make test
-
-# Start / stop infrastructure only
-make infra-up
-make infra-down
-
-# Reset local database (destroy volume and recreate)
-docker compose down -v && make infra-up
-
-# Clean everything
-make clean
 ```
 
-## Test-Driven Development (TDD)
+### 5.4 Creating a Pull Request
 
-All feature work follows Red-Green-Refactor. Every vertical slice begins with a failing test.
-
-### The cycle
-
-1. **Red** — Write a test that describes the behavior you want. Run it. Watch it fail. The failure message confirms you are testing the right thing.
-2. **Green** — Write the minimum production code to make the test pass. No more.
-3. **Refactor** — Clean up duplication, naming, and structure while all tests stay green.
-
-### Slice order
-
-Build each feature from the inside out, one layer at a time:
-
-| Order | Layer | What to test | Example |
-|-------|-------|--------------|---------|
-| 1 | Domain | Value object invariants, aggregate factory rules | `DogName rejects empty string` |
-| 2 | Domain | Aggregate behavior and state transitions | `Dog.Create sets all properties` |
-| 3 | Application | Command handler orchestration (mock the repo) | `RegisterDogHandler persists dog` |
-| 4 | Infrastructure | Repository round-trip against a real test DB | `DogRepository can save and retrieve` |
-| 5 | API | Full HTTP request/response via WebApplicationFactory | `POST /customers/{id}/dogs returns 201` |
-
-### Conventions
-
-- Name tests to describe the scenario: `RegisterDog_WithMissingName_ReturnsBadRequest`.
-- Domain tests are pure — no mocks, no infrastructure, no DI container.
-- API tests use `WebApplicationFactory` with a real PostgreSQL test container.
-- One test class per aggregate or endpoint. Group related scenarios with nested classes.
-
-### When to skip TDD
-
-TDD is required for all domain logic, command handlers, and API endpoints. Configuration-only changes (DI registration, EF mappings, middleware wiring) do not need dedicated tests but must be exercised by the integration tests above.
-
-## Testing
-
-- **Domain tests** — pure unit tests, no mocks, no infrastructure. Test aggregate behavior and value object invariants.
-- **API tests** — integration tests using `WebApplicationFactory`. Test HTTP endpoints against a real test database.
-
-Name test methods to describe the scenario: `CreateAccount_WithDuplicateEmail_ReturnsConflict`.
-
-Run tests before pushing:
+Use GitHub CLI:
 
 ```powershell
-# All tests (backend + frontend)
-make test
-
-# Backend only
-make api-test
-
-# Frontend only
-make frontend-test
+gh pr create --fill
 ```
 
-## Pull Request Process
+Include:
 
-### Opening a PR
+- `Closes #<issue-number>`
+- The 6‑item merge checklist from `.github/PULL_REQUEST_TEMPLATE.md`
 
-1. Push your branch to origin.
-2. Open a PR against `main` using `gh pr create`.
-3. Title format: `<type>: <summary>` (matches commit convention).
-4. Body should reference the story: `Closes #<issue-number>`.
-5. CODEOWNERS will be auto-assigned as reviewers.
+---
 
-### PR checklist
+## 6. Test‑Driven Development (TDD)
 
-Before requesting review, confirm:
+Camp Fit Fur Dogs is built using strict Test‑Driven Development.  
+Every change — from a small refactor to a new vertical slice — follows the same discipline:
 
-- [ ] Code compiles with zero warnings.
-- [ ] All tests pass locally (`make test`).
-- [ ] New code has tests covering the happy path and key edge cases.
-- [ ] No unrelated changes bundled into the PR.
-- [ ] Commit history is clean (squash fixups before review).
+1. **Red** — write a failing test  
+2. **Green** — write the minimum code to make it pass  
+3. **Refactor** — improve the design while keeping tests green  
 
-### Merge rules
+This applies across all layers:
 
-- PRs require at least one CODEOWNERS approval.
-- All CI checks must pass.
-- Squash-merge is the default strategy.
-- Delete the branch after merge.
+- Domain (entities, value objects, invariants)
+- Application (handlers, validators, dispatchers)
+- API (endpoint tests)
+- Infrastructure (repositories, persistence)
+- Guardrails (architecture enforcement)
 
-## Architecture Decision Records (ADRs)
+TDD is not optional.  
+It is the foundation of the system’s correctness, design, and maintainability.
 
-Significant technical decisions are recorded as ADRs in `docs/adr/`.
+---
 
-### When to write an ADR
+## 7. The Developer Loop
 
-- Choosing a framework, library, or tool.
-- Changing project structure or conventions.
-- Making a trade-off that future contributors will question.
+The developer loop is the daily workflow for contributing to the system.  
+It ensures fast feedback, clean commits, and consistent architecture.
 
-### ADR format
+### 7.1 The Loop
 
-```markdown
-# ADR-NNNN: Title
+1. **Pick a story**  
+   - Move it into the sprint board  
+   - Create a feature branch  
+   - Never commit to `main`
 
-## Status
-Accepted | Superseded | Deprecated
+2. **Write the first failing test**  
+   - Start at the highest layer affected  
+   - Let the test drive the design
 
-## Context
-What situation prompted this decision?
+3. **Make the test pass**  
+   - Write the smallest amount of code  
+   - Follow purity rules  
+   - Use the dispatcher pipeline
 
-## Decision
-What did we decide?
+4. **Refactor**  
+   - Improve naming, structure, and slice boundaries  
+   - Ensure no purity violations  
+   - Keep commits small and meaningful
 
-## Consequences
-What trade-offs result from this decision?
+5. **Run the full test suite**  
+   - Guardrails must pass  
+   - No broken slices  
+   - No architectural regressions
+
+6. **Update documentation**  
+   - ADRs for decisions  
+   - Developer guides for conventions  
+   - README indexes for discoverability
+
+7. **Commit and push**  
+   - Use conventional commit messages  
+   - Keep commits atomic  
+   - Open a PR with the merge checklist
+
+8. **Review and merge**  
+   - Ensure all checks pass  
+   - Ensure documentation is updated  
+   - Clean up the feature branch
+
+### 7.2 Why This Loop Matters
+
+- Keeps architecture consistent  
+- Prevents regressions  
+- Ensures every change is intentional  
+- Makes the system self‑documenting  
+- Supports long‑term maintainability  
+
+The developer loop is the heartbeat of the project.
+
+## 8. Git Hooks & Source Control Safety
+
+Camp Fit Fur Dogs enforces a strict source‑control discipline to protect `main`, prevent accidental commits, and ensure every change is intentional and reviewable.
+
+The repository includes Git hooks that run automatically inside the Dev Container. These hooks enforce safety rules before code ever reaches CI.
+
+---
+
+### 8.1 Pre‑Commit Safety
+
+The pre‑commit hook performs:
+
+- **Whitespace cleanup**
+- **File formatting checks**
+- **Forbidden file checks** (e.g., no stray `.cs` files in Abstractions)
+- **Guardrail test stubs** (ensuring new slices follow conventions)
+- **Prevention of large accidental commits**
+
+If a hook fails, fix the issue before committing.
+
+---
+
+### 8.2 Pre‑Push Safety
+
+The pre‑push hook ensures:
+
+- All tests pass locally  
+- No purity violations  
+- No broken slices  
+- No missing companion documentation  
+- No untracked files that should be committed  
+
+This prevents “push‑and‑pray” workflows.
+
+---
+
+### 8.3 Branch Protection
+
+The project follows strict branch protection rules:
+
+- **Never commit directly to `main`**
+- **Every change must come through a PR**
+- **Every PR must pass CI**
+- **Every PR must include the merge checklist**
+- **Every PR must update documentation when architecture changes**
+
+These rules are enforced by GitHub and by local hooks.
+
+---
+
+### 8.4 Feature Branch Workflow
+
+1. Create a branch for each story:
+
+```
+git checkout -b feature/us-###-short-description
 ```
 
-### Existing ADRs
+2. Commit frequently, in small, meaningful units.
+3. Push regularly to keep your branch backed up.
+4. Open a PR early and iterate.
 
-Browse the full list at [`docs/adr/`](../../docs/adr/).
+---
 
-## Code of Conduct
+### 8.5 Preventing Accidental Commits
 
-Be kind. Be constructive. Assume good intent. Every contributor — regardless of experience level — deserves respect and clear feedback.
+The repo includes safeguards to prevent:
 
+- Committing generated files  
+- Committing secrets  
+- Committing large binaries  
+- Committing directly to protected branches  
+- Committing without tests  
 
-## Conventions
+If a hook blocks your commit, it’s doing its job.
 
-Project-wide conventions, standing rules, and lessons learned are maintained in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md). This file is read automatically by GitHub Copilot and should be reviewed at the start of every AI-assisted session.
+---
 
-When your PR introduces or changes a convention, update `copilot-instructions.md` in the same PR — not as a follow-up.
-## Getting Help
+### 8.6 Resetting Hooks (Dev Container)
 
-- Open a GitHub Discussion for questions.
-- Tag `@FrankJHughes` for architecture or process questions.
-- Check the [Product Owner Guide](product-owner-guide.md) for story and backlog questions.
-- Check the [Scrum Master Guide](scrum-master-guide.md) for sprint and board questions.
+If hooks ever get out of sync:
+
+```powershell
+.devcontainer/reset-intellisense.ps1
+```
+
+This resets:
+
+- Git hooks  
+- Editor config  
+- Intellisense caches  
+
+---
+
+### 8.7 Philosophy
+
+Git hooks are not an annoyance — they are a **safety net**.
+
+They ensure:
+
+- You never break `main`
+- You never push untested code
+- You never bypass architectural rules
+- You never forget documentation updates
+- You never commit something you didn’t mean to
+
+They are part of the developer loop and part of the culture of the project.
+
+## 9. Where to Go Next
+
+The developer guide is intentionally high‑level.  
+All architecture, purity, and contributor rules live in the companion documents:
+
+```
+docs/guides/developer/
+```
+
+Start with:
+
+- **Folder Structure**  
+- **Dispatcher Pipeline**  
+- **API Endpoint Purity**  
+- **Purity Rules**  
+
+These documents define how to write code that fits the system.
+
 
