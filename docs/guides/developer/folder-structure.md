@@ -19,6 +19,7 @@ src/
 tests/
   CampFitFurDogs.Api.Tests/
   CampFitFurDogs.Application.Tests/
+    CampFitFurDogs.Architecture.Tests/
   CampFitFurDogs.Domain.Tests/
   CampFitFurDogs.Infrastructure.Tests/
 ```
@@ -202,7 +203,7 @@ When adding a new feature:
 4. Add repositories to **Infrastructure**.
 5. Inject `IUnitOfWork` in command handlers and call `CommitAsync` after repository operations.
 6. Add endpoints to **Api**.
-7. Add tests to the corresponding test project.
+7. Add tests to the corresponding test project. Pure-reflection guardrails go in Architecture.Tests; DI-dependent guardrails go in Api.Tests/Guardrails/.
 8. Follow naming conventions strictly.
 9. Do not bypass the dispatcher pipeline.
 10. Do not place code in SharedKernel unless it is truly cross-cutting.

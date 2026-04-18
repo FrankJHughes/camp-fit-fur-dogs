@@ -20,6 +20,8 @@ All notable changes to this project will be documented in this file.
 - `DummyCurrentUserService` pre-auth placeholder in Infrastructure (#118)
 - `ApiTestHelpers` shared test utilities for owner/dog creation (#118)
 - `BCrypt.Net-Next` NuGet package dependency in Domain layer (#154)
+- `CampFitFurDogs.Architecture.Tests` project — 15 pure-reflection guardrails and `ReferenceScanner.cs` relocated from Api.Tests (US-104)
+- `Directory.Packages.props` — Central Package Management for all 17 NuGet dependencies with transitive pinning (US-104)
 
 ### Changed
 
@@ -30,6 +32,14 @@ All notable changes to this project will be documented in this file.
 - Root `.gitignore` — moves `node_modules/` and `.next/` to `frontend/src/.gitignore`; adds scratch file exclusions
 - `PasswordHash` value object uses BCrypt (`BCrypt.Net-Next`) instead of base64 encoding; added `Create()` and `Verify()` methods (#154)
 - `CreateCustomerHandler` delegates hashing to `PasswordHash.Create()` — removed inline `HashPassword()` helper (#154)
+- DI-dependent guardrails remain in `Api.Tests/Guardrails/`; pure-reflection guardrails moved to `Architecture.Tests` (US-104)
+- 3 `Infrastructure*RegistrationGuardrailTests` consolidated into 1 `[Theory]` parameterized by suffix (US-104)
+- `DispatchGuardrailTests` + `DomainEventGuardrailTests` merged into `DispatcherRegistrationGuardrailTests` (US-104)
+- Duplicate `Post_Dogs_ShouldNotReturn404` removed from `RouteMappingGuardrailTests` (US-104)
+- `DiRegistrationScanner.cs` flattened from `Guardrails/Architecture/` to `Guardrails/` (US-104)
+- `PostgresFixture` updated to use `PostgreSqlBuilder(image)` constructor — resolves CS0618 (US-104)
+- 3 version drifts normalized: FluentAssertions 8.3.0→8.9.0, Testcontainers.PostgreSql 4.6.0→4.11.0, xunit.runner.visualstudio 3.1.4→3.1.5 (US-104)
+- All `Version=` attributes stripped from 11 csproj files — versions now managed centrally (US-104)
 
 ## [Sprint 3] — 2026-04-11
 
