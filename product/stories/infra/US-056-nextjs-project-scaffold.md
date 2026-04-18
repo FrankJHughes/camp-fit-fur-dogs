@@ -19,13 +19,13 @@ With the frontend technology decision formalized in ADR-0012 (US-055), the proje
 
 ## Acceptance Criteria
 
-- [ ] Next.js project initialized with TypeScript in the repo.
-- [ ] Folder structure follows conventions documented in US-055 ADR.
-- [ ] Dev server proxies API calls to the .NET backend.
-- [ ] `npm run dev` starts the frontend and shows a "Camp Fit Fur Dogs" landing page.
-- [ ] Landing page calls the health endpoint and displays the result.
-- [ ] CI pipeline updated to build the frontend project.
-- [ ] Frontend project README documents folder structure, dev server setup, and proxy configuration.
+- [x] Next.js project initialized with TypeScript in the repo.
+- [x] Folder structure follows conventions documented in US-055 ADR.
+- [x] Dev server proxies API calls to the .NET backend.
+- [x] `npm run dev` starts the frontend and shows a "Camp Fit Fur Dogs" landing page.
+- [x] Landing page calls the health endpoint and displays the result.
+- [x] CI pipeline updated to build the frontend project.
+- [x] Frontend project README documents folder structure, dev server setup, and proxy configuration.
 
 ## Dependencies
 

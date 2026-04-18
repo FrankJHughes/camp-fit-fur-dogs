@@ -16,12 +16,12 @@ ensures the rationale is auditable, reversible, and discoverable by future
 contributors.
 
 ## Acceptance Criteria
-- [ ] An ADR exists in docs/adr/ documenting the developer experience toolchain
-- [ ] ADR records context, decision, alternatives considered, and consequences
-- [ ] ADR defines the dependency order between environment layers
-- [ ] ADR maps each toolchain layer to the product story it enables
-- [ ] ADR status is "accepted" before any DX implementation story begins
-- [ ] ADR index is updated with the new entry
+- [x] An ADR exists in docs/adr/ documenting the developer experience toolchain
+- [x] ADR records context, decision, alternatives considered, and consequences
+- [x] ADR defines the dependency order between environment layers
+- [x] ADR maps each toolchain layer to the product story it enables
+- [x] ADR status is "accepted" before any DX implementation story begins
+- [x] ADR index is updated with the new entry
 
 ## Out of Scope
 - Implementing the toolchain (that is the job of the 5 DX stories)

@@ -17,12 +17,12 @@ container restarts, and provides health checks that distinguish "starting" from 
 
 ## Acceptance Criteria
 
-- [ ] A declarative configuration file exists at the repository root defining all infrastructure services
-- [ ] Each service includes a health check so consumers can wait for readiness, not just container start
-- [ ] Persistent storage is configured via named volumes so data survives down / up cycles
-- [ ] Connection strings, ports, and credentials are documented via environment variables with sensible development defaults
-- [ ] The full stack starts and stops with a single command (docker compose up -d / docker compose down)
-- [ ] Definitions are reusable by Codespaces, DevContainers, and CI without modification
+- [x] A declarative configuration file exists at the repository root defining all infrastructure services
+- [x] Each service includes a health check so consumers can wait for readiness, not just container start
+- [x] Persistent storage is configured via named volumes so data survives down / up cycles
+- [x] Connection strings, ports, and credentials are documented via environment variables with sensible development defaults
+- [x] The full stack starts and stops with a single command (docker compose up -d / docker compose down)
+- [x] Definitions are reusable by Codespaces, DevContainers, and CI without modification
 
 ## Out of Scope
 

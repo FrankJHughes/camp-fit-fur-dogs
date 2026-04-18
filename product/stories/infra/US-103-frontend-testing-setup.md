@@ -18,12 +18,12 @@ The proving slice (US-084) requires TDD at the frontend layer. You cannot red-gr
 
 ## Acceptance Criteria
 
-- [ ] Vitest configured as the test runner.
-- [ ] React Testing Library installed and configured.
-- [ ] First component test written and passing.
-- [ ] `npm test` runs all frontend tests.
-- [ ] CI pipeline updated — frontend tests run alongside backend tests.
-- [ ] Testing guide documents how to write and run a component test.
+- [x] Vitest configured as the test runner.
+- [x] React Testing Library installed and configured.
+- [x] First component test written and passing.
+- [x] `npm test` runs all frontend tests.
+- [x] CI pipeline updated — frontend tests run alongside backend tests.
+- [x] Testing guide documents how to write and run a component test.
 
 ## Dependencies
 

@@ -12,18 +12,18 @@ I can go from clone to coding without reading a setup guide.
 
 ## Acceptance Criteria
 
-- [ ] A platform-native bootstrap script exists for each supported OS
+- [x] A platform-native bootstrap script exists for each supported OS
       (`bootstrap.sh` for Linux/macOS/WSL, `bootstrap.ps1` for Windows).
-- [ ] The script validates prerequisites and exits early with clear
+- [x] The script validates prerequisites and exits early with clear
       install instructions if anything is missing.
-- [ ] Infrastructure starts automatically using shared definitions
+- [x] Infrastructure starts automatically using shared definitions
       from `compose.yml`.
-- [ ] Restore, build, and test run without manual intervention.
-- [ ] A readiness report prints service endpoints, pipeline status,
+- [x] Restore, build, and test run without manual intervention.
+- [x] A readiness report prints service endpoints, pipeline status,
       and elapsed time.
-- [ ] The command is idempotent — running it again produces the same
+- [x] The command is idempotent — running it again produces the same
       result without side effects.
-- [ ] README documents the bootstrap command.
+- [x] README documents the bootstrap command.
 
 ## Dependencies
 

@@ -28,51 +28,51 @@ linked from the CONTRIBUTING.md role-routing hub (created by US-009).
 
 ### Sprint Planning
 
-- [ ] How to select stories from the backlog for sprint commitment.
-- [ ] How to create GitHub Issues from story files (2-step workflow
+- [x] How to select stories from the backlog for sprint commitment.
+- [x] How to create GitHub Issues from story files (2-step workflow
       documented with exact commands).
-- [ ] How to assign milestone and sprint label to each issue.
-- [ ] How to set a sprint goal that connects to milestone objectives.
-- [ ] Sprint capacity considerations documented.
+- [x] How to assign milestone and sprint label to each issue.
+- [x] How to set a sprint goal that connects to milestone objectives.
+- [x] Sprint capacity considerations documented.
 
 ### Board Management
 
-- [ ] GitHub Projects board setup and column structure explained.
-- [ ] How to move issues through the board during a sprint.
-- [ ] How to handle blocked issues and dependencies.
-- [ ] How to track sprint progress against the sprint goal.
+- [x] GitHub Projects board setup and column structure explained.
+- [x] How to move issues through the board during a sprint.
+- [x] How to handle blocked issues and dependencies.
+- [x] How to track sprint progress against the sprint goal.
 
 ### Sprint Review
 
-- [ ] Sprint review document format explained with reference to
+- [x] Sprint review document format explained with reference to
       template (`docs/sprint-reviews/template.md`).
-- [ ] How to compile shipped stories, key decisions, metrics,
+- [x] How to compile shipped stories, key decisions, metrics,
       and retro items.
-- [ ] How to update CHANGELOG.md after each merged PR.
-- [ ] How to update README milestone progress after sprint review.
+- [x] How to update CHANGELOG.md after each merged PR.
+- [x] How to update README milestone progress after sprint review.
 
 ### Sprint Retrospective
 
-- [ ] Retro format documented: what went well, what could improve,
+- [x] Retro format documented: what went well, what could improve,
       action items.
-- [ ] How action items feed into next sprint planning.
+- [x] How action items feed into next sprint planning.
 
 ### Milestone Management
 
-- [ ] Difference between milestones (capability goals) and sprints
+- [x] Difference between milestones (capability goals) and sprints
       (timeboxes) explained.
-- [ ] How to create, close, and update GitHub Milestones.
-- [ ] When to record demos or case studies (milestone completion
+- [x] How to create, close, and update GitHub Milestones.
+- [x] When to record demos or case studies (milestone completion
       triggers).
-- [ ] How to update milestone progress in stakeholder artifacts.
+- [x] How to update milestone progress in stakeholder artifacts.
 
 ### Merge Governance
 
-- [ ] Branch protection rules explained (who can merge, required
+- [x] Branch protection rules explained (who can merge, required
       reviews).
-- [ ] CODEOWNERS file explained.
-- [ ] PR checklist walkthrough.
-- [ ] How to handle stale branches and failed PRs.
+- [x] CODEOWNERS file explained.
+- [x] PR checklist walkthrough.
+- [x] How to handle stale branches and failed PRs.
 
 ## Dependencies
 

@@ -15,12 +15,12 @@ Compatibility with cloud-hosted services such as Codespaces is a side
 effect of shipping this configuration, not an explicit goal.
 
 ## Acceptance Criteria
-- [ ] A dev container configuration exists in the repository
-- [ ] The environment includes the correct SDK, required CLI tools, and editor extensions
-- [ ] Infrastructure dependencies start automatically using the shared declarative definitions
-- [ ] Restore, build, and test succeed without manual intervention after the environment is ready
-- [ ] README documents how to launch the containerized environment
-- [ ] Environment provisioning completes in under 5 minutes on a warm cache
+- [x] A dev container configuration exists in the repository
+- [x] The environment includes the correct SDK, required CLI tools, and editor extensions
+- [x] Infrastructure dependencies start automatically using the shared declarative definitions
+- [x] Restore, build, and test succeed without manual intervention after the environment is ready
+- [x] README documents how to launch the containerized environment
+- [x] Environment provisioning completes in under 5 minutes on a warm cache
 
 ## Out of Scope
 - Prescribing a specific container technology or cloud platform
