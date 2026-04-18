@@ -8,10 +8,12 @@ namespace CampFitFurDogs.Application.Dogs.RegisterDog;
 public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Guid>
 {
     private readonly IDogRepository _dogRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public RegisterDogHandler(IDogRepository dogRepository)
+    public RegisterDogHandler(IDogRepository dogRepository, IUnitOfWork unitOfWork)
     {
         _dogRepository = dogRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> Handle(RegisterDogCommand command, CancellationToken ct)
@@ -27,6 +29,7 @@ public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Gui
         var dog = Dog.Create(ownerId, name, breed, dob, sex);
 
         await _dogRepository.AddAsync(dog, ct);
+        await _unitOfWork.CommitAsync(ct);
 
         return dog.Id.Value;
     }

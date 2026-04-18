@@ -8,11 +8,12 @@ namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
 public class RegisterDogHandlerTests
 {
     private readonly FakeDogRepository _repo = new();
+    private readonly FakeUnitOfWork _unitOfWork = new();
     private readonly RegisterDogHandler _handler;
 
     public RegisterDogHandlerTests()
     {
-        _handler = new RegisterDogHandler(_repo);
+        _handler = new RegisterDogHandler(_repo, _unitOfWork);
     }
 
     [Fact]
@@ -52,4 +53,38 @@ public class RegisterDogHandlerTests
 
         Assert.Empty(_repo.Dogs);
     }
+
+    [Fact]
+    public async Task Handle_ValidCommand_CommitsUnitOfWork()
+    {
+        var command = new RegisterDogCommand(
+            OwnerId: Guid.NewGuid(),
+            Name: "Biscuit",
+            Breed: "Golden Retriever",
+            DateOfBirth: new DateOnly(2022, 6, 15),
+            Sex: "Female");
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        Assert.True(_unitOfWork.Committed);
+        Assert.Equal(1, _unitOfWork.CommitCount);
+    }
+
+    [Fact]
+    public async Task Handle_InvalidSex_ThrowsAndDoesNotCommit()
+    {
+        var command = new RegisterDogCommand(
+            OwnerId: Guid.NewGuid(),
+            Name: "Biscuit",
+            Breed: "Poodle",
+            DateOfBirth: new DateOnly(2023, 1, 1),
+            Sex: "Unknown");
+
+        await Assert.ThrowsAsync<ArgumentException>(
+            () => _handler.Handle(command, CancellationToken.None));
+
+        Assert.False(_unitOfWork.Committed);
+        Assert.Equal(0, _unitOfWork.CommitCount);
+    }
+
 }
