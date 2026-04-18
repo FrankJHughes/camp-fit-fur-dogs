@@ -1,0 +1,41 @@
+using FluentAssertions;
+using CampFitFurDogs.Api.Tests.Guardrails.Architecture;
+using CampFitFurDogs.Api.Tests;
+
+namespace CampFitFurDogs.Api.Tests.Guardrails;
+
+public class NoManualHandlerRegistrationGuardrailTests
+    : GuardrailTestBase, IClassFixture<CampFitFurDogsApiFactory>
+{
+    public NoManualHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory)
+        : base(factory) { }
+
+    [Fact]
+    public void Should_Not_Have_Manual_Handler_Registrations()
+    {
+        var appAssembly = typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection).Assembly;
+
+        var handlers = DiRegistrationScanner.FindTypesWithInterfaces(
+            appAssembly,
+            t =>
+                t.IsClass &&
+                !t.IsAbstract &&
+                t.GetInterfaces().Any(i =>
+                    i.IsGenericType &&
+                    (
+                        i.GetGenericTypeDefinition().Name.StartsWith("ICommandHandler") ||
+                        i.GetGenericTypeDefinition().Name.StartsWith("IQueryHandler") ||
+                        i.GetGenericTypeDefinition().Name.StartsWith("IDomainEventHandler")
+                    )
+                ));
+
+        foreach (var (type, iface) in handlers)
+        {
+            iface.Should().NotBeNull();
+            var registrations = DiRegistrationScanner.GetRegistrations(Factory.Services, iface!);
+
+            registrations.Should().ContainSingle(
+                $"{type.Name} must be registered exactly once via Scrutor, not manually");
+        }
+    }
+}

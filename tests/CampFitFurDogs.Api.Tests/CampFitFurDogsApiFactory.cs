@@ -31,18 +31,26 @@ public class CampFitFurDogsApiFactory : WebApplicationFactory<Program>, IAsyncLi
         builder.ConfigureServices(services =>
         {
             // Remove the app's Npgsql registration
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-            if (descriptor != null) services.Remove(descriptor);
+            // Remove ALL DbContextOptions<AppDbContext> registrations
+            var descriptors = services
+                .Where(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>))
+                .ToList();
+
+            foreach (var d in descriptors)
+                services.Remove(d);
 
             // Point at the Testcontainers PostgreSQL instance
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(_postgres.GetConnectionString()));
 
             // Override ICurrentUserService with test double
-            var userServiceDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(ICurrentUserService));
-            if (userServiceDescriptor != null) services.Remove(userServiceDescriptor);
+            descriptors = services
+                .Where(s => s.ServiceType == typeof(ICurrentUserService))
+                .ToList();
+
+            foreach (var d in descriptors)
+                services.Remove(d);
+
             services.AddSingleton<ICurrentUserService>(TestUserService);
 
             // Create schema from EF model
