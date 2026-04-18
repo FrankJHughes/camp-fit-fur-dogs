@@ -19,6 +19,6 @@ public sealed class DogRepository : IDogRepository
 
     public async Task<Dog?> GetByIdAsync(DogId id, CancellationToken cancellationToken = default)
     {
-        return await _db.Dogs.FindAsync([id, cancellationToken], cancellationToken);
+        return await _db.Dogs.FindAsync([id], cancellationToken);
     }
 }

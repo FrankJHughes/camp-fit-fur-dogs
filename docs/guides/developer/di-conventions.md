@@ -172,6 +172,8 @@ No slice‑specific types may be registered manually.
 
 If a contributor finds themselves editing DI code to add a handler, validator, or repository, the slice is violating conventions.
 
+**Exception — cross-cutting infrastructure types.** Types that serve all slices but do not match Scrutor's suffix scan (e.g., `EfUnitOfWork` implementing `IUnitOfWork`) are registered explicitly in `Infrastructure/DependencyInjection.cs`. These are shared infrastructure, not slice-specific. See ADR-0017.
+
 ---
 
 # 7. Troubleshooting

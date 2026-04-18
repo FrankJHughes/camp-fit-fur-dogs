@@ -98,6 +98,7 @@ Each slice contains:
 - Contains handlers, validators, dispatchers.
 - Dispatches domain events.
 - Contains no HTTP or persistence logic.
+- Calls `IUnitOfWork.CommitAsync` to persist changes (command handlers only).
 
 ### 3.3 Domain Layer
 
@@ -199,11 +200,12 @@ When adding a new feature:
 2. Add handlers/validators to **Application**.
 3. Add domain entities/events to **Domain**.
 4. Add repositories to **Infrastructure**.
-5. Add endpoints to **Api**.
-6. Add tests to the corresponding test project.
-7. Follow naming conventions strictly.
-8. Do not bypass the dispatcher pipeline.
-9. Do not place code in SharedKernel unless it is truly cross-cutting.
+5. Inject `IUnitOfWork` in command handlers and call `CommitAsync` after repository operations.
+6. Add endpoints to **Api**.
+7. Add tests to the corresponding test project.
+8. Follow naming conventions strictly.
+9. Do not bypass the dispatcher pipeline.
+10. Do not place code in SharedKernel unless it is truly cross-cutting.
 
 If you’re unsure where something belongs, default to the **most restrictive** layer (Domain > Application > Infrastructure > Api).
 

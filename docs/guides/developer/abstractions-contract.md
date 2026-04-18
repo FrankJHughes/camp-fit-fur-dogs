@@ -17,6 +17,7 @@ These include:
 - **Service interfaces** (e.g., `ICurrentUserService`)
 - **Dispatcher interfaces** (`ICommandDispatcher`, `IQueryDispatcher`)
 - **Domain event abstractions** (`IDomainEventDispatcher`, `IDomainEventHandler<T>`)
+- **Cross-cutting interfaces** (e.g., `IUnitOfWork`)
 
 Everything in Abstractions is intentionally stable and dependency‑safe.
 
@@ -42,6 +43,7 @@ src/CampFitFurDogs.Application/Abstractions/
   ICurrentUserService.cs
   IDomainEventDispatcher.cs
   IDomainEventHandler.cs
+  IUnitOfWork.cs
 ```
 
 Each feature has its own subfolder.

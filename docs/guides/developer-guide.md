@@ -95,6 +95,7 @@ See:
 - **Abstractions Contract** — `developer/abstractions-contract.md`
 - **Dispatcher Pipeline** — `developer/dispatcher-pipeline.md`
 - **API Endpoint Purity** — `developer/api-endpoint-purity.md`
+- **DI Conventions** — `developer/di-conventions.md`
 
 ### 4.2 Domain Modeling
 

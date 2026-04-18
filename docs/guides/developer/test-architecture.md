@@ -128,6 +128,7 @@ Handler tests should:
 - Test business logic in isolation.
 - Mock repositories or external services.
 - Avoid testing validation (that belongs to validator tests).
+- Inject `FakeUnitOfWork` alongside fake repositories. Assert `Committed` is `true` and verify `CommitCount` for commit behavior.
 
 ### 4.3 Validator Tests
 
@@ -185,6 +186,7 @@ When adding new features:
 - Add domain tests.
 - Add endpoint tests.
 - Ensure existing guardrails still pass.
+- Handler tests must verify `IUnitOfWork.CommitAsync` is called on the happy path and not called on validation/guard failures.
 
 When modifying existing architecture:
 

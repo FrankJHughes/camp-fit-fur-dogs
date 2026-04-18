@@ -15,7 +15,7 @@ public sealed class CustomerRepository : ICustomerRepository
 
     public async Task<bool> EmailExistsAsync(Email email, CancellationToken ct)
     {
-        return await _db.Customers.AnyAsync(c => c.Email == email, ct);
+        return await _db.Customers.AnyAsync(c => c.Email.Value == email.Value, ct);
     }
 
     public async Task AddAsync(Customer customer, CancellationToken ct)

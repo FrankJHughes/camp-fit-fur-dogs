@@ -32,6 +32,7 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
                     System.Text.Encoding.UTF8.GetBytes("SuperSecure123!"))));
 
         await repo.AddAsync(customer, CancellationToken.None);
+        await ctx.SaveChangesAsync();
         return customer.Id;
     }
 
@@ -51,6 +52,7 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
             Sex.Female);
 
         await repo.AddAsync(dog, CancellationToken.None);
+        await ctx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
         var all = await readCtx.Set<Dog>().AsNoTracking().ToListAsync();
@@ -78,7 +80,9 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
             new DateOnly(2023, 1, 1),
             Sex.Male);
 
-        var act = () => repo.AddAsync(dog, CancellationToken.None);
+        await repo.AddAsync(dog, CancellationToken.None);
+
+        var act = () => ctx.SaveChangesAsync();
 
         await act.Should().ThrowAsync<DbUpdateException>();
     }
@@ -107,6 +111,7 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
 
         await repo.AddAsync(dog1, CancellationToken.None);
         await repo.AddAsync(dog2, CancellationToken.None);
+        await ctx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
         var allDogs = await readCtx.Set<Dog>().AsNoTracking().ToListAsync();
@@ -131,6 +136,7 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
             Sex.Female);
 
         await writeRepo.AddAsync(dog, CancellationToken.None);
+        await writeCtx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
         var readRepo = new DogRepository(readCtx);
@@ -156,5 +162,4 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
 
         result.Should().BeNull();
     }
-
 }
