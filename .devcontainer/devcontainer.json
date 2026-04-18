@@ -33,7 +33,11 @@
         "ms-dotnettools.csdevkit",
         "ms-azuretools.vscode-docker",
         "editorconfig.editorconfig"
-      ]
+      ],
+      "settings": {
+        "dotnet.server.useOmnisharp": false,
+        "dotnet.server.path": "/usr/lib/dotnet/dotnet"
+      }
     }
   },
   "features": {

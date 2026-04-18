@@ -2,5 +2,5 @@ namespace CampFitFurDogs.Application.Abstractions;
 
 public interface ICurrentUserService
 {
-    Guid GetCurrentUserId();
+    Guid CurrentUserId { get; }
 }
