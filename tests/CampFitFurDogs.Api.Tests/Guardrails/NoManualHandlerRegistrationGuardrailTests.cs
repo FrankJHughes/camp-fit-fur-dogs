@@ -1,5 +1,4 @@
 using FluentAssertions;
-using CampFitFurDogs.Api.Tests.Guardrails.Architecture;
 using CampFitFurDogs.Api.Tests;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
