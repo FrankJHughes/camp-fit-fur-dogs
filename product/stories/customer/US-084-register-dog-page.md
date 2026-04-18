@@ -3,7 +3,7 @@ id: US-084
 title: "Register Dog Page"
 epic: Customer
 milestone: M1+
-status: in-progress
+status: done
 sprint: S4
 sprint_order: 6
 domain: customer
@@ -23,15 +23,15 @@ As a **customer**, I can register a new dog by filling out a form with my dog's 
 
 ## Acceptance Criteria
 
-- [ ] React form component with fields: dog name, breed, date of birth, sex
-- [ ] Client-side validation (required fields, data types)
-- [ ] Form submits to the existing RegisterDog API endpoint via the typed API client (US-102)
-- [ ] Success feedback displayed after successful registration
-- [ ] Error handling: validation errors, API errors, network errors displayed to user
+- [x] React form component with fields: dog name, breed, date of birth, sex
+- [x] Client-side validation (required fields, data types)
+- [x] Form submits to the existing RegisterDog API endpoint via the typed API client (US-102)
+- [x] Success feedback displayed after successful registration
+- [x] Error handling: validation errors, API errors, network errors displayed to user
 - [x] ~~customerId passed as route parameter or prop~~ → **Dropped (April 15).** See *Design Seam* below.
-- [ ] Component tests: render, validate, submit, error states
-- [ ] Integration test: form → API client → mock server → success/error
-- [ ] **Design Doc:** This slice is the living example — the code IS the documentation
+- [x] Component tests: render, validate, submit, error states
+- [x] Integration test: form → API client → mock server → success/error
+- [x] **Design Doc:** This slice is the living example — the code IS the documentation
 
 ## TDD Requirements
 
