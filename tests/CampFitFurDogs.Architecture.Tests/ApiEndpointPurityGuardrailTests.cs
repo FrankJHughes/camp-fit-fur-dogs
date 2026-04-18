@@ -1,7 +1,7 @@
 using FluentAssertions;
 using System.Reflection;
 
-namespace CampFitFurDogs.Api.Tests.Guardrails;
+namespace CampFitFurDogs.Architecture.Tests;
 
 public class ApiEndpointPurityGuardrailTests
 {

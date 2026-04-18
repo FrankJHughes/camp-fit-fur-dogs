@@ -1,6 +1,6 @@
 using FluentAssertions;
 
-namespace CampFitFurDogs.Api.Tests.Guardrails;
+namespace CampFitFurDogs.Architecture.Tests;
 
 public class ApplicationDtoPurityGuardrailTests
 {
