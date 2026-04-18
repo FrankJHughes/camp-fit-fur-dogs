@@ -6,30 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- `.github/copilot-instructions.md` — living conventions document (standing rules, PR conventions, architecture patterns, tooling, lessons learned)
-- Sprint review closing checklist in `docs/sprint-reviews/_template.md`
-- Conventions maintenance sections in all three contributor guides
-- ADR-0011: CQRS Command/Query Pipelines (US-051)
-- ADR-0011: CQRS Command/Query Pipelines (US-051)
-- ADR-0012: Frontend Technology — React with Next.js (US-055)
-- `.gitattributes` — enforces LF line endings repo-wide; eliminates CRLF phantom diffs in Dev Container
-- First-Time Setup section in `docs/guides/developer-guide.md` (Docker Desktop auto-start, Git identity, hooks)
-- Frontend API client with typed error handling and unit test suite (see `frontend/CHANGELOG.md`)
-- `ICurrentUserService` abstraction for server-side identity resolution (#118)
-- `RegisterDogRequest` API DTO — request body no longer includes `OwnerId` (#118)
-- `DummyCurrentUserService` pre-auth placeholder in Infrastructure (#118)
-- `ApiTestHelpers` shared test utilities for owner/dog creation (#118)
+- View Dog Profile frontend slice — `/dogs/[id]` page with 13 tests (US-029; see `frontend/CHANGELOG.md`)
 - `BCrypt.Net-Next` NuGet package dependency in Domain layer (#154)
 - `CampFitFurDogs.Architecture.Tests` project — 15 pure-reflection guardrails and `ReferenceScanner.cs` relocated from Api.Tests (US-104)
 - `Directory.Packages.props` — Central Package Management for all 17 NuGet dependencies with transitive pinning (US-104)
 
 ### Changed
 
-- Frontend relocated from `src/frontend/` to `frontend/src/` for role-based monorepo layout
-- `POST /api/dogs` endpoint resolves owner identity from `ICurrentUserService` instead of request body (#118)
-
-- `.devcontainer/devcontainer.json` — adds `TESTCONTAINERS_RYUK_DISABLED` and `TESTCONTAINERS_HOST_OVERRIDE` for docker-outside-of-docker Testcontainers compatibility
-- Root `.gitignore` — moves `node_modules/` and `.next/` to `frontend/src/.gitignore`; adds scratch file exclusions
 - `PasswordHash` value object uses BCrypt (`BCrypt.Net-Next`) instead of base64 encoding; added `Create()` and `Verify()` methods (#154)
 - `CreateCustomerHandler` delegates hashing to `PasswordHash.Create()` — removed inline `HashPassword()` helper (#154)
 - DI-dependent guardrails remain in `Api.Tests/Guardrails/`; pure-reflection guardrails moved to `Architecture.Tests` (US-104)
@@ -40,6 +23,46 @@ All notable changes to this project will be documented in this file.
 - `PostgresFixture` updated to use `PostgreSqlBuilder(image)` constructor — resolves CS0618 (US-104)
 - 3 version drifts normalized: FluentAssertions 8.3.0→8.9.0, Testcontainers.PostgreSql 4.6.0→4.11.0, xunit.runner.visualstudio 3.1.4→3.1.5 (US-104)
 - All `Version=` attributes stripped from 11 csproj files — versions now managed centrally (US-104)
+
+### Removed
+
+- Stale `.gitkeep` files from test projects containing real content (US-104)
+- Orphaned `Guardrails/Architecture/` subfolder — sole file flattened up (US-104)
+- 5 redundant guardrail test files replaced by 2 consolidated files (US-104)
+
+## [Sprint 4] — 2026-04-18
+
+### Completed Stories
+
+| Story  | Title                        | Issue |
+|--------|------------------------------|-------|
+| US-051 | CQRS Command/Query Pipelines | —     |
+| US-055 | Frontend Technology Decision | —     |
+| US-056 | Next.js Project Scaffold     | —     |
+| US-084 | Register Dog Page            | #118  |
+
+### Added
+
+- `.github/copilot-instructions.md` — living conventions document (standing rules, PR conventions, architecture patterns, tooling, lessons learned)
+- Sprint review closing checklist in `docs/sprint-reviews/_template.md`
+- Conventions maintenance sections in all three contributor guides
+- ADR-0011: CQRS Command/Query Pipelines (US-051)
+- ADR-0012: Frontend Technology — React with Next.js (US-055)
+- `.gitattributes` — enforces LF line endings repo-wide; eliminates CRLF phantom diffs in Dev Container
+- First-Time Setup section in `docs/guides/developer-guide.md` (Docker Desktop auto-start, Git identity, hooks)
+- Frontend API client with typed error handling and unit test suite (see `frontend/CHANGELOG.md`)
+- `ICurrentUserService` abstraction for server-side identity resolution (#118)
+- `RegisterDogRequest` API DTO — request body no longer includes `OwnerId` (#118)
+- `DummyCurrentUserService` pre-auth placeholder in Infrastructure (#118)
+- `ApiTestHelpers` shared test utilities for owner/dog creation (#118)
+- Next.js project scaffold with API proxy and health-check landing page (US-056)
+
+### Changed
+
+- Frontend relocated from `src/frontend/` to `frontend/src/` for role-based monorepo layout
+- `POST /api/dogs` endpoint resolves owner identity from `ICurrentUserService` instead of request body (#118)
+- `.devcontainer/devcontainer.json` — adds `TESTCONTAINERS_RYUK_DISABLED` and `TESTCONTAINERS_HOST_OVERRIDE` for docker-outside-of-docker Testcontainers compatibility
+- Root `.gitignore` — moves `node_modules/` and `.next/` to `frontend/src/.gitignore`; adds scratch file exclusions
 
 ## [Sprint 3] — 2026-04-11
 
@@ -187,6 +210,3 @@ All notable changes to this project will be documented in this file.
 - `global.json` pinning .NET SDK version
 - Product vision, capability themes, emotional guarantees, definition of ready
 - 44 product stories across infra, docs, and customer domains
-
-
-- Next.js project scaffold with API proxy and health-check landing page (US-056)
