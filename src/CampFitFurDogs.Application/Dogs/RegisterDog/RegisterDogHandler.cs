@@ -1,4 +1,5 @@
 using CampFitFurDogs.Application.Abstractions;
+using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 
@@ -21,8 +22,9 @@ public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Gui
         var ownerId = CustomerId.From(command.OwnerId);
         var name = DogName.Create(command.Name);
         var breed = Breed.Create(command.Breed);
+        var dob = command.DateOfBirth;
 
-        var dog = Dog.Create(ownerId, name, breed, command.DateOfBirth, sex);
+        var dog = Dog.Create(ownerId, name, breed, dob, sex);
 
         await _dogRepository.AddAsync(dog, ct);
 

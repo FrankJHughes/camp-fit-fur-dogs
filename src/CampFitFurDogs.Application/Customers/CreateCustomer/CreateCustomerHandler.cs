@@ -1,4 +1,5 @@
 using CampFitFurDogs.Application.Abstractions;
+using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Application.Customers.CreateCustomer;

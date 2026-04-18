@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions;
 
-namespace CampFitFurDogs.Application.Dogs.RegisterDog;
+namespace CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 
 public sealed record RegisterDogCommand(
     Guid OwnerId,

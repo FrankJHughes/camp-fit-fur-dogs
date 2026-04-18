@@ -9,5 +9,5 @@ public sealed class DummyCurrentUserService : ICurrentUserService
     private static readonly Guid PlaceholderId =
         Guid.Parse("00000000-0000-0000-0000-000000000001");
 
-    public Guid GetCurrentUserId() => PlaceholderId;
+    public Guid CurrentUserId => PlaceholderId;
 }

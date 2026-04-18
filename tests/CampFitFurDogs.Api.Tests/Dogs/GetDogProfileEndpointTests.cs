@@ -25,10 +25,10 @@ public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory
     [Fact]
     public async Task GetDogProfile_ExistingDogOwnedByCustomer_Returns200WithProfile()
     {
-        var ownerId = await CreateOwnerAsync(_client);
+        var ownerId = await CreateAndSetOwnerAsync(_client, _testUserService);
         var dogId = await RegisterDogAsync(_client, _testUserService, ownerId);
 
-        var response = await _client.GetAsync($"/api/dogs/{dogId}?customerId={ownerId}");
+        var response = await _client.GetAsync($"/api/dogs/{dogId}");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -47,7 +47,7 @@ public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory
     public async Task GetDogProfile_NonExistentDog_Returns404()
     {
         var response = await _client.GetAsync(
-            $"/api/dogs/{Guid.NewGuid()}?customerId={Guid.NewGuid()}");
+            $"/api/dogs/{Guid.NewGuid()}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -57,21 +57,21 @@ public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory
     [Fact]
     public async Task GetDogProfile_DogNotOwnedByCustomer_Returns404()
     {
-        var ownerA = await CreateOwnerAsync(_client);
+        var ownerA = await CreateAndSetOwnerAsync(_client, _testUserService);
         var dogId = await RegisterDogAsync(_client, _testUserService, ownerA);
-        var ownerB = await CreateOwnerAsync(_client);
+        var ownerB = await CreateAndSetOwnerAsync(_client, _testUserService);
 
         var response = await _client.GetAsync(
-            $"/api/dogs/{dogId}?customerId={ownerB}");
+            $"/api/dogs/{dogId}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    // ── Validation ──
 
     [Fact]
     public async Task GetDogProfile_MissingCustomerId_Returns400()
     {
+        _testUserService.CurrentUserId = Guid.Empty;
         var response = await _client.GetAsync($"/api/dogs/{Guid.NewGuid()}");
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

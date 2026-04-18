@@ -2,5 +2,5 @@ namespace CampFitFurDogs.Application.Abstractions;
 
 public interface IQueryDispatcher
 {
-    Task<TResponse> Dispatch<TResponse>(IQuery<TResponse> query, CancellationToken ct);
+    Task<TResponse> DispatchAsync<TResponse>(IQuery<TResponse> query, CancellationToken ct);
 }

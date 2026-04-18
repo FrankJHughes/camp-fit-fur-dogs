@@ -1,7 +1,7 @@
 
 using CampFitFurDogs.Application.Abstractions;
 
-namespace CampFitFurDogs.Application.Customers.CreateCustomer;
+namespace CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 
 public sealed record CreateCustomerCommand(
     string FirstName,
