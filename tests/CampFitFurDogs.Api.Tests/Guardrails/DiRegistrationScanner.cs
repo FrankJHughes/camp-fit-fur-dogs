@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CampFitFurDogs.Api.Tests.Guardrails.Architecture;
+namespace CampFitFurDogs.Api.Tests.Guardrails;
 
 public static class DiRegistrationScanner
 {

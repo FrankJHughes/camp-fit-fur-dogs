@@ -1,7 +1,6 @@
 using FluentAssertions;
-using CampFitFurDogs.Api.Tests.Guardrails.Architecture;
 
-namespace CampFitFurDogs.Api.Tests.Guardrails;
+namespace CampFitFurDogs.Architecture.Tests;
 
 public class DomainMustNotReferenceHigherLayersGuardrailTests
 {

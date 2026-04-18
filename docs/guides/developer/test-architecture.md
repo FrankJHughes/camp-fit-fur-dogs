@@ -1,8 +1,6 @@
 # Test Architecture & Guardrails
 
-This guide describes the testing strategy for Camp Fit Fur Dogs, including how architectural guardrails are enforced, how test projects are structured, and how contributors should write and organize tests.
-
-The goal is to ensure the architecture remains clean, predictable, and self‑defending as the system grows.
+This guide describes the testing strategy for Camp Fit Fur Dogs, including how architectural guardrails are enforced, how test projects are structured, and how contributors should write and organize tests. The goal is to ensure the architecture remains clean, predictable, and self‑defending as the system grows.
 
 ---
 
@@ -19,38 +17,47 @@ The goal is to ensure the architecture remains clean, predictable, and self‑de
 
 ## 2. Test Project Structure
 
-The solution uses one test project per layer:
+The solution uses one test project per layer, plus a dedicated project for pure-reflection architectural guardrails:
 
 ```
 tests/
-  CampFitFurDogs.Api.Tests/
-  CampFitFurDogs.Application.Tests/
-  CampFitFurDogs.Domain.Tests/
-  CampFitFurDogs.Infrastructure.Tests/
+    CampFitFurDogs.Api.Tests/
+    CampFitFurDogs.Application.Tests/
+    CampFitFurDogs.Architecture.Tests/
+    CampFitFurDogs.Domain.Tests/
+    CampFitFurDogs.Infrastructure.Tests/
 ```
 
-Each project tests only its corresponding layer.
+Each project tests only its corresponding layer, except `Architecture.Tests` which validates cross-cutting structural rules via pure reflection.
 
 ### 2.1 Api.Tests
-- Endpoint tests
+
+- Endpoint tests (full request → response flow)
 - Request/response mapping tests
-- API guardrail tests (e.g., no direct handler/repository usage)
+- **DI-dependent guardrails** — tests that need the real DI container via `GuardrailTestBase` (see §3.1)
 
 ### 2.2 Application.Tests
+
 - Handler tests
 - Validator tests
 - Dispatcher pipeline tests
 - Domain event dispatch tests
-- DI guardrail tests
-- Auto-registration tests
 
-### 2.3 Domain.Tests
+### 2.3 Architecture.Tests
+
+- **Pure-reflection guardrails** — tests that inspect assemblies without a running host (see §3.2)
+- `ReferenceScanner.cs` utility for assembly-reference validation
+- No dependency on `Microsoft.AspNetCore.Mvc.Testing` or Testcontainers
+
+### 2.4 Domain.Tests
+
 - Entity behavior tests
 - Value object tests
 - Domain event tests
 - Invariant enforcement tests
 
-### 2.4 Infrastructure.Tests
+### 2.5 Infrastructure.Tests
+
 - Repository tests
 - Persistence tests
 - External system integration tests
@@ -60,54 +67,50 @@ Each project tests only its corresponding layer.
 
 ## 3. Guardrail Tests
 
-Guardrail tests enforce architectural purity and prevent regressions.
+Guardrail tests enforce architectural purity and prevent regressions. They fall into two categories based on their runtime needs.
 
-### 3.1 DI Guardrails
+### 3.1 DI-Dependent Guardrails (Api.Tests/Guardrails/)
 
-Examples:
+These tests need the real DI container to resolve services. They inherit from `GuardrailTestBase`, which boots the test server via `CampFitFurDogsApiFactory` and exposes `Get<T>()` / `GetAll<T>()` helpers.
 
-- Handlers must be auto-registered.
-- Validators must be auto-registered.
-- Repositories must be auto-registered.
-- No manual DI registration of slice-specific types.
+**Files (12):**
 
-These tests ensure DI conventions remain intact.
+| File | Purpose |
+|------|---------|
+| `GuardrailTestBase.cs` | Abstract base — DI scope helpers |
+| `DiRegistrationScanner.cs` | Static scanner — assembly + DI resolution |
+| `InfrastructureRegistrationGuardrailTests.cs` | `[Theory]` — Repository/Service/Provider registered |
+| `DispatcherRegistrationGuardrailTests.cs` | Command + DomainEvent dispatchers registered |
+| `NoManualHandlerRegistrationGuardrailTests.cs` | Handlers registered via Scrutor only |
+| `NoManualInfrastructureRegistrationGuardrailTests.cs` | Infra types registered via Scrutor only |
+| `NoDuplicateServiceRegistrationGuardrailTests.cs` | No duplicate DI registrations |
+| `DomainEventHandlerRegistrationGuardrailTests.cs` | Domain event handlers registered |
+| `CurrentUserServiceGuardrailTests.cs` | TestCurrentUserService wiring |
+| `DbContextGuardrailTests.cs` | Npgsql + single DbContext registration |
+| `RouteMappingGuardrailTests.cs` | Route smoke test |
+| `TestcontainersGuardrailTests.cs` | Database connectivity smoke test |
 
-### 3.2 Layer Purity Guardrails
+### 3.2 Pure-Reflection Guardrails (Architecture.Tests/)
+
+These tests use only `System.Reflection` and `ReferenceScanner` to inspect assemblies. They do **not** need a running host, DI container, or database — making them fast and isolated.
 
 Examples:
 
 - Domain must not reference Application or Infrastructure.
-- Application must not reference API or Infrastructure implementation details.
-- Infrastructure must not contain domain logic.
-- API must not reference Application internals.
-
-These tests enforce the dependency graph.
-
-### 3.3 API Guardrails
-
-Examples:
-
-- Endpoints must use dispatchers, not handlers.
-- Endpoints must not call repositories.
-- Endpoints must not contain domain logic.
-
-### 3.4 Dispatcher Pipeline Guardrails
-
-Examples:
-
-- Commands must be validated.
-- Queries must be validated.
-- Domain events must be dispatched after command execution.
-- Handlers must be resolved via DI.
-
-### 3.5 DTO Purity Guardrails
-
-Examples:
-
+- Application must not reference API or Infrastructure.
+- Handlers must follow naming conventions.
 - DTOs must not reference domain entities.
-- DTOs must not reference Application internals.
-- DTOs must be simple data carriers.
+- Endpoints must not bypass the dispatcher pipeline.
+- SharedKernel must have no upstream dependencies.
+
+### 3.3 When to Use Which
+
+| Need the DI container or test server? | Project |
+|---------------------------------------|---------|
+| **No** — inspecting types, references, naming | Architecture.Tests |
+| **Yes** — resolving services, hitting endpoints | Api.Tests/Guardrails/ |
+
+**Rule of thumb:** if the test can run with just assembly reflection, it belongs in Architecture.Tests. If it calls `Get<T>()`, `GetAll<T>()`, or `Factory.CreateClient()`, it belongs in Api.Tests/Guardrails/.
 
 ---
 
@@ -176,6 +179,8 @@ Avoid:
 When adding new architecture:
 
 - Add or update guardrail tests.
+- Pure-reflection guardrails → `Architecture.Tests`.
+- DI-dependent guardrails → `Api.Tests/Guardrails/`.
 - Ensure purity rules are enforced.
 - Update documentation (e.g., `purity-rules.md`).
 
@@ -198,9 +203,7 @@ When modifying existing architecture:
 
 ## 7. Philosophy
 
-Tests are not just for correctness — they are **architectural enforcement tools**.
-
-They ensure:
+Tests are not just for correctness — they are **architectural enforcement tools**. They ensure:
 
 - The architecture stays clean.
 - Conventions remain consistent.
@@ -208,4 +211,3 @@ They ensure:
 - The system remains maintainable as it grows.
 
 Guardrails turn architecture into something the system *defends*, not something developers must remember.
-

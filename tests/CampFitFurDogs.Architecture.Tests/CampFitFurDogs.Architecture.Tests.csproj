@@ -8,15 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="coverlet.collector">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -31,6 +28,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CampFitFurDogs.Api\CampFitFurDogs.Api.csproj" />
     <ProjectReference Include="..\..\src\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.SharedKernel\CampFitFurDogs.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

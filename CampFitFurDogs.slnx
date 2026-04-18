@@ -9,6 +9,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Application.Tests/CampFitFurDogs.Application.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs.Architecture.Tests/CampFitFurDogs.Architecture.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.SharedKernel.Tests/CampFitFurDogs.SharedKernel.Tests.csproj" />

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace CampFitFurDogs.Api.Tests.Guardrails.Architecture;
+namespace CampFitFurDogs.Architecture.Tests;
 
 public static class ReferenceScanner
 {
