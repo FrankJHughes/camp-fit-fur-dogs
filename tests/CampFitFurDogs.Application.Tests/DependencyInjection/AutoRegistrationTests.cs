@@ -6,7 +6,8 @@ using CampFitFurDogs.Application.DependencyInjection;
 using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
-using CampFitFurDogs.Domain.Dogs; // needed for IDogRepository
+using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Application.Tests.Fakes;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
@@ -19,8 +20,10 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        // Stub repository so handler can be constructed
+        // Stub dependencies so handlers can be constructed
         services.AddSingleton<IDogRepository, FakeDogRepository>();
+        services.AddSingleton<ICustomerRepository, FakeCustomerRepository>();
+        services.AddSingleton<IUnitOfWork, FakeUnitOfWork>();
 
         // Act
         services.AddApplicationServices();
@@ -41,6 +44,8 @@ public partial class AutoRegistrationTests
 
         // Provide required fakes so handlers/validators can be constructed
         services.AddSingleton<IDogRepository, FakeDogRepository>();
+        services.AddSingleton<ICustomerRepository, FakeCustomerRepository>();
+        services.AddSingleton<IUnitOfWork, FakeUnitOfWork>();
 
         // Act
         services.AddApplicationServices();
@@ -52,5 +57,4 @@ public partial class AutoRegistrationTests
         validator.Should().NotBeNull();
         validator.Should().BeOfType<RegisterDogCommandValidator>();
     }
-
 }

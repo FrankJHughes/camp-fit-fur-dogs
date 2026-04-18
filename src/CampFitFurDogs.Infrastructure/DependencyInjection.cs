@@ -23,23 +23,26 @@ public static class DependencyInjection
         });
 
         // 2. Repositories, services, adapters, interceptors (Scrutor)
-services.Scan(scan => scan
-    .FromAssemblies(assembly)
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
 
-    .AddClasses(c => c.Where(type => type.Name.EndsWith("Repository")))
-        .AsImplementedInterfaces()
-        .WithScopedLifetime()
+            .AddClasses(c => c.Where(type => type.Name.EndsWith("Repository")))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
 
-    .AddClasses(c => c.Where(type => type.Name.EndsWith("Service")))
-        .AsImplementedInterfaces()
-        .WithScopedLifetime()
+            .AddClasses(c => c.Where(type => type.Name.EndsWith("Service")))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
 
-    .AddClasses(c => c.Where(type => type.Name.EndsWith("Provider")))
-        .AsImplementedInterfaces()
-        .WithScopedLifetime()
-);
+            .AddClasses(c => c.Where(type => type.Name.EndsWith("Provider")))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
 
-        // 3. Current user service (explicit)
+        // 3. Unit of Work (explicit — not matched by Scrutor suffixes)
+        services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+
+        // 4. Current user service (explicit)
         services.AddSingleton<ICurrentUserService, DummyCurrentUserService>();
 
         return services;

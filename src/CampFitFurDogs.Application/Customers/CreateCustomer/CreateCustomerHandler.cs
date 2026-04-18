@@ -1,3 +1,4 @@
+// src/CampFitFurDogs.Application/Customers/CreateCustomer/CreateCustomerHandler.cs
 using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
@@ -8,16 +9,17 @@ public sealed class CreateCustomerHandler
     : ICommandHandler<CreateCustomerCommand, Guid>
 {
     private readonly ICustomerRepository _repo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CreateCustomerHandler(ICustomerRepository repo)
+    public CreateCustomerHandler(ICustomerRepository repo, IUnitOfWork unitOfWork)
     {
         _repo = repo;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken ct)
     {
         var email = Email.From(request.Email);
-
         if (await _repo.EmailExistsAsync(email, ct))
             throw new EmailAlreadyExistsException(email.Value);
 
@@ -32,12 +34,8 @@ public sealed class CreateCustomerHandler
             passwordHash);
 
         await _repo.AddAsync(customer, ct);
+        await _unitOfWork.CommitAsync(ct);
 
         return customer.Id.Value;
-    }
-
-    private static string HashPassword(string raw)
-    {
-        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(raw));
     }
 }

@@ -27,3 +27,5 @@ New ADRs should follow [TEMPLATE.md](TEMPLATE.md).
 | [0013](0013-server-side-identity-resolution.md) | Identity Resolution for ICurrentUserService | Accepted |
 | [0014](0014-dispatcher-pipeline.md) | Application Dispatcher Pipeline | Accepted |
 | [0015](0015-convention-based-auto-registration.md) | Convention-Based Auto-Registration | Accepted |
+| [0017](0017-unit-of-work-pattern.md) | Unit of Work Pattern | Accepted |
+| [0015](0015-convention-based-auto-registration.md) | Convention-Based Auto-Registration | Accepted |

@@ -15,12 +15,10 @@ public sealed class DogRepository : IDogRepository
     public async Task AddAsync(Dog dog, CancellationToken cancellationToken = default)
     {
         await _db.Dogs.AddAsync(dog, cancellationToken);
-        await _db.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Dog?> GetByIdAsync(DogId id, CancellationToken cancellationToken = default)
     {
-        return await _db.Dogs.FindAsync([id, cancellationToken], cancellationToken);
+        return await _db.Dogs.FindAsync([id], cancellationToken);
     }
-
 }

@@ -50,11 +50,16 @@ The command pipeline performs:
    - Resolve `ICommandHandler<TCommand, TResult>`.
    - Invoke `HandleAsync`.
 
-3. **Domain Events**  
+3. **Persistence (Unit of Work)**  
+   - Command handlers call `IUnitOfWork.CommitAsync` after all repository operations.
+   - Repositories stage changes on the DbContext change tracker but never flush.
+   - See ADR-0017.
+
+4. **Domain Events**  
    - Collect domain events from aggregates.
    - Dispatch via `IDomainEventDispatcher`.
 
-4. **Result**  
+5. **Result**  
    - Return the handler result to the caller.
 
 ---
@@ -136,6 +141,7 @@ When adding a new command or query:
 
 - Define the request type in Application Abstractions.
 - Implement a handler in the corresponding slice.
+- Inject `IUnitOfWork` into command handlers and call `CommitAsync` after repository operations.
 - Optionally add validators.
 - Use `ICommandDispatcher` / `IQueryDispatcher` from API endpoints.
 - Do not bypass the dispatcher pipeline.
