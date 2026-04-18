@@ -13,15 +13,15 @@ configuration.
 
 ## Acceptance Criteria
 
-- [ ] `.editorconfig` enforces portable formatting rules across all
+- [x] `.editorconfig` enforces portable formatting rules across all
       editors (indent style, charset, line endings, C# conventions).
-- [ ] `.vscode/extensions.json` prompts new developers to install
+- [x] `.vscode/extensions.json` prompts new developers to install
       recommended extensions (C# Dev Kit, Docker, EditorConfig).
-- [ ] `.vscode/settings.json` enables format-on-save and complements
+- [x] `.vscode/settings.json` enables format-on-save and complements
       `.editorconfig` with VS Code-specific behaviors.
-- [ ] `.vscode/launch.json` provides a one-click debug profile (F5)
+- [x] `.vscode/launch.json` provides a one-click debug profile (F5)
       for the API project.
-- [ ] `.vscode/tasks.json` wires Ctrl+Shift+B to build and provides
+- [x] `.vscode/tasks.json` wires Ctrl+Shift+B to build and provides
       a test task.
 
 ## Dependencies

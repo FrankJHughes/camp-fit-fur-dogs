@@ -42,68 +42,68 @@ overlap and ensure every fact lives in one place.
 
 ### Story Creation
 
-- [ ] Documents the 2-step story creation workflow:
+- [x] Documents the 2-step story creation workflow:
       1. Write `product/stories/<domain>/US-NNN-title.md` using the
          template (`product/stories/_template.md`). Commit via PR.
       2. Create a GitHub Issue:
          `gh issue create --title "US-NNN: Title" --milestone "Sprint N"`
-- [ ] Explains how to determine the next available story number
+- [x] Explains how to determine the next available story number
       (check highest `US-NNN` in `product/stories/`).
-- [ ] Explains the naming convention (`US-{NNN}-{kebab-name}.md`)
+- [x] Explains the naming convention (`US-{NNN}-{kebab-name}.md`)
       and links to ADR-0009.
-- [ ] Lists the available story domains (`infra`, `docs`, `customer`)
+- [x] Lists the available story domains (`infra`, `docs`, `customer`)
       and when to use each.
-- [ ] Documents when a story requires a companion ADR (technology
+- [x] Documents when a story requires a companion ADR (technology
       or tool selection, structural patterns, cross-cutting
       constraints).
 
 ### Acceptance Criteria Patterns *(absorbed from US-010)*
 
-- [ ] Explains what makes AC testable: observable, binary
+- [x] Explains what makes AC testable: observable, binary
       (pass/fail), independent of implementation details.
-- [ ] Provides 3–5 examples of well-written AC with annotations
+- [x] Provides 3–5 examples of well-written AC with annotations
       explaining why they work.
-- [ ] Provides 3–5 anti-pattern examples (vague language, compound
+- [x] Provides 3–5 anti-pattern examples (vague language, compound
       conditions, implementation-coupled) with corrected versions.
-- [ ] Documents the emotional safety guarantee section — when to
+- [x] Documents the emotional safety guarantee section — when to
       include it, how to write guarantees that are verifiable.
 
 ### Story Sizing and Prioritization *(absorbed from US-010)*
 
-- [ ] Explains the point scale used by the project and what each
+- [x] Explains the point scale used by the project and what each
       level represents (complexity, not time).
-- [ ] Documents prioritization criteria: customer value, technical
+- [x] Documents prioritization criteria: customer value, technical
       dependency, risk reduction, team capacity.
-- [ ] Explains how to split stories that exceed the sprint capacity
+- [x] Explains how to split stories that exceed the sprint capacity
       threshold.
 
 ### Sprint Planning
 
-- [ ] Documents how to start a new sprint:
+- [x] Documents how to start a new sprint:
       1. Create a GitHub Milestone with sprint name, dates, and goal.
       2. Pull stories from the backlog onto the sprint board.
       3. Assign story points via the project board's custom fields.
       4. Verify total capacity does not exceed team velocity.
-- [ ] Explains how to set sprint goals that are specific and
+- [x] Explains how to set sprint goals that are specific and
       measurable.
-- [ ] Documents board column flow (Backlog → Ready → In Progress →
+- [x] Documents board column flow (Backlog → Ready → In Progress →
       In Review → Done) and what triggers each transition.
 
 ### Definition of Ready *(absorbed from US-011)*
 
-- [ ] Provides a DoR checklist that a story must satisfy before
+- [x] Provides a DoR checklist that a story must satisfy before
       entering a sprint:
       - Product story file exists with all required sections.
       - AC are testable and reviewed.
       - Dependencies are identified and unblocked.
       - Points are assigned.
       - GitHub Issue exists and is linked to the milestone.
-- [ ] Documents how to push back when a story does not meet DoR
+- [x] Documents how to push back when a story does not meet DoR
       (move to backlog, add "needs-refinement" label, note the gap).
 
 ### Definition of Done *(absorbed from US-011)*
 
-- [ ] Provides a DoD checklist that a story must satisfy before
+- [x] Provides a DoD checklist that a story must satisfy before
       closing:
       - All AC pass.
       - PR is squash-merged to main.
@@ -112,35 +112,35 @@ overlap and ensure every fact lives in one place.
       - GitHub Issue is closed.
       - Sprint review entry is drafted (if sprint boundary).
       - No regressions introduced (existing tests pass).
-- [ ] Documents the distinction between "merged" and "done" — a
+- [x] Documents the distinction between "merged" and "done" — a
       story is not done until post-merge verification is complete.
 
 ### Sprint Execution
 
-- [ ] Documents the branch-per-story workflow:
+- [x] Documents the branch-per-story workflow:
       one story = one branch = one PR (squash-merge, delete after).
-- [ ] Explains branch naming conventions (`feature/`, `chore/`,
+- [x] Explains branch naming conventions (`feature/`, `chore/`,
       `fix/`, `docs/`).
-- [ ] Documents the PR review and merge process.
-- [ ] Links to `CONTRIBUTING.md` for commit message conventions.
+- [x] Documents the PR review and merge process.
+- [x] Links to `CONTRIBUTING.md` for commit message conventions.
 
 ### Ceremony Facilitation *(absorbed from US-011)*
 
-- [ ] Documents sprint review format: What Shipped table, Key
+- [x] Documents sprint review format: What Shipped table, Key
       Decisions, Metrics, What Went Well, What Could Improve,
       Next Sprint Focus.
-- [ ] Documents retrospective approach: what formats to use
+- [x] Documents retrospective approach: what formats to use
       (Start/Stop/Continue, 4Ls, timeline), how to capture
       action items, how to track follow-through.
-- [ ] Documents refinement cadence: when to groom, how many
+- [x] Documents refinement cadence: when to groom, how many
       stories to refine per session, exit criteria for a
       grooming session.
-- [ ] Documents async standup format for solo/distributed work:
+- [x] Documents async standup format for solo/distributed work:
       what was done, what's next, any blockers.
 
 ### Sprint Closure
 
-- [ ] Documents how to close a sprint:
+- [x] Documents how to close a sprint:
       1. Copy `docs/sprint-reviews/_template.md` to
          `docs/sprint-reviews/sprint-N.md` and fill in all sections.
       2. Add a new section to `CHANGELOG.md` with all changes.
@@ -149,36 +149,36 @@ overlap and ensure every fact lives in one place.
 
 ### Governance Artifacts *(absorbed from US-011)*
 
-- [ ] Documents the ADR lifecycle: when to create, required
+- [x] Documents the ADR lifecycle: when to create, required
       sections, review process, status transitions (Proposed →
       Accepted → Superseded/Deprecated).
-- [ ] Documents branch protection rules and who can override.
-- [ ] Documents the merge checklist: CI green, PR approved,
+- [x] Documents branch protection rules and who can override.
+- [x] Documents the merge checklist: CI green, PR approved,
       no unresolved conversations, squash-merge only.
-- [ ] References `docs/governance/governance.md` for role
+- [x] References `docs/governance/governance.md` for role
       definitions and ceremony schedules.
 
 ### Backlog Grooming
 
-- [ ] Documents how to audit the backlog for stale or obsolete
+- [x] Documents how to audit the backlog for stale or obsolete
       stories (check AC against current repo state, verify paths
       and dependencies still exist).
-- [ ] Documents how to retire a story (delete the file, close the
+- [x] Documents how to retire a story (delete the file, close the
       Issue as "not planned," note the reason).
-- [ ] Documents how to mark a story as fulfilled (close the Issue,
+- [x] Documents how to mark a story as fulfilled (close the Issue,
       optionally update the story file with completion status).
 
 ### Impediment Tracking *(absorbed from US-011)*
 
-- [ ] Documents how to flag a blocked story (add "blocked" label,
+- [x] Documents how to flag a blocked story (add "blocked" label,
       note the blocker in the Issue, escalate if needed).
-- [ ] Documents escalation paths: technical blockers (spike story),
+- [x] Documents escalation paths: technical blockers (spike story),
       external blockers (document and defer), scope disputes
       (PO decision).
 
 ### Troubleshooting
 
-- [ ] Includes a troubleshooting section covering:
+- [x] Includes a troubleshooting section covering:
       - Story number collision (two stories claim the same US-NNN)
       - Orphaned Issues (Issue exists but no product story file)
       - Orphaned stories (product story exists but no GitHub Issue)
@@ -186,9 +186,9 @@ overlap and ensure every fact lives in one place.
 
 ### Cross-References
 
-- [ ] Linked from `docs/README.md` (operations section).
-- [ ] Linked from `CONTRIBUTING.md` (story workflow section).
-- [ ] Linked from `docs/runbooks/` directory.
+- [x] Linked from `docs/README.md` (operations section).
+- [x] Linked from `CONTRIBUTING.md` (story workflow section).
+- [x] Linked from `docs/runbooks/` directory.
 
 ## Dependencies
 

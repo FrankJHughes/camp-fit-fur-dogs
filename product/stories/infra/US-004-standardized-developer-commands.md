@@ -11,12 +11,12 @@ machine and in CI—without memorising raw CLI flags.
 
 ## Acceptance Criteria
 
-- [ ] A `Makefile` at the repo root exposes standard targets: `restore`,
+- [x] A `Makefile` at the repo root exposes standard targets: `restore`,
       `build`, `test`, `clean`, `infra-up`, `infra-down`, `all`.
-- [ ] `make help` lists every target with a one-line description.
-- [ ] CI (`Build & Test` workflow) invokes `make all` instead of raw
+- [x] `make help` lists every target with a one-line description.
+- [x] CI (`Build & Test` workflow) invokes `make all` instead of raw
       `dotnet` commands.
-- [ ] Targets produce identical results locally, in the dev container,
+- [x] Targets produce identical results locally, in the dev container,
       and in CI.
 
 ## Dependencies

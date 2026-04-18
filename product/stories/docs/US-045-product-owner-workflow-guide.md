@@ -30,52 +30,52 @@ linked from the CONTRIBUTING.md role-routing hub (created by US-009).
 
 ### Story Authoring
 
-- [ ] Story file format documented: heading, user story,
+- [x] Story file format documented: heading, user story,
       value/context, acceptance criteria, emotional guarantees,
       dependencies, open questions.
-- [ ] Story naming convention explained with examples
+- [x] Story naming convention explained with examples
       (ADR-0009: `US-NNN-kebab-title.md`).
-- [ ] Domain directory structure explained
+- [x] Domain directory structure explained
       (`product/stories/customer/`, `docs/`, `infra/`).
-- [ ] Acceptance criteria writing guidelines: observable, testable,
+- [x] Acceptance criteria writing guidelines: observable, testable,
       no implementation details.
 
 ### Backlog Management
 
-- [ ] How to add a new story to the backlog (create file, choose
+- [x] How to add a new story to the backlog (create file, choose
       domain directory, next available US number).
-- [ ] How to retire, absorb, or split stories — with examples
+- [x] How to retire, absorb, or split stories — with examples
       from project history.
-- [ ] How to update story scope after refinement — what changes
+- [x] How to update story scope after refinement — what changes
       are acceptable vs requiring a new story.
 
 ### Emotional Guarantees
 
-- [ ] Full list of emotional guarantees (EG-01 through EG-07)
+- [x] Full list of emotional guarantees (EG-01 through EG-07)
       with descriptions and examples.
-- [ ] How to tag stories with relevant guarantees.
-- [ ] How emotional guarantees become acceptance criteria on
+- [x] How to tag stories with relevant guarantees.
+- [x] How emotional guarantees become acceptance criteria on
       feature stories (DoD integration).
 
 ### Definition of Ready
 
-- [ ] All 8 DoR criteria listed and explained with pass/fail
+- [x] All 8 DoR criteria listed and explained with pass/fail
       examples.
-- [ ] How to run a readiness check before sprint planning.
+- [x] How to run a readiness check before sprint planning.
 
 ### Refinement and Prioritization
 
-- [ ] When and how to run backlog refinement.
-- [ ] How to identify stories that need grooming (scope unclear,
+- [x] When and how to run backlog refinement.
+- [x] How to identify stories that need grooming (scope unclear,
       missing AC, stale dependencies).
-- [ ] How milestones inform prioritization — capability goals
+- [x] How milestones inform prioritization — capability goals
       vs sprint timeboxes.
 
 ### Milestones
 
-- [ ] Difference between milestones and sprints explained.
-- [ ] How to assign stories to milestones.
-- [ ] How to propose new milestones or reorganize existing ones.
+- [x] Difference between milestones and sprints explained.
+- [x] How to assign stories to milestones.
+- [x] How to propose new milestones or reorganize existing ones.
 
 ## Dependencies
 

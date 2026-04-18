@@ -7,10 +7,10 @@ Configure GitHub branch protection rules on main so that no code lands without p
 Prevents accidental force-pushes, ensures every merge is reviewed, and makes the quality gate non-negotiable.
 
 ## Acceptance Criteria
-- [ ] main branch requires pull request with at least 1 approval
-- [ ] Status checks (CI workflow) are required to pass before merge
-- [ ] Force-push and deletion are disabled on main
-- [ ] Admin enforcement is enabled (no bypass)
-- [ ] Branch protection rules are documented in CONTRIBUTING.md
+- [x] main branch requires pull request with at least 1 approval
+- [x] Status checks (CI workflow) are required to pass before merge
+- [x] Force-push and deletion are disabled on main
+- [x] Admin enforcement is enabled (no bypass)
+- [x] Branch protection rules are documented in CONTRIBUTING.md
 
 ## Emotional Guarantees: N/A

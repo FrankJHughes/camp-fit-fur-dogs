@@ -17,14 +17,14 @@ The proving slice (US-084) needs to call the RegisterDog API endpoint. Rather th
 
 ## Acceptance Criteria
 
-- [ ] Typed API client module created with generic request/response handling.
-- [ ] TypeScript types enforce compile-time safety on API calls.
-- [ ] Network errors produce meaningful error objects.
-- [ ] HTTP errors (4xx/5xx) produce typed error objects.
-- [ ] Validation errors produce field-level error objects.
-- [ ] Base URL configuration supports dev proxy and production.
-- [ ] API client usage guide documents how to add a new typed endpoint call.
-- [ ] All tests pass in CI.
+- [x] Typed API client module created with generic request/response handling.
+- [x] TypeScript types enforce compile-time safety on API calls.
+- [x] Network errors produce meaningful error objects.
+- [x] HTTP errors (4xx/5xx) produce typed error objects.
+- [x] Validation errors produce field-level error objects.
+- [x] Base URL configuration supports dev proxy and production.
+- [x] API client usage guide documents how to add a new typed endpoint call.
+- [x] All tests pass in CI.
 
 ## Dependencies
 

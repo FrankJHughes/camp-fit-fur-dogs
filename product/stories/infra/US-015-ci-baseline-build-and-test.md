@@ -7,9 +7,9 @@ Create a GitHub Actions workflow that builds the solution and runs tests on ever
 Catches regressions before merge, establishes the quality gate that all other CI enhancements build upon.
 
 ## Acceptance Criteria
-- [ ] .github/workflows/ci.yml triggers on push and pull_request to main
-- [ ] Workflow restores, builds, and tests the .NET solution
-- [ ] Build status badge is embedded in README.md
-- [ ] Workflow completes in under 3 minutes
+- [x] .github/workflows/ci.yml triggers on push and pull_request to main
+- [x] Workflow restores, builds, and tests the .NET solution
+- [x] Build status badge is embedded in README.md
+- [x] Workflow completes in under 3 minutes
 
 ## Emotional Guarantees: N/A

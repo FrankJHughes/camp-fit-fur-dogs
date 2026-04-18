@@ -72,18 +72,18 @@ given type before assigning the next.
 
 ### Convention Definition
 
-- [ ] The naming pattern `{TYPE}-{NNN}-{kebab-name}.md` is documented
+- [x] The naming pattern `{TYPE}-{NNN}-{kebab-name}.md` is documented
       in an ADR (0009) with status Accepted.
-- [ ] The ADR defines exactly three type prefixes: `US` (user story),
+- [x] The ADR defines exactly three type prefixes: `US` (user story),
       `SP` (spike), `CH` (chore).
-- [ ] The ADR specifies that numbering is three-digit, zero-padded,
+- [x] The ADR specifies that numbering is three-digit, zero-padded,
       sequential per type, and global across all domain directories.
 
 ### Retroactive Rename
 
-- [ ] Every existing product story under `product/stories/` is
+- [x] Every existing product story under `product/stories/` is
       renamed to follow the convention.
-- [ ] The rename mapping is:
+- [x] The rename mapping is:
 
       | Current Name | New Name |
       |---|---|
@@ -99,24 +99,24 @@ given type before assigning the next.
       | `product-owner-contributor-guide.md` | `US-010-product-owner-contributor-guide.md` |
       | `scrum-master-contributor-guide.md` | `US-011-scrum-master-contributor-guide.md` |
 
-- [ ] No story file exists under `product/stories/` that does not
+- [x] No story file exists under `product/stories/` that does not
       match the `{TYPE}-{NNN}-{kebab-name}.md` pattern (excluding
       `_template.md`).
 
 ### Scaffold Tool Alignment
 
-- [ ] The scaffold tool story (US-006) is updated to include a
+- [x] The scaffold tool story (US-006) is updated to include a
       `--type` flag accepting `US`, `SP`, or `CH` (default: `US`).
-- [ ] The scaffold tool story specifies that the tool scans all
+- [x] The scaffold tool story specifies that the tool scans all
       domain directories to find the highest existing number for
       the requested type before assigning the next.
 
 ### Cross-References
 
-- [ ] Any internal references to renamed story files (in other
+- [x] Any internal references to renamed story files (in other
       stories, ADRs, or documentation) are updated to use the
       new file names.
-- [ ] The ADR index (`docs/adr/README.md`) includes ADR-0009.
+- [x] The ADR index (`docs/adr/README.md`) includes ADR-0009.
 
 ## Dependencies
 

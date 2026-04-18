@@ -18,13 +18,13 @@ Sprint 4 Phase 2. After the proving slice (US-084) ships, we know what a real sl
 
 ## Acceptance Criteria
 
-- [ ] All handlers discovered and registered by assembly scanning convention.
-- [ ] All validators discovered and registered by assembly scanning convention.
-- [ ] All repositories discovered and registered by convention.
-- [ ] Zero manual registration in `Program.cs` or startup for slice-specific types.
-- [ ] Existing RegisterDog slice (US-084) still works after refactor.
-- [ ] New slice addition requires only adding files in the slice folder — no shared file edits.
-- [ ] Convention rules documented: file/folder naming contracts and discovery rules.
+- [x] All handlers discovered and registered by assembly scanning convention.
+- [x] All validators discovered and registered by assembly scanning convention.
+- [x] All repositories discovered and registered by convention.
+- [x] Zero manual registration in `Program.cs` or startup for slice-specific types.
+- [x] Existing RegisterDog slice (US-084) still works after refactor.
+- [x] New slice addition requires only adding files in the slice folder — no shared file edits.
+- [x] Convention rules documented: file/folder naming contracts and discovery rules.
 
 ## Dependencies
 
