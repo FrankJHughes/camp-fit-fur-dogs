@@ -22,7 +22,7 @@ public sealed class CreateCustomerHandler
             throw new EmailAlreadyExistsException(email.Value);
 
         var phone = PhoneNumber.From(request.Phone);
-        var passwordHash = PasswordHash.From(HashPassword(request.Password));
+        var passwordHash = PasswordHash.Create(request.Password);
 
         var customer = Customer.Create(
             request.FirstName,

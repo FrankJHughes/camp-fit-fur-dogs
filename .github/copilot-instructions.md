@@ -141,6 +141,16 @@ Endpoints never accept user identity (e.g., `OwnerId`) from the request body. Id
 - **Tests:** `TestCurrentUserService` (Api.Tests) exposes a settable `CurrentUserId`. The test factory overrides the DI registration so tests control which user the endpoint sees.
 - **Pattern:** Endpoint binds a DTO (e.g., `RegisterDogRequest`), injects `ICurrentUserService`, and constructs the command by combining both.
 
+### Password Hashing
+
+- **Algorithm:** BCrypt via `BCrypt.Net-Next` (default work factor 11).
+- **Location:** `PasswordHash` value object in the Domain layer — BCrypt is pure computation, not an infrastructure concern.
+- **Two entry points:**
+  - `PasswordHash.Create(plaintext)` — write path (registration, password change). Hashes and returns a new value object.
+  - `PasswordHash.Verify(plaintext)` — read path (login). Compares plaintext against the stored hash.
+  - `PasswordHash.From(hashedValue)` — rehydration path (EF Core loading from DB). Wraps an existing hash string.
+- **Never store plaintext or reversible encodings** (base64, hex) in the database.
+
 ---
 
 ## Frontend
