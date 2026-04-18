@@ -292,42 +292,13 @@ When closing a milestone:
 
 ### Current milestones
 
-| Milestone | Goal |
-|-----------|------|
-| M1: First Customer Vertical | Account + dog registration + profile view |
-| M2: Complete Dog Management | Full CRUD + edge cases for dog records |
-| M3: Portfolio Showcase | Project documented, tooled, and presentable |
+See the [Product Owner Guide — Milestones](product-owner-guide.md#milestones) for the authoritative milestone table.
 
 ## Merge Governance
 
-### Branch protection
+See [copilot-instructions.md — Source Control](../../.github/copilot-instructions.md) for the authoritative branch protection settings, branching model, and PR conventions.
 
-The `main` branch is protected:
-
-- Direct pushes are blocked — all changes go through PRs.
-- At least one CODEOWNERS approval is required.
-- All CI status checks must pass before merge.
-- Squash-merge is the default strategy.
-
-### CODEOWNERS
-
-The `CODEOWNERS` file defines who must review PRs based on file paths.
-When a PR touches files in a protected path, the corresponding owners
-are auto-assigned as reviewers.
-
-Review the current CODEOWNERS at
-[`CODEOWNERS`](../../CODEOWNERS).
-
-### PR checklist
-
-Before approving a PR:
-
-- [ ] Code compiles with zero warnings.
-- [ ] All tests pass.
-- [ ] New code has appropriate test coverage.
-- [ ] No unrelated changes bundled.
-- [ ] Commit messages follow the convention.
-- [ ] Story AC are addressed (check the linked issue).
+See the [Pull Request Template](../../.github/PULL_REQUEST_TEMPLATE.md) for the enforced merge checklist.
 
 ### Handling stale branches
 
@@ -362,13 +333,7 @@ Use consistent colors per sprint for visual distinction on the board.
 
 ## Conventions Review
 
-At each sprint closing, review [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md) for staleness:
-
-- Do the standing rules still match how the team works?
-- Did the retrospective surface lessons learned that should be added?
-- Are there conventions in the document that are no longer relevant?
-
-Include any updates in the sprint closing PR.
+At each sprint closing, review [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md) for staleness. See its §Maintaining This Document section for the full review checklist.
 ## Getting Help
 
 - Check the [Product Owner Guide](product-owner-guide.md) for story

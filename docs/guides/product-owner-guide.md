@@ -319,11 +319,7 @@ When priorities shift:
 
 ## Conventions Maintenance
 
-Project conventions live in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md). The Product Owner is responsible for ensuring that:
-
-- Story acceptance criteria reference relevant conventions when applicable
-- New process decisions from retrospectives are captured as standing rules or lessons learned
-- The conventions document stays aligned with the product backlog and Definition of Ready
+Project conventions live in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md). See its §Maintaining This Document section for the full review checklist. The Product Owner ensures new process decisions from retrospectives are captured there.
 ## Getting Help
 
 - Check the [Scrum Master Guide](scrum-master-guide.md) for sprint
