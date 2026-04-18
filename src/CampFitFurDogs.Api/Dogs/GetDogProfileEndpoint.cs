@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions;
-using CampFitFurDogs.Application.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 
 namespace CampFitFurDogs.Api.Dogs;
 
@@ -9,23 +9,14 @@ public static class GetDogProfileEndpoint
     {
         app.MapGet("/{id}", async (
             Guid id,
-            Guid customerId,
+            ICurrentUserService currentUser,
             IQueryDispatcher dispatcher) =>
         {
-            try
-            {
-                var query = new GetDogProfileQuery(id, customerId);
-                var result = await dispatcher.Dispatch(query, CancellationToken.None);
-                return Results.Ok(result);
-            }
-            catch (KeyNotFoundException)
-            {
-                return Results.NotFound();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Results.NotFound();
-            }
+            var query = new GetDogProfileQuery(id, currentUser.CurrentUserId);
+            var result = await dispatcher.DispatchAsync(query, CancellationToken.None);
+            return result is null
+                ? Results.NotFound()
+                : Results.Ok(result);
         });
     }
 }

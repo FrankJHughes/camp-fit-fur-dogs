@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions;
-using CampFitFurDogs.Application.Dogs.RegisterDog;
+using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 
 namespace CampFitFurDogs.Api.Dogs;
 
@@ -12,22 +12,15 @@ public static class RegisterDogEndpoint
             ICurrentUserService currentUserService,
             ICommandDispatcher dispatcher) =>
         {
-            try
-            {
-                var command = new RegisterDogCommand(
-                    currentUserService.GetCurrentUserId(),
-                    request.Name,
-                    request.Breed,
-                    request.DateOfBirth,
-                    request.Sex);
+            var command = new RegisterDogCommand(
+                currentUserService.CurrentUserId,
+                request.Name,
+                request.Breed,
+                DateOnly.Parse(request.DateOfBirth),
+                request.Sex);
 
-                var id = await dispatcher.Dispatch(command, CancellationToken.None);
-                return Results.Created($"/api/dogs/{id}", new { DogId = id });
-            }
-            catch (ArgumentException ex)
-            {
-                return Results.BadRequest(new { Error = ex.Message.Split(" (Parameter")[0] });
-            }
+            var result = await dispatcher.DispatchAsync(command, CancellationToken.None);
+            return Results.Created($"/api/dogs/{result}", new { DogId = result });
         });
     }
 }
