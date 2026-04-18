@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - `RegisterDogRequest` API DTO — request body no longer includes `OwnerId` (#118)
 - `DummyCurrentUserService` pre-auth placeholder in Infrastructure (#118)
 - `ApiTestHelpers` shared test utilities for owner/dog creation (#118)
+- `BCrypt.Net-Next` NuGet package dependency in Domain layer (#154)
 
 ### Changed
 
@@ -27,6 +28,8 @@ All notable changes to this project will be documented in this file.
 
 - `.devcontainer/devcontainer.json` — adds `TESTCONTAINERS_RYUK_DISABLED` and `TESTCONTAINERS_HOST_OVERRIDE` for docker-outside-of-docker Testcontainers compatibility
 - Root `.gitignore` — moves `node_modules/` and `.next/` to `frontend/src/.gitignore`; adds scratch file exclusions
+- `PasswordHash` value object uses BCrypt (`BCrypt.Net-Next`) instead of base64 encoding; added `Create()` and `Verify()` methods (#154)
+- `CreateCustomerHandler` delegates hashing to `PasswordHash.Create()` — removed inline `HashPassword()` helper (#154)
 
 ## [Sprint 3] — 2026-04-11
 
