@@ -15,11 +15,11 @@ The codebase uses a command/query separation pattern with handler dispatch. Befo
 
 ## Acceptance Criteria
 
-- [ ] ADR created in `docs/adr/` following the existing ADR template.
-- [ ] Documents the command/query separation pattern used in the codebase.
-- [ ] Documents pipeline behavior (validation, logging, transaction) approach.
-- [ ] Documents handler discovery and dispatch mechanism.
-- [ ] ADR index (`docs/adr/README.md`) updated with the new entry.
+- [x] ADR created in `docs/adr/` following the existing ADR template.
+- [x] Documents the command/query separation pattern used in the codebase.
+- [x] Documents pipeline behavior (validation, logging, transaction) approach.
+- [x] Documents handler discovery and dispatch mechanism.
+- [x] ADR index (`docs/adr/README.md`) updated with the new entry.
 
 ## Dependencies
 

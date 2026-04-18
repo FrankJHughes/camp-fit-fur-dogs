@@ -15,11 +15,11 @@ The team has informally decided on React with Next.js and TypeScript for the fro
 
 ## Acceptance Criteria
 
-- [ ] ADR-0012 created in `docs/adr/` following the existing ADR template.
-- [ ] Documents the decision to use React with Next.js and TypeScript.
-- [ ] Captures alternatives considered (e.g., Blazor, Angular, Vue).
-- [ ] Documents consequences: build tooling, deployment model, API integration approach.
-- [ ] ADR index (`docs/adr/README.md`) updated with the new entry.
+- [x] ADR-0012 created in `docs/adr/` following the existing ADR template.
+- [x] Documents the decision to use React with Next.js and TypeScript.
+- [x] Captures alternatives considered (e.g., Blazor, Angular, Vue).
+- [x] Documents consequences: build tooling, deployment model, API integration approach.
+- [x] ADR index (`docs/adr/README.md`) updated with the new entry.
 
 ## Dependencies
 
