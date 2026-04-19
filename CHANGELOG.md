@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - `AppDbContextAutoDiscoveryGuardrailTests` — guardrail ensuring no `DbSet<T>` properties on `AppDbContext` (US-107)
+- `GetDogProfileReaderTests` — 3 integration tests: profile found, not found, wrong owner (US-107)
 - `IEndpoint` interface with static abstract `Map` method — assembly-scanned endpoint auto-discovery (US-106; ADR-0020)
 - `IGetDogProfileReader` / `GetDogProfileReader` — query-side reader isolation, query handlers no longer depend on repositories (US-106; ADR-0021)
 - `FakeGetDogProfileReader` test double for query handler unit tests (US-106)
@@ -24,6 +25,11 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - `AppDbContext` uses `ApplyConfigurationsFromAssembly` — eliminates per-entity `ApplyConfiguration` calls (US-107)
 - `DogRepository` + `CustomerRepository` use `Set<T>()` — eliminates dependency on `DbSet<T>` properties (US-107)
+- `GetDogProfileReader` uses `Set<T>()` instead of `DbSet<T>` property (US-107)
+- ADR-0015 amended with EF configuration auto-discovery scope (US-107)
+- `copilot-instructions.md` — added EF Core Conventions section (US-107)
+- `di-conventions.md` — added Section 6: EF Entity Configuration Conventions (US-107)
+- `folder-structure.md` — added `Configuration.cs` to slice anatomy, Infrastructure template, and contributor steps (US-107)
 - `GetDogProfileHandler` depends on `IGetDogProfileReader` instead of `IDogRepository` (US-106)
 - Endpoint classes implement `IEndpoint`; group files (`CustomerEndpoints.cs`, `DogEndpoints.cs`) eliminated (US-106)
 - `Endpoints.MapEndpoints()` uses assembly scanning instead of manual wiring (US-106)
