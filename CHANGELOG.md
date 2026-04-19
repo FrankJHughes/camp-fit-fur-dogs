@@ -74,10 +74,14 @@ All notable changes to this project will be documented in this file.
 
 | Story  | Title                        | Issue |
 |--------|------------------------------|-------|
-| US-051 | CQRS Command/Query Pipelines | —     |
+| US-051 | CQRS Command/Query Pipelines | #115  |
 | US-055 | Frontend Technology Decision | —     |
 | US-056 | Next.js Project Scaffold     | —     |
+| US-079 | Convention-Based Auto-Registration | #120  |
+| US-083 | API Client Layer                   | #117  |
 | US-084 | Register Dog Page            | #118  |
+| US-102 | API Client Layer                   | #123  |
+| US-103 | Frontend Testing Setup             | #124  |
 
 ### Added
 
