@@ -18,6 +18,26 @@ Three triggers, zero new ceremonies:
 
 ## Standing Rules
 
+## Story Grammar (Required)
+
+All backlog stories **must** begin with the following structure:
+
+**As a <role>, I must/should be able to <verb>… so that <value>…**
+
+Valid roles:
+- Owner
+- Staff
+- Admin
+
+Invalid roles:
+- System
+- API
+- Backend
+- Infrastructure
+- Database
+
+Stories must always reflect a **human actor**, never a technical component.
+
 ### TDD Discipline
 
 - **Red-green-refactor on every layer**: Domain → Application → Infrastructure → API.
