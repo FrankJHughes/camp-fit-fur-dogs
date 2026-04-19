@@ -29,6 +29,7 @@ Single entry point for all Camp Fit Fur Dogs documentation.
 | [Test Architecture](guides/developer/test-architecture.md) | Guardrails, test patterns, layer-specific testing |
 | [DI Conventions](guides/developer/di-conventions.md) | Dependency injection registration rules |
 | [Frontend Testing](guides/developer/frontend-testing.md) | Patterns and conventions for frontend tests |
+| [Feature Slice Walkthrough](guides/developer/feature-slice-walkthrough.md) | Step-by-step TDD walkthrough for adding command and query slices |
 
 ---
 
