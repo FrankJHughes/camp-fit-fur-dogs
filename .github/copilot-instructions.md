@@ -30,6 +30,11 @@ Three triggers, zero new ceremonies:
 - **GitHub Issues are only created when a story is pulled into a sprint.** No pre-created issues for uncommitted work.
 - Sprint board: GitHub Projects board #14.
 
+### Repo Content Lookup
+
+- **Always look in the public GitHub repo first** (browse the website or use raw URLs) before asking the developer to paste content.
+- The repo is public at `frankjhughes/camp-fit-fur-dogs` — there is no reason to block on the developer for file contents that are already available.
+
 ---
 
 ## Source Control
@@ -246,3 +251,5 @@ Targets are scoped by stack. Bare names are aggregates that run both.
 | 5 | Version drift across 11 csproj files caused MSB3277 (EF Core Relational conflict) and silent dependency mismatches | Introduced Central Package Management (`Directory.Packages.props`). New packages must be added there — not in csproj. `CentralPackageTransitivePinningEnabled` prevents transitive conflicts. |
 | 5 | Guardrail tests mixed pure-reflection and DI-dependent tests in one project, slowing CI feedback | Split into `Architecture.Tests` (pure reflection, no host) and `Api.Tests/Guardrails/` (DI-dependent via `GuardrailTestBase`). Routing rule: if it doesn't need `Get<T>()`, it goes in Architecture.Tests. |
 | 6 | Documentation duplicated across 4–6 files (source control rules, DoR, DoD, milestones, conventions, nav hubs) — updates drifted and contradicted each other | Established canonical ownership map: each topic has exactly one authoritative file, all others link to it. Single nav hub in `docs/README.md`. Debloated ~540 lines with zero information loss. |
+
+

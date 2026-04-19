@@ -1,8 +1,8 @@
 # Architecture Decision Records
 
-This directory contains the Architecture Decision Records (ADR) for
-Camp Fit Fur Dogs. See [ADR-0001](0001-use-lightweight-adrs.md) for why
-we use ADRs.
+This directory contains the Architecture Decision Records (ADR) for Camp Fit Fur Dogs.
+
+See [ADR-0001](0001-use-lightweight-adrs.md) for why we use ADRs.
 
 ## Template
 
@@ -28,4 +28,5 @@ New ADRs should follow [TEMPLATE.md](TEMPLATE.md).
 | [0014](0014-dispatcher-pipeline.md) | Application Dispatcher Pipeline | Accepted |
 | [0015](0015-convention-based-auto-registration.md) | Convention-Based Auto-Registration | Accepted |
 | [0017](0017-unit-of-work-pattern.md) | Unit of Work Pattern | Accepted |
-| [0015](0015-convention-based-auto-registration.md) | Convention-Based Auto-Registration | Accepted |
+| [0020](0020-endpoint-auto-discovery.md) | Endpoint Auto-Discovery via IEndpoint | Accepted |
+| [0021](0021-query-side-reader-isolation.md) | Query-Side Reader Isolation | Accepted |

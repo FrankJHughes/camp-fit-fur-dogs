@@ -38,10 +38,11 @@ Each project tests only its corresponding layer, except `Architecture.Tests` whi
 
 ### 2.2 Application.Tests
 
-- Handler tests
+- Handler tests (command and query)
 - Validator tests
 - Dispatcher pipeline tests
 - Domain event dispatch tests
+- Fake test doubles for slice dependencies (e.g., `FakeGetDogProfileReader` for query handlers, fake repositories for command handlers)
 
 ### 2.3 Architecture.Tests
 
@@ -58,7 +59,8 @@ Each project tests only its corresponding layer, except `Architecture.Tests` whi
 
 ### 2.5 Infrastructure.Tests
 
-- Repository tests
+- Repository tests (command-side persistence)
+- Reader tests (query-side data retrieval)
 - Persistence tests
 - External system integration tests
 - Infrastructure guardrails (e.g., no domain logic)
@@ -73,13 +75,14 @@ Guardrail tests enforce architectural purity and prevent regressions. They fall 
 
 These tests need the real DI container to resolve services. They inherit from `GuardrailTestBase`, which boots the test server via `CampFitFurDogsApiFactory` and exposes `Get<T>()` / `GetAll<T>()` helpers.
 
-**Files (12):**
+**Files (14):**
 
 | File | Purpose |
 |------|---------|
 | `GuardrailTestBase.cs` | Abstract base — DI scope helpers |
 | `DiRegistrationScanner.cs` | Static scanner — assembly + DI resolution |
 | `InfrastructureRegistrationGuardrailTests.cs` | `[Theory]` — Repository/Service/Provider registered |
+| `ReaderRegistrationGuardrailTests.cs` | `[Theory]` — Reader types registered via Scrutor |
 | `DispatcherRegistrationGuardrailTests.cs` | Command + DomainEvent dispatchers registered |
 | `NoManualHandlerRegistrationGuardrailTests.cs` | Handlers registered via Scrutor only |
 | `NoManualInfrastructureRegistrationGuardrailTests.cs` | Infra types registered via Scrutor only |
@@ -87,6 +90,7 @@ These tests need the real DI container to resolve services. They inherit from `G
 | `DomainEventHandlerRegistrationGuardrailTests.cs` | Domain event handlers registered |
 | `CurrentUserServiceGuardrailTests.cs` | TestCurrentUserService wiring |
 | `DbContextGuardrailTests.cs` | Npgsql + single DbContext registration |
+| `EndpointConventionGuardrailTests.cs` | Every `*Endpoint` class implements `IEndpoint`; at least one exists |
 | `RouteMappingGuardrailTests.cs` | Route smoke test |
 | `TestcontainersGuardrailTests.cs` | Database connectivity smoke test |
 
@@ -102,6 +106,7 @@ Examples:
 - DTOs must not reference domain entities.
 - Endpoints must not bypass the dispatcher pipeline.
 - SharedKernel must have no upstream dependencies.
+- Query handlers must not depend on repository interfaces (ADR-0021).
 
 ### 3.3 When to Use Which
 
@@ -126,12 +131,18 @@ Guardrail tests should:
 
 ### 4.2 Handler Tests
 
-Handler tests should:
+**Command handler tests** should:
 
 - Test business logic in isolation.
 - Mock repositories or external services.
 - Avoid testing validation (that belongs to validator tests).
 - Inject `FakeUnitOfWork` alongside fake repositories. Assert `Committed` is `true` and verify `CommitCount` for commit behavior.
+
+**Query handler tests** should:
+
+- Inject a fake reader (e.g., `FakeGetDogProfileReader`) — never a repository.
+- Assert the handler maps reader output to the correct result DTO.
+- Do not inject `FakeUnitOfWork` — queries have no side effects.
 
 ### 4.3 Validator Tests
 
@@ -164,7 +175,7 @@ Tests may use:
 
 - Builders
 - Factory methods
-- Test doubles
+- Test doubles (fake repositories for commands, fake readers for queries)
 - In-memory repositories (for Infrastructure tests)
 
 Avoid:
@@ -186,12 +197,13 @@ When adding new architecture:
 
 When adding new features:
 
-- Add handler tests.
+- Add handler tests (with fake readers for query slices, fake repositories for command slices).
 - Add validator tests.
 - Add domain tests.
 - Add endpoint tests.
 - Ensure existing guardrails still pass.
-- Handler tests must verify `IUnitOfWork.CommitAsync` is called on the happy path and not called on validation/guard failures.
+- Command handler tests must verify `IUnitOfWork.CommitAsync` is called on the happy path and not called on validation/guard failures.
+- Query handler tests must **not** use `FakeUnitOfWork` — queries have no side effects.
 
 When modifying existing architecture:
 

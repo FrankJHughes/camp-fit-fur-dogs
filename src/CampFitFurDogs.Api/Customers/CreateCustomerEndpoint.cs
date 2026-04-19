@@ -4,11 +4,11 @@ using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Api.Customers;
 
-public static class CreateCustomerEndpoint
+public class CreateCustomerEndpoint : IEndpoint
 {
-    public static void MapCreateCustomer(this IEndpointRouteBuilder app)
+    public static void Map(IEndpointRouteBuilder app)
     {
-        app.MapPost("/", async (
+        app.MapPost("/customers", async (
             CreateCustomerCommand cmd,
             ICommandDispatcher dispatcher) =>
         {
@@ -19,24 +19,15 @@ public static class CreateCustomerEndpoint
             }
             catch (EmailAlreadyExistsException)
             {
-                return Results.Conflict(new
-                {
-                    Error = "An account with this email already exists. You can sign in or use a different email."
-                });
+                return Results.Conflict(new { Error = "An account with this email already exists. You can sign in or use a different email." });
             }
             catch (ArgumentNullException ex)
             {
-                return Results.BadRequest(new
-                {
-                    Error = FormatValidationMessage(ex.ParamName)
-                });
+                return Results.BadRequest(new { Error = FormatValidationMessage(ex.ParamName) });
             }
             catch (ArgumentException ex)
             {
-                return Results.BadRequest(new
-                {
-                    Error = ex.Message.Split(" (Parameter")[0]
-                });
+                return Results.BadRequest(new { Error = ex.Message.Split(" (Parameter")[0] });
             }
         });
     }

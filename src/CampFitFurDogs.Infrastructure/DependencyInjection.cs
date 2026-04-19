@@ -37,6 +37,10 @@ public static class DependencyInjection
             .AddClasses(c => c.Where(type => type.Name.EndsWith("Provider")))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
+
+            .AddClasses(c => c.Where(type => type.Name.EndsWith("Reader")))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
         );
 
         // 3. Unit of Work (explicit — not matched by Scrutor suffixes)
@@ -48,3 +52,4 @@ public static class DependencyInjection
         return services;
     }
 }
+

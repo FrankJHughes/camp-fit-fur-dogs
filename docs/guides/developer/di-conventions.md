@@ -1,5 +1,5 @@
-# Dependency Injection Conventions  
-**Convention‑Based Auto‑Registration for Handlers, Validators, and Repositories**
+# Dependency Injection Conventions
+**Convention‑Based Auto‑Registration for Handlers, Validators, Repositories, and Readers**
 
 This guide documents the conventions used for automatic discovery and registration of slice‑specific types in the Application and Infrastructure layers. Contributors should follow these conventions when adding new slices or modifying existing ones.
 
@@ -11,10 +11,11 @@ These conventions eliminate the need for manual DI wiring in `Program.cs` or sha
 
 The project uses **assembly scanning** to automatically register:
 
-- Command handlers  
-- Query handlers  
-- Validators  
-- Repositories  
+- Command handlers
+- Query handlers
+- Validators
+- Repositories
+- Readers
 
 This scanning is convention‑based: if a type follows the naming and folder rules described below, it will be discovered and registered automatically.
 
@@ -31,7 +32,8 @@ Each vertical slice follows this structure:
   Handlers/
   Validators/
   Models/
-  Repositories/        (Infrastructure only)
+  Repositories/        (Infrastructure only — command slices)
+  Readers/             (Infrastructure only — query slices)
 ```
 
 Slices live in:
@@ -143,7 +145,7 @@ Example:
 Repositories live in Infrastructure:
 
 ```
-src/CampFitFurDogs.Infrastructure/<Feature>/Repositories/
+src/CampFitFurDogs.Infrastructure/<Feature>/
 ```
 
 ## Registration
@@ -157,9 +159,62 @@ services.Scan(scan => scan
     .WithScopedLifetime());
 ```
 
+## Scope
+Repositories are for **command handlers only**. They return domain aggregates for invariant enforcement. Query handlers must not depend on repository interfaces — use readers instead (see Section 6).
+
 ---
 
-# 6. Zero Manual Registration
+# 6. Reader Conventions
+
+## Naming
+Readers must end with:
+
+```
+Reader
+```
+
+Examples:
+
+- `GetDogProfileReader`
+- `ListDogsReader`
+
+## Interfaces
+Reader interfaces live in **Application.Abstractions**, named after the slice:
+
+```
+I<UseCase>Reader
+```
+
+Example:
+
+- `IGetDogProfileReader` → `GetDogProfileReader`
+
+## Location
+Reader implementations live in Infrastructure:
+
+```
+src/CampFitFurDogs.Infrastructure/<Feature>/
+```
+
+## Registration
+Readers are registered automatically via Scrutor's suffix scan:
+
+```csharp
+services.Scan(scan => scan
+    .FromAssemblyOf<Infrastructure.DependencyInjection>()
+    .AddClasses(c => c.Where(t => t.Name.EndsWith("Reader")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+```
+
+## Scope
+Readers are for **query handlers only**. They return response DTOs directly — no domain aggregates cross the boundary. This enforces the CQRS read/write split (ADR-0021).
+
+An architecture guardrail test enforces this: no `IQueryHandler` implementation may depend on any interface ending in `Repository`.
+
+---
+
+# 7. Zero Manual Registration
 
 `Program.cs` must contain only:
 
@@ -170,17 +225,17 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 No slice‑specific types may be registered manually.
 
-If a contributor finds themselves editing DI code to add a handler, validator, or repository, the slice is violating conventions.
+If a contributor finds themselves editing DI code to add a handler, validator, repository, or reader, the slice is violating conventions.
 
 **Exception — cross-cutting infrastructure types.** Types that serve all slices but do not match Scrutor's suffix scan (e.g., `EfUnitOfWork` implementing `IUnitOfWork`) are registered explicitly in `Infrastructure/DependencyInjection.cs`. These are shared infrastructure, not slice-specific. See ADR-0017.
 
 ---
 
-# 7. Troubleshooting
+# 8. Troubleshooting
 
 If a type is not being registered:
 
-1. Ensure the class name ends with `Handler`, `Validator`, or `Repository`.
+1. Ensure the class name ends with `Handler`, `Validator`, `Repository`, or `Reader`.
 2. Ensure the class implements the correct interface.
 3. Ensure the class is public.
 4. Ensure the class is in the Application or Infrastructure assembly.
@@ -190,28 +245,30 @@ If all conventions are followed, the type will be discovered automatically.
 
 ---
 
-# 8. Regression Guarantee
+# 9. Regression Guarantee
 
-The RegisterDog slice (US‑084) serves as the proving slice.  
-If auto‑registration breaks, the RegisterDog flow will fail, signaling a regression.
+The RegisterDog slice (US‑084) serves as the proving slice for command-side conventions.
+The GetDogProfile slice (US-106) serves as the proving slice for query-side conventions.
+If auto‑registration breaks, these flows will fail, signaling a regression.
 
 ---
 
-# 9. Contributor Expectations
+# 10. Contributor Expectations
 
 When adding a new slice:
 
 - Create the slice folder under Application and Infrastructure.
-- Add commands, queries, handlers, validators, and repositories following naming conventions.
+- Add commands, queries, handlers, validators, repositories (command slices), and readers (query slices) following naming conventions.
 - Do **not** modify DI configuration.
 - Do **not** add manual registrations.
 - Do **not** modify shared files.
 
-If the slice follows conventions, it will “just work.”
+If the slice follows conventions, it will "just work."
 
 ---
 
-# 10. Related Documents
+# 11. Related Documents
 
-- ADR‑00xx — Convention‑Based Auto‑Registration (decision record)
+- ADR‑0015 — Convention‑Based Auto‑Registration (decision record)
+- ADR-0021 — Query-Side Reader Isolation (decision record)
 - `developer-guide.md` — High‑level contributor workflow

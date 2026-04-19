@@ -5,18 +5,16 @@ using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 
-
-
 namespace CampFitFurDogs.Application.Tests.Dogs.GetDogProfile;
 
 public class GetDogProfileHandlerTests
 {
-    private readonly FakeDogRepository _repo = new();
+    private readonly FakeGetDogProfileReader _reader = new();
     private readonly GetDogProfileHandler _handler;
 
     public GetDogProfileHandlerTests()
     {
-        _handler = new GetDogProfileHandler(_repo);
+        _handler = new GetDogProfileHandler(_reader);
     }
 
     [Fact]
@@ -30,7 +28,7 @@ public class GetDogProfileHandlerTests
             new DateOnly(2022, 6, 15),
             Sex.Female);
 
-        await _repo.AddAsync(dog);
+        _reader.Add(dog);
 
         var query = new GetDogProfileQuery(dog.Id.Value, ownerId.Value);
 
@@ -55,7 +53,6 @@ public class GetDogProfileHandlerTests
     [Fact]
     public async Task Handle_DogExistsButNotOwnedByCustomer_ReturnsNull()
     {
-        // Arrange
         var ownerA = Guid.NewGuid();
         var ownerB = Guid.NewGuid();
 
@@ -64,21 +61,15 @@ public class GetDogProfileHandlerTests
             DogName.Create("Biscuit"),
             Breed.Create("Golden Retriever"),
             new DateOnly(2022, 6, 15),
-            Sex.Female
-        );
+            Sex.Female);
 
-        var repo = new FakeDogRepository();
-        await repo.AddAsync(dog, CancellationToken.None);
+        _reader.Add(dog);
 
-        var handler = new GetDogProfileHandler(repo);
-
+        var handler = new GetDogProfileHandler(_reader);
         var query = new GetDogProfileQuery(dog.Id.Value, ownerB);
 
-        // Act
         var result = await handler.Handle(query, CancellationToken.None);
 
-        // Assert
         result.Should().BeNull();
     }
-
 }
