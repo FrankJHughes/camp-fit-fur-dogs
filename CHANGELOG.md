@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [Sprint 5] — 2026-04-18
+
+### Completed Stories
+
+| Story  | Title                                      | Issue |
+|--------|--------------------------------------------|-------|
+| US-029 | View Dog Profile (Frontend)                | #153  |
+| US-049 | Secure Password Hashing                    | #154  |
+| US-050 | Unit of Work                               | #155  |
+| US-052 | Developer Guide: Feature Slice Walkthrough | #150  |
+| US-104 | Architecture Test Consolidation            | #159  |
+| US-105 | Doc Debloat                                | #160  |
+| US-106 | Add-Only Slice Architecture                | #163  |
+| US-107 | EF Entity Auto-Discovery                   | #165  |
+
 ### Added
 - `feature-slice-walkthrough.md` — step-by-step TDD walkthrough for adding command and query slices (US-052)
 - `AppDbContextAutoDiscoveryGuardrailTests` — guardrail ensuring no `DbSet<T>` properties on `AppDbContext` (US-107)
