@@ -3,11 +3,11 @@ using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 
 namespace CampFitFurDogs.Api.Dogs;
 
-public static class RegisterDogEndpoint
+public class RegisterDogEndpoint : IEndpoint
 {
-    public static void MapRegisterDog(this IEndpointRouteBuilder app)
+    public static void Map(IEndpointRouteBuilder app)
     {
-        app.MapPost("/", async (
+        app.MapPost("/dogs", async (
             RegisterDogRequest request,
             ICurrentUserService currentUserService,
             ICommandDispatcher dispatcher) =>
@@ -20,6 +20,7 @@ public static class RegisterDogEndpoint
                 request.Sex);
 
             var result = await dispatcher.DispatchAsync(command, CancellationToken.None);
+
             return Results.Created($"/api/dogs/{result}", new { DogId = result });
         });
     }

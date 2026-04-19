@@ -77,6 +77,17 @@ Rejected due to added tooling complexity and reduced flexibility during rapid it
 - Misnamed or misplaced types silently fail to register (mitigated by guardrails)  
 - Assembly scanning adds minimal startup overhead (acceptable for this project)
 
+
+## Amendment — US-107 (Sprint 5)
+
+EF entity configurations (`IEntityTypeConfiguration<T>`) are now auto-discovered via `ApplyConfigurationsFromAssembly`, extending the convention-based philosophy to the persistence layer:
+
+- Entity configurations implement `IEntityTypeConfiguration<T>` and live in `Infrastructure/<Feature>/`
+- `AppDbContext.OnModelCreating` calls `ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly)` — no individual `ApplyConfiguration` calls
+- `AppDbContext` exposes zero `DbSet<T>` properties — repositories and readers use `Set<T>()`
+- A guardrail test (`AppDbContextAutoDiscoveryGuardrailTests`) enforces the zero-`DbSet` constraint
+
+This eliminates the last two modification points when scaffolding a new aggregate root.
 ## Notes  
 The detailed conventions, folder structure, and contributor expectations are documented in:
 

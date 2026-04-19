@@ -49,6 +49,7 @@ src/
         RegisterDogResult.cs
         GetDogProfileQuery.cs
         GetDogProfileResult.cs
+        IGetDogProfileReader.cs
 
     Dogs/
       RegisterDog/
@@ -66,6 +67,8 @@ src/
   CampFitFurDogs.Infrastructure/
     Dogs/
       DogRepository.cs
+      DogConfiguration.cs
+      GetDogProfileReader.cs
 
   CampFitFurDogs.Api/
     Dogs/
@@ -75,10 +78,10 @@ src/
 
 Each slice contains:
 
-- **Abstractions** — commands, queries, results.
+- **Abstractions** — commands, queries, results, reader interfaces.
 - **Application** — handlers, validators.
 - **Domain** — entities, value objects, domain events.
-- **Infrastructure** — repositories, persistence.
+- **Infrastructure** — repositories (commands), readers (queries), persistence.
 - **Api** — endpoints.
 
 ---
@@ -138,6 +141,7 @@ Application/<Feature>/
 Application/Abstractions/<Feature>/
   <UseCase>Command.cs
   <UseCase>Result.cs
+  I<UseCase>Reader.cs          # query slices only
 ```
 
 ### 4.3 Domain Structure
@@ -154,6 +158,8 @@ Domain/<Feature>/
 ```
 Infrastructure/<Feature>/
   <Entity>Repository.cs
+  <Entity>Configuration.cs
+  <UseCase>Reader.cs          # query slices only
 ```
 
 ### 4.5 Api Structure
@@ -197,12 +203,12 @@ Api/<Feature>/
 
 When adding a new feature:
 
-1. Add commands/queries/results to **Abstractions**.
+1. Add commands/queries/results and reader interfaces (query slices) to **Abstractions**.
 2. Add handlers/validators to **Application**.
 3. Add domain entities/events to **Domain**.
-4. Add repositories to **Infrastructure**.
+4. Add repositories (command slices), readers (query slices), and entity configurations to **Infrastructure**.
 5. Inject `IUnitOfWork` in command handlers and call `CommitAsync` after repository operations.
-6. Add endpoints to **Api**.
+6. Add endpoints to **Api** — each endpoint class implements `IEndpoint`.
 7. Add tests to the corresponding test project. Pure-reflection guardrails go in Architecture.Tests; DI-dependent guardrails go in Api.Tests/Guardrails/.
 8. Follow naming conventions strictly.
 9. Do not bypass the dispatcher pipeline.

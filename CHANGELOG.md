@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- `AppDbContextAutoDiscoveryGuardrailTests` — guardrail ensuring no `DbSet<T>` properties on `AppDbContext` (US-107)
+- `GetDogProfileReaderTests` — 3 integration tests: profile found, not found, wrong owner (US-107)
+- `IEndpoint` interface with static abstract `Map` method — assembly-scanned endpoint auto-discovery (US-106; ADR-0020)
+- `IGetDogProfileReader` / `GetDogProfileReader` — query-side reader isolation, query handlers no longer depend on repositories (US-106; ADR-0021)
+- `FakeGetDogProfileReader` test double for query handler unit tests (US-106)
+- Architecture guardrail: query handlers must not depend on repository interfaces (US-106)
+- Architecture guardrail: every `*Endpoint` class must implement `IEndpoint` (US-106)
+- Architecture guardrail: at least one `IEndpoint` implementation exists (US-106)
+- Scrutor scan for `Reader` suffix in Infrastructure DI (US-106)
+- ADR-0020: Endpoint Auto-Discovery via IEndpoint (US-106)
+- ADR-0021: Query-Side Reader Isolation (US-106)
 
 - View Dog Profile frontend slice — `/dogs/[id]` page with 13 tests (US-029; see `frontend/CHANGELOG.md`)
 - `BCrypt.Net-Next` NuGet package dependency in Domain layer (#154)
@@ -12,6 +23,16 @@ All notable changes to this project will be documented in this file.
 - `Directory.Packages.props` — Central Package Management for all 17 NuGet dependencies with transitive pinning (US-104)
 
 ### Changed
+- `AppDbContext` uses `ApplyConfigurationsFromAssembly` — eliminates per-entity `ApplyConfiguration` calls (US-107)
+- `DogRepository` + `CustomerRepository` use `Set<T>()` — eliminates dependency on `DbSet<T>` properties (US-107)
+- `GetDogProfileReader` uses `Set<T>()` instead of `DbSet<T>` property (US-107)
+- ADR-0015 amended with EF configuration auto-discovery scope (US-107)
+- `copilot-instructions.md` — added EF Core Conventions section (US-107)
+- `di-conventions.md` — added Section 6: EF Entity Configuration Conventions (US-107)
+- `folder-structure.md` — added `Configuration.cs` to slice anatomy, Infrastructure template, and contributor steps (US-107)
+- `GetDogProfileHandler` depends on `IGetDogProfileReader` instead of `IDogRepository` (US-106)
+- Endpoint classes implement `IEndpoint`; group files (`CustomerEndpoints.cs`, `DogEndpoints.cs`) eliminated (US-106)
+- `Endpoints.MapEndpoints()` uses assembly scanning instead of manual wiring (US-106)
 
 - `PasswordHash` value object uses BCrypt (`BCrypt.Net-Next`) instead of base64 encoding; added `Create()` and `Verify()` methods (#154)
 - `CreateCustomerHandler` delegates hashing to `PasswordHash.Create()` — removed inline `HashPassword()` helper (#154)
@@ -25,6 +46,7 @@ All notable changes to this project will be documented in this file.
 - All `Version=` attributes stripped from 11 csproj files — versions now managed centrally (US-104)
 
 ### Removed
+- `DbSet<Customer>` and `DbSet<Dog>` properties from `AppDbContext` — entity access now uses `Set<T>()` (US-107)
 
 - Stale `.gitkeep` files from test projects containing real content (US-104)
 - Orphaned `Guardrails/Architecture/` subfolder — sole file flattened up (US-104)
@@ -210,3 +232,5 @@ All notable changes to this project will be documented in this file.
 - `global.json` pinning .NET SDK version
 - Product vision, capability themes, emotional guarantees, definition of ready
 - 44 product stories across infra, docs, and customer domains
+
+
