@@ -103,9 +103,22 @@ It ensures fast feedback, clean commits, and consistent architecture.
 
 The developer loop is the heartbeat of the project.
 
+
 ---
 
-## 4. Quick Links
+## 4. Adding a New Feature Slice
+
+The project follows a strict TDD sequence for every vertical slice:
+
+- **Command slices** (write path): Domain → Application → Infrastructure → API
+- **Query slices** (read path): Application → Infrastructure → API
+
+Each step starts with a failing test. The walkthrough covers file naming, folder placement, and the conventions that make every slice purely additive (no shared files to modify).
+
+See [Feature Slice Walkthrough](developer/feature-slice-walkthrough.md) for the complete step-by-step guide.
+---
+
+## 5. Quick Links
 
 | Topic | Document |
 |-------|----------|
@@ -119,6 +132,7 @@ The developer loop is the heartbeat of the project.
 | Test architecture | [Test Architecture](developer/test-architecture.md) |
 | Purity rules | [Purity Rules](developer/purity-rules.md) |
 | Frontend testing | [Frontend Testing](developer/frontend-testing.md) |
+| Feature slice walkthrough | [Feature Slice Walkthrough](developer/feature-slice-walkthrough.md) |
 | TDD discipline | [copilot-instructions.md](../../.github/copilot-instructions.md) §TDD |
 | Source control & git hooks | [copilot-instructions.md](../../.github/copilot-instructions.md) §Source Control |
 | Branching & PR workflow | [CONTRIBUTING.md](../../CONTRIBUTING.md) |

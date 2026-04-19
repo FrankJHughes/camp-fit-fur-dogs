@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- `feature-slice-walkthrough.md` — step-by-step TDD walkthrough for adding command and query slices (US-052)
 - `AppDbContextAutoDiscoveryGuardrailTests` — guardrail ensuring no `DbSet<T>` properties on `AppDbContext` (US-107)
 - `GetDogProfileReaderTests` — 3 integration tests: profile found, not found, wrong owner (US-107)
 - `IEndpoint` interface with static abstract `Map` method — assembly-scanned endpoint auto-discovery (US-106; ADR-0020)
