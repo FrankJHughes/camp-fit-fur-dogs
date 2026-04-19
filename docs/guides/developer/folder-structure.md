@@ -67,6 +67,7 @@ src/
   CampFitFurDogs.Infrastructure/
     Dogs/
       DogRepository.cs
+      DogConfiguration.cs
       GetDogProfileReader.cs
 
   CampFitFurDogs.Api/
@@ -157,6 +158,7 @@ Domain/<Feature>/
 ```
 Infrastructure/<Feature>/
   <Entity>Repository.cs
+  <Entity>Configuration.cs
   <UseCase>Reader.cs          # query slices only
 ```
 
@@ -204,7 +206,7 @@ When adding a new feature:
 1. Add commands/queries/results and reader interfaces (query slices) to **Abstractions**.
 2. Add handlers/validators to **Application**.
 3. Add domain entities/events to **Domain**.
-4. Add repositories (command slices) and readers (query slices) to **Infrastructure**.
+4. Add repositories (command slices), readers (query slices), and entity configurations to **Infrastructure**.
 5. Inject `IUnitOfWork` in command handlers and call `CommitAsync` after repository operations.
 6. Add endpoints to **Api** — each endpoint class implements `IEndpoint`.
 7. Add tests to the corresponding test project. Pure-reflection guardrails go in Architecture.Tests; DI-dependent guardrails go in Api.Tests/Guardrails/.

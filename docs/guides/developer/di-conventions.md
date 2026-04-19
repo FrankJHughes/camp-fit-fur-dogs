@@ -15,6 +15,7 @@ The project uses **assembly scanning** to automatically register:
 - Query handlers
 - Validators
 - Repositories
+- Entity configurations (`IEntityTypeConfiguration<T>`)
 - Readers
 
 This scanning is convention‑based: if a type follows the naming and folder rules described below, it will be discovered and registered automatically.
@@ -214,6 +215,61 @@ An architecture guardrail test enforces this: no `IQueryHandler` implementation 
 
 ---
 
+# 6. EF Entity Configuration Conventions
+
+## Naming
+
+Configuration classes must end with:
+
+```
+Configuration
+```
+
+Examples:
+
+- `DogConfiguration`
+- `CustomerConfiguration`
+
+## Interfaces
+
+Configurations must implement:
+
+```
+IEntityTypeConfiguration<T>
+```
+
+## Location
+
+Configurations live alongside repositories in Infrastructure:
+
+```
+src/CampFitFurDogs.Infrastructure/<Feature>/<Entity>Configuration.cs
+```
+
+## Registration
+
+Configurations are registered automatically via assembly scanning in `AppDbContext`:
+
+```csharp
+protected override void OnModelCreating(ModelBuilder model)
+{
+    model.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+}
+```
+
+No individual `model.ApplyConfiguration(new …())` calls are permitted.
+
+## Entity Access
+
+Repositories and readers access entities via `Set<T>()`:
+
+```csharp
+await _db.Set<Dog>().FindAsync([id], ct);
+```
+
+`AppDbContext` must not expose `DbSet<T>` properties. The `AppDbContextAutoDiscoveryGuardrailTests` guardrail enforces this.
+
+---
 # 7. Zero Manual Registration
 
 `Program.cs` must contain only:
