@@ -6,7 +6,8 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using CampFitFurDogs.Application;
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel;
+using SharedKernel.Abstractions;
 using TestDoubles.Dispatchers;
 
 namespace CampFitFurDogs.Application.Tests.Dispatchers;

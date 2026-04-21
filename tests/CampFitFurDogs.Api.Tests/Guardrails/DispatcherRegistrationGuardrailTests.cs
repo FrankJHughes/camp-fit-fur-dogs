@@ -1,14 +1,16 @@
 using FluentAssertions;
-using CampFitFurDogs.Application.Abstractions;
-using CampFitFurDogs.Application.DomainEvents;
+using SharedKernel.Abstractions;
+using SharedKernel.Events;
+
+using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
 public class DispatcherRegistrationGuardrailTests
-    : GuardrailTestBase, IClassFixture<CampFitFurDogsApiFactory>
+    : ApiTestBase
 {
-    public DispatcherRegistrationGuardrailTests(CampFitFurDogsApiFactory factory)
-        : base(factory) { }
+    public DispatcherRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture){ }
 
     [Fact]
     public void CommandDispatcher_ShouldBeRegistered() =>

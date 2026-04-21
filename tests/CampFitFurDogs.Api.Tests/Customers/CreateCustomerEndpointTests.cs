@@ -3,16 +3,18 @@ using System.Net.Http.Json;
 using FluentAssertions;
 
 using CampFitFurDogs.Api;
+using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Customers;
 
-public class CreateCustomerEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
+public class CreateCustomerEndpointTests : ApiTestBase
 {
     private readonly HttpClient _client;
 
-    public CreateCustomerEndpointTests(CampFitFurDogsApiFactory factory)
+    public CreateCustomerEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _client = factory.CreateClient();
+        _client = Factory.CreateClient();
     }
 
     [Fact]

@@ -6,14 +6,14 @@ namespace CampFitFurDogs.Architecture.Tests;
 public class EndpointDiscoveryGuardrailTests
 {
     private static readonly Assembly ApiAssembly =
-        typeof(CampFitFurDogs.Api.IEndpoint).Assembly;
+        typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
 
     [Fact]
     public void Api_assembly_should_contain_at_least_one_IEndpoint_implementation()
     {
         var implementations = ApiAssembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface
-                        && typeof(CampFitFurDogs.Api.IEndpoint).IsAssignableFrom(t))
+                        && typeof(SharedKernel.Api.IEndpoint).IsAssignableFrom(t))
             .ToList();
 
         implementations.Should().NotBeEmpty(
@@ -27,7 +27,7 @@ public class EndpointDiscoveryGuardrailTests
         var nonConforming = ApiAssembly.GetTypes()
             .Where(t => !t.IsInterface
                         && t.Name.EndsWith("Endpoint", StringComparison.Ordinal)
-                        && !typeof(CampFitFurDogs.Api.IEndpoint).IsAssignableFrom(t))
+                        && !typeof(SharedKernel.Api.IEndpoint).IsAssignableFrom(t))
             .Select(t => t.FullName)
             .ToList();
 

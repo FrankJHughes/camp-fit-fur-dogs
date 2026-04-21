@@ -1,19 +1,22 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using CampFitFurDogs.Api.Tests.Fixtures;
+
 using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class GetDogProfileEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
+public class GetDogProfileEndpointTests : ApiTestBase
 {
     private readonly HttpClient _client;
-    private readonly TestCurrentUserService _testUserService;
+    private readonly TestCurrentUser _testUserService;
 
-    public GetDogProfileEndpointTests(CampFitFurDogsApiFactory factory)
+    public GetDogProfileEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _client = factory.CreateClient();
-        _testUserService = factory.TestUserService;
+        _client = Factory.CreateClient();
+        _testUserService = Factory.TestUser;
     }
 
     private sealed record DogProfileResponse(

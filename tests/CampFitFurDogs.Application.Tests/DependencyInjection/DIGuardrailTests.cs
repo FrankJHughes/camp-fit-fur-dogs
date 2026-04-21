@@ -1,7 +1,8 @@
 using System.Linq;
-using CampFitFurDogs.Application.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+
+using SharedKernel.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 
@@ -19,7 +20,29 @@ public class DiGuardrailTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddApplicationServices();
+
+        var sharedKernelOptions = new SharedKernelOptions();
+
+        services.AddSharedKernel(
+            applicationAssemblies: new[]
+            {
+                typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+            },
+            configure: options =>
+            {
+                sharedKernelOptions = options;
+
+                options.AddInfrastructureAutoRegistration(
+                    assemblies: new[]
+                    {
+                        typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly
+                    },
+                    rules => rules
+                        .Add("Repository", ServiceLifetime.Scoped)
+                        .Add("Reader", ServiceLifetime.Scoped)
+                        .Add("Provider", ServiceLifetime.Scoped)
+                        .Add("Service", ServiceLifetime.Scoped));
+            });
 
         var descriptors = services.ToList();
 

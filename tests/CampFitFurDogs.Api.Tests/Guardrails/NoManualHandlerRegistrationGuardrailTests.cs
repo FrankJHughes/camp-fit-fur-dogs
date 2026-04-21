@@ -1,18 +1,19 @@
 using FluentAssertions;
 using CampFitFurDogs.Api.Tests;
+using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
 public class NoManualHandlerRegistrationGuardrailTests
-    : GuardrailTestBase, IClassFixture<CampFitFurDogsApiFactory>
+    : ApiTestBase
 {
-    public NoManualHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory)
-        : base(factory) { }
+    public NoManualHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture){ }
 
     [Fact]
     public void Should_Not_Have_Manual_Handler_Registrations()
     {
-        var appAssembly = typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection).Assembly;
+        var appAssembly = typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly;
 
         var handlers = DiRegistrationScanner.FindTypesWithInterfaces(
             appAssembly,

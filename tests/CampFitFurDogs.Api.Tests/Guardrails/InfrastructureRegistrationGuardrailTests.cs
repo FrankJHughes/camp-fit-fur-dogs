@@ -1,35 +1,34 @@
 using FluentAssertions;
+using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-public class InfrastructureRegistrationGuardrailTests
-    : GuardrailTestBase, IClassFixture<CampFitFurDogsApiFactory>
+public class InfrastructureRegistrationGuardrailTests : ApiTestBase
 {
-    public InfrastructureRegistrationGuardrailTests(CampFitFurDogsApiFactory factory)
-        : base(factory) { }
+    public InfrastructureRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture){ }
 
     [Theory]
     [InlineData("Repository")]
-    [InlineData("Service")]
+    [InlineData("Reader")]
     [InlineData("Provider")]
-    public void Should_Register_All_Infrastructure_Types(string suffix)
+    [InlineData("Service")]
+    public void All_Types_With_Suffix_Are_Registered(string suffix)
     {
-        var assembly = typeof(CampFitFurDogs.Infrastructure.DependencyInjection).Assembly;
+        var assembly = typeof(AssemblyMarker).Assembly;
 
         var types = assembly
             .GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith(suffix))
             .ToList();
 
-        if (types.Count == 0) return; // suffix category may not exist yet
-
         foreach (var type in types)
         {
             var iface = type.GetInterfaces().FirstOrDefault();
-            iface.Should().NotBeNull($"{suffix} {type.Name} must implement an interface");
+            iface.Should().NotBeNull();
 
             var resolved = GetAll(iface);
-            resolved.Should().NotBeEmpty($"{suffix} {type.Name} must be registered in DI");
+            resolved.Should().NotBeEmpty();
         }
     }
 }

@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 
 namespace CampFitFurDogs.Application.Dogs.GetDogProfile;

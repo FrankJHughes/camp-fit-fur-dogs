@@ -139,26 +139,28 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
         await writeCtx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
-        var readRepo = new DogRepository(readCtx);
+        var reader = new GetDogProfileReader(readCtx);
+        var result = await reader.GetDogProfileAsync(dog.Id.Value, ownerId.Value, CancellationToken.None);
 
-        var result = await readRepo.GetByIdAsync(dog.Id, CancellationToken.None);
+        // var readRepo = new DogRepository(readCtx);
+        // var result = await readRepo.GetByIdAsync(dog.Id, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result!.Id.Should().Be(dog.Id);
-        result.OwnerId.Should().Be(ownerId);
-        result.Name.Should().Be(DogName.Create("Biscuit"));
-        result.Breed.Should().Be(Breed.Create("Golden Retriever"));
+        result!.Id.Should().Be(dog.Id.Value);
+        result.OwnerId.Should().Be(ownerId.Value);
+        result.Name.Should().Be("Biscuit");
+        result.Breed.Should().Be("Golden Retriever");
         result.DateOfBirth.Should().Be(new DateOnly(2022, 6, 15));
-        result.Sex.Should().Be(Sex.Female);
+        result.Sex.Should().Be(Sex.Female.ToString());
     }
 
     [Fact]
     public async Task GetByIdAsync_NonExistentId_ReturnsNull()
     {
-        await using var ctx = _fixture.CreateContext();
-        var repo = new DogRepository(ctx);
+        await using var readCtx = _fixture.CreateContext();
 
-        var result = await repo.GetByIdAsync(DogId.From(Guid.NewGuid()), CancellationToken.None);
+        var reader = new GetDogProfileReader(readCtx);
+        var result = await reader.GetDogProfileAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
 
         result.Should().BeNull();
     }

@@ -4,7 +4,8 @@
     <Project Path="src/CampFitFurDogs.Application/CampFitFurDogs.Application.csproj" />
     <Project Path="src/CampFitFurDogs.Domain/CampFitFurDogs.Domain.csproj" />
     <Project Path="src/CampFitFurDogs.Infrastructure/CampFitFurDogs.Infrastructure.csproj" />
-    <Project Path="src/CampFitFurDogs.SharedKernel/CampFitFurDogs.SharedKernel.csproj" />
+    <Project Path="src/SharedKernel.Infrastructure.EntityFrameworkCore/SharedKernel.Infrastructure.EntityFrameworkCore.csproj" />
+    <Project Path="src/SharedKernel/SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj" />
@@ -12,6 +13,6 @@
     <Project Path="tests/CampFitFurDogs.Architecture.Tests/CampFitFurDogs.Architecture.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj" />
-    <Project Path="tests/CampFitFurDogs.SharedKernel.Tests/CampFitFurDogs.SharedKernel.Tests.csproj" />
+    <Project Path="tests/SharedKernel.Tests/SharedKernel.Tests.csproj" />
   </Folder>
 </Solution>

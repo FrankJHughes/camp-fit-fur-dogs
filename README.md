@@ -67,7 +67,7 @@ camp-fit-fur-dogs/
 |   +-- CampFitFurDogs.Application/
 |   +-- CampFitFurDogs.Domain/
 |   +-- CampFitFurDogs.Infrastructure/
-|   +-- CampFitFurDogs.SharedKernel/
+|   +-- SharedKernel/
 |
 +-- tests/                      # Mirror of src/ for unit tests
 |

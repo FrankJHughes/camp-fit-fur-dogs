@@ -1,20 +1,23 @@
 using System.Reflection;
 using FluentAssertions;
-using CampFitFurDogs.SharedKernel;
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel.Domain;
+using SharedKernel.Abstractions;
+
+using CampFitFurDogs.Api.Tests.Fixtures;
+
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
 public class DomainEventHandlerRegistrationGuardrailTests
-    : GuardrailTestBase, IClassFixture<CampFitFurDogsApiFactory>
+    : ApiTestBase
 {
-    public DomainEventHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory)
-        : base(factory) { }
+    public DomainEventHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture){ }
 
     [Fact]
     public void Should_Register_All_DomainEventHandlers()
     {
         // Find all concrete classes implementing IDomainEventHandler<T>
-        var handlerTypes = typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection)
+        var handlerTypes = typeof(CampFitFurDogs.Application.AssemblyMarker)
             .Assembly
             .GetTypes()
             .Where(t =>

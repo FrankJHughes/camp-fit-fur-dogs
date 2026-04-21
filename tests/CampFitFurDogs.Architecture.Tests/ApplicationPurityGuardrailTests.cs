@@ -7,7 +7,7 @@ public class ApplicationPurityGuardrailTests
     [Fact]
     public void Application_Should_Not_Reference_Infrastructure_Or_Api()
     {
-        var appAssembly = typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection).Assembly;
+        var appAssembly = typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly;
 
         var forbiddenPrefixes = new[]
         {

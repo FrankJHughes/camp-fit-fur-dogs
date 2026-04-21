@@ -1,25 +1,27 @@
 using System.Linq;
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel.Abstractions;
 using FluentAssertions;
+
+using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
 public class CurrentUserServiceGuardrailTests
-    : GuardrailTestBase, IClassFixture<CampFitFurDogsApiFactory>
+    : ApiTestBase
 {
-    public CurrentUserServiceGuardrailTests(CampFitFurDogsApiFactory factory)
-        : base(factory) { }
+    public CurrentUserServiceGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture){ }
 
     [Fact]
     public void ShouldResolveTestCurrentUserService()
     {
-        Get<ICurrentUserService>().Should().BeOfType<TestCurrentUserService>();
+        Get<ICurrentUserService>().Should().BeOfType<TestCurrentUser>();
     }
 
     [Fact]
     public void ShouldBeSameInstanceAsFactoryProperty()
     {
-        Get<ICurrentUserService>().Should().BeSameAs(Factory.TestUserService);
+        Get<ICurrentUserService>().Should().BeSameAs(Factory.TestUser);
     }
 
     [Fact]

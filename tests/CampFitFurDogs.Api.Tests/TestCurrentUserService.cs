@@ -1,8 +1,8 @@
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel.Abstractions;
 
 namespace CampFitFurDogs.Api.Tests;
 
-public sealed class TestCurrentUserService : ICurrentUserService
+public sealed class TestCurrentUser : ICurrentUserService
 {
     public Guid CurrentUserId { get; set; } = Guid.NewGuid();
 }

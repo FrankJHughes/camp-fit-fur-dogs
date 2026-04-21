@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel.Abstractions;
 
 namespace TestDoubles.Dispatchers;
 

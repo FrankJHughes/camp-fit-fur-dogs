@@ -1,13 +1,15 @@
-using CampFitFurDogs.Application.Abstractions;
+using Microsoft.AspNetCore.Builder;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
+using SharedKernel.Abstractions;
+using SharedKernel.Api;
 
 namespace CampFitFurDogs.Api.Dogs;
 
 public class RegisterDogEndpoint : IEndpoint
 {
-    public static void Map(IEndpointRouteBuilder app)
+    public void Map(IEndpointRouteBuilder app)
     {
-        app.MapPost("/dogs", async (
+        app.MapPost("/api/dogs", async (
             RegisterDogRequest request,
             ICurrentUserService currentUserService,
             ICommandDispatcher dispatcher) =>

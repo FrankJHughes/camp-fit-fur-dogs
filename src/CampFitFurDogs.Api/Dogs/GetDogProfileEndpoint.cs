@@ -1,13 +1,15 @@
-using CampFitFurDogs.Application.Abstractions;
+using Microsoft.AspNetCore.Builder;
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+using SharedKernel.Abstractions;
+using SharedKernel.Api;
 
 namespace CampFitFurDogs.Api.Dogs;
 
 public class GetDogProfileEndpoint : IEndpoint
 {
-    public static void Map(IEndpointRouteBuilder app)
+    public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/dogs/{id}", async (
+        app.MapGet("/api/dogs/{id}", async (
             Guid id,
             ICurrentUserService currentUser,
             IQueryDispatcher dispatcher) =>

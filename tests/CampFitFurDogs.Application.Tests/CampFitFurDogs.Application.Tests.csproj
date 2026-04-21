@@ -21,7 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Api\CampFitFurDogs.Api.csproj" />
     <ProjectReference Include="..\..\src\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
