@@ -1,5 +1,5 @@
 using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.SharedKernel;
+using SharedKernel.Domain;
 
 namespace CampFitFurDogs.Domain.Dogs;
 

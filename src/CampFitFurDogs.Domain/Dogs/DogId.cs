@@ -1,12 +1,10 @@
-using CampFitFurDogs.SharedKernel;
+using SharedKernel.Domain;
 
 namespace CampFitFurDogs.Domain.Dogs;
 
-public sealed class DogId : ValueObject
+public sealed class DogId : AggregateId
 {
-    public Guid Value { get; }
-
-    private DogId(Guid value) => Value = value;
+    private DogId(Guid value) : base(value) { }
 
     public static DogId New() => new(Guid.NewGuid());
 
@@ -15,10 +13,5 @@ public sealed class DogId : ValueObject
         if (value == Guid.Empty)
             throw new ArgumentException("DogId cannot be empty.", nameof(value));
         return new DogId(value);
-    }
-
-    protected override IEnumerable<object?> GetEqualityComponents()
-    {
-        yield return Value;
     }
 }

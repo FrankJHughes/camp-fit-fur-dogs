@@ -14,7 +14,7 @@ src/
   CampFitFurDogs.Application/
   CampFitFurDogs.Domain/
   CampFitFurDogs.Infrastructure/
-  CampFitFurDogs.SharedKernel/
+  SharedKernel/
 
 tests/
   CampFitFurDogs.Api.Tests/

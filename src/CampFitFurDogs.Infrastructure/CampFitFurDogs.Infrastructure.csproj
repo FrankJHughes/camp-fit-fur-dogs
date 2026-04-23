@@ -8,11 +8,12 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <ProjectReference Include="..\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
     <ProjectReference Include="..\CampFitFurDogs.Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\SharedKernel.Infrastructure.EntityFrameworkCore\SharedKernel.Infrastructure.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

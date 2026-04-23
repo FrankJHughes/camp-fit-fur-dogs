@@ -7,7 +7,7 @@ public class HandlerPurityGuardrailTests
     [Fact]
     public void Handlers_Should_Not_Depend_On_Infrastructure()
     {
-        var appAssembly = typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection).Assembly;
+        var appAssembly = typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly;
 
         var handlerTypes = appAssembly
             .GetTypes()

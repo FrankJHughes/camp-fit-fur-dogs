@@ -7,7 +7,7 @@ public class ApplicationMustNotReferenceInfrastructureGuardrailTests
     [Fact]
     public void Application_Should_Not_Reference_Infrastructure()
     {
-        var appAssembly = typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection).Assembly;
+        var appAssembly = typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly;
 
         var offenders = ReferenceScanner.FindForbiddenReferences(
             appAssembly,

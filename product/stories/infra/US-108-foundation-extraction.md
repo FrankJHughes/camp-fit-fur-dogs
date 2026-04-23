@@ -76,11 +76,11 @@ Move all product-agnostic CQRS interfaces# + M.E.DI.Abstractions + Scrutor)
 Move all product-agnostic CQRS interfaces, dispatchers, and DI conventions from Application into SharedKernel:
 
 ```
-src/CampFitFurDogs.SharedKernel/
+src/SharedKernel/
   Domain/                , dispatchers, and DI conventions from Application into SharedKernel:
 
 ```
-src/CampFitFurDogs.SharedKernel/
+src/SharedKernel/
   Domain/                              (existing)
     Entity.cs
     AggregateRoot.cs
@@ -131,7 +131,7 @@ New dependencies for SharedKernel: `Microsoft.Extensions.DependencyInjection.Abs
 ### Part B: Create SharedKernel.Infrastructure (Tier 3 — EF Core)
 
 ```
-src/CampFitFurDogs.SharedKernel.Infrastructure/
+src/SharedKernel.Infrastructure/
   AggregateConfiguration.cs            (from Infrastructure) half)
     DomainEventRegistration.cs
     AssemblyMarker.cs
@@ -142,7 +142,7 @@ New dependencies for SharedKernel: `Microsoft.Extensions.DependencyInjection.Abs
 ### Part B: Create SharedKernel.Infrastructure (Tier 3 — EF Core)
 
 ```
-src/CampFitFurDogs.SharedKernel.Infrastructure/
+src/SharedKernel.Infrastructure/
   AggregateConfiguration.cs            (from Infrastructure)
   EfUnitOfWork.cs                      (from Infrastructure)
 ```
@@ -152,7 +152,7 @@ Dependencies: `Microsoft.EntityFrameworkCore`. References: `SharedKernel`.
 ### Part C: Create SharedKernel.Api (Tier 4 — ASP.NET Core routing)
 
 ```
-src/CampFitFurDogs.SharedKernel.Api/
+src/SharedKernel.Api/
   IEndpoint.cs                         (from Api)
   Endpoints.cs                         (from Api)
   EfUnitOfWork.cs                      (from Infrastructure)
@@ -558,27 +558,27 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 ## Deliverables
 
 - [ ] ADR-0022: Foundation Extraction — SharedKernel Expansion
-- [ ] `CampFitFurDogs.SharedKernel.csproj`erables
+- [ ] `SharedKernel.csproj`erables
 
 - [ ] ADR-0022: Foundation Extraction — SharedKernel Expansion
-- [ ] `CampFitFurDogs.SharedKernel.csproj` updated with `M.E.DI.Abstractions` and `Scrutor` deps
+- [ ] `SharedKernel.csproj` updated with `M.E.DI.Abstractions` and `Scrutor` deps
 - [ ] `SharedKernel/Application/` subfolder with all 15 moved files
-- [ ] Namespaces updated from `CampFitFurDogs.Application.*` to `CampFitFurDogs.SharedKernel.Application.*`
+- [ ] Namespaces updated from `CampFitFurDogs.Application.*` to `SharedKernel.Application.*`
 - [ ] `C updated with `M.E.DI.Abstractions` and `Scrutor` deps
 - [ ] `SharedKernel/Application/` subfolder with all 15 moved files
 - [ ] Namespaces updated fromampFitFurDogs.SharedKernel.Infrastructure` project created
 - [ ] `AggregateConfiguration.cs` and `EfUnitOfWork.cs` moved and re-namespaced
-- [ ] `CampFitFurDogs.SharedKernel.Api` project created
-- [ ] `IEndpoint.cs` and `Endpoints.cs` moved and re- `CampFitFurDogs.Application.*` to `CampFitFurDogs.SharedKernel.Application.*`
-- [ ] `CampFitFurDogs.SharedKernel.Infrastructure` project created
+- [ ] `SharedKernel.Api` project created
+- [ ] `IEndpoint.cs` and `Endpoints.cs` moved and re- `CampFitFurDogs.Application.*` to `SharedKernel.Application.*`
+- [ ] `SharedKernel.Infrastructure` project created
 - [ ] `AggregateConfiguration.cs` and `EfUnitOfWork.cs` moved and re-namespaced
-- [ ] `CampFitFurDogs.SharedKernel.Api` project created
+- [ ] `SharedKernel.Api` project created
 - [ ] `IEndpoint.cs` and `Endpoints.cs` moved and re-namespaced
-- [ ] `CampFitFurDogs.SharedKernel.Testing` project created
+- [ ] `SharedKernel.Testing` project created
 - [ ] `CleanArchitectureGuardrails` abstract base class with 18 inherited tests
 - [ ] `ArchitectureGuard` runtime validator
 - [ ] `Sharednamespaced
-- [ ] `CampFitFurDogs.SharedKernel.Testing` project created
+- [ ] `SharedKernel.Testing` project created
 - [ ] `CleanArchitectureGuardrails` abstract base class with 18 inherited tests
 - [ ] `ArchitectureGuard` runtime validator
 - [ ] `SharedKernelOptions` configuration class

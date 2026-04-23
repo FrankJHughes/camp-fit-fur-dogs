@@ -51,14 +51,14 @@ Roslyn analyzers run inside the compiler pipeline. They see every syntax tree an
 ### Part A: Analyzer project
 
 ```
-src/CampFitFurDogs.SharedKernel.Analyzers/ real time. A custom analyzer can flag forbidden `using` statements, constructor injections, and type references **as the code is written** — same experience as a compiler error.
+src/SharedKernel.Analyzers/ real time. A custom analyzer can flag forbidden `using` statements, constructor injections, and type references **as the code is written** — same experience as a compiler error.
 
 ## Solution
 
 ### Part A: Analyzer project
 
 ```
-src/CampFitFurDogs.SharedKernel.Analyzers/
+src/SharedKernel.Analyzers/
   LayerDependencyAnalyzer.cs           (DiagnosticAnalyzer)
   LayerConfiguration.cs                (reads layer metadata from .csproj)
   DiagnosticDescriptors.cs             (all
@@ -301,10 +301,10 @@ Roslyn analyzers have their own test framework (`Microsoft.CodeAnalysis.CSharp.A
 Roslyn analyzers have their own test framework (`Microsoft.CodeAnalysis.CSharp.Analyzer.Testing`). Each diagnostic gets a test class verifying it fires on violation code and stays silent on clean code:
 
 ```
-tests/CampFitFurDogs.SharedKernel. gets a test class verifying it fires on violation code and stays silent on clean code:
+tests/SharedKernel. gets a test class verifying it fires on violation code and stays silent on clean code:
 
 ```
-tests/CampFitFurDogs.SharedKernel.Analyzers.Tests/
+tests/SharedKernel.Analyzers.Tests/
   CFFD001_DomainMustNotReferenceApplicationTests.cs
   CFFD002_DomainMustNotReferenceInfrastructureTests.cs
   CFFD008_ApplicationMustNotReferenceInfrastructureTests.cs
@@ -338,7 +338,7 @@ Product projects add an analyzer reference:
 <!-- In Directory.Build.props or each .csproj -->
 <ItemGroup>
   <ProjectReference
-    Include="..\CampFitFurDogs.SharedKernel.Analyzers\CampFitFurDogs. integration
+    Include="..\SharedKernel.Analyzers\CampFitFurDogs. integration
 
 Product projects add an analyzer reference:
 
@@ -354,7 +354,7 @@ Product projects add an analyzer reference:
 
 That is it. No test code, no configuration beyond the `ArchitectureLayer` property. The analyzer runs inside `dotnet build` and inside the IDE.
 
-## DeliverablesDogs.SharedKernel.Analyzers\CampFitFurDogs.SharedKernel.Analyzers.csproj"
+## DeliverablesDogs.SharedKernel.Analyzers\SharedKernel.Analyzers.csproj"
     OutputItemType="Analyzer"
     ReferenceOutputAssembly="false" />
 </ItemGroup>
@@ -363,13 +363,13 @@ That is it. No test code, no configuration beyond the `ArchitectureLayer` proper
 That is it. No test code, no configuration
 
 - [ ] ADR-0023: Architecture Boundary Roslyn Analyzer
-- [ ] `CampFitFurDogs.SharedKernel.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
+- [ ] `SharedKernel.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
 - [ ] `LayerDependencyAnalyzer` diagnostic analyzer beyond the `ArchitectureLayer` property. The analyzer runs inside `dotnet build` and inside the IDE.
 
 ## Deliverables
 
 - [ ] ADR-0023: Architecture Boundary Roslyn Analyzer
-- [ ] `CampFitFurDogs.SharedKernel.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
+- [ ] `SharedKernel.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
 - [ ] `LayerDependencyAnalyzer` diagnostic analyzer with all 14 diagnostic rules
 - [ ] `LayerConfiguration` with all 14 diagnostic rules
 - [ ] `LayerConfiguration` reads `ArchitectureLayer` from MSBuild properties via `AnalyzerConfigOptions`
@@ -380,7 +380,7 @@ That is it. No test code, no configuration
 - [ ] `DiagnosticDescriptors` with clear, actionable messages for each violation
 - [ ] All product `.csproj` files updated with `<ArchitectureLayer>` property
 - [ ] `Directory.Build.props` updated with analyzer project reference
-- [ ] `CampFitFurDogs.SharedKernel.Analyzers.Tests` project created
+- [ ] `SharedKernel.Analyzers.Tests` project created
 - [ ] Analyzer verification tests for all 14 diagnostic rules (violation + clean code)
 - [ ] Project added to `CampFitFurDogs.sln`
 - [ ] `copampFitFurDogs.SharedKernel.Analyzers.Tests` project created

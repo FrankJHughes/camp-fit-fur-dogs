@@ -1,5 +1,5 @@
 
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel.Abstractions;
 
 namespace CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 

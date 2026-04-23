@@ -220,7 +220,7 @@ All notable changes to this project will be documented in this file.
 - ADR-0005: Makefile for Standardized Developer Commands
 - ADR-0006: Dev Container for Containerized Development Environment
 - ADR-0007: One-Command Local Bootstrap
-- `src/CampFitFurDogs.SharedKernel/` — Entity, AggregateRoot, ValueObject,
+- `src/SharedKernel/` — Entity, AggregateRoot, ValueObject,
   IDomainEvent, IRepository base types
 - `src/CampFitFurDogs.Domain/Dogs/` — Dog aggregate, DogId value object
 - `src/CampFitFurDogs.Domain/Guardians/` — Guardian aggregate, GuardianId

@@ -1,13 +1,14 @@
 using FluentAssertions;
 using CampFitFurDogs.Api.Tests;
+using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
 public class NoManualInfrastructureRegistrationGuardrailTests
-    : GuardrailTestBase, IClassFixture<CampFitFurDogsApiFactory>
+    : ApiTestBase
 {
-    public NoManualInfrastructureRegistrationGuardrailTests(CampFitFurDogsApiFactory factory)
-        : base(factory) { }
+    public NoManualInfrastructureRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture){ }
 
     [Fact]
     public void Should_Not_Have_Manual_Infrastructure_Registrations()

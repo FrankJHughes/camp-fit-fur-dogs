@@ -2,6 +2,6 @@ namespace CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 
 public interface IGetDogProfileReader
 {
-    Task<DogProfileResponse?> GetDogProfileAsync(
+    Task<GetDogProfileResponse?> GetDogProfileAsync(
         Guid dogId, Guid ownerId, CancellationToken ct);
 }

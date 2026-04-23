@@ -1,5 +1,5 @@
 // src/CampFitFurDogs.Application/Customers/CreateCustomer/CreateCustomerHandler.cs
-using CampFitFurDogs.Application.Abstractions;
+using SharedKernel.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
 

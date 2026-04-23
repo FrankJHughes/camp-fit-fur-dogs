@@ -1,14 +1,16 @@
-using CampFitFurDogs.Application.Abstractions;
+using Microsoft.AspNetCore.Builder;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
+using SharedKernel.Abstractions;
+using SharedKernel.Api;
 
 namespace CampFitFurDogs.Api.Customers;
 
 public class CreateCustomerEndpoint : IEndpoint
 {
-    public static void Map(IEndpointRouteBuilder app)
+    public void Map(IEndpointRouteBuilder app)
     {
-        app.MapPost("/customers", async (
+        app.MapPost("/api/customers", async (
             CreateCustomerCommand cmd,
             ICommandDispatcher dispatcher) =>
         {
@@ -28,6 +30,10 @@ public class CreateCustomerEndpoint : IEndpoint
             catch (ArgumentException ex)
             {
                 return Results.BadRequest(new { Error = ex.Message.Split(" (Parameter")[0] });
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new { Error = ex.Message });
             }
         });
     }

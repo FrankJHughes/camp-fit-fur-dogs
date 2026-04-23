@@ -28,7 +28,7 @@ public static class ApiTestHelpers
     }
 
     public static async Task<Guid> CreateAndSetOwnerAsync(
-        HttpClient client, TestCurrentUserService testUserService)
+        HttpClient client, TestCurrentUser testUserService)
     {
         var ownerId = await CreateOwnerAsync(client);
         testUserService.CurrentUserId = ownerId;
@@ -36,7 +36,7 @@ public static class ApiTestHelpers
     }
 
     public static async Task<Guid> RegisterDogAsync(
-        HttpClient client, TestCurrentUserService testUserService, Guid ownerId)
+        HttpClient client, TestCurrentUser testUserService, Guid ownerId)
     {
         testUserService.CurrentUserId = ownerId;
 

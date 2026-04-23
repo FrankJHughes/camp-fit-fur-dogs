@@ -9,15 +9,15 @@ public class FakeGetDogProfileReader : IGetDogProfileReader
 
     public void Add(Dog dog) => _dogs.Add(dog);
 
-    public Task<DogProfileResponse?> GetDogProfileAsync(
+    public Task<GetDogProfileResponse?> GetDogProfileAsync(
         Guid dogId, Guid ownerId, CancellationToken ct)
     {
         var dog = _dogs.FirstOrDefault(d => d.Id.Value == dogId);
 
         if (dog is null || dog.OwnerId.Value != ownerId)
-            return Task.FromResult<DogProfileResponse?>(null);
+            return Task.FromResult<GetDogProfileResponse?>(null);
 
-        return Task.FromResult<DogProfileResponse?>(new DogProfileResponse(
+        return Task.FromResult<GetDogProfileResponse?>(new GetDogProfileResponse(
             dog.Id.Value,
             dog.OwnerId.Value,
             dog.Name.Value,

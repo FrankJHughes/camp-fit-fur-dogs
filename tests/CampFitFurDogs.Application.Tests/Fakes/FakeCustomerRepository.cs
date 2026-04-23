@@ -8,7 +8,7 @@ public class FakeCustomerRepository : ICustomerRepository
 
     public Task<bool> EmailExistsAsync(Email email, CancellationToken ct)
     {
-        return Task.FromResult(Customers.Any(c => c.Email == email));
+        return Task.FromResult(Customers.Any(c => c.Email.Equals(email)));
     }
 
     public Task AddAsync(Customer customer, CancellationToken ct)

@@ -7,7 +7,7 @@ public class ApplicationDtoPurityGuardrailTests
     [Fact]
     public void Application_Dtos_Should_Not_Reference_Infrastructure()
     {
-        var appAssembly = typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection).Assembly;
+        var appAssembly = typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly;
 
         var dtoTypes = appAssembly
             .GetTypes()

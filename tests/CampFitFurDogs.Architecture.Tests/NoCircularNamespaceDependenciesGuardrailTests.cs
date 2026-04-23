@@ -11,8 +11,8 @@ public class NoCircularNamespaceDependenciesGuardrailTests
         var assemblies = new[]
         {
             typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
-            typeof(CampFitFurDogs.Application.DependencyInjection.DependencyInjection).Assembly,
-            typeof(CampFitFurDogs.Infrastructure.DependencyInjection).Assembly,
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
+            typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
             typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly
         };
 

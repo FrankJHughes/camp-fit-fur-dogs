@@ -2,18 +2,20 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
+using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class RegisterDogEndpointTests : IClassFixture<CampFitFurDogsApiFactory>
+public class RegisterDogEndpointTests : ApiTestBase
 {
     private readonly HttpClient _client;
-    private readonly TestCurrentUserService _testUserService;
+    private readonly TestCurrentUser _testUserService;
 
-    public RegisterDogEndpointTests(CampFitFurDogsApiFactory factory)
+    public RegisterDogEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _client = factory.CreateClient();
-        _testUserService = factory.TestUserService;
+        _client = Factory.CreateClient();
+        _testUserService = Factory.TestUser;
     }
 
     // ── AC: Successful registration ──
