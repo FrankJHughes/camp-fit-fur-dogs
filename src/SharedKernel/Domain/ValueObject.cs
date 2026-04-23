@@ -1,27 +1,29 @@
 namespace SharedKernel.Domain;
 
-public abstract class ValueObject : IEquatable<ValueObject>
+public abstract class ValueObject
 {
     protected abstract IEnumerable<object?> GetEqualityComponents();
 
-    public override bool Equals(object? obj) => Equals(obj as ValueObject);
-
-    public bool Equals(ValueObject? other)
+    public override bool Equals(object? obj)
     {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        if (GetType() != other.GetType()) return false;
-        return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
+        if (obj is null || obj.GetType() != GetType())
+            return false;
+
+        var other = (ValueObject)obj;
+
+        return GetEqualityComponents()
+            .SequenceEqual(other.GetEqualityComponents());
     }
 
-    public override int GetHashCode() =>
-        GetEqualityComponents()
-            .Aggregate(0, (hash, component) =>
-                HashCode.Combine(hash, component));
-
-    public static bool operator ==(ValueObject? left, ValueObject? right) =>
-        left is null ? right is null : left.Equals(right);
-
-    public static bool operator !=(ValueObject? left, ValueObject? right) =>
-        !(left == right);
+    public override int GetHashCode()
+    {
+        return GetEqualityComponents()
+            .Aggregate(1, (current, component) =>
+            {
+                unchecked
+                {
+                    return current * 23 + (component?.GetHashCode() ?? 0);
+                }
+            });
+    }
 }

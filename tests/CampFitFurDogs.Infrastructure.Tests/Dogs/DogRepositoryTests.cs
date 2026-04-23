@@ -115,7 +115,7 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
 
         await using var readCtx = _fixture.CreateContext();
         var allDogs = await readCtx.Set<Dog>().AsNoTracking().ToListAsync();
-        var ownerDogs = allDogs.Where(d => d.OwnerId == ownerId).ToList();
+        var ownerDogs = allDogs.Where(d => d.OwnerId.Equals(ownerId)).ToList();
 
         ownerDogs.Should().HaveCount(2);
     }

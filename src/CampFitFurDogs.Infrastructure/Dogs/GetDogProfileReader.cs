@@ -6,7 +6,7 @@ namespace CampFitFurDogs.Infrastructure.Dogs;
 
 public sealed class GetDogProfileReader(AppDbContext db) : IGetDogProfileReader
 {
-    public async Task<DogProfileResponse?> GetDogProfileAsync(
+    public async Task<GetDogProfileResponse?> GetDogProfileAsync(
         Guid dogId, Guid ownerId, CancellationToken ct)
     {
         var dog = await db.Set<Dog>().FindAsync([DogId.From(dogId)], ct);
@@ -14,7 +14,7 @@ public sealed class GetDogProfileReader(AppDbContext db) : IGetDogProfileReader
         if (dog is null || dog.OwnerId.Value != ownerId)
             return null;
 
-        return new DogProfileResponse(
+        return new GetDogProfileResponse(
             dog.Id.Value,
             dog.OwnerId.Value,
             dog.Name.Value,

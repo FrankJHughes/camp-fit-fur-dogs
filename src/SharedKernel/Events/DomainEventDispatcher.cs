@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SharedKernel.Abstractions;
-using SharedKernel.Domain;
 
 namespace SharedKernel.Events;
 

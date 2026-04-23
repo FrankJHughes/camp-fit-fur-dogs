@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using SharedKernel.Domain;
 using SharedKernel.Abstractions;
+using SharedKernel.Events;
 
 using CampFitFurDogs.Api.Tests.Fixtures;
 

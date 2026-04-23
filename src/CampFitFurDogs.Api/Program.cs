@@ -18,8 +18,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // BEGIN SHARED KERNEL ASSISTED REGISTRATION
 //
 
-var sharedKernelOptions = new SharedKernelOptions();
-
 // 2. register ef core infrastructure layer:
 //          unit of work
 builder.Services.AddSharedKernelEfCore<AppDbContext>();
@@ -33,8 +31,6 @@ builder.Services.AddSharedKernel(
     },
     configure: options =>
     {
-        sharedKernelOptions = options;
-
         // 4. register infrastructure layer:
         //          repositories, readers,
         //          providers, services
