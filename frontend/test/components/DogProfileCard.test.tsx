@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { DogProfileCard } from '@/components/DogProfileCard';
 
 const profile = {
@@ -35,4 +36,5 @@ describe('DogProfileCard', () => {
     render(<DogProfileCard profile={profile} />);
     expect(screen.queryByText('owner-1234')).not.toBeInTheDocument();
   });
+
 });
