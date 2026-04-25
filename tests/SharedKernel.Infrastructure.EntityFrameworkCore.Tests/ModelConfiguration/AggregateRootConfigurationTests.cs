@@ -19,11 +19,11 @@ public sealed class AggregateRootConfigurationTests
         var entity = modelBuilder.Model.FindEntityType(typeof(FakeAggregate));
         entity.Should().NotBeNull();
 
-        entity!.GetTableName().Should().Be(""FakeAggregates"");
-        entity.FindPrimaryKey()!.Properties.Single().Name.Should().Be(""Id"");
-        entity.FindProperty(""Id"")!.ValueGenerated.Should().Be(ValueGenerated.Never);
-        entity.FindProperty(""DomainEvents"").Should().BeNull();
+        entity!.GetTableName().Should().Be("FakeAggregates");
+        entity.FindPrimaryKey()!.Properties.Single().Name.Should().Be("Id");
+        entity.FindProperty("Id")!.ValueGenerated.Should().Be(ValueGenerated.Never);
+        entity.FindProperty("DomainEvents").Should().BeNull();
         configuration.ConfigureCalled.Should().BeTrue();
-        entity.FindProperty(""Name"").Should().NotBeNull();
+        entity.FindProperty("Name").Should().NotBeNull();
     }
 }

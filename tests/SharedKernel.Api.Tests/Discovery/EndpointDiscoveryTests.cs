@@ -11,36 +11,32 @@ public sealed class EndpointDiscoveryTests
     [Fact]
     public void RegisterEndpointsFromAssembly_discovers_all_IEndpoint_implementations()
     {
-        var assembly = typeof(FakeEndpoint).Assembly;
+        FakeEndpoint.Reset();
+        FakeEndpoint2.Reset();
 
-        EndpointDiscovery.RegisterEndpointsFromAssembly(assembly);
+        var assembly = typeof(FakeEndpoint).Assembly;
+        EndpointDiscovery.AddEndpoints(assembly);
 
         var routeBuilder = new FakeRouteBuilder();
-        EndpointDiscovery.MapDiscoveredEndpoints(routeBuilder);
+        EndpointDiscovery.MapEndpoints(routeBuilder);
 
-        var endpoints = new IEndpoint[]
-        {
-            new FakeEndpoint(),
-            new FakeEndpoint2()
-        };
-
-        endpoints.All(e => e.WasMapped).Should().BeTrue();
+        FakeEndpoint.WasMapped.Should().BeTrue();
+        FakeEndpoint2.WasMapped.Should().BeTrue();
     }
 
     [Fact]
     public void MapDiscoveredEndpoints_invokes_Map_on_each_discovered_endpoint()
     {
+        FakeEndpoint.Reset();
+        FakeEndpoint2.Reset();
+
         var assembly = typeof(FakeEndpoint).Assembly;
-        EndpointDiscovery.RegisterEndpointsFromAssembly(assembly);
+        EndpointDiscovery.AddEndpoints(assembly);
 
         var routeBuilder = new FakeRouteBuilder();
+        EndpointDiscovery.MapEndpoints(routeBuilder);
 
-        EndpointDiscovery.MapDiscoveredEndpoints(routeBuilder);
-
-        var ep1 = new FakeEndpoint();
-        var ep2 = new FakeEndpoint2();
-
-        ep1.WasMapped.Should().BeTrue();
-        ep2.WasMapped.Should().BeTrue();
+        FakeEndpoint.WasMapped.Should().BeTrue();
+        FakeEndpoint2.WasMapped.Should().BeTrue();
     }
 }

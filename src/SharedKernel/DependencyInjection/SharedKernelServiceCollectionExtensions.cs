@@ -62,7 +62,8 @@ public static class SharedKernelServiceCollectionExtensions
                 t.GetInterfaces()
                     .Where(i =>
                         i.IsGenericType &&
-                        i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>) &&
+                        (i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>) ||
+                            i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)) &&
                         !i.ContainsGenericParameters)
                     .Select(i => (Service: i, Implementation: t)))
             .ToList();
@@ -72,8 +73,9 @@ public static class SharedKernelServiceCollectionExtensions
         {
             var hasCommands = types.Any(t =>
                 t.GetInterfaces().Any(i =>
-                    i.IsGenericType &&
-                    i.GetGenericTypeDefinition() == typeof(ICommand<>)));
+                    (i == typeof(ICommand)) ||
+                    (i.IsGenericType &&
+                     i.GetGenericTypeDefinition() == typeof(ICommand<>))));
 
             if (hasCommands)
                 throw new InvalidOperationException("No command handlers found during AddSharedKernelCore().");

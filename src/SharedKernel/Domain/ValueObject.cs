@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace SharedKernel.Domain;
 
 public abstract class ValueObject
@@ -14,6 +16,12 @@ public abstract class ValueObject
         return GetEqualityComponents()
             .SequenceEqual(other.GetEqualityComponents());
     }
+
+    public static bool operator ==(ValueObject? left, ValueObject? right)
+        => Equals(left, right);
+
+    public static bool operator !=(ValueObject? left, ValueObject? right)
+        => !Equals(left, right);
 
     public override int GetHashCode()
     {

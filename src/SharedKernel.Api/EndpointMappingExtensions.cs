@@ -5,9 +5,9 @@ namespace SharedKernel.Api;
 
 public static class EndpointMappingExtensions
 {
-    public static IEndpointRouteBuilder MapDiscoveredEndpoints(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
     {
-        EndpointDiscovery.MapDiscoveredEndpoints(app);
+        EndpointDiscovery.MapEndpoints(app);
         return app;
     }
 }

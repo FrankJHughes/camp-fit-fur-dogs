@@ -5,27 +5,27 @@ namespace SharedKernel.Api;
 
 public static class EndpointDiscovery
 {
-    private static readonly List<Type> _endpointTypes = new();
+    private static readonly HashSet<Type> _endpointTypes = [];
 
     /// <summary>
     /// Scans the given assembly for types implementing IEndpoint
     /// and stores them for later mapping.
     /// </summary>
-    public static void RegisterEndpointsFromAssembly(Assembly assembly)
+    public static void AddEndpoints(Assembly assembly)
     {
-        var types = assembly
+        var endpointTypes = assembly
             .GetTypes()
             .Where(t =>
                 !t.IsAbstract &&
-                typeof(IEndpoint).IsAssignableFrom(t));
+                typeof(SharedKernel.Api.IEndpoint).IsAssignableFrom(t));
 
-        _endpointTypes.AddRange(types);
+        _endpointTypes.UnionWith(endpointTypes);
     }
 
     /// <summary>
     /// Instantiates and maps all discovered endpoints.
     /// </summary>
-    public static void MapDiscoveredEndpoints(IEndpointRouteBuilder app)
+    public static void MapEndpoints(IEndpointRouteBuilder app)
     {
         foreach (var endpointType in _endpointTypes)
         {

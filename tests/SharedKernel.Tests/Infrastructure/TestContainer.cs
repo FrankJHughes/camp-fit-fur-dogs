@@ -15,6 +15,14 @@ public sealed class TestContainer
         return this;
     }
 
+    public TestContainer WithCommandHandler<TCommand, THandler>()
+        where TCommand : ICommand
+        where THandler : class, ICommandHandler<TCommand>
+    {
+        _services.AddTransient<ICommandHandler<TCommand>, THandler>();
+        return this;
+    }
+
     public TestContainer WithQueryHandler<TQuery, TResponse, THandler>()
         where TQuery : IQuery<TResponse>
         where THandler : class, IQueryHandler<TQuery, TResponse>

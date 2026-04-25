@@ -10,14 +10,14 @@ public sealed class EndpointMappingExtensionsTests
     [Fact]
     public void MapDiscoveredEndpoints_calls_into_EndpointDiscovery()
     {
+        FakeEndpoint.Reset();
+
         var assembly = typeof(FakeEndpoint).Assembly;
-        EndpointDiscovery.RegisterEndpointsFromAssembly(assembly);
+        EndpointDiscovery.AddEndpoints(assembly);
 
         var routeBuilder = new FakeRouteBuilder();
+        routeBuilder.MapEndpoints();
 
-        routeBuilder.MapDiscoveredEndpoints();
-
-        var ep = new FakeEndpoint();
-        ep.WasMapped.Should().BeTrue();
+        FakeEndpoint.WasMapped.Should().BeTrue();
     }
 }
