@@ -1,16 +1,10 @@
 'use client';
+import type { DogFormData } from '@/api/dogs/registerDog';
 
 import { useState } from 'react';
 
-export interface RegisterDogFormData {
-  name: string;
-  breed: string;
-  dateOfBirth: string;
-  sex: string;
-}
-
 interface RegisterDogFormProps {
-  onSubmit: (data: RegisterDogFormData) => void;
+  onSubmit: (data: DogFormData) => void;
   errors?: Record<string, string>;
   isSubmitting?: boolean;
 }

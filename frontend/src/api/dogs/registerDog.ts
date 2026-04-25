@@ -1,5 +1,11 @@
 import { createApiClient } from '@/lib/api/client';
-import type { RegisterDogFormData } from '@/components/dogs/RegisterDogForm';
+
+export interface DogFormData {
+  name: string;
+  breed: string;
+  dateOfBirth: string;
+  sex: string;
+}
 
 export interface RegisterDogResult {
   success: boolean;
@@ -8,7 +14,7 @@ export interface RegisterDogResult {
 
 const client = createApiClient();
 
-export async function registerDog(data: RegisterDogFormData): Promise<RegisterDogResult> {
+export async function registerDog(data: DogFormData): Promise<RegisterDogResult> {
   const result = await client.post<void>('/dogs/register', data);
   if (result.ok) {
     return { success: true };
