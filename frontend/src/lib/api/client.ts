@@ -43,6 +43,7 @@ export function createApiClient(baseUrl: string = '/api') {
             type: 'http',
             status: response.status,
             message: data.message ?? 'Request failed',
+            errors: data.errors,
           },
         };
       }

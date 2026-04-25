@@ -1,38 +1,42 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 
-const dogId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+const { mockGet } = vi.hoisted(() => ({
+  mockGet: vi.fn(),
+}));
 
-const profileData = {
-  id: dogId,
-  ownerId: 'owner-1234',
-  name: 'Buddy',
-  breed: 'Golden Retriever',
-  dateOfBirth: '2023-06-15',
-  sex: 'Male',
-};
+vi.mock('@/lib/api/client', () => ({
+  createApiClient: () => ({ get: mockGet }),
+}));
 
 describe('getDogProfile', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+  const dogId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+  const profileData = {
+    id: dogId,
+    ownerId: 'owner-1234',
+    name: 'Buddy',
+    breed: 'Golden Retriever',
+    dateOfBirth: '2023-06-15',
+    sex: 'Male',
+  };
+
+  beforeEach(() => {
+    mockGet.mockReset();
   });
 
-  it('sends a GET request to /api/dogs/{id}', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(profileData),
-    });
-    global.fetch = fetchMock;
+  it('sends GET to /dogs/{id} and returns the profile on success', async () => {
+    mockGet.mockResolvedValue({ ok: true, data: profileData });
 
     const result = await getDogProfile(dogId);
 
-    expect(fetchMock).toHaveBeenCalledWith(`/api/dogs/${dogId}`);
+    expect(mockGet).toHaveBeenCalledWith(`/dogs/${dogId}`);
     expect(result).toEqual({ success: true, profile: profileData });
   });
 
-  it('returns not found when the response is 404', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+  it('returns notFound when the client returns a 404 error', async () => {
+    mockGet.mockResolvedValue({
       ok: false,
-      status: 404,
+      error: { type: 'http', message: 'Not Found', status: 404 },
     });
 
     const result = await getDogProfile(dogId);
@@ -40,10 +44,10 @@ describe('getDogProfile', () => {
     expect(result).toEqual({ success: false, notFound: true });
   });
 
-  it('returns failure with error when the response is not ok and not 404', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+  it('returns a failure with error message on non-404 HTTP errors', async () => {
+    mockGet.mockResolvedValue({
       ok: false,
-      status: 500,
+      error: { type: 'http', message: 'Internal Server Error', status: 500 },
     });
 
     const result = await getDogProfile(dogId);
@@ -51,19 +55,22 @@ describe('getDogProfile', () => {
     expect(result).toEqual({
       success: false,
       notFound: false,
-      error: 'An unexpected error occurred. Please try again.',
+      error: 'Internal Server Error',
     });
   });
 
-  it('returns failure with a network error when fetch throws', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+  it('returns a failure with error message on network errors', async () => {
+    mockGet.mockResolvedValue({
+      ok: false,
+      error: { type: 'network', message: 'A network error occurred' },
+    });
 
     const result = await getDogProfile(dogId);
 
     expect(result).toEqual({
       success: false,
       notFound: false,
-      error: 'A network error occurred. Please try again.',
+      error: 'A network error occurred',
     });
   });
 });

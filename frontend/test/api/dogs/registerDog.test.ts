@@ -1,72 +1,78 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { registerDog } from '@/api/dogs/registerDog';
 
-const validData = {
-  name: 'Buddy',
-  breed: 'Golden Retriever',
-  dateOfBirth: '2023-06-15',
-  sex: 'Male',
-};
+const { mockPost } = vi.hoisted(() => ({
+  mockPost: vi.fn(),
+}));
+
+vi.mock('@/lib/api/client', () => ({
+  createApiClient: () => ({ post: mockPost }),
+}));
 
 describe('registerDog', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+  const formData = {
+    name: 'Buddy',
+    breed: 'Golden Retriever',
+    dateOfBirth: '2023-06-15',
+    sex: 'Male',
+  };
+
+  beforeEach(() => {
+    mockPost.mockReset();
   });
 
-  it('sends a POST request to /api/dogs/register', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    });
-    global.fetch = fetchMock;
+  it('sends POST to /dogs/register with the form data and returns success', async () => {
+    mockPost.mockResolvedValue({ ok: true, data: undefined });
 
-    const result = await registerDog(validData);
+    const result = await registerDog(formData);
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/dogs/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(validData),
-    });
+    expect(mockPost).toHaveBeenCalledWith('/dogs/register', formData);
     expect(result).toEqual({ success: true });
   });
 
-  it('returns failure with errors when the response is not ok', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+  it('returns validation errors when the client returns a validation error', async () => {
+    mockPost.mockResolvedValue({
       ok: false,
-      json: () => Promise.resolve({
-        errors: { name: 'Name is required' },
-      }),
+      error: {
+        type: 'validation',
+        message: 'Validation failed',
+        errors: { name: ['Name is required'], breed: ['Breed is required'] },
+      },
     });
 
-    const result = await registerDog(validData);
+    const result = await registerDog(formData);
 
     expect(result).toEqual({
       success: false,
-      errors: { name: 'Name is required' },
+      errors: { name: 'Name is required', breed: 'Breed is required' },
     });
   });
 
-  it('returns failure with a network error when fetch throws', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+  it('returns a form-level error on non-validation errors', async () => {
+    mockPost.mockResolvedValue({
+      ok: false,
+      error: { type: 'http', message: 'Internal Server Error', status: 500 },
+    });
 
-    const result = await registerDog(validData);
+    const result = await registerDog(formData);
+
+    expect(result).toEqual({
+      success: false,
+      errors: { form: 'Internal Server Error' },
+    });
+  });
+
+  it('returns a form-level error on network errors', async () => {
+    mockPost.mockResolvedValue({
+      ok: false,
+      error: { type: 'network', message: 'A network error occurred' },
+    });
+
+    const result = await registerDog(formData);
 
     expect(result).toEqual({
       success: false,
       errors: { form: 'A network error occurred. Please try again.' },
-    });
-  });
-
-  it('returns failure with a generic error when the error response is not JSON', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      json: () => Promise.reject(new SyntaxError('Unexpected token <')),
-    });
-
-    const result = await registerDog(validData);
-
-    expect(result).toEqual({
-      success: false,
-      errors: { form: 'An unexpected error occurred. Please try again.' },
     });
   });
 });
