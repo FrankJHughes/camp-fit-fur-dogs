@@ -1,48 +1,37 @@
+import { createApiClient } from '@/lib/api/client';
+
 export interface EditDogProfileData {
-    name: string;
-    breed: string;
-    dateOfBirth: string;
-    sex: string;
+  name: string;
+  breed: string;
+  dateOfBirth: string;
+  sex: string;
 }
 
 export interface EditDogProfileResult {
-    success: boolean;
-    errors?: Record<string, string>;
+  success: boolean;
+  errors?: Record<string, string>;
 }
 
+const client = createApiClient();
+
 export async function editDogProfile(
-    dogId: string,
-    data: EditDogProfileData
+  dogId: string,
+  data: EditDogProfileData
 ): Promise<EditDogProfileResult> {
-    try {
-        const response = await fetch(`/api/dogs/${dogId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            try {
-                const body = await response.json();
-                return { success: false, errors: body.errors };
-            } catch {
-                return {
-                    success: false,
-                    errors: {
-                        form: 'An unexpected error occurred. Please try again.',
-                    },
-                };
-            }
-        }
-
-        // 204 No Content — no body to parse
-        return { success: true };
-    } catch {
-        return {
-            success: false,
-            errors: {
-                form: 'A network error occurred. Please try again.',
-            },
-        };
-    }
+  const result = await client.put<void>(`/dogs/${dogId}`, data);
+  if (result.ok) {
+    return { success: true };
+  }
+  if (result.error.errors) {
+    const errors = Object.fromEntries(
+      Object.entries(result.error.errors).map(([k, v]) =>
+        [k, Array.isArray(v) ? v[0] : v]
+      )
+    );
+    return { success: false, errors };
+  }
+  const message = result.error.type === 'network'
+    ? 'A network error occurred. Please try again.'
+    : result.error.message;
+  return { success: false, errors: { form: message } };
 }
