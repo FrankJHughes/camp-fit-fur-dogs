@@ -1,17 +1,11 @@
 'use client';
+import type { EditDogProfileData } from '@/api/dogs/editDogProfile';
 
 import { useState } from 'react';
 
-export interface EditDogProfileFormData {
-    name: string;
-    breed: string;
-    dateOfBirth: string;
-    sex: string;
-}
-
 interface EditDogProfileFormProps {
-    initialData: EditDogProfileFormData;
-    onSubmit: (data: EditDogProfileFormData) => void;
+    initialData: EditDogProfileData;
+    onSubmit: (data: EditDogProfileData) => void;
     errors?: Record<string, string>;
     isSubmitting?: boolean;
 }
