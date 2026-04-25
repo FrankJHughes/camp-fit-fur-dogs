@@ -132,3 +132,30 @@ Domain entities and aggregates must not cross the Api boundary.
 Endpoints must resolve identity from the current user service, not from request bodies.
 
 These guardrails should be enforced by tests, analyzers, and reviews.
+
+## Frontend Architecture
+
+The frontend follows a **layer + aggregate** convention that mirrors the backend's aggregate grouping.
+
+Structure: `layer/aggregate/filename` — slice identity is encoded in the filename, not a subfolder.
+
+Frontend layers:
+
+- `api/` — server-call functions (one per slice).
+- `components/` — presentational React components.
+- `lib/` — pure logic and action functions.
+- `app/` — Next.js routing layer (untouched by this convention).
+
+Within each layer, files are grouped by aggregate:
+
+- `api/dogs/getDogProfile.ts`
+- `components/dogs/DogProfileCard.tsx`
+- `lib/dogs/dogProfileActions.ts`
+
+Shared infrastructure (e.g., API client) lives in `lib/api/` with no aggregate subfolder.
+
+Slice subfolders are introduced only when an aggregate accumulates 10+ files in a single layer.
+
+The `app/` directory is owned by Next.js routing conventions and is not restructured.
+
+The `test/` directory mirrors `src/` exactly.

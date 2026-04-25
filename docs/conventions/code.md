@@ -130,7 +130,19 @@ Layout:
 
 - `frontend/`
   - `src/`
-  - `test/`
+    - `api/<aggregate>/` — server-call functions grouped by aggregate.
+    - `components/<aggregate>/` — presentational components grouped by aggregate.
+    - `lib/<aggregate>/` — pure logic and action functions grouped by aggregate.
+    - `lib/api/` — shared infrastructure (API client).
+    - `app/` — Next.js routing layer.
+  - `test/` — mirrors `src/` structure.
+
+File naming:
+
+- `api/`: `camelCaseVerb.ts` (e.g., `getDogProfile.ts`).
+- `components/`: `PascalCase.tsx` (e.g., `DogProfileCard.tsx`).
+- `lib/`: `camelCase.ts` (e.g., `dogProfileActions.ts`).
+- `app/`: `page.tsx` (Next.js convention).
 
 Testing:
 

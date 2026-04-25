@@ -1,4 +1,4 @@
-﻿# Copilot Instructions
+# Copilot Instructions
 
 This file provides top level guidance for how copilot should behave in this repository.
 All detailed conventions live in separate files under docs/conventions.
@@ -45,3 +45,4 @@ These four files are the single source of truth for all repository rules.
 | 12 | 8 | Manual copy paste of generated file content caused corruption | Added script first file generation rule |
 | 13 | 9 | Di tests required a separate assembly due to speculative debugging | Added debugging discipline rule requiring deliberate reasoning before proposing architectural changes |
 | 14 | 10 | Partial file edits and patching attempts caused corruption and drift across code and documentation | Added universal patch rule requiring full file regeneration with patches already applied for all file types |
+| 15 | 6 | PowerShell treats `[id]` in Next.js dynamic route folder names as a wildcard character class, causing silent file-operation failures | Use `-LiteralPath` in all PowerShell file operations involving Next.js dynamic route folders (e.g., `Get-Content -LiteralPath`, `Set-Content -LiteralPath`). Never use `-Path` with bracket characters. |

@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- `getDogProfileActions()` pure function returning `DogProfileAction[]` for the View Dog Profile page
+- `DogProfileActionsCard` presentational component rendering action buttons from an actions array
+- `ViewDogProfilePage` wired with Edit action via sibling composition
+- Optional `actions?: ReactNode` slot prop on `DogProfileCard`
+- Page-level tests for `ViewDogProfilePage` action rendering
+- Unit tests for `getDogProfileActions` function
+- Frontend layer + aggregate folder convention documented in architecture.md, code.md, and folder-structure.md
+
+### Changed
+
+- Frontend reorganized by **layer + aggregate** convention — all dog-related files moved under `dogs/` subfolders (`api/dogs/`, `components/dogs/`, `lib/dogs/`)
+- All frontend import paths updated to reflect new aggregate folder structure
+- Added Lessons Learned row for PowerShell `[id]` bracket path issue
+
 ## [Sprint 5] — 2026-04-18
 
 ### Completed Stories
