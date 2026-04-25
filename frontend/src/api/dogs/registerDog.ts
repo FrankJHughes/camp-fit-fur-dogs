@@ -1,4 +1,4 @@
-import type { RegisterDogFormData } from '@/components/RegisterDogForm';
+import type { RegisterDogFormData } from '@/components/dogs/RegisterDogForm';
 
 export interface RegisterDogResult {
   success: boolean;

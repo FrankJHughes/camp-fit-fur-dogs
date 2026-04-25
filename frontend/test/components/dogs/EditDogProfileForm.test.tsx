@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { EditDogProfileForm } from '@/components/EditDogProfileForm';
+import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
 
 const initialData = {
     name: 'Buddy',

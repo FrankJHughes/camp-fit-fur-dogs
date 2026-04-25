@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getDogProfile } from '@/api/getDogProfile';
-import type { DogProfile } from '@/api/getDogProfile';
+import { getDogProfile } from '@/api/dogs/getDogProfile';
+import type { DogProfile } from '@/api/dogs/getDogProfile';
 import {
     editDogProfile,
     type EditDogProfileData,
-} from '@/api/editDogProfile';
-import { EditDogProfileForm } from '@/components/EditDogProfileForm';
+} from '@/api/dogs/editDogProfile';
+import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
 
 export default function EditDogProfilePage() {
     const { id } = useParams<{ id: string }>();

@@ -1,4 +1,4 @@
-import { registerDog } from '@/api/registerDog';
+import { registerDog } from '@/api/dogs/registerDog';
 
 const validData = {
   name: 'Buddy',

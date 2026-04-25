@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RegisterDogPage from '@/app/dogs/register/page';
-import { registerDog } from '@/api/registerDog';
+import { registerDog } from '@/api/dogs/registerDog';
 
 const pushMock = vi.fn();
 
@@ -9,7 +9,7 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: pushMock }),
 }));
 
-vi.mock('@/api/registerDog', () => ({
+vi.mock('@/api/dogs/registerDog', () => ({
   registerDog: vi.fn().mockResolvedValue({ success: true }),
 }));
 

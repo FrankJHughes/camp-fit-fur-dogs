@@ -9,11 +9,11 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock API functions
-vi.mock('@/api/getDogProfile');
-vi.mock('@/api/editDogProfile');
+vi.mock('@/api/dogs/getDogProfile');
+vi.mock('@/api/dogs/editDogProfile');
 
-import { getDogProfile } from '@/api/getDogProfile';
-import { editDogProfile } from '@/api/editDogProfile';
+import { getDogProfile } from '@/api/dogs/getDogProfile';
+import { editDogProfile } from '@/api/dogs/editDogProfile';
 import EditDogProfilePage from '@/app/dogs/[id]/edit/page';
 
 const profileData = {

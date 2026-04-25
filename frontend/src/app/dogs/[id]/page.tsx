@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getDogProfile, type GetDogProfileResult } from '@/api/getDogProfile';
-import { DogProfileCard } from '@/components/DogProfileCard';
+import { getDogProfile, type GetDogProfileResult } from '@/api/dogs/getDogProfile';
+import { DogProfileCard } from '@/components/dogs/DogProfileCard';
 import DogProfileActionsCard from '@/components/dogs/DogProfileActionsCard';
 import { getDogProfileActions } from '@/lib/dogs/dogProfileActions';
 

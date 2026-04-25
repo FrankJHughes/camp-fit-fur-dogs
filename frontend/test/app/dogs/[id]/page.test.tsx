@@ -2,9 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ViewDogProfilePage from '@/app/dogs/[id]/page';
-import { getDogProfile } from '@/api/getDogProfile';
+import { getDogProfile } from '@/api/dogs/getDogProfile';
 
-vi.mock('@/api/getDogProfile');
+vi.mock('@/api/dogs/getDogProfile');
 
 const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({

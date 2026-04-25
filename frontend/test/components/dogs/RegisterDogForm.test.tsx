@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RegisterDogForm } from '@/components/RegisterDogForm';
+import { RegisterDogForm } from '@/components/dogs/RegisterDogForm';
 
 describe('RegisterDogForm', () => {
   it('renders the form with all fields and a submit button', () => {

@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RegisterDogForm, type RegisterDogFormData } from '@/components/RegisterDogForm';
-import { registerDog } from '@/api/registerDog';
+import { RegisterDogForm, type RegisterDogFormData } from '@/components/dogs/RegisterDogForm';
+import { registerDog } from '@/api/dogs/registerDog';
 
 export default function RegisterDogPage() {
   const router = useRouter();

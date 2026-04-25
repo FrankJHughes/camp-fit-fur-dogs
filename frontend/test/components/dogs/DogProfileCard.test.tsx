@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DogProfileCard } from '@/components/DogProfileCard';
+import { DogProfileCard } from '@/components/dogs/DogProfileCard';
 
 const profile = {
   id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
