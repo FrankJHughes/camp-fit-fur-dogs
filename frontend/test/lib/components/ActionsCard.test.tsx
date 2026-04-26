@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ActionsCard } from '@/components/shared/ActionsCard';
-import type { Action } from '@/lib/shared/action';
+import { ActionsCard } from '@/lib/components/ActionsCard';
+import type { Action } from '@/lib/action';
 
 describe('ActionsCard', () => {
     it('renders a button for each action', () => {

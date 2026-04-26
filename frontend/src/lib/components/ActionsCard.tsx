@@ -1,4 +1,4 @@
-import type { Action } from '@/lib/shared/action';
+import type { Action } from '@/lib/action';
 
 interface ActionsCardProps {
     actions: Action[];

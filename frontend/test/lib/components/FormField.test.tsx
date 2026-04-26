@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { FormField } from '../../../src/components/shared/FormField';
+import { FormField } from '../../../src/lib/components/FormField';
 
 describe('FormField', () => {
   it('renders the label text', () => {

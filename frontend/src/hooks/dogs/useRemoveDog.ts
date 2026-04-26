@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { removeDog } from '@/api/dogs/removeDog';
 import { useConfirmDialog } from '@/lib/hooks/useConfirmDialog';
-import type { ConfirmDialogProps } from '@/components/shared/ConfirmDialog';
+import type { ConfirmDialogProps } from '@/lib/components/ConfirmDialog';
 
 export function useRemoveDog(
     id: string,

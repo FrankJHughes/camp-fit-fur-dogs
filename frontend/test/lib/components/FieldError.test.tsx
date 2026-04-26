@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { FieldError } from '../../../src/components/shared/FieldError';
+import { FieldError } from '../../../src/lib/components/FieldError';
 
 describe('FieldError', () => {
   it('renders the error message with role="alert"', () => {

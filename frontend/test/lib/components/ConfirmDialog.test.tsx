@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { ConfirmDialog } from '../../../src/components/shared/ConfirmDialog';
+import { ConfirmDialog } from '../../../src/lib/components/ConfirmDialog';
 
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal ??= vi.fn(function (this: HTMLDialogElement) {

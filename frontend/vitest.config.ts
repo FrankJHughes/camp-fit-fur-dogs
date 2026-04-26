@@ -17,6 +17,7 @@ export default defineConfig({
           environment: 'node',
           globals: true,
           include: ['./test/lib/**/*.test.ts', './test/api/**/*.test.ts'],
+          exclude: ['./test/lib/hooks/**', './test/lib/components/**']
         },
       },
       {
@@ -26,7 +27,8 @@ export default defineConfig({
           environment: 'jsdom',
           globals: true,
           setupFiles: ['./test/setup.ts'],
-          include: ['./test/app/**/*.test.{ts,tsx}', './test/components/**/*.test.{ts,tsx}', './test/hooks/**/*.test.{ts,tsx}'],
+          include: ['./test/app/**/*.test.{ts,tsx}', './test/components/**/*.test.{ts,tsx}', './test/hooks/**/*.test.{ts,tsx}',
+            './test/lib/components/**/*.test.{ts,tsx}', './test/lib/hooks/**/*.test.{ts,tsx}'],
         },
       },
       {

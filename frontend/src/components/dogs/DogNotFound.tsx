@@ -1,4 +1,4 @@
-import { NotFound } from '../shared/NotFound';
+import { NotFound } from '../../lib/components/NotFound';
 
 export function DogNotFound() {
   return (

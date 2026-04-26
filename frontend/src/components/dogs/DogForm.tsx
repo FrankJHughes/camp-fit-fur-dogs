@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { FieldError } from '../shared/FieldError';
-import { FormField } from '../shared/FormField';
+import { FieldError } from '../../lib/components/FieldError';
+import { FormField } from '../../lib/components/FormField';
 import { validateDogForm } from '../../lib/dogs/validateDogForm';
 import type { DogFormValues } from '../../types/dog';
 
