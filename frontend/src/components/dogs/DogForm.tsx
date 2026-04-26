@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { FieldError } from '../shared/FieldError';
 import { FormField } from '../shared/FormField';
+import { validateDogForm } from '../../lib/validateDogForm';
 
 export interface DogFormValues {
   name: string;
@@ -45,11 +46,7 @@ export function DogForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors: Record<string, string> = {};
-    if (!name.trim()) newErrors.name = "Please enter your dog's name";
-    if (!breed.trim()) newErrors.breed = 'Please enter a breed';
-    if (!dateOfBirth.trim()) newErrors.dateOfBirth = 'Please enter a date of birth';
-    if (!sex) newErrors.sex = 'Please select a sex';
+    const newErrors = validateDogForm({ name, breed, dateOfBirth, sex });
 
     if (Object.keys(newErrors).length > 0) {
       setValidationErrors(newErrors);
