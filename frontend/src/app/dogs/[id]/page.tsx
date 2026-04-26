@@ -9,7 +9,7 @@ import DogProfileActionsCard from '@/components/dogs/DogProfileActionsCard';
 import { getDogProfileActions } from '@/lib/dogs/dogProfileActions';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
 
-export default function ViewDogProfilePage() {
+export default function GetDogProfilePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 

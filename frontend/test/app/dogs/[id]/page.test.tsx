@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ViewDogProfilePage from '@/app/dogs/[id]/page';
+import GetDogProfilePage from '@/app/dogs/[id]/page';
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 
 vi.mock('@/api/dogs/getDogProfile');
@@ -30,7 +30,7 @@ describe('ViewDogProfilePage', () => {
   it('shows loading state initially', () => {
     vi.mocked(getDogProfile).mockReturnValue(new Promise(() => { }));
 
-    render(<ViewDogProfilePage />);
+    render(<GetDogProfilePage />);
 
     expect(screen.getByText('Loading…')).toBeDefined();
   });
@@ -38,7 +38,7 @@ describe('ViewDogProfilePage', () => {
   it('renders the dog profile card with the fetched profile', async () => {
     vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
 
-    render(<ViewDogProfilePage />);
+    render(<GetDogProfilePage />);
 
     await waitFor(() => {
       expect(screen.getByText('Buddy')).toBeDefined();
@@ -49,7 +49,7 @@ describe('ViewDogProfilePage', () => {
     const user = userEvent.setup();
     vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
 
-    render(<ViewDogProfilePage />);
+    render(<GetDogProfilePage />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /edit/i })).toBeDefined();
@@ -63,7 +63,7 @@ describe('ViewDogProfilePage', () => {
   it('shows not-found message when the dog does not exist', async () => {
     vi.mocked(getDogProfile).mockResolvedValue({ success: false, notFound: true });
 
-    render(<ViewDogProfilePage />);
+    render(<GetDogProfilePage />);
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /couldn't find that dog/i })).toBeInTheDocument();
