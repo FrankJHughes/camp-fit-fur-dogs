@@ -4,7 +4,7 @@ import Home from '@/app/page';
 
 describe('Home page', () => {
   it('renders the heading', () => {
-    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})));
+    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => { })));
 
     render(<Home />);
 

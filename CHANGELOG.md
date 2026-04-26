@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Edit Dog Profile page — owners can update name, breed, date of birth, and sex (US-030)
+- Edit button on View Dog Profile page navigates to the edit form (US-030)
+
 ## [Sprint 5] — 2026-04-18
 
 ### Completed Stories

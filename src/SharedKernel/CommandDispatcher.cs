@@ -41,5 +41,34 @@ public sealed class CommandDispatcher : ICommandDispatcher
         // 3. Execute handler
         return await ((dynamic)handler).Handle((dynamic)command, ct);
     }
+
+    public async Task DispatchAsync(ICommand command, CancellationToken ct)
+    {
+        // 1. Run validators (if any)
+        var validatorType = typeof(IValidator<>).MakeGenericType(command.GetType());
+        var validators = _provider.GetServices(validatorType).Cast<object>();
+
+        var context = new ValidationContext<object>(command);
+
+        foreach (var validator in validators)
+        {
+            var result = await ((IValidator)validator).ValidateAsync(context, ct);
+
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+        }
+
+        // 2. Resolve handler
+        var handlerType = typeof(ICommandHandler<>)
+            .MakeGenericType(command.GetType());
+
+        var handler = (object)_provider.GetRequiredService(handlerType);
+
+        // 3. Execute handler
+        await ((dynamic)handler).Handle((dynamic)command, ct);
+    }
+
 }
 

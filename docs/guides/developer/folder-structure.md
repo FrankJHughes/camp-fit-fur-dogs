@@ -216,3 +216,76 @@ When adding a new feature:
 
 If you’re unsure where something belongs, default to the **most restrictive** layer (Domain > Application > Infrastructure > Api).
 
+
+---
+
+## 7. Frontend Folder Structure
+
+The frontend lives in `frontend/` and follows a **layer + aggregate** convention
+that mirrors the backend's aggregate grouping without fighting Next.js conventions.
+
+### 7.1 Directory Layout
+
+```
+frontend/src/
+├── api/dogs/                  ← Server-call functions grouped by aggregate
+│   ├── getDogProfile.ts
+│   ├── registerDog.ts
+│   └── editDogProfile.ts
+├── components/dogs/           ← Presentational React components grouped by aggregate
+│   ├── DogProfileCard.tsx
+│   ├── DogProfileActionsCard.tsx
+│   ├── EditDogProfileForm.tsx
+│   └── RegisterDogForm.tsx
+├── lib/dogs/                  ← Pure logic / action functions grouped by aggregate
+│   └── dogProfileActions.ts
+├── lib/api/                   ← Shared infrastructure (API client, auth helpers)
+│   └── client.ts
+└── app/                       ← Next.js routing layer — UNTOUCHED by this convention
+    ├── page.tsx
+    └── dogs/
+        ├── [id]/
+        │   ├── page.tsx
+        │   └── edit/
+        │       └── page.tsx
+        └── register/
+            ├── page.tsx
+            └── success/
+                └── page.tsx
+
+frontend/test/                 ← Mirrors src/ structure
+├── api/dogs/
+├── components/dogs/
+├── lib/dogs/
+└── app/dogs/
+```
+
+### 7.2 Convention Rules
+
+| Rule | Detail |
+|------|--------|
+| **Structure** | `layer/aggregate/filename` — slice identity is encoded in the filename, not a subfolder |
+| **Slice subfolders** | Introduced only when an aggregate accumulates **10+ files** in a single layer |
+| **`app/` layer** | Left untouched — Next.js owns routing; the file-system convention already reads like slices |
+| **`test/` mirror** | Test directory mirrors `src/` exactly (`test/api/dogs/`, `test/components/dogs/`, etc.) |
+| **Shared infra** | Cross-aggregate utilities live in `lib/api/` (e.g., `client.ts`) — no aggregate subfolder |
+
+### 7.3 Frontend Naming Conventions
+
+| Layer | File pattern | Example |
+|-------|-------------|---------|
+| `api/` | `camelCaseVerb.ts` | `getDogProfile.ts`, `registerDog.ts` |
+| `components/` | `PascalCase.tsx` | `DogProfileCard.tsx`, `RegisterDogForm.tsx` |
+| `lib/` | `camelCase.ts` | `dogProfileActions.ts` |
+| `app/` | `page.tsx` (Next.js convention) | `app/dogs/[id]/page.tsx` |
+
+### 7.4 Frontend Contributor Steps
+
+When adding a new frontend feature:
+
+1. Add server-call function(s) to `api/<aggregate>/`.
+2. Add pure logic / action functions to `lib/<aggregate>/` (if needed).
+3. Add presentational component(s) to `components/<aggregate>/`.
+4. Wire the page in `app/` — compose components, call server functions.
+5. Add tests mirroring `src/` structure in `test/`.
+6. Follow naming conventions strictly.

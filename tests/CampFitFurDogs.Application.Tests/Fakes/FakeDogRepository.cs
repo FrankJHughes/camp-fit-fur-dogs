@@ -14,7 +14,7 @@ public class FakeDogRepository : IDogRepository
 
     public Task<Dog?> GetByIdAsync(DogId id, CancellationToken cancellationToken = default)
     {
-        var dog = Dogs.FirstOrDefault(d => d.Id == id);
+        var dog = Dogs.FirstOrDefault(d => d.Id.Equals(id));
         return Task.FromResult(dog);
     }
 

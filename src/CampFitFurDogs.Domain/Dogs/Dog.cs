@@ -27,4 +27,13 @@ public sealed class Dog : AggregateRoot<DogId>
     {
         return new Dog(DogId.New(), ownerId, name, breed, dateOfBirth, sex);
     }
+
+    public void Update(DogName name, Breed breed, DateOnly dateOfBirth, Sex sex)
+    {
+        Name = name;
+        Breed = breed;
+        DateOfBirth = dateOfBirth;
+        Sex = sex;
+    }
+
 }

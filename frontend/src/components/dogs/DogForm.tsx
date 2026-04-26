@@ -1,25 +1,41 @@
 'use client';
-
 import { useState } from 'react';
 
-export interface RegisterDogFormData {
+export interface DogFormValues {
   name: string;
   breed: string;
   dateOfBirth: string;
   sex: string;
 }
 
-interface RegisterDogFormProps {
-  onSubmit: (data: RegisterDogFormData) => void;
+interface DogFormProps {
+  title: string;
+  submitLabel: string;
+  initialValues?: DogFormValues;
+  onSubmit: (data: DogFormValues) => void;
   errors?: Record<string, string>;
   isSubmitting?: boolean;
 }
 
-export function RegisterDogForm({ onSubmit, errors, isSubmitting }: RegisterDogFormProps) {
-  const [name, setName] = useState('');
-  const [breed, setBreed] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [sex, setSex] = useState('');
+const emptyValues: DogFormValues = {
+  name: '',
+  breed: '',
+  dateOfBirth: '',
+  sex: '',
+};
+
+export function DogForm({
+  title,
+  submitLabel,
+  initialValues = emptyValues,
+  onSubmit,
+  errors,
+  isSubmitting,
+}: DogFormProps) {
+  const [name, setName] = useState(initialValues.name);
+  const [breed, setBreed] = useState(initialValues.breed);
+  const [dateOfBirth, setDateOfBirth] = useState(initialValues.dateOfBirth);
+  const [sex, setSex] = useState(initialValues.sex);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const displayErrors = { ...validationErrors, ...errors };
@@ -44,7 +60,7 @@ export function RegisterDogForm({ onSubmit, errors, isSubmitting }: RegisterDogF
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1>Register Dog</h1>
+      <h1>{title}</h1>
 
       {displayErrors.form && <p>{displayErrors.form}</p>}
 
@@ -76,7 +92,7 @@ export function RegisterDogForm({ onSubmit, errors, isSubmitting }: RegisterDogF
       </label>
       {displayErrors.sex && <p>{displayErrors.sex}</p>}
 
-      <button type="submit" disabled={isSubmitting}>Register</button>
+      <button type="submit" disabled={isSubmitting}>{submitLabel}</button>
     </form>
   );
 }

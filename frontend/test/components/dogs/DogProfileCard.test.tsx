@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { DogProfileCard } from '@/components/DogProfileCard';
+import { DogProfileCard } from '@/components/dogs/DogProfileCard';
 
 const profile = {
   id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
@@ -35,4 +35,5 @@ describe('DogProfileCard', () => {
     render(<DogProfileCard profile={profile} />);
     expect(screen.queryByText('owner-1234')).not.toBeInTheDocument();
   });
+
 });

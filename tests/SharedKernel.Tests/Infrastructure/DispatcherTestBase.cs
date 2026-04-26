@@ -9,6 +9,11 @@ public abstract class DispatcherTestBase
 
     protected void BuildContainer() => Provider = _container.Build();
 
+    protected void WithCommandHandler<TCommand, THandler>()
+        where TCommand : ICommand
+        where THandler : class, ICommandHandler<TCommand>
+        => _container.WithCommandHandler<TCommand, THandler>();
+
     protected void WithCommandHandler<TCommand, TResponse, THandler>()
         where TCommand : ICommand<TResponse>
         where THandler : class, ICommandHandler<TCommand, TResponse>

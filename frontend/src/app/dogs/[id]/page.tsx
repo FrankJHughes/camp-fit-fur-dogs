@@ -1,29 +1,32 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { getDogProfile, type GetDogProfileResult } from '@/api/getDogProfile';
-import { DogProfileCard } from '@/components/DogProfileCard';
+import { useParams, useRouter } from 'next/navigation';
+import { getDogProfile } from '@/api/dogs/getDogProfile';
+import { toQueryState } from '@/lib/api/queryResult';
+import { DogProfileCard } from '@/components/dogs/DogProfileCard';
+import DogProfileActionsCard from '@/components/dogs/DogProfileActionsCard';
+import { getDogProfileActions } from '@/lib/dogs/dogProfileActions';
+import { useApiQuery } from '@/lib/hooks/useApiQuery';
 
 export default function ViewDogProfilePage() {
   const { id } = useParams<{ id: string }>();
-  const [result, setResult] = useState<GetDogProfileResult | null>(null);
+  const router = useRouter();
 
-  useEffect(() => {
-    getDogProfile(id).then(setResult);
-  }, [id]);
+  const state = useApiQuery(
+    () => getDogProfile(id).then(toQueryState),
+    [id]
+  );
 
-  if (result === null) {
-    return <p>Loading…</p>;
-  }
+  if (state.status === 'loading') return <p>Loading…</p>;
+  if (state.status === 'not-found') return <p>Dog not found.</p>;
+  if (state.status === 'error') return <p>{state.error}</p>;
 
-  if (result.success) {
-    return <DogProfileCard profile={result.profile} />;
-  }
+  const actions = getDogProfileActions(state.data.id, router.push);
 
-  if (result.notFound) {
-    return <p>Dog not found.</p>;
-  }
-
-  return <p>{result.error}</p>;
+  return (
+    <>
+      <DogProfileCard profile={state.data} />
+      <DogProfileActionsCard actions={actions} />
+    </>
+  );
 }

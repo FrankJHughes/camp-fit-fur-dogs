@@ -49,7 +49,7 @@ builder.Services.AddSharedKernel(
 // 5. register api layer:
 //          endpoints
 var apiAssembly = typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
-EndpointDiscovery.RegisterEndpointsFromAssembly(apiAssembly);
+EndpointDiscovery.AddEndpoints(apiAssembly);
 
 //
 // END SHARED KERNEL ASSISTED REGISTRATION
@@ -59,7 +59,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.MapDiscoveredEndpoints();
+app.MapEndpoints();
 
 app.UseExceptionHandler(errorApp =>
 {

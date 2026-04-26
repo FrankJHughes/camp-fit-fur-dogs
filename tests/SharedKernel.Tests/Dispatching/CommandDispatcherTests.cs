@@ -1,4 +1,6 @@
 
+using SharedKernel.Tests.Fakes;
+
 namespace SharedKernel.Tests.Dispatching;
 
 public class CommandDispatcherTests : DispatcherTestBase
@@ -22,6 +24,19 @@ public class CommandDispatcherTests : DispatcherTestBase
             CancellationToken.None);
 
         response.Success.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Dispatch_VoidCommand_Completes_Without_Exception()
+    {
+        WithCommandHandler<DeleteMessageCommand, DeleteMessageCommandHandler>();
+        BuildContainer();
+
+        var dispatcher = Provider.GetRequiredService<ICommandDispatcher>();
+
+        await dispatcher.DispatchAsync(
+            new DeleteMessageCommand("msg-123"),
+            CancellationToken.None);
     }
 }
 

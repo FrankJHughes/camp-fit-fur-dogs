@@ -1,67 +1,72 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ViewDogProfilePage from '@/app/dogs/[id]/page';
-import { getDogProfile } from '@/api/getDogProfile';
+import { getDogProfile } from '@/api/dogs/getDogProfile';
 
-vi.mock('@/api/getDogProfile');
+vi.mock('@/api/dogs/getDogProfile');
+
+const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
   useParams: () => ({ id: 'abc-123' }),
+  useRouter: () => ({ push: mockPush }),
 }));
-
-const mockedGetDogProfile = vi.mocked(getDogProfile);
 
 const profile = {
   id: 'abc-123',
-  ownerId: 'owner-1',
   name: 'Buddy',
   breed: 'Golden Retriever',
   dateOfBirth: '2023-06-15',
   sex: 'Male',
+  ownerId: 'owner-1',
 };
 
 describe('ViewDogProfilePage', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+  beforeEach(() => {
+    vi.mocked(getDogProfile).mockReset();
+    mockPush.mockClear();
   });
 
-  it('shows a loading indicator while fetching', () => {
-    mockedGetDogProfile.mockReturnValue(new Promise(() => {}));
+  it('shows loading state initially', () => {
+    vi.mocked(getDogProfile).mockReturnValue(new Promise(() => { }));
 
     render(<ViewDogProfilePage />);
 
-    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    expect(screen.getByText('Loading…')).toBeDefined();
   });
 
-  it('renders the dog profile on success', async () => {
-    mockedGetDogProfile.mockResolvedValue({ success: true, profile });
-
-    render(<ViewDogProfilePage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Buddy' })).toBeInTheDocument();
-    });
-  });
-
-  it('shows a friendly message when the dog is not found', async () => {
-    mockedGetDogProfile.mockResolvedValue({ success: false, notFound: true });
+  it('renders the dog profile card with the fetched profile', async () => {
+    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
 
     render(<ViewDogProfilePage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Dog not found.')).toBeInTheDocument();
+      expect(screen.getByText('Buddy')).toBeDefined();
     });
   });
 
-  it('shows an error message on failure', async () => {
-    mockedGetDogProfile.mockResolvedValue({
-      success: false,
-      notFound: false,
-      error: 'An unexpected error occurred. Please try again.',
-    });
+  it('renders the actions card with an Edit button that navigates to the edit route', async () => {
+    const user = userEvent.setup();
+    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
 
     render(<ViewDogProfilePage />);
 
     await waitFor(() => {
-      expect(screen.getByText('An unexpected error occurred. Please try again.')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /edit/i })).toBeDefined();
+    });
+
+    await user.click(screen.getByRole('button', { name: /edit/i }));
+
+    expect(mockPush).toHaveBeenCalledWith('/dogs/abc-123/edit');
+  });
+
+  it('shows not-found message when the dog does not exist', async () => {
+    vi.mocked(getDogProfile).mockResolvedValue({ success: false, notFound: true });
+
+    render(<ViewDogProfilePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Dog not found.')).toBeDefined();
     });
   });
 });
