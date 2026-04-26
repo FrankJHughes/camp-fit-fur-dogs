@@ -1,4 +1,5 @@
-interface NotFoundLink {
+import Link from 'next/link';
+export interface NotFoundLink {
   label: string;
   href: string;
 }
@@ -18,7 +19,7 @@ export function NotFound({ heading, message, links = [] }: NotFoundProps) {
         <ul>
           {links.map((link) => (
             <li key={link.href}>
-              <a href={link.href}>{link.label}</a>
+              <Link href={link.href}>{link.label}</Link>
             </li>
           ))}
         </ul>
