@@ -53,7 +53,7 @@ describe('RegisterDogForm', () => {
     await user.selectOptions(screen.getByLabelText(/sex/i), 'Male');
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(screen.getByText('Name is required')).toBeInTheDocument();
+    expect(screen.getByText("Please enter your dog's name")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   }, 10000);
 
@@ -67,7 +67,7 @@ describe('RegisterDogForm', () => {
     await user.selectOptions(screen.getByLabelText(/sex/i), 'Male');
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(screen.getByText('Breed is required')).toBeInTheDocument();
+    expect(screen.getByText('Please enter a breed')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   }, 10000);
 
@@ -81,7 +81,7 @@ describe('RegisterDogForm', () => {
     await user.selectOptions(screen.getByLabelText(/sex/i), 'Male');
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(screen.getByText('Date of birth is required')).toBeInTheDocument();
+    expect(screen.getByText('Please enter a date of birth')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   }, 10000);
 
@@ -95,7 +95,7 @@ describe('RegisterDogForm', () => {
     await user.type(screen.getByLabelText(/date of birth/i), '2023-06-15');
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(screen.getByText('Sex is required')).toBeInTheDocument();
+    expect(screen.getByText('Please select a sex')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   }, 10000);
 
@@ -115,7 +115,7 @@ describe('RegisterDogForm', () => {
     render(<RegisterDogForm onSubmit={onSubmit} />);
 
     await user.click(screen.getByRole('button', { name: /register/i }));
-    expect(screen.getByText('Name is required')).toBeInTheDocument();
+    expect(screen.getByText("Please enter your dog's name")).toBeInTheDocument();
 
     await user.type(screen.getByLabelText(/name/i), 'Buddy');
     await user.type(screen.getByLabelText(/breed/i), 'Golden Retriever');

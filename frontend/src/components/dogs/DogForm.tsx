@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { FieldError } from '../shared/FieldError';
+import { FormField } from '../shared/FormField';
 
 export interface DogFormValues {
   name: string;
@@ -44,10 +46,10 @@ export function DogForm({
     e.preventDefault();
 
     const newErrors: Record<string, string> = {};
-    if (!name.trim()) newErrors.name = 'Name is required';
-    if (!breed.trim()) newErrors.breed = 'Breed is required';
-    if (!dateOfBirth.trim()) newErrors.dateOfBirth = 'Date of birth is required';
-    if (!sex) newErrors.sex = 'Sex is required';
+    if (!name.trim()) newErrors.name = "Please enter your dog's name";
+    if (!breed.trim()) newErrors.breed = 'Please enter a breed';
+    if (!dateOfBirth.trim()) newErrors.dateOfBirth = 'Please enter a date of birth';
+    if (!sex) newErrors.sex = 'Please select a sex';
 
     if (Object.keys(newErrors).length > 0) {
       setValidationErrors(newErrors);
@@ -62,35 +64,54 @@ export function DogForm({
     <form onSubmit={handleSubmit}>
       <h1>{title}</h1>
 
-      {displayErrors.form && <p>{displayErrors.form}</p>}
+      <FieldError id="error-form" message={displayErrors.form} />
 
-      <label>
-        Name
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-      </label>
-      {displayErrors.name && <p>{displayErrors.name}</p>}
+      <FormField label="Name" name="name" error={displayErrors.name}>
+        {(fieldProps) => (
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            {...fieldProps}
+          />
+        )}
+      </FormField>
 
-      <label>
-        Breed
-        <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} />
-      </label>
-      {displayErrors.breed && <p>{displayErrors.breed}</p>}
+      <FormField label="Breed" name="breed" error={displayErrors.breed}>
+        {(fieldProps) => (
+          <input
+            type="text"
+            value={breed}
+            onChange={(e) => setBreed(e.target.value)}
+            {...fieldProps}
+          />
+        )}
+      </FormField>
 
-      <label>
-        Date of Birth
-        <input type="text" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
-      </label>
-      {displayErrors.dateOfBirth && <p>{displayErrors.dateOfBirth}</p>}
+      <FormField label="Date of Birth" name="dateOfBirth" error={displayErrors.dateOfBirth}>
+        {(fieldProps) => (
+          <input
+            type="text"
+            value={dateOfBirth}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            {...fieldProps}
+          />
+        )}
+      </FormField>
 
-      <label>
-        Sex
-        <select value={sex} onChange={(e) => setSex(e.target.value)}>
-          <option value="">Select</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-      </label>
-      {displayErrors.sex && <p>{displayErrors.sex}</p>}
+      <FormField label="Sex" name="sex" error={displayErrors.sex}>
+        {(fieldProps) => (
+          <select
+            value={sex}
+            onChange={(e) => setSex(e.target.value)}
+            {...fieldProps}
+          >
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        )}
+      </FormField>
 
       <button type="submit" disabled={isSubmitting}>{submitLabel}</button>
     </form>

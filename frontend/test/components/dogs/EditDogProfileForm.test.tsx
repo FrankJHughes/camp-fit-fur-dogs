@@ -97,7 +97,7 @@ describe('EditDogProfileForm', () => {
         await user.click(screen.getByRole('button', { name: /save/i }));
 
         expect(
-            screen.getByText('Name is required')
+            screen.getByText("Please enter your dog's name")
         ).toBeInTheDocument();
         expect(onSubmit).not.toHaveBeenCalled();
     }, 10000);
@@ -117,7 +117,7 @@ describe('EditDogProfileForm', () => {
         await user.click(screen.getByRole('button', { name: /save/i }));
 
         expect(
-            screen.getByText('Breed is required')
+            screen.getByText('Please enter a breed')
         ).toBeInTheDocument();
         expect(onSubmit).not.toHaveBeenCalled();
     }, 10000);
@@ -137,7 +137,7 @@ describe('EditDogProfileForm', () => {
         await user.click(screen.getByRole('button', { name: /save/i }));
 
         expect(
-            screen.getByText('Date of birth is required')
+            screen.getByText('Please enter a date of birth')
         ).toBeInTheDocument();
         expect(onSubmit).not.toHaveBeenCalled();
     }, 10000);
@@ -157,7 +157,7 @@ describe('EditDogProfileForm', () => {
         await user.click(screen.getByRole('button', { name: /save/i }));
 
         expect(
-            screen.getByText('Sex is required')
+            screen.getByText('Please select a sex')
         ).toBeInTheDocument();
         expect(onSubmit).not.toHaveBeenCalled();
     }, 10000);
