@@ -1,7 +1,7 @@
 import { createApiClient } from '@/lib/api/client';
 import type { QueryResult } from '@/lib/api/queryResult';
 
-export interface DogProfile {
+export interface GetDogProfileQuery {
   id: string;
   ownerId: string;
   name: string;
@@ -12,8 +12,8 @@ export interface DogProfile {
 
 const client = createApiClient();
 
-export async function getDogProfile(dogId: string): Promise<QueryResult<DogProfile>> {
-  const result = await client.get<DogProfile>(`/dogs/${dogId}`);
+export async function getDogProfile(dogId: string): Promise<QueryResult<GetDogProfileQuery>> {
+  const result = await client.get<GetDogProfileQuery>(`/dogs/${dogId}`);
   if (result.ok) {
     return { success: true, data: result.data };
   }

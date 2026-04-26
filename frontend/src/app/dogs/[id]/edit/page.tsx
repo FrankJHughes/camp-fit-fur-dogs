@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 import { toQueryState } from '@/lib/api/queryResult';
 import { DogNotFound } from '@/components/dogs/DogNotFound';
-import { editDogProfile, type EditDogProfileData } from '@/api/dogs/editDogProfile';
+import { editDogProfile, type EditDogProfileCommand } from '@/api/dogs/editDogProfile';
 import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import { useCommand } from '@/lib/hooks/useCommand';
@@ -18,7 +18,7 @@ export default function EditDogProfilePage() {
     [id]
   );
 
-  const { errors, isSubmitting, handleSubmit } = useCommand<EditDogProfileData>(
+  const { errors, isSubmitting, handleSubmit } = useCommand<EditDogProfileCommand>(
     (data) => editDogProfile(id, data),
     () => router.push(`/dogs/${id}`)
   );

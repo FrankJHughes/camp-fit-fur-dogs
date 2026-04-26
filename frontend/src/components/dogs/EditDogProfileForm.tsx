@@ -1,10 +1,10 @@
 'use client';
-import type { EditDogProfileData } from '@/api/dogs/editDogProfile';
+import type { EditDogProfileCommand } from '@/api/dogs/editDogProfile';
 import { DogForm } from '@/components/dogs/DogForm';
 
 interface EditDogProfileFormProps {
-  initialData: EditDogProfileData;
-  onSubmit: (data: EditDogProfileData) => void;
+  initialData: EditDogProfileCommand;
+  onSubmit: (data: EditDogProfileCommand) => void;
   errors?: Record<string, string>;
   isSubmitting?: boolean;
 }

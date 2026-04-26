@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { NotFound } from '@/components/shared/NotFound';
+import { NotFound } from '@/lib/components/NotFound';
 
 describe('NotFound', () => {
   const defaultProps = {

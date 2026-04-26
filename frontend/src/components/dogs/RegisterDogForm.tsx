@@ -1,9 +1,9 @@
 'use client';
-import type { DogFormData } from '@/api/dogs/registerDog';
+import type { RegisterDogCommand } from '@/api/dogs/registerDog';
 import { DogForm } from '@/components/dogs/DogForm';
 
 interface RegisterDogFormProps {
-  onSubmit: (data: DogFormData) => void;
+  onSubmit: (data: RegisterDogCommand) => void;
   errors?: Record<string, string>;
   isSubmitting?: boolean;
 }

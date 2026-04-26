@@ -8,6 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 - View Dog Profile page (`/dogs/[id]`) — API client, `DogProfileCard` component, dynamic route with loading/404/error states (US-029)
+- Remove Dog from View Dog Profile page with confirmation dialog and error feedback (US-032)
 - Vitest 3 configured as the frontend test runner with jsdom environment
 - React Testing Library and jest-dom matchers installed and configured
 - First passing component test — verifies landing page heading renders
@@ -22,3 +23,4 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Restructured project layout — moved `package.json` and configs from `frontend/src/` up to `frontend/` (project root). `src/` now contains only application source code.
 - Vitest config migrated from global `environment: 'jsdom'` to `test.projects` — unit tests run in `node` (~50ms), component tests in `jsdom`
 - `test/tsconfig.json` — fixed `@/*` path alias and source file inclusion for VS Code IntelliSense
+
