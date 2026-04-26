@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
 
 - Edit Dog Profile page — owners can update name, breed, date of birth, and sex (US-030)
 - Edit button on View Dog Profile page navigates to the edit form (US-030)
@@ -25,6 +26,7 @@ All notable changes to this project will be documented in this file.
 | US-107 | EF Entity Auto-Discovery                   | #165  |
 
 ### Added
+- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
 - `feature-slice-walkthrough.md` — step-by-step TDD walkthrough for adding command and query slices (US-052)
 - `AppDbContextAutoDiscoveryGuardrailTests` — guardrail ensuring no `DbSet<T>` properties on `AppDbContext` (US-107)
 - `GetDogProfileReaderTests` — 3 integration tests: profile found, not found, wrong owner (US-107)
@@ -89,6 +91,7 @@ All notable changes to this project will be documented in this file.
 | US-103 | Frontend Testing Setup             | #124  |
 
 ### Added
+- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
 
 - `.github/copilot-instructions.md` — living conventions document (standing rules, PR conventions, architecture patterns, tooling, lessons learned)
 - Sprint review closing checklist in `docs/sprint-reviews/_template.md`
@@ -125,6 +128,7 @@ All notable changes to this project will be documented in this file.
 | US-046 | Scrum Master Workflow Guide  | #100  |
 
 ### Added
+- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
 
 - `POST /api/customers` — create customer account (US-027)
 - `POST /api/dogs` — register a dog under a customer (US-028)
@@ -166,6 +170,7 @@ All notable changes to this project will be documented in this file.
 | US-026 | Declarative Infra Dependencies | #56 |
 
 ### Added
+- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
 
 - ADR-0008: Consistent Editor Experience
 - ADR-0009: Story Naming Convention
@@ -219,6 +224,7 @@ All notable changes to this project will be documented in this file.
 | US-019 | API DDD Layer Wiring | #20 |
 
 ### Added
+- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
 
 - ADR-0003: Developer Experience Toolchain
 - ADR-0004: Docker Compose for Infrastructure Definitions
@@ -244,6 +250,7 @@ All notable changes to this project will be documented in this file.
 | US-015 | CI Baseline Build and Test | #8 |
 
 ### Added
+- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
 
 - Repository initialization
 - ADR-0001: Use Lightweight ADRs
