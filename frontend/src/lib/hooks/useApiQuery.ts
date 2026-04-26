@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export type QueryState<T> =
   | { status: 'loading' }
@@ -11,12 +11,22 @@ export function useApiQuery<T>(
   deps: unknown[]
 ): QueryState<T> {
   const [state, setState] = useState<QueryState<T>>({ status: 'loading' });
+  const [prevDeps, setPrevDeps] = useState(deps);
+
+  if (!depsEqual(prevDeps, deps)) {
+    setPrevDeps(deps);
+    setState({ status: 'loading' });
+  }
 
   useEffect(() => {
-    setState({ status: 'loading' });
     queryFn().then(setState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   return state;
+}
+
+function depsEqual(a: unknown[], b: unknown[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((val, i) => Object.is(val, b[i]));
 }
