@@ -196,7 +196,8 @@ frontend/src/api/<useCase>.ts
 
 - Export a typed result interface with discriminated union for success/error states.
 - Handle HTTP errors and network errors with typed results — never throw.
-- Import form data types from the component, not vice versa.
+- Form data types (e.g., `DogFormData`) live in the API slice file — the component imports from the API slice.
+- API functions return `CommandResult` via `toCommandResult()` from `lib/api/commandResult.ts`.
 
 #### 4c. Page (RED → GREEN)
 
@@ -217,9 +218,9 @@ frontend/src/app/<feature>/<route>/page.tsx
 **Rules:**
 
 - Pages are `'use client'` thin orchestrators — they import the component and the API client.
-- State management (loading, errors, submission) lives in the page, not the component.
+- State management uses the `useCommand` hook — the page calls `useCommand(commandFn, onSuccess)` and passes `{ errors, isSubmitting, handleSubmit }` to the form.
 - Presentation lives in the component, not the page.
-- Navigation on success uses Next.js `useRouter`.
+- Navigation on success uses Next.js `useRouter` via the `onSuccess` callback passed to `useCommand`.
 
 ---
 
@@ -333,7 +334,7 @@ frontend/src/api/<useCase>.ts
 
 **Rules:**
 
-- Export a response interface and a discriminated union result type.
+- API functions return `QueryResult<T>` from `lib/api/queryResult.ts` with a standard `.data` field.
 - Handle 404 as a distinct result variant — not an error.
 - Never throw — all outcomes are typed return values.
 
@@ -356,8 +357,8 @@ frontend/src/app/<feature>/[id]/page.tsx
 **Rules:**
 
 - Pages are `'use client'` thin orchestrators.
-- Data fetching on mount via `useEffect` + API client.
-- The page manages loading/error/not-found state; the component receives resolved data as props.
+- Data fetching via the `useApiQuery` hook — call `useApiQuery(() => queryFn(id).then(toQueryState), [id])`.
+- The hook returns a discriminated `QueryState<T>` — the page branches on `state.status` (loading / success / not-found / error). The component receives resolved data as props.
 - Dynamic route segments use `useParams()`.
 
 ---

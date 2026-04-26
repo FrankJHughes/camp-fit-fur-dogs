@@ -1,11 +1,16 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-## [Unreleased]
 
 ### Added
 
+- Edit Dog Profile backend slice — `PUT /api/dogs/{id}` with command, handler, endpoint, and tests (US-030)
+- `EditDogProfilePage` — query via `useApiQuery`, command via `useCommand` (US-030)
+- `EditDogProfileForm` — thin wrapper around shared `DogForm` (US-030)
+- `DogForm` shared component — `RegisterDogForm` and `EditDogProfileForm` are thin wrappers
+- `useApiQuery` hook — generic loading/success/not-found/error state machine for query pages
+- `useCommand` hook — generic errors/isSubmitting/handleSubmit state machine for command pages
+- `CommandResult` type and `toCommandResult()` mapper in `lib/api/commandResult.ts`
+- `QueryResult<T>` type and `toQueryState()` mapper in `lib/api/queryResult.ts`
 - `getDogProfileActions()` pure function returning `DogProfileAction[]` for the View Dog Profile page
 - `DogProfileActionsCard` presentational component rendering action buttons from an actions array
 - `ViewDogProfilePage` wired with Edit action via sibling composition
@@ -16,9 +21,20 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- All frontend API slices wired to `createApiClient()` — eliminates raw `fetch` calls
+- Form data types (`DogFormData`, `EditDogProfileData`) live in their API slice files
+- `getDogProfile` returns `QueryResult<DogProfile>` with standard `.data` field
+- `registerDog` returns `CommandResult` via `toCommandResult()`
 - Frontend reorganized by **layer + aggregate** convention — all dog-related files moved under `dogs/` subfolders (`api/dogs/`, `components/dogs/`, `lib/dogs/`)
 - All frontend import paths updated to reflect new aggregate folder structure
+- `copilot-instructions.md` — added frontend conventions and lessons learned
+- `feature-slice-walkthrough.md` — updated for `useApiQuery`, `useCommand`, and shared result types
 - Added Lessons Learned row for PowerShell `[id]` bracket path issue
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
 
 ## [Sprint 5] — 2026-04-18
 
@@ -268,5 +284,4 @@ All notable changes to this project will be documented in this file.
 - `global.json` pinning .NET SDK version
 - Product vision, capability themes, emotional guarantees, definition of ready
 - 44 product stories across infra, docs, and customer domains
-
 

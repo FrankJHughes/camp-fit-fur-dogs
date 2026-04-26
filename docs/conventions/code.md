@@ -133,7 +133,8 @@ Layout:
     - `api/<aggregate>/` — server-call functions grouped by aggregate.
     - `components/<aggregate>/` — presentational components grouped by aggregate.
     - `lib/<aggregate>/` — pure logic and action functions grouped by aggregate.
-    - `lib/api/` — shared infrastructure (API client).
+    - `lib/api/` — shared infrastructure (API client, `CommandResult`, `QueryResult`).
+    - `lib/hooks/` — shared hooks (`useApiQuery`, `useCommand`).
     - `app/` — Next.js routing layer.
   - `test/` — mirrors `src/` structure.
 

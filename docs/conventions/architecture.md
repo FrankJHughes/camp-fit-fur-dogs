@@ -152,7 +152,7 @@ Within each layer, files are grouped by aggregate:
 - `components/dogs/DogProfileCard.tsx`
 - `lib/dogs/dogProfileActions.ts`
 
-Shared infrastructure (e.g., API client) lives in `lib/api/` with no aggregate subfolder.
+Shared infrastructure lives in `lib/api/` (API client, `CommandResult`, `QueryResult`) and `lib/hooks/` (`useApiQuery`, `useCommand`) with no aggregate subfolder.
 
 Slice subfolders are introduced only when an aggregate accumulates 10+ files in a single layer.
 
