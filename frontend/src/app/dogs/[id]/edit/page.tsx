@@ -1,74 +1,59 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getDogProfile } from '@/api/dogs/getDogProfile';
-import type { DogProfile } from '@/api/dogs/getDogProfile';
-import {
-    editDogProfile,
-    type EditDogProfileData,
-} from '@/api/dogs/editDogProfile';
+import { getDogProfile, type DogProfile } from '@/api/dogs/getDogProfile';
+import { editDogProfile, type EditDogProfileData } from '@/api/dogs/editDogProfile';
 import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
+import { useApiQuery, type QueryState } from '@/lib/hooks/useApiQuery';
+
+function toQueryState(result: Awaited<ReturnType<typeof getDogProfile>>): QueryState<DogProfile> {
+  if (result.success) return { status: 'success', data: result.profile };
+  if (result.notFound) return { status: 'not-found' };
+  return { status: 'error', error: result.error };
+}
 
 export default function EditDogProfilePage() {
-    const { id } = useParams<{ id: string }>();
-    const router = useRouter();
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
 
-    const [profile, setProfile] = useState<DogProfile | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [notFound, setNotFound] = useState(false);
-    const [fetchError, setFetchError] = useState<string | undefined>();
+  const state = useApiQuery<DogProfile>(
+    () => getDogProfile(id).then(toQueryState),
+    [id]
+  );
 
-    const [errors, setErrors] = useState<
-        Record<string, string> | undefined
-    >();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string> | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
-        getDogProfile(id).then((result) => {
-            if (result.success) {
-                setProfile(result.profile);
-            } else {
-                if (result.notFound) {
-                    setNotFound(true);
-                } else {
-                    setFetchError(result.error);
-                }
-            }
-            setLoading(false);
-        });
-    }, [id]);
+  const handleSubmit = async (data: EditDogProfileData) => {
+    setIsSubmitting(true);
+    setErrors(undefined);
 
-    const handleSubmit = async (data: EditDogProfileData) => {
-        setIsSubmitting(true);
-        setErrors(undefined);
+    const result = await editDogProfile(id, data);
 
-        const result = await editDogProfile(id, data);
+    if (result.success) {
+      router.push(`/dogs/${id}`);
+    } else {
+      setErrors(result.errors);
+      setIsSubmitting(false);
+    }
+  };
 
-        if (result.success) {
-            router.push(`/dogs/${id}`);
-        } else {
-            setErrors(result.errors);
-            setIsSubmitting(false);
-        }
-    };
+  if (state.status === 'loading') return <p>Loading…</p>;
+  if (state.status === 'not-found') return <p>Dog not found.</p>;
+  if (state.status === 'error') return <p>{state.error}</p>;
 
-    if (loading) return <p>Loading…</p>;
-    if (notFound) return <p>Dog not found.</p>;
-    if (fetchError) return <p>{fetchError}</p>;
-    if (!profile) return null;
-
-    return (
-        <EditDogProfileForm
-            initialData={{
-                name: profile.name,
-                breed: profile.breed,
-                dateOfBirth: profile.dateOfBirth,
-                sex: profile.sex,
-            }}
-            onSubmit={handleSubmit}
-            errors={errors}
-            isSubmitting={isSubmitting}
-        />
-    );
+  return (
+    <EditDogProfileForm
+      initialData={{
+        name: state.data.name,
+        breed: state.data.breed,
+        dateOfBirth: state.data.dateOfBirth,
+        sex: state.data.sex,
+      }}
+      onSubmit={handleSubmit}
+      errors={errors}
+      isSubmitting={isSubmitting}
+    />
+  );
 }
