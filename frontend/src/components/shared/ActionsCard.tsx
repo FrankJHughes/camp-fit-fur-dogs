@@ -1,10 +1,12 @@
-import type { DogProfileAction } from '@/lib/dogs/dogProfileActions';
+import type { Action } from '@/lib/shared/action';
 
-interface DogProfileActionsCardProps {
-    actions: DogProfileAction[];
+interface ActionsCardProps {
+    actions: Action[];
 }
 
-export default function DogProfileActionsCard({ actions }: DogProfileActionsCardProps) {
+export function ActionsCard({ actions }: ActionsCardProps) {
+    if (actions.length === 0) return null;
+
     return (
         <>
             {actions.map((action) => (
