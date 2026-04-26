@@ -22,4 +22,9 @@ public sealed class DogRepository : IDogRepository
         return await _db.Set<Dog>().FindAsync(new object[] { id }, cancellationToken);
     }
 
+    public Task DeleteAsync(Dog dog, CancellationToken cancellationToken = default)
+    {
+        _db.Set<Dog>().Remove(dog);
+        return Task.CompletedTask;
+    }
 }

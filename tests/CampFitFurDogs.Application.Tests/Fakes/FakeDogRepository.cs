@@ -18,4 +18,9 @@ public class FakeDogRepository : IDogRepository
         return Task.FromResult(dog);
     }
 
+    public Task DeleteAsync(Dog dog, CancellationToken cancellationToken = default)
+    {
+        Dogs.Remove(dog);
+        return Task.CompletedTask;
+    }
 }
