@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { FieldError } from '../shared/FieldError';
 import { FormField } from '../shared/FormField';
-import { validateDogForm } from '../../lib/validateDogForm';
+import { validateDogForm } from '../../lib/dogs/validateDogForm';
 import type { DogFormValues } from '../../types/dog';
 
 export type { DogFormValues };

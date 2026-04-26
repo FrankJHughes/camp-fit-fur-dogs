@@ -1,4 +1,4 @@
-import type { DogFormValues } from '../types/dog';
+import type { DogFormValues } from '../../types/dog';
 
 export function validateDogForm(values: DogFormValues): Record<string, string> {
   const errors: Record<string, string> = {};

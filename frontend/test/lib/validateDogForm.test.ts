@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateDogForm } from '../../src/lib/validateDogForm';
+import { validateDogForm } from '../../src/lib/dogs/validateDogForm';
 
 describe('validateDogForm', () => {
   it('returns no errors when all fields are valid', () => {
