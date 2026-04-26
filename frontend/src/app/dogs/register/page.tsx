@@ -1,28 +1,17 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RegisterDogForm, type RegisterDogFormData } from '@/components/dogs/RegisterDogForm';
-import { registerDog } from '@/api/dogs/registerDog';
+import { RegisterDogForm } from '@/components/dogs/RegisterDogForm';
+import { registerDog, type DogFormData } from '@/api/dogs/registerDog';
+import { useCommand } from '@/lib/hooks/useCommand';
 
 export default function RegisterDogPage() {
   const router = useRouter();
-  const [errors, setErrors] = useState<Record<string, string> | undefined>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (data: RegisterDogFormData) => {
-    setIsSubmitting(true);
-    setErrors(undefined);
-
-    const result = await registerDog(data);
-
-    if (result.success) {
-      router.push('/dogs/register/success');
-    } else {
-      setErrors(result.errors);
-      setIsSubmitting(false);
-    }
-  };
+  const { errors, isSubmitting, handleSubmit } = useCommand<DogFormData>(
+    (data) => registerDog(data),
+    () => router.push('/dogs/register/success')
+  );
 
   return (
     <RegisterDogForm

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getDogProfile, type DogProfile } from '@/api/dogs/getDogProfile';
 import { editDogProfile, type EditDogProfileData } from '@/api/dogs/editDogProfile';
 import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
 import { useApiQuery, type QueryState } from '@/lib/hooks/useApiQuery';
+import { useCommand } from '@/lib/hooks/useCommand';
 
 function toQueryState(result: Awaited<ReturnType<typeof getDogProfile>>): QueryState<DogProfile> {
   if (result.success) return { status: 'success', data: result.profile };
@@ -22,22 +22,10 @@ export default function EditDogProfilePage() {
     [id]
   );
 
-  const [errors, setErrors] = useState<Record<string, string> | undefined>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (data: EditDogProfileData) => {
-    setIsSubmitting(true);
-    setErrors(undefined);
-
-    const result = await editDogProfile(id, data);
-
-    if (result.success) {
-      router.push(`/dogs/${id}`);
-    } else {
-      setErrors(result.errors);
-      setIsSubmitting(false);
-    }
-  };
+  const { errors, isSubmitting, handleSubmit } = useCommand<EditDogProfileData>(
+    (data) => editDogProfile(id, data),
+    () => router.push(`/dogs/${id}`)
+  );
 
   if (state.status === 'loading') return <p>Loading…</p>;
   if (state.status === 'not-found') return <p>Dog not found.</p>;
