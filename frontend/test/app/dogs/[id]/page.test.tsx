@@ -36,7 +36,7 @@ describe('ViewDogProfilePage', () => {
   });
 
   it('renders the dog profile card with the fetched profile', async () => {
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, profile });
+    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
 
     render(<ViewDogProfilePage />);
 
@@ -47,7 +47,7 @@ describe('ViewDogProfilePage', () => {
 
   it('renders the actions card with an Edit button that navigates to the edit route', async () => {
     const user = userEvent.setup();
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, profile });
+    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
 
     render(<ViewDogProfilePage />);
 

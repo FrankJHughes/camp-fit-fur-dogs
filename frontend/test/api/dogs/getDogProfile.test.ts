@@ -30,7 +30,7 @@ describe('getDogProfile', () => {
     const result = await getDogProfile(dogId);
 
     expect(mockGet).toHaveBeenCalledWith(`/dogs/${dogId}`);
-    expect(result).toEqual({ success: true, profile: profileData });
+    expect(result).toEqual({ success: true, data: profileData });
   });
 
   it('returns notFound when the client returns a 404 error', async () => {

@@ -1,23 +1,18 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { getDogProfile, type DogProfile } from '@/api/dogs/getDogProfile';
+import { getDogProfile } from '@/api/dogs/getDogProfile';
+import { toQueryState } from '@/lib/api/queryResult';
 import { editDogProfile, type EditDogProfileData } from '@/api/dogs/editDogProfile';
 import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
-import { useApiQuery, type QueryState } from '@/lib/hooks/useApiQuery';
+import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import { useCommand } from '@/lib/hooks/useCommand';
-
-function toQueryState(result: Awaited<ReturnType<typeof getDogProfile>>): QueryState<DogProfile> {
-  if (result.success) return { status: 'success', data: result.profile };
-  if (result.notFound) return { status: 'not-found' };
-  return { status: 'error', error: result.error };
-}
 
 export default function EditDogProfilePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
-  const state = useApiQuery<DogProfile>(
+  const state = useApiQuery(
     () => getDogProfile(id).then(toQueryState),
     [id]
   );

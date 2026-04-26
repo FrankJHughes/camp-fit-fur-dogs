@@ -29,7 +29,7 @@ describe('EditDogProfilePage', () => {
     beforeEach(() => {
         vi.mocked(getDogProfile).mockResolvedValue({
             success: true,
-            profile: profileData,
+            data: profileData,
         });
         mockPush.mockClear();
     });

@@ -1,4 +1,5 @@
 import { createApiClient } from '@/lib/api/client';
+import type { QueryResult } from '@/lib/api/queryResult';
 
 export interface DogProfile {
   id: string;
@@ -9,16 +10,12 @@ export interface DogProfile {
   sex: string;
 }
 
-export type GetDogProfileResult =
-  | { success: true; profile: DogProfile }
-  | { success: false; notFound: boolean; error?: string };
-
 const client = createApiClient();
 
-export async function getDogProfile(dogId: string): Promise<GetDogProfileResult> {
+export async function getDogProfile(dogId: string): Promise<QueryResult<DogProfile>> {
   const result = await client.get<DogProfile>(`/dogs/${dogId}`);
   if (result.ok) {
-    return { success: true, profile: result.data };
+    return { success: true, data: result.data };
   }
   if (result.error.status === 404) {
     return { success: false, notFound: true };
