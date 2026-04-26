@@ -144,6 +144,7 @@ Frontend layers:
 - `api/` — server-call functions (one per slice).
 - `components/` — presentational React components.
 - `lib/` — pure logic and action functions.
+- `hooks/` — behavioral hooks that orchestrate UI state, API calls, and navigation.
 - `app/` — Next.js routing layer (untouched by this convention).
 
 Within each layer, files are grouped by aggregate:
@@ -151,11 +152,14 @@ Within each layer, files are grouped by aggregate:
 - `api/dogs/getDogProfile.ts`
 - `components/dogs/DogProfileCard.tsx`
 - `lib/dogs/dogProfileActions.ts`
+- `hooks/dogs/useRemoveDog.ts`
+- `lib/components/ConfirmDialog.tsx`
 
-Shared infrastructure lives in `lib/api/` (API client, `CommandResult`, `QueryResult`) and `lib/hooks/` (`useApiQuery`, `useCommand`) with no aggregate subfolder.
+Shared infrastructure lives in `lib/api/` (API client, `CommandResult`, `QueryResult`), `lib/hooks/` (`useApiQuery`, `useCommand`, `useConfirmDialog`), and `lib/components/` (`ConfirmDialog`, `ActionsCard`) with no aggregate subfolder.
 
 Slice subfolders are introduced only when an aggregate accumulates 10+ files in a single layer.
 
 The `app/` directory is owned by Next.js routing conventions and is not restructured.
 
 The `test/` directory mirrors `src/` exactly.
+

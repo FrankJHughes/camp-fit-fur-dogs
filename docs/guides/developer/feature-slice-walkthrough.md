@@ -224,6 +224,22 @@ frontend/src/app/<feature>/<route>/page.tsx
 
 ---
 
+## Destructive Command Slice (variant)
+
+A destructive command removes or archives a resource. It follows the same backend TDD order as a standard command slice but differs on the frontend: no form component is needed. Instead the page wires a confirmation dialog.
+
+### Frontend TDD order
+
+| Step | What | Example file |
+|------|------|-------------|
+| 1 | API client | `api/dogs/removeDog.ts` |
+| 2 | Aggregate behavioral hook | `hooks/dogs/useRemoveDog.ts` |
+| 3 | Page integration | `app/dogs/[id]/page.tsx` |
+
+Reuse existing shared components (`ConfirmDialog`, `ActionsCard` from `lib/components/`) — do not rebuild them per slice.
+
+The behavioral hook owns the confirm-dialog lifecycle, the API call, error state, and post-success navigation. The page simply spreads `dialogProps` onto `ConfirmDialog` and renders the error.
+
 ## Query Slice (Read Path)
 
 A query slice reads state without mutation. The full-stack runtime flow:
@@ -398,3 +414,4 @@ frontend/src/app/<feature>/[id]/page.tsx
 - [ ] Guardrails pass (endpoint discovery, query handler isolation, auto-discovery)
 - [ ] CHANGELOG updated under `[Unreleased]`
 - [ ] PR opened with merge checklist
+

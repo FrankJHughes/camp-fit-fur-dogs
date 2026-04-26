@@ -134,7 +134,9 @@ Layout:
     - `components/<aggregate>/` — presentational components grouped by aggregate.
     - `lib/<aggregate>/` — pure logic and action functions grouped by aggregate.
     - `lib/api/` — shared infrastructure (API client, `CommandResult`, `QueryResult`).
-    - `lib/hooks/` — shared hooks (`useApiQuery`, `useCommand`).
+    - `lib/hooks/` — shared hooks (`useApiQuery`, `useCommand`, `useConfirmDialog`).
+- `hooks/<aggregate>/` — behavioral hooks scoped to an aggregate (e.g., `useRemoveDog`).
+- `lib/components/` — cross-aggregate presentational components (e.g., `ConfirmDialog`, `ActionsCard`).
     - `app/` — Next.js routing layer.
   - `test/` — mirrors `src/` structure.
 
@@ -182,3 +184,4 @@ Naming:
 
 - Tests should describe behavior, not implementation.
 - Prefer scenario‑style names that read like specifications.
+
