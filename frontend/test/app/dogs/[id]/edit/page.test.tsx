@@ -76,7 +76,7 @@ describe('EditDogProfilePage', () => {
         render(<EditDogProfilePage />);
 
         await waitFor(() => {
-            expect(screen.getByText(/not found/i)).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: /couldn't find that dog/i })).toBeInTheDocument();
         });
     });
 
