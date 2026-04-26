@@ -3,13 +3,9 @@ import { useState } from 'react';
 import { FieldError } from '../shared/FieldError';
 import { FormField } from '../shared/FormField';
 import { validateDogForm } from '../../lib/validateDogForm';
+import type { DogFormValues } from '../../types/dog';
 
-export interface DogFormValues {
-  name: string;
-  breed: string;
-  dateOfBirth: string;
-  sex: string;
-}
+export type { DogFormValues };
 
 interface DogFormProps {
   title: string;
@@ -35,18 +31,19 @@ export function DogForm({
   errors,
   isSubmitting,
 }: DogFormProps) {
-  const [name, setName] = useState(initialValues.name);
-  const [breed, setBreed] = useState(initialValues.breed);
-  const [dateOfBirth, setDateOfBirth] = useState(initialValues.dateOfBirth);
-  const [sex, setSex] = useState(initialValues.sex);
+  const [values, setValues] = useState<DogFormValues>(initialValues);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const displayErrors = { ...validationErrors, ...errors };
 
+  const update = (field: keyof DogFormValues) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setValues((prev) => ({ ...prev, [field]: e.target.value }));
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateDogForm({ name, breed, dateOfBirth, sex });
+    const newErrors = validateDogForm(values);
 
     if (Object.keys(newErrors).length > 0) {
       setValidationErrors(newErrors);
@@ -54,7 +51,7 @@ export function DogForm({
     }
 
     setValidationErrors({});
-    onSubmit({ name, breed, dateOfBirth, sex });
+    onSubmit(values);
   };
 
   return (
@@ -67,8 +64,8 @@ export function DogForm({
         {(fieldProps) => (
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={values.name}
+            onChange={update('name')}
             {...fieldProps}
           />
         )}
@@ -78,8 +75,8 @@ export function DogForm({
         {(fieldProps) => (
           <input
             type="text"
-            value={breed}
-            onChange={(e) => setBreed(e.target.value)}
+            value={values.breed}
+            onChange={update('breed')}
             {...fieldProps}
           />
         )}
@@ -89,8 +86,8 @@ export function DogForm({
         {(fieldProps) => (
           <input
             type="text"
-            value={dateOfBirth}
-            onChange={(e) => setDateOfBirth(e.target.value)}
+            value={values.dateOfBirth}
+            onChange={update('dateOfBirth')}
             {...fieldProps}
           />
         )}
@@ -99,8 +96,8 @@ export function DogForm({
       <FormField label="Sex" name="sex" error={displayErrors.sex}>
         {(fieldProps) => (
           <select
-            value={sex}
-            onChange={(e) => setSex(e.target.value)}
+            value={values.sex}
+            onChange={update('sex')}
             {...fieldProps}
           >
             <option value="">Select</option>
