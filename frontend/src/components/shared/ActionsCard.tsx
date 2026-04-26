@@ -10,7 +10,13 @@ export function ActionsCard({ actions }: ActionsCardProps) {
     return (
         <>
             {actions.map((action) => (
-                <button key={action.label} onClick={action.onClick}>
+                <button
+                    key={action.label}
+                    onClick={action.onClick}
+                    {...(action.variant && action.variant !== 'default'
+                        ? { 'data-variant': action.variant }
+                        : {})}
+                >
                     {action.label}
                 </button>
             ))}

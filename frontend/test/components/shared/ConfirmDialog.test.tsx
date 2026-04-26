@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { ConfirmDialog } from '../../../src/components/shared/ConfirmDialog';
 
-// jsdom does not implement HTMLDialogElement.showModal / .close
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal ??= vi.fn(function (this: HTMLDialogElement) {
     this.setAttribute('open', '');
@@ -29,7 +28,7 @@ describe('ConfirmDialog', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
-  it('does not render dialog content when closed', () => {
+  it('does not expose dialog role when closed', () => {
     render(<ConfirmDialog {...baseProps} isOpen={false} />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
@@ -72,5 +71,20 @@ describe('ConfirmDialog', () => {
     render(<ConfirmDialog {...baseProps} onCancel={onCancel} />);
     await userEvent.keyboard('{Escape}');
     expect(onCancel).toHaveBeenCalledOnce();
+  });
+
+  it('keeps the dialog element in the DOM when isOpen is false', () => {
+    const { container } = render(<ConfirmDialog {...baseProps} isOpen={false} />);
+
+    expect(container.querySelector('dialog')).toBeInTheDocument();
+  });
+
+  it('removes the open attribute when isOpen transitions to false', () => {
+    const { container, rerender } = render(<ConfirmDialog {...baseProps} isOpen={true} />);
+    expect(container.querySelector('dialog')).toHaveAttribute('open');
+
+    rerender(<ConfirmDialog {...baseProps} isOpen={false} />);
+    expect(container.querySelector('dialog')).toBeInTheDocument();
+    expect(container.querySelector('dialog')).not.toHaveAttribute('open');
   });
 });

@@ -32,4 +32,27 @@ describe('ActionsCard', () => {
 
         expect(container.innerHTML).toBe('');
     });
+
+    it('renders a destructive action with data-variant="destructive"', () => {
+        const actions: Action[] = [
+            { label: 'Remove', onClick: vi.fn(), variant: 'destructive' },
+        ];
+
+        render(<ActionsCard actions={actions} />);
+
+        expect(screen.getByRole('button', { name: 'Remove' })).toHaveAttribute(
+            'data-variant',
+            'destructive',
+        );
+    });
+
+    it('renders a default action without data-variant', () => {
+        const actions: Action[] = [
+            { label: 'Edit', onClick: vi.fn() },
+        ];
+
+        render(<ActionsCard actions={actions} />);
+
+        expect(screen.getByRole('button', { name: 'Edit' })).not.toHaveAttribute('data-variant');
+    });
 });

@@ -40,6 +40,7 @@ export default function GetDogProfilePage() {
             <DogProfileCard profile={state.data} />
             <ActionsCard actions={actions} />
             <ConfirmDialog {...removeDog.dialogProps} />
+            {removeDog.error && <p role="alert">{removeDog.error}</p>}
         </>
     );
 }

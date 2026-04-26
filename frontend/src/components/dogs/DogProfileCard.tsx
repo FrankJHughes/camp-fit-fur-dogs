@@ -1,9 +1,7 @@
 import type { GetDogProfileQuery } from '@/api/dogs/getDogProfile';
-import type { ReactNode } from 'react';
 
 interface DogProfileCardProps {
   profile: GetDogProfileQuery;
-  actions?: ReactNode;
 }
 
 export function DogProfileCard({ profile }: DogProfileCardProps) {

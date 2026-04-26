@@ -76,4 +76,44 @@ describe('useRemoveDog', () => {
 
         expect(result.current.dialogProps.confirmLabel).toBe('Remove');
     });
+
+    it('returns error as null initially', () => {
+        const push = vi.fn();
+        const { result } = renderHook(() => useRemoveDog('abc-123', 'Buddy', push));
+
+        expect(result.current.error).toBeNull();
+    });
+
+    it('sets error when removeDog fails', async () => {
+        const push = vi.fn();
+        vi.mocked(removeDog).mockResolvedValue({ success: false, errors: { form: 'Server blew up' } });
+        const { result } = renderHook(() => useRemoveDog('abc-123', 'Buddy', push));
+
+        act(() => result.current.open());
+        await act(async () => result.current.dialogProps.onConfirm());
+
+        expect(result.current.error).toBe('Server blew up');
+    });
+
+    it('clears error when dialog is reopened', async () => {
+        const push = vi.fn();
+        vi.mocked(removeDog).mockResolvedValue({ success: false, errors: { form: 'Server blew up' } });
+        const { result } = renderHook(() => useRemoveDog('abc-123', 'Buddy', push));
+
+        act(() => result.current.open());
+        await act(async () => result.current.dialogProps.onConfirm());
+        expect(result.current.error).toBe('Server blew up');
+
+        act(() => result.current.open());
+        expect(result.current.error).toBeNull();
+    });
+
+    it('does not open the dialog when name is empty', () => {
+        const push = vi.fn();
+        const { result } = renderHook(() => useRemoveDog('abc-123', '', push));
+
+        act(() => result.current.open());
+
+        expect(result.current.dialogProps.isOpen).toBe(false);
+    });
 });

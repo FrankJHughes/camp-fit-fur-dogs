@@ -135,4 +135,25 @@ describe('GetDogProfilePage', () => {
         await user.click(screen.getByRole('button', { name: /cancel/i }));
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
+
+    it('shows an error message when removeDog fails', async () => {
+        const user = userEvent.setup();
+        vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
+        vi.mocked(removeDog).mockResolvedValue({ success: false, errors: { form: 'Could not remove dog' } });
+
+        render(<GetDogProfilePage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: /remove/i })).toBeDefined();
+        });
+
+        await user.click(screen.getByRole('button', { name: /remove/i }));
+
+        const dialog = screen.getByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: 'Remove' }));
+
+        await waitFor(() => {
+            expect(screen.getByRole('alert')).toHaveTextContent('Could not remove dog');
+        });
+    });
 });
