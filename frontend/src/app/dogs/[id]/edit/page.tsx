@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 import { toQueryState } from '@/lib/api/queryResult';
+import { DogNotFound } from '@/components/dogs/DogNotFound';
 import { editDogProfile, type EditDogProfileData } from '@/api/dogs/editDogProfile';
 import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
@@ -23,7 +24,7 @@ export default function EditDogProfilePage() {
   );
 
   if (state.status === 'loading') return <p>Loading…</p>;
-  if (state.status === 'not-found') return <p>Dog not found.</p>;
+  if (state.status === 'not-found') return <DogNotFound />;
   if (state.status === 'error') return <p>{state.error}</p>;
 
   return (

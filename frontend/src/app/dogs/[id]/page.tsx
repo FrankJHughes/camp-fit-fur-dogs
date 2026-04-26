@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 import { toQueryState } from '@/lib/api/queryResult';
+import { DogNotFound } from '@/components/dogs/DogNotFound';
 import { DogProfileCard } from '@/components/dogs/DogProfileCard';
 import DogProfileActionsCard from '@/components/dogs/DogProfileActionsCard';
 import { getDogProfileActions } from '@/lib/dogs/dogProfileActions';
@@ -18,7 +19,7 @@ export default function ViewDogProfilePage() {
   );
 
   if (state.status === 'loading') return <p>Loading…</p>;
-  if (state.status === 'not-found') return <p>Dog not found.</p>;
+  if (state.status === 'not-found') return <DogNotFound />;
   if (state.status === 'error') return <p>{state.error}</p>;
 
   const actions = getDogProfileActions(state.data.id, router.push);
