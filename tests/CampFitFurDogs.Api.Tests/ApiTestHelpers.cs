@@ -36,16 +36,18 @@ public static class ApiTestHelpers
     }
 
     public static async Task<Guid> RegisterDogAsync(
-        HttpClient client, TestCurrentUser testUserService, Guid ownerId)
+        HttpClient client, TestCurrentUser testUserService, Guid ownerId,
+        string name = "Biscuit", string breed = "Golden Retriever",
+        string dateOfBirth = "2022-06-15", string sex = "Female")
     {
         testUserService.CurrentUserId = ownerId;
 
         var request = new
         {
-            Name = "Biscuit",
-            Breed = "Golden Retriever",
-            DateOfBirth = "2022-06-15",
-            Sex = "Female"
+            Name = name,
+            Breed = breed,
+            DateOfBirth = dateOfBirth,
+            Sex = sex
         };
 
         var response = await client.PostAsJsonAsync("/api/dogs", request);
