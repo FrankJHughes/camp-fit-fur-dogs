@@ -1,32 +1,36 @@
 import { render, screen } from '@testing-library/react';
 
-const { mockListDogs } = vi.hoisted(() => ({
-  mockListDogs: vi.fn(),
+const { mockListDogsByCurrentUser } = vi.hoisted(() => ({
+  mockListDogsByCurrentUser: vi.fn(),
 }));
 
-vi.mock('@/api/dogs/listDogs', () => ({
-  listDogs: mockListDogs,
+vi.mock('@/api/dogs/listDogsByCurrentUser', () => ({
+  listDogsByCurrentUser: mockListDogsByCurrentUser,
 }));
 
 vi.mock('next/link', () => ({
   default: (props: any) => <a href={props.href}>{props.children}</a>,
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 import DogsPage from '@/app/dogs/page';
 
 describe('DogsPage', () => {
   afterEach(() => {
-    mockListDogs.mockReset();
+    mockListDogsByCurrentUser.mockReset();
   });
 
   it('shows loading state initially', () => {
-    mockListDogs.mockReturnValue(new Promise(() => {}));
+    mockListDogsByCurrentUser.mockReturnValue(new Promise(() => { }));
     render(<DogsPage />);
-    expect(screen.getByText('Loading\u2026')).toBeInTheDocument();
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
   });
 
   it('renders list of dogs on success', async () => {
-    mockListDogs.mockResolvedValue({
+    mockListDogsByCurrentUser.mockResolvedValue({
       success: true,
       data: {
         dogs: [
@@ -43,7 +47,7 @@ describe('DogsPage', () => {
   });
 
   it('shows empty state when no dogs registered', async () => {
-    mockListDogs.mockResolvedValue({
+    mockListDogsByCurrentUser.mockResolvedValue({
       success: true,
       data: { dogs: [] },
     });
@@ -56,7 +60,7 @@ describe('DogsPage', () => {
   });
 
   it('shows error message on failure', async () => {
-    mockListDogs.mockResolvedValue({
+    mockListDogsByCurrentUser.mockResolvedValue({
       success: false,
       notFound: false,
       error: 'Something went wrong',

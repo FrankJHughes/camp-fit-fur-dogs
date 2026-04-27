@@ -1,20 +1,20 @@
 import { createApiClient } from '@/lib/api/client';
 import type { QueryResult } from '@/lib/api/queryResult';
 
-export interface DogSummary {
+interface DogListItem {
   id: string;
   name: string;
   breed: string;
 }
 
-export interface ListDogsResponse {
-  dogs: DogSummary[];
+export interface ListDogsByCurrentUserResponse {
+  dogs: DogListItem[];
 }
 
 const client = createApiClient();
 
-export async function listDogs(): Promise<QueryResult<ListDogsResponse>> {
-  const result = await client.get<ListDogsResponse>('/dogs');
+export async function listDogsByCurrentUser(): Promise<QueryResult<ListDogsByCurrentUserResponse>> {
+  const result = await client.get<ListDogsByCurrentUserResponse>('/dogs');
   if (result.ok) {
     return { success: true, data: result.data };
   }

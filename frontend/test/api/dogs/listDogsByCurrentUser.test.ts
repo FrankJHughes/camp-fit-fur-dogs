@@ -6,9 +6,9 @@ vi.mock('@/lib/api/client', () => ({
   createApiClient: () => ({ get: mockGet }),
 }));
 
-import { listDogs } from '@/api/dogs/listDogs';
+import { listDogsByCurrentUser } from '@/api/dogs/listDogsByCurrentUser';
 
-describe('listDogs', () => {
+describe('listDogsByCurrentUser', () => {
   afterEach(() => {
     mockGet.mockReset();
   });
@@ -20,7 +20,7 @@ describe('listDogs', () => {
     ];
     mockGet.mockResolvedValue({ ok: true, data: { dogs } });
 
-    const result = await listDogs();
+    const result = await listDogsByCurrentUser();
 
     expect(mockGet).toHaveBeenCalledWith('/dogs');
     expect(result).toEqual({ success: true, data: { dogs } });
@@ -32,7 +32,7 @@ describe('listDogs', () => {
       error: { type: 'http', status: 500, message: 'Server error' },
     });
 
-    const result = await listDogs();
+    const result = await listDogsByCurrentUser();
 
     expect(result).toEqual({
       success: false,

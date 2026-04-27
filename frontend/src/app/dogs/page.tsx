@@ -1,14 +1,22 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
-import { listDogs, type ListDogsResponse } from '@/api/dogs/listDogs';
+import { listDogsByCurrentUser } from '@/api/dogs/listDogsByCurrentUser';
 import { toQueryState } from '@/lib/api/queryResult';
-import Link from 'next/link';
+import type { ListDogsByCurrentUserResponse } from '@/api/dogs/listDogsByCurrentUser';
+import { ListDogsByCurrentUserCard } from '@/components/dogs/ListDogsByCurrentUserCard';
+import { ActionsCard } from '@/lib/components/ActionsCard';
+import { Action } from '@/lib/action';
 
 export default function DogsPage() {
-  const state = useApiQuery<ListDogsResponse>(
+  const router = useRouter();
+  const actions: Action[] = [
+    { label: 'Register', onClick: () => router.push('/dogs/register') },
+  ];
+  const state = useApiQuery<ListDogsByCurrentUserResponse>(
     async () => {
-      const result = await listDogs();
+      const result = await listDogsByCurrentUser();
       return toQueryState(result);
     },
     []
@@ -16,25 +24,12 @@ export default function DogsPage() {
 
   if (state.status === 'loading') return <p>Loading…</p>;
   if (state.status === 'error') return <p role="alert">{state.error}</p>;
-
-  const { dogs } = state.data;
+  if (state.status === 'not-found') return <p>Not found.</p>;
 
   return (
-    <div>
-      <h1>My Dogs</h1>
-      {dogs.length === 0 ? (
-        <p>No dogs registered yet.</p>
-      ) : (
-        <ul>
-          {dogs.map((dog) => (
-            <li key={dog.id}>
-              <Link href={`/dogs/${dog.id}`}>
-                {dog.name} — {dog.breed}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <>
+      <ListDogsByCurrentUserCard dogs={state.data.dogs} />
+      <ActionsCard actions={actions} />
+    </>
   );
 }
