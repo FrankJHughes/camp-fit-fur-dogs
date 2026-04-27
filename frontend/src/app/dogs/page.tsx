@@ -11,9 +11,11 @@ import { Action } from '@/lib/action';
 
 export default function DogsPage() {
   const router = useRouter();
+
   const actions: Action[] = [
     { label: 'Register', onClick: () => router.push('/dogs/register') },
   ];
+
   const state = useApiQuery<ListDogsByCurrentUserResponse>(
     async () => {
       const result = await listDogsByCurrentUser();
