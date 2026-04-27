@@ -45,7 +45,7 @@ if the domain event happened, the SMS will be delivered.
 
 - **EG-01 No Surprises** — SMS messages arrive promptly from a recognizable sender
 - **EG-03 Calm Protection** — Phone numbers are never logged in full; owner privacy is preserved
-- **EG-05 Respect for Attention** — SMS is reserved for high-value, time-sensitive communications
+- **EG-05 Responsible Partner** — SMS is reserved for high-value, time-sensitive communications
 
 ## Provider Options
 

@@ -72,7 +72,7 @@ semantic HTML all benefit every user.
 ## Emotional Guarantees
 
 - **EG-01 No Surprises** — Every user, regardless of ability, has the same experience quality
-- **EG-04 Inclusive by Default** — Accessibility is designed in, not bolted on
+- **EG-07 Behaves Consistently** — Accessibility is designed in, not bolted on
 
 ## Legal Context
 

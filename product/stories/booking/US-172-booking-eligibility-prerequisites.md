@@ -100,8 +100,7 @@ This story creates two capabilities:
 - **EG-01 No Surprises** — The eligibility checklist is visible on the dog profile at all times, not just during booking
 - **EG-02 No Blame** — Unmet prerequisites are framed as next steps, never as failures or faults
 - **EG-03 Calm Protection** — The system ensures every dog in a group session meets the same safety standard
-- **EG-04 Inclusive by Default** — Every dog can eventually participate — the path is clear and achievable
-- **EG-05 Respect for Attention** — One consolidated checklist, not scattered requirements discovered one at a time
+- **EG-05 Responsible Partner** — Every dog can eventually participate — the path is clear and achievable
 
 ## Legal Guarantees
 

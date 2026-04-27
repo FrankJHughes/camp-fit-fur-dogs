@@ -65,7 +65,7 @@ trust in the communication channel.
 - **EG-01 No Surprises** — The "check your email" page sets clear expectations; no confusion about next steps
 - **EG-02 No Blame** — Expired tokens offer a resend option, never scold
 - **EG-03 Calm Protection** — Verification protects the owner from someone else registering with their email
-- **EG-05 Respect for Attention** — Verification and welcome are separate emails, but the verification email is warm enough to also feel welcoming
+- **EG-05 Responsible Partner** — Verification and welcome are separate emails, but the verification email is warm enough to also feel welcoming
 
 ## Design Seam: Hybrid Login Model
 

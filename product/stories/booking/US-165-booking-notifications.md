@@ -52,7 +52,7 @@ have been shown to reduce no-shows by up to 40% in service industries.
 ## Emotional Guarantees
 
 - **EG-01 No Surprises** — Owners always know the status of their bookings
-- **EG-05 Respect for Attention** — Reminders are timely, not excessive (one reminder per booking)
+- **EG-05 Responsible Partner** — Reminders are timely, not excessive (one reminder per booking)
 
 ## Legal Guarantees
 

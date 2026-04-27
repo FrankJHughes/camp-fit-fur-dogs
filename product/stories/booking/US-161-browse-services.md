@@ -42,7 +42,7 @@ service browsing experience reduces friction and builds confidence.
 ## Emotional Guarantees
 
 - **EG-01 No Surprises** — Pricing, prerequisites, and availability are visible before any commitment
-- **EG-05 Respect for Attention** — The page is scannable; owners can find what they need quickly
+- **EG-05 Responsible Partner** — The page is scannable; owners can find what they need quickly
 
 ## Legal Guarantees
 

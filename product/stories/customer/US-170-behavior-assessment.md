@@ -57,7 +57,7 @@ signs early, and provide the right environment for every dog's personality.
 - **EG-01 No Surprises** — Staff know what to expect before the dog arrives
 - **EG-02 No Blame** — Bite history disclosure is framed as safety, not judgment ("this helps us keep everyone safe")
 - **EG-03 Calm Protection** — Dogs are grouped with compatible playmates
-- **EG-04 Inclusive by Default** — Every temperament is accommodated — there is no "bad dog," only a dog that needs the right environment
+- **EG-05 Responsible Partner** — Every temperament is accommodated — there is no "bad dog," only a dog that needs the right environment
 
 ## Legal Guarantees
 

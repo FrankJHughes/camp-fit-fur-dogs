@@ -60,7 +60,7 @@ layer with explicit verification, documentation, and audit trail.
 ## Emotional Guarantees
 
 - **EG-03 Calm Protection** — The system never sends a message without proper consent
-- **EG-05 Respect for Attention** — Only consented, relevant communications are delivered
+- **EG-05 Responsible Partner** — Only consented, relevant communications are delivered
 
 ## Legal Reference
 

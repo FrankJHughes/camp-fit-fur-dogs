@@ -68,7 +68,7 @@ can still reach the owner. If a phone number changes, email is the fallback.
 - **EG-01 No Surprises** — Owners always know what channels are active and what they'll receive
 - **EG-02 No Blame** — Verification is framed as protection, not bureaucracy
 - **EG-03 Calm Protection** — Contact data is handled respectfully; phone numbers are never shared
-- **EG-05 Respect for Attention** — Owners control exactly how they're reached
+- **EG-05 Responsible Partner** — Owners control exactly how they're reached
 
 ## Design Seam: Notification Preferences
 

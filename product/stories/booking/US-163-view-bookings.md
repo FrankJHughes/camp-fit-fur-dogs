@@ -38,7 +38,7 @@ book again.
 ## Emotional Guarantees
 
 - **EG-01 No Surprises** — Booking status is always clear and current
-- **EG-05 Respect for Attention** — The page is scannable; upcoming bookings are immediately visible
+- **EG-05 Responsible Partner** — The page is scannable; upcoming bookings are immediately visible
 
 ## Legal Guarantees
 

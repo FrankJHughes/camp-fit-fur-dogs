@@ -41,7 +41,7 @@ GDPR) by providing a clear opt-out mechanism.
 
 - **EG-01 No Surprises** — Owners always know what they're signed up for
 - **EG-03 Calm Protection** — No unwanted email; full control over communication
-- **EG-05 Respect for Attention** — The system earns the right to communicate by making every message valuable
+- **EG-05 Responsible Partner** — The system earns the right to communicate by making every message valuable
 
 ## Notes
 

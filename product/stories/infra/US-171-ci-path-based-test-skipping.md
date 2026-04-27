@@ -59,7 +59,7 @@ full coverage for cross-cutting changes.
 ## Emotional Guarantees
 
 - **EG-01 No Surprises** — Developers see which suites were skipped and why
-- **EG-05 Respect for Attention** — CI feedback arrives in under a minute for docs-only changes
+- **EG-05 Responsible Partner** — CI feedback arrives in under a minute for docs-only changes
 
 ## Notes
 
