@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { ListDogsByCurrentUserCard } from '@/components/dogs/ListDogsByCurrentUserCard';
 
 vi.mock('next/link', () => ({
-  default: (props: any) => <a href={props.href}>{props.children}</a>,
+  default: (props: { href: string; children: React.ReactNode }) => <a href={props.href}>{props.children}</a>,
 }));
 
 describe('ListDogsByCurrentUserCard', () => {

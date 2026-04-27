@@ -9,7 +9,7 @@ vi.mock('@/api/dogs/listDogsByCurrentUser', () => ({
 }));
 
 vi.mock('next/link', () => ({
-  default: (props: any) => <a href={props.href}>{props.children}</a>,
+  default: (props: { href: string; children: React.ReactNode }) => <a href={props.href}>{props.children}</a>,
 }));
 
 vi.mock('next/navigation', () => ({
