@@ -73,14 +73,17 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 
-      - name: Run SharedKernel tests
-        run: |
-          cd tests/SharedKernel.Tests
-          dotnet test --no-build --verbosity normal
-          cd ../SharedKernel.Api.Tests
-          dotnet test --no-build --verbosity normal
-          cd ../SharedKernel.Infrastructure.EntityFrameworkCore.Tests
-          dotnet test --no-build --verbosity normal
+      - name: Run SharedKernel.Tests
+        working-directory: tests/SharedKernel.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run SharedKernel.Api.Tests
+        working-directory: tests/SharedKernel.Api.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        working-directory: tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
 
   backend:
     name: Backend Tests
@@ -96,12 +99,21 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 
-      - name: Run backend tests
-        run: |
-          dotnet test tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj --no-build --verbosity normal
-          dotnet test tests/CampFitFurDogs.Application.Tests/CampFitFurDogs.Application.Tests.csproj --no-build --verbosity normal
-          dotnet test tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj --no-build --verbosity normal
-          dotnet test tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj --no-build --verbosity normal
+      - name: Run CampFitFurDogs.Api.Tests
+        working-directory: tests/CampFitFurDogs.Api.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run CampFitFurDogs.Application.Tests
+        working-directory: tests/CampFitFurDogs.Application.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run CampFitFurDogs.Domain.Tests
+        working-directory: tests/CampFitFurDogs.Domain.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run CampFitFurDogs.Infrastructure.Tests
+        working-directory: tests/CampFitFurDogs.Infrastructure.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
 
   frontend:
     name: Frontend Tests
