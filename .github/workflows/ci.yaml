@@ -66,16 +66,29 @@ jobs:
     needs: [determine-changes, validate-ci-deps]
     if: |
       github.ref == 'refs/heads/main' ||
-      ${{ needs.determine-changes.outputs.shared-kernel == 'true' }} ||
-      ${{ needs.determine-changes.outputs.infra == 'true' }}
+      needs.determine-changes.outputs.shared-kernel == 'true' ||
+      needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
 
       - name: Clean build artifacts
         run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
 
+      # Build only the SharedKernel test projects
+      - name: Build SharedKernel.Tests
+        working-directory: tests/SharedKernel.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build SharedKernel.Api.Tests
+        working-directory: tests/SharedKernel.Api.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        working-directory: tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        run: dotnet build --configuration Debug
+
+      # Run tests
       - name: Run SharedKernel.Tests
         working-directory: tests/SharedKernel.Tests
         run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
@@ -94,17 +107,34 @@ jobs:
     needs: [determine-changes, validate-ci-deps, shared-kernel]
     if: |
       github.ref == 'refs/heads/main' ||
-      ${{ needs.determine-changes.outputs.backend == 'true' }} ||
-      ${{ needs.determine-changes.outputs.shared-kernel == 'true' }} ||
-      ${{ needs.determine-changes.outputs.infra == 'true' }}
+      needs.determine-changes.outputs.backend == 'true' ||
+      needs.determine-changes.outputs.shared-kernel == 'true' ||
+      needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
 
       - name: Clean build artifacts
         run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
 
+      # Build only backend test projects
+      - name: Build CampFitFurDogs.Api.Tests
+        working-directory: tests/CampFitFurDogs.Api.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build CampFitFurDogs.Application.Tests
+        working-directory: tests/CampFitFurDogs.Application.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build CampFitFurDogs.Domain.Tests
+        working-directory: tests/CampFitFurDogs.Domain.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build CampFitFurDogs.Infrastructure.Tests
+        working-directory: tests/CampFitFurDogs.Infrastructure.Tests
+        run: dotnet build --configuration Debug
+
+      # Run tests
       - name: Run CampFitFurDogs.Api.Tests
         working-directory: tests/CampFitFurDogs.Api.Tests
         run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
@@ -127,13 +157,12 @@ jobs:
     needs: [determine-changes, validate-ci-deps, backend]
     if: |
       github.ref == 'refs/heads/main' ||
-      ${{ needs.determine-changes.outputs.frontend == 'true' }} ||
-      ${{ needs.determine-changes.outputs.backend == 'true' }} ||
-      ${{ needs.determine-changes.outputs.infra == 'true' }}
+      needs.determine-changes.outputs.frontend == 'true' ||
+      needs.determine-changes.outputs.backend == 'true' ||
+      needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
 
       - name: Install dependencies
         run: npm ci --prefix frontend
