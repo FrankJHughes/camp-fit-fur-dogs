@@ -58,7 +58,7 @@ jobs:
         run: npm install js-yaml
 
       - name: Validate CI Dependencies
-        run: node scripts/ci/validate-ci-deps.mjs
+        run: node scripts/ci/validate-ci-dependencies.mjs
 
   shared-kernel:
     name: SharedKernel Tests
