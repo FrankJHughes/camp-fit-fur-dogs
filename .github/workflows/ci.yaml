@@ -73,6 +73,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
 
+      - name: Clean build artifacts
+        run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
+
       - name: Run SharedKernel.Tests
         working-directory: tests/SharedKernel.Tests
         run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
@@ -98,6 +101,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
+
+      - name: Clean build artifacts
+        run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
 
       - name: Run CampFitFurDogs.Api.Tests
         working-directory: tests/CampFitFurDogs.Api.Tests
