@@ -1,3 +1,17 @@
+---
+id: US-013
+title: "Add Contributing Pr Template"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Add CONTRIBUTING Guide, PR Template, and .gitignore
 
 ## Intent
@@ -13,3 +27,4 @@ Reduces onboarding friction, enforces PR hygiene, and keeps the repository free 
 - [x] All three files pass markdownlint
 
 ## Emotional Guarantees: N/A
+

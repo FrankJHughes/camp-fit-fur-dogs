@@ -1,3 +1,17 @@
+---
+id: US-123
+title: "Prevent Silent Failures"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-123 — US‑123 — Prevent Silent Failures in CQRS Pipelines
 
 ## Intent
@@ -17,3 +31,4 @@ Ensures reliability, prevents data loss, and builds trust in SharedKernel.
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

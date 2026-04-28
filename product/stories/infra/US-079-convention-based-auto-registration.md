@@ -1,3 +1,17 @@
+---
+id: US-079
+title: "Convention Based Auto Registration"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-079 — Convention-Based Auto-Registration
 
 > Repurposed from "React Project Skeleton." Original concept absorbed into US-056 (Next.js Project Scaffold).
@@ -33,3 +47,4 @@ Sprint 4 Phase 2. After the proving slice (US-084) ships, we know what a real sl
 ## Open Questions
 
 - None.
+

@@ -312,7 +312,7 @@ To propose a milestone:
 
 When priorities shift:
 
-> _Milestone reassignment is done by editing `product/catalog.csv` and running `scripts/Sync-Frontmatter.ps1`._
+> _Milestone reassignment is done by editing `product/catalog.csv` and running `scripts/frontmatter/Sync-FrontMatter.ps1`._
 2. Update the milestone description if the goal changed.
 3. Document the change in the next sprint review.
 

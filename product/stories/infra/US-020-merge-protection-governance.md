@@ -1,3 +1,17 @@
+---
+id: US-020
+title: "Merge Protection Governance"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Merge Protection Governance
 
 ## Intent
@@ -14,3 +28,4 @@ Prevents accidental force-pushes, ensures every merge is reviewed, and makes the
 - [x] Branch protection rules are documented in CONTRIBUTING.md
 
 ## Emotional Guarantees: N/A
+

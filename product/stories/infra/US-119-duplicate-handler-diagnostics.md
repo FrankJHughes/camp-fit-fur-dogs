@@ -1,3 +1,17 @@
+---
+id: US-119
+title: "Duplicate Handler Diagnostics"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-119 — US‑119 — Receive Clear Diagnostics for Duplicate Handlers
 
 ## Intent
@@ -17,3 +31,4 @@ Prevents ambiguous dispatch behavior and improves developer confidence.
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

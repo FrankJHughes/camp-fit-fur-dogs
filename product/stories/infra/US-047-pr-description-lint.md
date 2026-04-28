@@ -1,3 +1,17 @@
+---
+id: US-047
+title: "Pr Description Lint"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # PR Description Lint — CI Enforcement of PR Template
 
 ## Intent
@@ -26,3 +40,4 @@ The PR template exists (US-013) and branch protection requires CI to pass (US-02
 ## Emotional Guarantees
 
 - **EG-02 (No blame)**: Failure messages guide — "PR body is missing an issue link. Add 'Closes #<number>' to connect this PR to its story." — not "You forgot to link an issue."
+

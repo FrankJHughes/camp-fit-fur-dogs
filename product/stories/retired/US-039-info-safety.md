@@ -1,3 +1,17 @@
+---
+id: US-039
+title: "Info Safety"
+epic: ""
+milestone: ""
+status: backlog
+domain: retired
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-039 — Information Safety
 
 ## Intent
@@ -18,3 +32,4 @@ Trust is a prerequisite for engagement. Customers who feel their data is exposed
 ## Emotional Guarantees
 
 - EG-03 Calm protection
+

@@ -1,3 +1,17 @@
+---
+id: US-032
+title: "Remove Dog"
+epic: ""
+milestone: ""
+status: shipped
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-032 — Remove a Dog
 
 ## Intent
@@ -13,3 +27,4 @@ Allows safe cleanup without accidental loss.
 
 ## Emotional Guarantees
 - EG-06 Explicit risk and reversibility
+

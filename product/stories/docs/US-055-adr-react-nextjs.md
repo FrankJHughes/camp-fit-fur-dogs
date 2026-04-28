@@ -1,3 +1,17 @@
+---
+id: US-055
+title: "Adr React Nextjs"
+epic: ""
+milestone: ""
+status: shipped
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-055 — ADR-0012: Frontend Technology (React/Next.js)
 
 ## User Story
@@ -28,3 +42,4 @@ The team has informally decided on React with Next.js and TypeScript for the fro
 ## Open Questions
 
 - None — decision already made informally; this story formalizes it.
+

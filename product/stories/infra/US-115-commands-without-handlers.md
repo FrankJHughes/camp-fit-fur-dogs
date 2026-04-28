@@ -1,3 +1,17 @@
+---
+id: US-115
+title: "Commands Without Handlers"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-115 — US‑115 — Allow Commands Without Handlers Until Dispatched
 
 ## Intent
@@ -16,3 +30,4 @@ Supports iterative development and reduces friction during slice creation.
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

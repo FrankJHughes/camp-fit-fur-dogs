@@ -1,3 +1,17 @@
+---
+id: US-041
+title: "Understand Steps"
+epic: ""
+milestone: ""
+status: backlog
+domain: retired
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-041 — Understand Steps
 
 ## Intent
@@ -19,3 +33,4 @@ Clarity reduces anxiety. When a customer can see the shape of a workflow — whe
 ## Emotional Guarantees
 
 - EG-01 No surprises
+

@@ -1,0 +1,15 @@
+{
+  "backend": [
+    "shared-kernel"
+  ],
+  "frontend": [
+    "backend"
+  ],
+  "shared-kernel": [],
+  "infra": [
+    "backend",
+    "frontend",
+    "shared-kernel"
+  ],
+  "docs-only": []
+}

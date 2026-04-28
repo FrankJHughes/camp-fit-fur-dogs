@@ -1,3 +1,17 @@
+---
+id: US-043
+title: "Respect Owner"
+epic: ""
+milestone: ""
+status: backlog
+domain: retired
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-043 — Respect Dog Owner
 
 ## Intent
@@ -19,3 +33,4 @@ Pet parents who treat their dogs as family expect the same respect from systems 
 ## Emotional Guarantees
 
 - EG-05 Respectful partnership
+

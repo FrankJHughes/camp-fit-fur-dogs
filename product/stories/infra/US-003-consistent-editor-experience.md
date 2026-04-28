@@ -1,3 +1,17 @@
+---
+id: US-003
+title: "Consistent Editor Experience"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Consistent Editor Experience
 
 **Issue:** #59

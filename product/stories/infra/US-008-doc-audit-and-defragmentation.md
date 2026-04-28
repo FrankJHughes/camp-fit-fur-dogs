@@ -1,3 +1,17 @@
+---
+id: US-008
+title: "Doc Audit And Defragmentation"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Documentation Audit and Defragmentation
 
 **Status:** Complete (implemented in this PR)
@@ -53,3 +67,4 @@ All acceptance criteria have been fulfilled:
 - ADR-0010: Planning YAML infrastructure retired.
 - US-012 / ADR-0009: Naming convention formalized.
 - `planning/` directory: Retired (April 2026 backlog grooming).
+

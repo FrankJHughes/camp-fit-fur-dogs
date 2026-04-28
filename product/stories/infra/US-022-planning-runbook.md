@@ -1,3 +1,17 @@
+---
+id: US-022
+title: "Planning Runbook"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Planning Runbook
 
 ## User Story
@@ -212,3 +226,4 @@ overlap and ensure every fact lives in one place.
 - ADR-0010: [Retire Planning YAML Infrastructure](../../docs/adr/0010-retire-planning-yaml-infrastructure.md)
 - US-010 absorbed: Product Owner Contributor Guide (retired).
 - US-011 absorbed: Scrum Master Contributor Guide (retired).
+

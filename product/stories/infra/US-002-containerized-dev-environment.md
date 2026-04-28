@@ -1,3 +1,17 @@
+---
+id: US-002
+title: "Containerized Dev Environment"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Containerized Development Environment
 
 ## Intent
@@ -28,3 +42,4 @@ effect of shipping this configuration, not an explicit goal.
 - Native local development workflow (covered by One-Command Local Bootstrap)
 
 ## Emotional Guarantees: N/A
+

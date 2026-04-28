@@ -1,3 +1,17 @@
+---
+id: US-116
+title: "Query Dispatch Failure"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-116 — US‑116 — Dispatch Queries With Clear Failure When No Handler Exists
 
 ## Intent
@@ -16,3 +30,4 @@ Prevents null/default responses and ensures queries are never silently ignored.
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

@@ -1,3 +1,17 @@
+---
+id: US-056
+title: "Nextjs Project Scaffold"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-056 — Next.js Project Scaffold
 
 > Repurposed from "Next.js Project Bootstrap." Original concept absorbed; scope updated for Sprint 4.
@@ -34,3 +48,4 @@ With the frontend technology decision formalized in ADR-0012 (US-055), the proje
 ## Open Questions
 
 - None.
+

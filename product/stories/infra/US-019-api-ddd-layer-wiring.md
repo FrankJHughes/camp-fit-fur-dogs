@@ -1,3 +1,17 @@
+---
+id: US-019
+title: "Api Ddd Layer Wiring"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # API — DDD Layer Wiring
 
 ## Intent
@@ -13,3 +27,4 @@ Proves the layered architecture compiles and runs, and gives developers a clear 
 - [x] Integration test confirms DI container resolves all registered services
 
 ## Emotional Guarantees: N/A
+

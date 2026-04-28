@@ -1,3 +1,17 @@
+---
+id: US-028
+title: "Register Dog"
+epic: ""
+milestone: ""
+status: shipped
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-028 — Register a Dog
 
 ## Intent
@@ -16,3 +30,4 @@ Introduces the dog as a first-class entity owned by the customer.
 - EG-01 No surprises
 - EG-04 Forgiving of interruption
 - EG-05 Respectful partnership
+

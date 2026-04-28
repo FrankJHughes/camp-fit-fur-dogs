@@ -1,3 +1,17 @@
+---
+id: US-048
+title: "Compile Time Safe Command Dispatch"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-048 — Compile-Time-Safe Command Dispatch
 
 ## Intent
@@ -19,3 +33,4 @@ The current `CommandDispatcher` uses reflection and `dynamic` to resolve handler
 ## Emotional Guarantees
 
 - EG-01 No surprises
+

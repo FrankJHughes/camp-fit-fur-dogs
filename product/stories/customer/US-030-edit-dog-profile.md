@@ -1,3 +1,17 @@
+---
+id: US-030
+title: "Edit Dog Profile"
+epic: ""
+milestone: ""
+status: shipped
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-030 — Edit Dog Profile
 
 ## Intent
@@ -15,3 +29,4 @@ Supports change without fear or confusion.
 ## Emotional Guarantees
 - EG-01 No surprises
 - EG-06 Explicit risk and reversibility
+

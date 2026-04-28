@@ -1,3 +1,17 @@
+---
+id: US-120
+title: "Handler Resolution Guidance"
+epic: ""
+milestone: ""
+status: backlog
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-120 — US‑120 — Receive Helpful Guidance When Handler Resolution Fails
 
 ## Intent
@@ -16,3 +30,4 @@ Reduces debugging time and improves onboarding.
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

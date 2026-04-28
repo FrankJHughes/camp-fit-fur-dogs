@@ -1,3 +1,17 @@
+---
+id: US-040
+title: "Reassurance"
+epic: ""
+milestone: ""
+status: backlog
+domain: retired
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-040 — Reassurance on Failure
 
 ## Intent
@@ -19,3 +33,4 @@ Failures happen. The emotional difference between a system that says "something 
 ## Emotional Guarantees
 
 - EG-02 No blame
+

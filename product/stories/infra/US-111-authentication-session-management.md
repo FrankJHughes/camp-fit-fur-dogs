@@ -1,3 +1,17 @@
+---
+id: US-111
+title: "Authentication Session Management"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US‑111 — Authentication: Session Management
 
 ## Intent
@@ -24,3 +38,4 @@ As an **owner**, I must be able to **stay logged in securely**, so that I can us
 ## Notes
 - Must integrate with API Endpoint Purity rules.
 - Must not leak identity provider tokens.
+

@@ -1,3 +1,17 @@
+---
+id: US-117
+title: "Queries Without Handlers"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-117 — US‑117 — Allow Queries Without Handlers Until Dispatched
 
 ## Intent
@@ -16,3 +30,4 @@ Supports slice‑by‑slice development and reduces pressure to complete read mo
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

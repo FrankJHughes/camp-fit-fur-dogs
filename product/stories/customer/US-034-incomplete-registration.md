@@ -1,3 +1,17 @@
+---
+id: US-034
+title: "Incomplete Registration"
+epic: ""
+milestone: ""
+status: backlog
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-034 — Incomplete Registration Recovery
 
 ## Intent
@@ -19,3 +33,4 @@ Respects the customer's time and effort. Interruptions are normal — the system
 ## Emotional Guarantees
 
 - EG-04 Forgiving of interruption
+
