@@ -306,13 +306,13 @@ To propose a milestone:
 1. Write a one-sentence goal.
 2. List the stories required to achieve it.
 3. Verify no story appears in two milestones.
-4. Create the GitHub Milestone with the goal as the description.
+> _GitHub Milestones are no longer used. Milestones are tracked in story frontmatter and the catalog._
 
 ### Reorganizing milestones
 
 When priorities shift:
 
-1. Move stories between milestones via `gh issue edit --milestone`.
+> _Milestone reassignment is done by editing `product/catalog.csv` and running `scripts/Sync-Frontmatter.ps1`._
 2. Update the milestone description if the goal changed.
 3. Document the change in the next sprint review.
 

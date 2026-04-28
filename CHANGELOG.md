@@ -2,14 +2,158 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased Sprint 7]
+
+### Added
+
+## [Sprint 6] — 2026-04-27
+
+### Completed Stories
+
+| Story  | Title                              | Issue |
+|--------|------------------------------------|-------|
+| US-030 | Edit Dog Profile                   | #172  |
+| US-031 | List Dogs by Current User          | #177  |
+| US-032 | Remove Dog                         | #173  |
+| US-035 | Invalid Info Validation             | #176  |
+| US-037 | Missing Dog / NotFound              | #175  |
+| US-038 | Confirm Destructive Action          | #174  |
+| US-108 | Foundation Extraction               | #171  |
+
+### Added
+### Added
+- Edit Dog Profile page — owners can update their dog's name, breed, date of birth, and sex (US-030)
+- My Dogs page# Changelog
+
+All notable changes to this project will be documented in this file.
+
 ## [Unreleased]
 
 ### Added
-- Shared `NotFound` component and `DogNotFound` wrapper — friendly not-found experience with navigation links on dog pages (US-037)
-- Edit Dog Profile page — owners can update name, breed, date of birth, and sex (US-030)
-- Edit button on View Dog Profile page navigates to the edit form (US-030)
-- Remove Dog — owner can delete a dog from their profile with confirmation (US-087)
-- List Dogs by Current User page — `/dogs` with API client, `ListDogsByCurrentUserCard`, inline actions, and `ActionsCard` (US-031)
+
+## [Sprint 6] — 2026-04-27
+
+### Completed Stories
+
+| Story  | Title                              | Issue |
+|--------|------------------------------------|-------|
+| US-030 | Edit Dog Profile                   | #172  |
+| US-031 | List Dogs by Current User          | #177  |
+| US-032 | Remove Dog                         | #173  |
+| US-035 | Invalid Info Validation            | #176  |
+| US-037 | Missing Dog / NotFound             | #175  |
+| US-038 | Confirm Destructive Action         | #174  |
+| US-108 | Foundation Extraction              | #171  |
+
+### Added
+- Edit Dog Profile page — owners can update their dog's name, breed, date of birth, and sex (US-030)
+- Edit button on View Dog Profile navigates to the edit form (US-030)
+- My Dogs page — owners see all their registered dogs at `/dogs` with quick links to view, edit, or register a new dog (US-031)
+- Remove Dog — owners can remove a dog from their profile with a confirmation step to prevent accidents (US-032)
+- Form validation — clear, accessible inline error messages guide owners when required fields are missing or invalid (US-035)
+- Confirmation dialog — destructive actions like removing a dog prompt for confirmation before proceeding; Escape key and focus behavior default to the safe choice (US-038)
+- Friendly not-found page — owners who navigate to a dog that doesn't exist see a helpful message with links back to their dogs (US-037)
+- Reusable backend building blocks extracted into a shared library for faster future development (US-108)
+
+## [Sprint 5] — 2026-04-18
+
+### Completed Stories
+
+| Story  | Title                                      | Issue |
+|--------|--------------------------------------------|-------|
+| US-029 | View Dog Profile (Frontend)                | #153  |
+| US-049 | Secure Password Hashing                    | #154  |
+| US-050 | Unit of Work                               | #155  |
+| US-052 | Developer Guide: Feature Slice Walkthrough | #150  |
+| US-104 | Architecture Test Consolidation            | #159  |
+| US-105 | Doc Debloat                                | #160  |
+| US-106 | Add-Only Slice Architecture                | #163  |
+| US-107 | EF Entity Auto-Discovery                   | #165  |
+
+### Added
+- View Dog Profile frontend page — owners can view a dog's full profile at `/dogs/[id]` (US-029)
+- Feature slice walkthrough — step-by-step TDD guide for adding new command and query slices (US-052)
+- Endpoint auto-discovery — new endpoints are registered automatically by convention (US-106; ADR-0020)
+- Query-side reader isolation — query handlers use dedicated read models instead of full domain repositories (US-106; ADR-0021)
+- EF entity auto-discovery — new entities and their configurations are picked up automatically without manual wiring (US-107)
+
+### Changed
+- Password hashing upgraded to industry-standard BCrypt (US-049)
+- Architecture tests consolidated and centrally managed for consistency (US-104)
+- NuGet dependencies centrally managed with version pinning (US-104)
+- Documentation streamlined — stale and duplicated content removed (US-105)
+
+## [Sprint 4] — 2026-04-18
+
+### Completed Stories
+
+| Story  | Title                                | Issue |
+|--------|--------------------------------------|-------|
+| US-051 | CQRS Command/Query Pipelines        | #115  |
+| US-055 | Frontend Technology Decision         | —     |
+| US-056 | Next.js Project Scaffold            | —     |
+| US-079 | Convention-Based Auto-Registration   | #120  |
+| US-084 | Register Dog Page                    | #118  |
+| US-102 | API Client Layer                     | #123  |
+| US-103 | Frontend Testing Setup               | #124  |
+
+### Added
+- Register Dog page — owners can register a new dog through the web interface (US-084)
+- Frontend application scaffold with API proxy and health-check landing page (US-056)
+- Frontend API client with typed error handling (US-102)
+- Frontend test infrastructure (US-103)
+- CQRS command and query pipeline architecture (US-051; ADR-0011)
+- Frontend technology decision — React with Next.js (US-055; ADR-0012)
+- Living conventions document for contributor alignment
+- Convention-based service registration — new services are wired automatically by naming convention (US-079)
+
+### Changed
+- Dog registration resolves owner identity server-side instead of requiring it in the request (US-084)
+- Dev container updated for test container compatibility
+
+## [Sprint 3] — 2026-04-11
+
+### Completed Stories
+
+| Story  | Title                        | Issue |
+|--------|------------------------------|-------|
+| US-009 | Developer Contributor Guide  | #98   |
+| US-027 | Create Customer Account      | #95   |
+| US-028 | Register Dog                 | #96   |
+| US-029 | View Dog Profile             | #97   |
+| US-045 | Product Owner Workflow Guide | #99   |
+| US-046 | Scrum Master Workflow Guide  | #100  |
+
+### Added
+- Create Customer Account — new owners can create an account (US-027)
+- Register Dog — owners can register a dog under their account (US-028)
+- View Dog Profile — owners can view a dog's details with ownership verification (US-029)
+- Developer, Product Owner, and Scrum Master contributor guides (US-009, US-045, US-046)
+- Pre-push hook preventing direct pushes to main branch
+- Backlog stories US-047 through US-050
+
+### Changed
+- README updated with milestone progress and navigation improvements
+- Portfolio documents updated with milestone-driven structure
+
+## [Sprint 2] — 2026-04-08
+
+### Completed Stories
+
+| Story | Title                             | Issue |
+|-------|-----------------------------------|-------|
+| US-002 | Containerized Dev Environment    | #58  |
+| US-003 | Consistent Editor Experience     | #59  |
+| US-004 | Standardized Developer Commands  | #57  |
+| US-005 | One-Command Local Bootstrap      | #55  |
+| US-008 | Doc Audit & Defragmentation      | —    |
+| US-012 | Story Naming Convention          | —    |
+| — owners see all their registered dogs at `/dogs` with quick links to view, edit, or register a new dog (US-031)
+- Remove Dog — owners can remove a dog from their profile with a confirmation step to prevent accidents (US-032)
+- Form validation — clear, accessible inline error messages guide owners when required fields are missing or invalid (US-035)
+- Confirmation dialog — destructive actions like removing a dog prompt for confirmation before proceeding; Escape key and focus behavior default to the safe choice (US-038)
+- Friendly not-found page — owners who navigate to a dog that doesn't exist see a helpful message with links back to their dogs (US-037)
+- Foundation extraction — reusable backend building blocks extracted into a shared library for faster future development (US-108)
 
 ## [Sprint 5] — 2026-04-18
 
