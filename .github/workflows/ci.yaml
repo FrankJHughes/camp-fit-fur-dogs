@@ -37,9 +37,9 @@ jobs:
               - 'tests/SharedKernel.*/**'
             infra:
               - '.github/**'
+              - '*.sln'
               - 'Makefile'
               - 'docker-compose*'
-              - '*.sln'
             docs-only:
               - '*.md'
               - 'product/**'
@@ -58,7 +58,7 @@ jobs:
         run: npm install js-yaml
 
       - name: Validate CI Dependencies
-        run: node scripts/ci/validate-ci-dependencies.mjs
+        run: node scripts/ci/validate-ci-deps.mjs
 
   shared-kernel:
     name: SharedKernel Tests
@@ -72,8 +72,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
+
       - name: Run SharedKernel tests
-        run: dotnet test --no-build --verbosity normal
+        run: |
+          dotnet test tests/SharedKernel.Tests/SharedKernel.Tests.csproj --no-build --verbosity normal
+          dotnet test tests/SharedKernel.Api.Tests/SharedKernel.Api.Tests.csproj --no-build --verbosity normal
+          dotnet test tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests.csproj --no-build --verbosity normal
 
   backend:
     name: Backend Tests
@@ -88,8 +92,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
+
       - name: Run backend tests
-        run: dotnet test --no-build --verbosity normal
+        run: |
+          dotnet test tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj --no-build --verbosity normal
+          dotnet test tests/CampFitFurDogs.Application.Tests/CampFitFurDogs.Application.Tests.csproj --no-build --verbosity normal
+          dotnet test tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj --no-build --verbosity normal
+          dotnet test tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj --no-build --verbosity normal
 
   frontend:
     name: Frontend Tests
@@ -104,7 +113,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
+
       - name: Install dependencies
         run: npm ci --prefix frontend
+
       - name: Run frontend tests
         run: npm test --prefix frontend
