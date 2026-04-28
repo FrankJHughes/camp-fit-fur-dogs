@@ -75,9 +75,12 @@ jobs:
 
       - name: Run SharedKernel tests
         run: |
-          dotnet test tests/SharedKernel.Tests/SharedKernel.Tests.csproj --no-build --verbosity normal
-          dotnet test tests/SharedKernel.Api.Tests/SharedKernel.Api.Tests.csproj --no-build --verbosity normal
-          dotnet test tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests.csproj --no-build --verbosity normal
+          cd tests/SharedKernel.Tests
+          dotnet test --no-build --verbosity normal
+          cd ../SharedKernel.Api.Tests
+          dotnet test --no-build --verbosity normal
+          cd ../SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+          dotnet test --no-build --verbosity normal
 
   backend:
     name: Backend Tests
