@@ -5,6 +5,7 @@
     <IsTestProject>true</IsTestProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <VSTestUseDotNet>true</VSTestUseDotNet>
   </PropertyGroup>
 
   <!-- Central Package Management handles versions -->
