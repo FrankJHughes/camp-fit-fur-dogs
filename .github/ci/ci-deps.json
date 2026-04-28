@@ -5,11 +5,5 @@
   "frontend": [
     "backend"
   ],
-  "shared-kernel": [],
-  "infra": [
-    "backend",
-    "frontend",
-    "shared-kernel"
-  ],
-  "docs-only": []
+  "shared-kernel": []
 }

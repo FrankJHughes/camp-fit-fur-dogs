@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch: {}
   schedule:
     - cron: "0 9 * * *" # nightly full run
 
@@ -53,13 +53,32 @@ jobs:
     needs: determine-changes
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install validator dependencies
+        run: npm install js-yaml
+
       - name: Validate CI Dependencies
-        run: pwsh scripts/ci/Validate-CIDependencies.ps1
+        run: node scripts/ci/validate-ci-deps.mjs
+
+  shared-kernel:
+    name: SharedKernel Tests
+    runs-on: ubuntu-latest
+    needs: [determine-changes, validate-ci-deps]
+    if: |
+      github.ref == 'refs/heads/main' ||
+      ${{ needs.determine-changes.outputs.shared-kernel == 'true' }} ||
+      ${{ needs.determine-changes.outputs.infra == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+      - name: Run SharedKernel tests
+        run: dotnet test --no-build --verbosity normal
 
   backend:
     name: Backend Tests
     runs-on: ubuntu-latest
-    needs: [determine-changes]
+    needs: [determine-changes, validate-ci-deps, shared-kernel]
     if: |
       github.ref == 'refs/heads/main' ||
       ${{ needs.determine-changes.outputs.backend == 'true' }} ||
@@ -72,25 +91,10 @@ jobs:
       - name: Run backend tests
         run: dotnet test --no-build --verbosity normal
 
-  shared-kernel:
-    name: SharedKernel Tests
-    runs-on: ubuntu-latest
-    needs: [determine-changes]
-    if: |
-      github.ref == 'refs/heads/main' ||
-      ${{ needs.determine-changes.outputs.shared-kernel == 'true' }} ||
-      ${{ needs.determine-changes.outputs.infra == 'true' }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-      - name: Run SharedKernel tests
-        run: dotnet test --no-build --verbosity normal
-
   frontend:
     name: Frontend Tests
     runs-on: ubuntu-latest
-    needs: [determine-changes]
+    needs: [determine-changes, validate-ci-deps, backend]
     if: |
       github.ref == 'refs/heads/main' ||
       ${{ needs.determine-changes.outputs.frontend == 'true' }} ||
