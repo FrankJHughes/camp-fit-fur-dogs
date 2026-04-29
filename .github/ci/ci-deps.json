@@ -1,0 +1,9 @@
+{
+  "backend": [
+    "shared-kernel"
+  ],
+  "frontend": [
+    "backend"
+  ],
+  "shared-kernel": []
+}

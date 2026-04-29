@@ -1,3 +1,17 @@
+---
+id: US-108
+title: "Foundation Extraction"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-108 — Foundation Extraction
 
 ## Intent
@@ -676,3 +690,4 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 ## Estimated Effort
 
 ~8 hours (4 new/expanded projects + file moves + namespace updates + DI refactor + SharedKernel.Testing + runtime guard + guardrail migration + docs)8 hours (4 new/expanded projects + file moves + namespace updates + DI refactor + SharedKernel.Testing + runtime guard + guardrail migration + docs)
+

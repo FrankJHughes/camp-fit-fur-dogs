@@ -1,3 +1,17 @@
+---
+id: US-052
+title: "Developer Guide Feature Slice Walkthrough"
+epic: ""
+milestone: ""
+status: shipped
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-052 — Developer Guide: Adding a New Feature Slice
 
 ## Intent
@@ -22,3 +36,4 @@ Every vertical slice shipped so far (Create Customer, Register Dog, View Dog Pro
 
 - EG-01 No surprises — the guide matches the actual patterns in the codebase
 - EG-04 Always know where you stand — a developer can follow the checklist step by step without ambiguity
+

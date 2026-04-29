@@ -1,3 +1,17 @@
+---
+id: US-015
+title: "Ci Baseline Build And Test"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # CI Baseline — Build and Test
 
 ## Intent
@@ -13,3 +27,4 @@ Catches regressions before merge, establishes the quality gate that all other CI
 - [x] Workflow completes in under 3 minutes
 
 ## Emotional Guarantees: N/A
+

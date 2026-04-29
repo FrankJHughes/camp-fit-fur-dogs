@@ -1,3 +1,17 @@
+---
+id: US-112
+title: "Authorization Role Model"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US‑112 — Authorization: Role Model & Policy Engine
 
 ## Intent
@@ -24,3 +38,4 @@ As an **owner**, I must be **restricted to actions I am allowed to perform**, so
 ## Notes
 - Must follow Abstractions Contract rules.
 - Must not introduce cross‑layer coupling.
+

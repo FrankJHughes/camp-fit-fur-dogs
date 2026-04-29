@@ -1,3 +1,17 @@
+---
+id: US-103
+title: "Frontend Testing Setup"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-103 — Frontend Testing Setup
 
 ## User Story
@@ -32,3 +46,4 @@ The proving slice (US-084) requires TDD at the frontend layer. You cannot red-gr
 ## Open Questions
 
 - None.
+

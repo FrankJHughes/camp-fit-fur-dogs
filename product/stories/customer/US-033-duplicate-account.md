@@ -1,3 +1,17 @@
+---
+id: US-033
+title: "Duplicate Account"
+epic: ""
+milestone: ""
+status: backlog
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-033 — Duplicate Account Attempt
 
 ## Intent
@@ -19,3 +33,4 @@ Protects the customer from confusion and self-blame when the system detects a du
 ## Emotional Guarantees
 
 - EG-02 No blame
+

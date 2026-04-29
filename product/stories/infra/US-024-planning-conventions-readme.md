@@ -1,3 +1,17 @@
+---
+id: US-024
+title: "Planning Conventions Readme"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Planning Conventions Document
 
 ## Intent
@@ -27,3 +41,4 @@ procedure. A single conventions reference eliminates these recurring costs.
 - Prescribing specific directory paths, file formats, or tooling
 
 ## Emotional Guarantees: N/A
+

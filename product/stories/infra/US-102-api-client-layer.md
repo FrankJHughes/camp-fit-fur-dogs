@@ -1,3 +1,17 @@
+---
+id: US-102
+title: "Api Client Layer"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-102 — API Client Layer
 
 ## User Story
@@ -33,3 +47,4 @@ The proving slice (US-084) needs to call the RegisterDog API endpoint. Rather th
 ## Open Questions
 
 - None.
+

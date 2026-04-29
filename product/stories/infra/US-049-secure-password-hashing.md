@@ -1,3 +1,17 @@
+---
+id: US-049
+title: "Secure Password Hashing"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-049 — Secure Password Hashing
 
 ## Intent
@@ -20,3 +34,4 @@ The current `PasswordHash` value object uses `Convert.ToBase64String` — this i
 ## Emotional Guarantees
 
 - EG-03 Calm protection
+

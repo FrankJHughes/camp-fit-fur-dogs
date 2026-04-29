@@ -1,3 +1,17 @@
+---
+id: US-121
+title: "Startup Handler Validation"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-121 — US‑121 — Validate Handler Types at Startup
 
 ## Intent
@@ -17,3 +31,4 @@ Prevents invalid generic signatures and ensures DI scanning is predictable.
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

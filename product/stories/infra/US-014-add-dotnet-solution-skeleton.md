@@ -1,3 +1,17 @@
+---
+id: US-014
+title: "Add Dotnet Solution Skeleton"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Add .NET Solution Skeleton
 
 ## Intent
@@ -14,3 +28,4 @@ Gives every developer a runnable solution on day one and provides CI with a comp
 - [x] Health-check endpoint returns 200 OK
 
 ## Emotional Guarantees: N/A
+

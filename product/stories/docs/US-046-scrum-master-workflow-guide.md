@@ -1,3 +1,17 @@
+---
+id: US-046
+title: "Scrum Master Workflow Guide"
+epic: ""
+milestone: ""
+status: shipped
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-046 — Scrum Master Workflow Guide
 
 ## User Story
@@ -84,3 +98,4 @@ linked from the CONTRIBUTING.md role-routing hub (created by US-009).
 - Should the guide include a sprint planning checklist as a
   separate artifact?
 - Should CHANGELOG maintenance be automated via CI?
+

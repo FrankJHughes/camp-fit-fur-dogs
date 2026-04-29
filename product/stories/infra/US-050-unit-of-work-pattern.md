@@ -1,3 +1,17 @@
+---
+id: US-050
+title: "Unit Of Work Pattern"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-050 — Unit of Work Pattern
 
 ## Intent
@@ -20,3 +34,4 @@ Currently each repository calls `SaveChangesAsync` independently. This works for
 ## Emotional Guarantees
 
 - EG-01 No surprises
+

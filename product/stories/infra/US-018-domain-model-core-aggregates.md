@@ -1,3 +1,17 @@
+---
+id: US-018
+title: "Domain Model Core Aggregates"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Domain Model — Core Aggregates
 
 ## Intent
@@ -14,3 +28,4 @@ Proves the DDD architecture end-to-end and establishes the pattern every future 
 - [x] Unit tests cover all invariants and event emissions
 
 ## Emotional Guarantees: N/A
+

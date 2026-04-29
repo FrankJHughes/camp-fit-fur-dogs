@@ -1,3 +1,17 @@
+---
+id: US-109
+title: "Architecture Boundary Roslyn Analyzer"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-109 — Architecture Boundary Roslyn Analyzer
 
 ## Intent
@@ -477,3 +491,4 @@ That is it. No test code, no configuration
 - The analyzer complements but does not replace SharedKernel.Testing guardrails. Test-time guardrails can enforce rules that are impractical for a syntax/semantic analyzer (e.g., "every IEndpoint implementation must be discoverable by assembly scanning"). The two enforcement impractical for a syntax/semantic analyzer (e.g., "every IEndpoint implementation must be discoverable by assembly scanning"). The two enforcement layers cover different rule categories.
 - If the analyzer is later published as a NuGet package, the `OutputItemType="Analyzer"` reference becomes a standard `PackageReference` with analyzer assets layers cover different rule categories.
 - If the analyzer is later published as a NuGet package, the `OutputItemType="Analyzer"` reference becomes a standard `PackageReference` with analyzer assets — zero product code change.
+

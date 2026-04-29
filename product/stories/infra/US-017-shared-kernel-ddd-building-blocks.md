@@ -1,3 +1,17 @@
+---
+id: US-017
+title: "Shared Kernel Ddd Building Blocks"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Shared Kernel — DDD Building Blocks
 
 ## Intent
@@ -13,3 +27,4 @@ Eliminates boilerplate, enforces DDD patterns structurally, and makes domain cod
 - [x] NuGet-packageable structure (even if not published yet)
 
 ## Emotional Guarantees: N/A
+

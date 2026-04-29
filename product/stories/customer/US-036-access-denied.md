@@ -1,3 +1,17 @@
+---
+id: US-036
+title: "Access Denied"
+epic: ""
+milestone: ""
+status: backlog
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-036 — Access Denied
 
 ## Intent
@@ -19,3 +33,4 @@ When the system restricts access, the customer deserves a calm, clear explanatio
 ## Emotional Guarantees
 
 - EG-03 Calm protection
+

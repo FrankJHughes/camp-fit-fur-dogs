@@ -1,3 +1,17 @@
+---
+id: US-107
+title: "Ef Entity Auto Discovery"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-107 — EF Entity Auto-Discovery
 
 ## Intent
@@ -67,3 +81,4 @@ Add an architecture guardrail test that asserts `AppDbContext` declares zero `Db
 - A contributor scaffolding a new aggregate never opens an existing file.
 - A contributor never worries about forgetting to add a `DbSet` or `ApplyConfiguration` call — the configuration file *is* the registration.
 - The scaffold checklist is purely "create files" — no "edit files" step exists.
+

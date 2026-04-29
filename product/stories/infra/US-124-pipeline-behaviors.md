@@ -1,3 +1,17 @@
+---
+id: US-124
+title: "Pipeline Behaviors"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-124 — Pipeline Behaviors in SharedKernel
 
 ## Intent
@@ -42,3 +56,4 @@ Pipeline behaviors provide a single, reusable mechanism for enforcing cross‑cu
 - Dispatchers must remain reflection‑free and maintain current performance characteristics.
 - Behavior registration must integrate with existing `AddSharedKernel()` DI conventions.
 - Domain events are not part of this story; they may receive a similar pipeline in a future story.
+

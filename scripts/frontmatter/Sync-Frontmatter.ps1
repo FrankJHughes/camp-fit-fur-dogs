@@ -190,3 +190,20 @@ if ($WhatIf) {
     Write-Host "Sync complete. $updated files updated, $skipped skipped." -ForegroundColor Green
     Write-Host "Run 'git diff' to review changes before committing." -ForegroundColor Cyan
 }
+param(
+    [switch]$CheckOnly
+)
+
+# Existing logic computes $expectedFrontmatter and $actualFrontmatter
+
+if ($CheckOnly) {
+    if ($expectedFrontmatter -eq $actualFrontmatter) {
+        "OK"
+        exit 0
+    } else {
+        "DIFF"
+        exit 1
+    }
+}
+
+# Existing write-mode behavior continues here

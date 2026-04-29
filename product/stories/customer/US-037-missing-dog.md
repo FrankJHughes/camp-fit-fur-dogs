@@ -1,3 +1,17 @@
+---
+id: US-037
+title: "Missing Dog"
+epic: ""
+milestone: ""
+status: shipped
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-037 — Missing Dog
 
 ## Intent
@@ -19,3 +33,4 @@ A dog that was previously visible but is now gone creates anxiety. The system sh
 ## Emotional Guarantees
 
 - EG-01 No surprises
+

@@ -1,3 +1,17 @@
+---
+id: US-042
+title: "Safe Changes"
+epic: ""
+milestone: ""
+status: backlog
+domain: retired
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-042 — Safe Changes
 
 ## Intent
@@ -19,3 +33,4 @@ Fear of making irreversible mistakes paralyzes customers. A system that communic
 ## Emotional Guarantees
 
 - EG-06 Explicit risk and reversibility
+

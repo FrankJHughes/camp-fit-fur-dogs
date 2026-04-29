@@ -1,3 +1,17 @@
+---
+id: US-045
+title: "Product Owner Workflow Guide"
+epic: ""
+milestone: ""
+status: shipped
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-045 — Product Owner Workflow Guide
 
 ## User Story
@@ -86,3 +100,4 @@ linked from the CONTRIBUTING.md role-routing hub (created by US-009).
 
 - Should the guide include a decision flowchart for story splitting?
 - Should refinement checklists be a separate runbook or inline?
+

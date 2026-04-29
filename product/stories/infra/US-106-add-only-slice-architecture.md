@@ -1,3 +1,17 @@
+---
+id: US-106
+title: "Add Only Slice Architecture"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-106 — Add-Only Slice Architecture
 
 ## Intent

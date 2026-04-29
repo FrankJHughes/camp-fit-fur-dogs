@@ -1,42 +1,171 @@
-﻿name: CI
+﻿name: Build & Test
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 9 * * *" # nightly full run
 
 jobs:
-  build-and-test:
-    name: Build & Test
+  determine-changes:
+    name: Determine Changed Paths
     runs-on: ubuntu-latest
-
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      shared-kernel: ${{ steps.filter.outputs.shared-kernel }}
+      infra: ${{ steps.filter.outputs.infra }}
+      docs-only: ${{ steps.filter.outputs.docs-only }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
         with:
-          global-json-file: global.json
+          filters: |
+            backend:
+              - 'src/CampFitFurDogs.*/**'
+              - 'tests/CampFitFurDogs.*/**'
+            frontend:
+              - 'frontend/**'
+            shared-kernel:
+              - 'src/SharedKernel/**'
+              - 'tests/SharedKernel.*/**'
+            infra:
+              - '.github/**'
+              - '*.sln'
+              - 'Makefile'
+              - 'docker-compose*'
+            docs-only:
+              - '*.md'
+              - 'product/**'
+              - 'docs/**'
+              - 'LICENSE'
+              - '.editorconfig'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: 'frontend/package-lock.json'
+  validate-ci-deps:
+    name: Validate CI Dependency Graph
+    runs-on: ubuntu-latest
+    needs: determine-changes
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Build & Test
-        run: make all
+      - name: Install validator dependencies
+        run: npm install js-yaml
 
-      - name: Frontend install
-        run: make frontend-install
+      - name: Validate CI Dependencies
+        run: node scripts/ci/validate-ci-dependencies.mjs
 
-      - name: Frontend lint
-        run: make frontend-lint
+  shared-kernel:
+    name: SharedKernel Tests
+    runs-on: ubuntu-latest
+    needs: [determine-changes, validate-ci-deps]
+    if: |
+      github.ref == 'refs/heads/main' ||
+      needs.determine-changes.outputs.shared-kernel == 'true' ||
+      needs.determine-changes.outputs.infra == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
 
-      - name: Frontend build
-        run: make frontend-build
+      - name: Clean build artifacts
+        run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
+
+      # Build only the SharedKernel test projects
+      - name: Build SharedKernel.Tests
+        working-directory: tests/SharedKernel.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build SharedKernel.Api.Tests
+        working-directory: tests/SharedKernel.Api.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        working-directory: tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        run: dotnet build --configuration Debug
+
+      # Run tests
+      - name: Run SharedKernel.Tests
+        working-directory: tests/SharedKernel.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run SharedKernel.Api.Tests
+        working-directory: tests/SharedKernel.Api.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        working-directory: tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+  backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: [determine-changes, validate-ci-deps, shared-kernel]
+    if: |
+      github.ref == 'refs/heads/main' ||
+      needs.determine-changes.outputs.backend == 'true' ||
+      needs.determine-changes.outputs.shared-kernel == 'true' ||
+      needs.determine-changes.outputs.infra == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+
+      - name: Clean build artifacts
+        run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
+
+      # Build only backend test projects
+      - name: Build CampFitFurDogs.Api.Tests
+        working-directory: tests/CampFitFurDogs.Api.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build CampFitFurDogs.Application.Tests
+        working-directory: tests/CampFitFurDogs.Application.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build CampFitFurDogs.Domain.Tests
+        working-directory: tests/CampFitFurDogs.Domain.Tests
+        run: dotnet build --configuration Debug
+
+      - name: Build CampFitFurDogs.Infrastructure.Tests
+        working-directory: tests/CampFitFurDogs.Infrastructure.Tests
+        run: dotnet build --configuration Debug
+
+      # Run tests
+      - name: Run CampFitFurDogs.Api.Tests
+        working-directory: tests/CampFitFurDogs.Api.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run CampFitFurDogs.Application.Tests
+        working-directory: tests/CampFitFurDogs.Application.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run CampFitFurDogs.Domain.Tests
+        working-directory: tests/CampFitFurDogs.Domain.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+      - name: Run CampFitFurDogs.Infrastructure.Tests
+        working-directory: tests/CampFitFurDogs.Infrastructure.Tests
+        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+
+  frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: [determine-changes, validate-ci-deps, backend]
+    if: |
+      github.ref == 'refs/heads/main' ||
+      needs.determine-changes.outputs.frontend == 'true' ||
+      needs.determine-changes.outputs.backend == 'true' ||
+      needs.determine-changes.outputs.infra == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+
+      - name: Install dependencies
+        run: npm ci --prefix frontend
+
+      - name: Run frontend tests
+        run: npm test --prefix frontend

@@ -1,3 +1,17 @@
+---
+id: US-118
+title: "Domain Events Zero Or Many"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-118 — US‑118 — Allow Zero or Many Domain Event Handlers
 
 ## Intent
@@ -16,3 +30,4 @@ Supports pure DDD and prevents accidental coupling between domain and applicatio
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

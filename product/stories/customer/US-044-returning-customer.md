@@ -1,3 +1,17 @@
+---
+id: US-044
+title: "Returning Customer"
+epic: ""
+milestone: ""
+status: backlog
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-044 — Returning Customer Confidence
 
 ## Intent
@@ -19,3 +33,4 @@ Returning to a system that has forgotten you is disorienting. A system that ackn
 ## Emotional Guarantees
 
 - EG-04 Forgiving of interruption
+

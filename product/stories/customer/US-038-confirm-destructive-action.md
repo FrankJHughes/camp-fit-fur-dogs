@@ -1,3 +1,17 @@
+---
+id: US-038
+title: "Confirm Destructive Action"
+epic: ""
+milestone: ""
+status: shipped
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-038 — Confirm Destructive Action
 
 ## Intent
@@ -19,3 +33,4 @@ Destructive actions carry emotional weight — removing a dog, deleting an accou
 ## Emotional Guarantees
 
 - EG-06 Explicit risk and reversibility
+

@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <VSTestUseDotNet>true</VSTestUseDotNet>
   </PropertyGroup>
 
   <PropertyGroup>

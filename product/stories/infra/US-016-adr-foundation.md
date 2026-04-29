@@ -1,3 +1,17 @@
+---
+id: US-016
+title: "Adr Foundation"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # ADR Foundation
 
 ## Intent
@@ -13,3 +27,4 @@ Prevents knowledge loss, enables async decision review, and gives future contrib
 - [x] ADR numbering convention is documented
 
 ## Emotional Guarantees: N/A
+

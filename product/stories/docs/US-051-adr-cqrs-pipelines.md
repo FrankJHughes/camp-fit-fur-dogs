@@ -1,3 +1,17 @@
+---
+id: US-051
+title: "Adr Cqrs Pipelines"
+epic: ""
+milestone: ""
+status: shipped
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-051 — ADR: CQRS Command/Query Pipelines
 
 ## User Story
@@ -28,3 +42,4 @@ The codebase uses a command/query separation pattern with handler dispatch. Befo
 ## Open Questions
 
 - None.
+

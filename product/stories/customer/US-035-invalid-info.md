@@ -1,3 +1,17 @@
+---
+id: US-035
+title: "Invalid Info"
+epic: ""
+milestone: ""
+status: shipped
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-035 — Invalid Information Handling
 
 ## Intent
@@ -20,3 +34,4 @@ Validation errors are a universal experience. How the system communicates them d
 
 - EG-02 No blame
 - EG-01 No surprises
+

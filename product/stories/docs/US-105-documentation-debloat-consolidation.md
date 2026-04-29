@@ -1,3 +1,17 @@
+---
+id: US-105
+title: "Documentation Debloat Consolidation"
+epic: ""
+milestone: ""
+status: shipped
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-105 — Documentation Debloat & Consolidation
 
 ## Intent

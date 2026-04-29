@@ -1,3 +1,17 @@
+---
+id: US-031
+title: "Add Multiple Dogs"
+epic: ""
+milestone: ""
+status: shipped
+domain: customer
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-031 — Add Multiple Dogs
 
 ## Intent
@@ -14,3 +28,4 @@ Supports real-world ownership scenarios.
 ## Emotional Guarantees
 - EG-01 No surprises
 - EG-07 Consistent behavior
+

@@ -1,3 +1,17 @@
+---
+id: US-026
+title: "Declarative Infra Dependencies"
+epic: ""
+milestone: ""
+status: shipped
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # Declarative Infrastructure Dependencies
 
 ## Intent
@@ -30,3 +44,4 @@ container restarts, and provides health checks that distinguish "starting" from 
 - Prescribing specific database migrations or seed data
 - Cloud or production infrastructure provisioning
 - Code-level integration with infrastructure services (NuGet packages, DbContext registration)
+

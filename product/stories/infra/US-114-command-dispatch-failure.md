@@ -1,3 +1,17 @@
+---
+id: US-114
+title: "Command Dispatch Failure"
+epic: ""
+milestone: ""
+status: backlog
+domain: infra
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-114 — US‑114 — Dispatch Commands With Clear Failure When No Handler Exists
 
 ## Intent
@@ -17,3 +31,4 @@ Prevents silent failures, improves debugging clarity, and ensures commands are n
 
 ## Notes
 Add architectural constraints, purity rules, or cross‑slice considerations.
+

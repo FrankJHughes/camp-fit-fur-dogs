@@ -1,3 +1,17 @@
+---
+id: US-053
+title: "Feature Slice Scaffold Script"
+epic: ""
+milestone: ""
+status: backlog
+domain: docs
+urgency: ""
+importance: ""
+covey_quadrant: ""
+vertical_slice: false
+emotional_guarantees: ""
+legal_guarantees: ""
+---
 # US-053 — Feature Slice Scaffold Script
 
 ## Intent
@@ -36,3 +50,4 @@ Every vertical slice shipped so far follows an identical structure across Domain
 
 - EG-01 No surprises — the generated structure matches the documented architecture exactly
 - EG-04 Always know where you stand — every slice starts at red with a clear path to green
+
