@@ -25,11 +25,11 @@ jobs:
   create_neon_branch:
     name: Create Neon Branch
     outputs:
-      db_url: ${{ steps.create_neon_branch.outputs.db_url }}
-      db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}
-      neon_host: ${{ steps.create_neon_branch.outputs.db_host }}
-      neon_branch_id: ${{ steps.create_neon_branch.outputs.branch_id }}
-      neon_password: ${{ steps.create_neon_branch.outputs.db_password }}
+        db_url: ${{ steps.create_neon_branch_encode.outputs.db_url }}
+        db_url_with_pooler: ${{ steps.create_neon_branch_encode.outputs.db_url_with_pooler }}        neon_host: ${{ steps.create_neon_branch.outputs.db_host }}
+        neon_host: ${{ steps.create_neon_branch_encode.outputs.host }}
+        neon_branch_id: ${{ steps.create_neon_branch_encode.outputs.branch_id }}
+        neon_password: ${{ steps.create_neon_branch_encode.outputs.db_password }}
     needs: setup
     if: |
       github.event_name == 'pull_request' && (
@@ -56,10 +56,10 @@ jobs:
     needs: create_neon_branch
     steps:
       - env:
-          neon_url: ${{ needs.create_neon_branch.outputs.db_url }}
-          neon_branch_id: ${{needs.create_neon_branch.outputs.neon_branch_id}}
-          neon_host: ${{needs.create_neon_branch.outputs.neon_host}}
-          neon_password: ${{needs.create_neon_branch.outputs.neon_password}}
+            neon_url: ${{ needs.create_neon_branch.outputs.db_url }}
+            neon_branch_id: ${{needs.create_neon_branch.outputs.neon_branch_id}}
+            neon_host: ${{needs.create_neon_branch.outputs.neon_host}}
+            neon_password: ${{needs.create_neon_branch.outputs.neon_password}}
         run:
             echo "$neon_url | Host=$neon_host; Port=5432; Database=$neon_branch_id; Username=neondb_owner; Password=$neon_password; Ssl Mode=Require; Trust Server Certificate=true;"
 
