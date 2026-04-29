@@ -56,10 +56,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: create_neon_branch
     steps:
-      - name: Echo Neon Branch ID
-        run: echo "${{steps.create-neon-branch.outputs.neon_branch_id}}"
-      - name: Echo NEON Host
-        run: echo "${{steps.create-neon-branch.outputs.neon_host }}"
+      - env:
+          neon_branch_id: ${{needs.create_neon_branch.outputs.neon_branch_id}}
+          neon_host: ${{needs.create_neon_branch.outputs.neon_host}}
+          neon_password: ${{needs.create_neon_branch.outputs.neon_password}}
+        run:
+            echo "$neon_branch_id"
+            echo "$neon_host"
 
   delete_neon_branch:
     name: Delete Neon Branch
