@@ -32,6 +32,10 @@ jobs:
 
           echo "DB_CONN=$(jq -r '.branch.endpoints[0].connection_uri' neon.json)" >> $GITHUB_ENV
 
+      - name: Debug DB_CONN
+        run: |
+          echo "DB_CONN is: $DB_CONN"
+
       - name: Apply EF Migrations
         run: |
           dotnet tool install --global dotnet-ef
