@@ -136,3 +136,5 @@ See [Feature Slice Walkthrough](developer/feature-slice-walkthrough.md) for the 
 | TDD discipline | [copilot-instructions.md](../../.github/copilot-instructions.md) §TDD |
 | Source control & git hooks | [copilot-instructions.md](../../.github/copilot-instructions.md) §Source Control |
 | Branching & PR workflow | [CONTRIBUTING.md](../../CONTRIBUTING.md) |
+| Secrets Setup | [secrets-setup.md](developer/secrets-setup.md) |
+| Integration Testing | [integration-testing.md](developer/integration-testing.md) |
