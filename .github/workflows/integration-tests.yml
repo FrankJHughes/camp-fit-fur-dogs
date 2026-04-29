@@ -17,6 +17,9 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Restore solution
+        run: dotnet restore
+
       - name: Create Neon Branch Database
         id: neon
         run: |
