@@ -60,7 +60,7 @@ jobs:
           neon_host: ${{needs.create_neon_branch.outputs.neon_host}}
           neon_password: ${{needs.create_neon_branch.outputs.neon_password}}
         run:
-            echo "$neon_host $neon_branch_id"
+            echo "Host=" + $neon_host + "; Port=5432; Database=" + $neon_branch_id + "; Username=db_owner; Password=" + $neon_password + "; Ssl Mode=Require; Trust Server Certificate=true;"
 
   delete_neon_branch:
     name: Delete Neon Branch
