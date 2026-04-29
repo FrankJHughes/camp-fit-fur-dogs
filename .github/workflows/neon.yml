@@ -57,9 +57,9 @@ jobs:
     needs: create_neon_branch
     steps:
       - name: Echo Neon Branch ID
-        run: echo neon_branch_id ${{steps.create-neon-branch.outputs.neon_branch_id}}
+        run: echo "${{steps.create-neon-branch.outputs.neon_branch_id}}"
       - name: Echo NEON Host
-        run: echo neon_host ${{steps.create-neon-branch.outputs.neon_host }}
+        run: echo "${{steps.create-neon-branch.outputs.neon_host }}"
 
   delete_neon_branch:
     name: Delete Neon Branch
