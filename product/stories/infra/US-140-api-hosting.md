@@ -38,6 +38,7 @@ testable without manual intervention.
 - [ ] Build failures surface clearly in GitHub
 - [ ] Rollback to a previous deployment is possible
 - [ ] CORS is configured to allow requests from the frontend hosting URL
+- [ ] Connection string is stored securely in the API hosting platform's environment variables
 
 ## Emotional Guarantees
 

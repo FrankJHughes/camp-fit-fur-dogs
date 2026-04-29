@@ -138,3 +138,4 @@ See [Feature Slice Walkthrough](developer/feature-slice-walkthrough.md) for the 
 | Branching & PR workflow | [CONTRIBUTING.md](../../CONTRIBUTING.md) |
 | Secrets Setup | [secrets-setup.md](developer/secrets-setup.md) |
 | Integration Testing | [integration-testing.md](developer/integration-testing.md) |
+| Database Hosting | [db-hosting.md](developer/db-hosting.md) |

@@ -30,7 +30,7 @@ jobs:
             https://console.neon.tech/api/v2/projects/${{ secrets.NEON_PROJECT_ID }}/branches \
             > neon.json
 
-          echo "DB_CONN=$(jq -r '.branch.connection_uri' neon.json)" >> $GITHUB_ENV
+          echo "DB_CONN=$(jq -r '.branch.endpoints[0].connection_uri' neon.json)" >> $GITHUB_ENV
 
       - name: Apply EF Migrations
         run: |

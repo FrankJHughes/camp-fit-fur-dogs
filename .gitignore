@@ -25,5 +25,4 @@ secrets.json
 scratch*.ps1
 scratch*.log
 scratch.txt
-scripts/database/Activate-NeonDb.ps1
-scripts/secrets/Activate-NeonDb.ps1
+scripts/secrets/Activate-NeonDb*.ps1
