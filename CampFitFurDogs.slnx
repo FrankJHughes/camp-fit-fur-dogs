@@ -10,11 +10,13 @@
     <Project Path="src/SharedKernel.Api/SharedKernel.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/CampFitFurDogs.Api.IntegrationTests/CampFitFurDogs.Api.IntegrationTests.csproj" />
     <Project Path="tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Application.Tests/CampFitFurDogs.Application.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Architecture.Tests/CampFitFurDogs.Architecture.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs.Infrastructure.IntegrationTests/CampFitFurDogs.Infrastructure.IntegrationTests.csproj" />
     <Project Path="tests/SharedKernel.Tests/SharedKernel.Tests.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.Tests/SharedKernel.Infrastructure.Tests.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests.csproj" />

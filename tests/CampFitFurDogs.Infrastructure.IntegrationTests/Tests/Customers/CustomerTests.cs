@@ -1,8 +1,11 @@
+using System;
+using System.Net.Http;
 using System.Net.Http.Json;
-using CampFitFurDogs.IntegrationTests.Fixtures;
+using System.Threading.Tasks;
+using CampFitFurDogs.InfrastructureIntegrationTests.Fixtures;
 using Xunit;
 
-namespace CampFitFurDogs.IntegrationTests.Tests.Customers;
+namespace CampFitFurDogs.InfrastructureIntegrationTests.Tests.Customers;
 
 public class CustomerTests : IClassFixture<ApiFixture>
 {

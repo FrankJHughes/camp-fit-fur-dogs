@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 
-namespace CampFitFurDogs.IntegrationTests.Fixtures;
+namespace CampFitFurDogs.InfrastructureIntegrationTests.Fixtures;
 
 public class ApiFixture : WebApplicationFactory<Program>
 {
