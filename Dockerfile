@@ -1,7 +1,7 @@
 # ============================
 # BUILD STAGE
 # ============================
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
 # Copy solution + project files first (cache-friendly)
@@ -14,7 +14,6 @@ COPY src/CampFitFurDogs.Infrastructure/CampFitFurDogs.Infrastructure.csproj src/
 COPY src/SharedKernel/SharedKernel.csproj src/SharedKernel/
 COPY src/SharedKernel.Api/SharedKernel.Api.csproj src/SharedKernel.Api/
 
-# Restore dependencies
 RUN dotnet restore
 
 # Copy the rest of the source
@@ -31,7 +30,7 @@ RUN dotnet publish src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj \
 # ============================
 # RUNTIME STAGE
 # ============================
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 COPY --from=build /app/publish .
