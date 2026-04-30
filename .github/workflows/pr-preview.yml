@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get branch name
+      - name: Get Branch Name
         id: branch_name
         uses: tj-actions/branch-names@v8
 
