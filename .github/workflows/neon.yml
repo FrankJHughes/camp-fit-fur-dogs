@@ -44,6 +44,7 @@ jobs:
         run: |
           RAW_URL="${{ steps.create_neon_branch.outputs.db_url }}"
           URL_NO_SCHEME="${RAW_URL#postgres://}"
+          URL_NO_SCHEME="${URL_NO_SCHEME#postgresql://}"
 
           USERPASS="${URL_NO_SCHEME%@*}"
           HOSTDB="${URL_NO_SCHEME#*@}"
