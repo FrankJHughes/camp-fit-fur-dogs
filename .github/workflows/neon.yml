@@ -49,22 +49,22 @@ jobs:
           branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
-      - run: echo db_url ${{ steps.create-branch.outputs.db_url }} # the password is masked when printed
-      - run: echo host ${{ steps.create-branch.outputs.host }}
-      - run: echo branch_id ${{ steps.create-branch.outputs.branch_id }}
+    #   - run: echo db_url ${{ steps.create-branch.outputs.db_url }} # the password is masked when printed
+    #   - run: echo host ${{ steps.create-branch.outputs.host }}
+    #   - run: echo branch_id ${{ steps.create-branch.outputs.branch_id }}
 
-#   echo_neon_branch:
-#     name: Echo Neon Branch
-#     runs-on: ubuntu-latest
-#     needs: create_neon_branch
-#     steps:
-#       - env:
-#           neon_url: ${{ needs.create_neon_branch.outputs.db_url }}
-#           neon_branch_id: ${{needs.create_neon_branch.outputs.neon_branch_id}}
-#           neon_host: ${{needs.create_neon_branch.outputs.neon_host}}
-#           neon_password: ${{needs.create_neon_branch.outputs.neon_password}}
-#         run:
-#           echo "$neon_url | Host=$neon_host; Port=5432; Database=$neon_branch_id; Username=neondb_owner; Password=$neon_password; Ssl Mode=Require; Trust Server Certificate=true;"
+  echo_neon_branch:
+    name: Echo Neon Branch
+    runs-on: ubuntu-latest
+    needs: create_neon_branch
+    steps:
+      - env:
+          neon_url: ${{ needs.create_neon_branch.outputs.db_url }}
+          neon_branch_id: ${{needs.create_neon_branch.outputs.neon_branch_id}}
+          neon_host: ${{needs.create_neon_branch.outputs.neon_host}}
+          neon_password: ${{needs.create_neon_branch.outputs.neon_password}}
+        run:
+          echo "$neon_url | Host=$neon_host; Port=5432; Database=$neon_branch_id; Username=neondb_owner; Password=$neon_password; Ssl Mode=Require; Trust Server Certificate=true;"
 
   delete_neon_branch:
     name: Delete Neon Branch
