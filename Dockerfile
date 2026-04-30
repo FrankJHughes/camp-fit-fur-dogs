@@ -14,7 +14,7 @@ COPY src/CampFitFurDogs.Infrastructure/CampFitFurDogs.Infrastructure.csproj src/
 COPY src/SharedKernel/SharedKernel.csproj src/SharedKernel/
 COPY src/SharedKernel.Api/SharedKernel.Api.csproj src/SharedKernel.Api/
 
-RUN dotnet restore
+RUN dotnet restore src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj
 
 # Copy the rest of the source
 COPY . .
