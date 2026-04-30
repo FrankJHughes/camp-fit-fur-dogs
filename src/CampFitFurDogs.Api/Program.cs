@@ -10,6 +10,17 @@ using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 0. CORS: allow frontend host
+var allowedOrigin = builder.Configuration["Frontend:BaseUrl"];
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.WithOrigins(allowedOrigin ?? "http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 // 1. register infrastructure layer
 //          db context
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -60,6 +71,8 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.MapEndpoints();
+
+app.UseCors();
 
 app.UseExceptionHandler(errorApp =>
 {

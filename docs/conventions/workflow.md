@@ -124,3 +124,29 @@ Identity is resolved via `ICurrentUserService`.
 - Api tests provide a test implementation.
 
 This keeps identity resolution consistent, testable, and decoupled from transport details.
+
+## API Deployment Workflow (US‑140)
+
+The Camp Fit Fur Dogs API is deployed on Render using a Dockerized .NET 10 container.  
+Deployment is automated and triggered by changes to the `main` branch.
+
+### Deployment Model
+- Render Web Service
+- Dockerfile located at `src/CampFitFurDogs.Api/Dockerfile`
+- Health check path: `/health`
+- HTTPS termination handled by Render
+- Environment variables injected at runtime
+
+### CI/CD Behavior
+- Every push to `main` triggers an automatic deploy on Render
+- No GitHub Actions workflow is required for deployment
+- Build and runtime logs are available in the Render dashboard
+
+### Secrets & Configuration
+All secrets and connection strings are stored in Render’s Environment tab:
+
+- `ConnectionStrings__DefaultConnection`
+- `ASPNETCORE_ENVIRONMENT=Production`
+- `Frontend__BaseUrl=<frontend-host-url>`
+
+No secrets are committed to source control.

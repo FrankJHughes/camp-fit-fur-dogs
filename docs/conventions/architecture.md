@@ -163,3 +163,51 @@ The `app/` directory is owned by Next.js routing conventions and is not restruct
 
 The `test/` directory mirrors `src/` exactly.
 
+## Hosting & Deployment Architecture
+
+### Overview
+The Camp Fit Fur Dogs system uses a cloud‑hosted deployment model that separates the API, database, and frontend into independently deployable units. Each component is deployed to a platform that matches its operational requirements while keeping cost at or near zero.
+
+---
+
+## API Hosting (US‑140)
+
+The API is hosted on **Render** as a Dockerized .NET 10 Web Service.
+
+### Architectural Characteristics
+- **Containerized runtime** using a multi‑stage Dockerfile located at  
+  `src/CampFitFurDogs.Api/Dockerfile`
+- **HTTPS termination** handled by Render
+- **Health check endpoint** exposed at `/health`
+- **Environment variables** injected at runtime (no secrets in source)
+- **Automatic deployment** on push to `main`
+- **Cold‑start behavior**: free tier sleeps after 15 minutes of inactivity
+
+The API is stateless and horizontally scalable. All state is stored in the database.
+
+---
+
+## Database Hosting (US‑141)
+
+The application database is hosted on **Neon** using branch‑based ephemeral environments for PRs and a persistent branch for production.
+
+### Architectural Characteristics
+- **PostgreSQL** as the primary relational store
+- **Connection strings** provided via environment variables
+- **Branch‑per‑PR workflow** for isolated integration testing
+- **Automatic expiration** of preview branches
+- **SSL‑required connections** enforced by Neon
+
+The application accesses the database exclusively through EF Core and the Shared Kernel abstractions.
+
+---
+
+## Frontend Hosting (US‑139)
+
+The frontend (Next.js) is hosted separately from the API to allow independent scaling and deployment.
+
+### Architectural Characteristics
+- Hosted on a static‑optimized platform (Vercel or Render Static Sites)
+- Communicates with the API over HTTPS
+- CORS is configured in the API to allow the frontend host
+- Deployment is triggered on push to `main`

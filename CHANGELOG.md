@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file.
 - Local integration test runner script
 - EF migration application step in CI
 - Developer guide for running integration tests locally
+- The Camp Fit Fur Dogs API is now hosted and available over HTTPS, enabling external access to dog profiles, registration flows, and future customer‑facing features.
+- Automatic deployment is now active for all updates merged into the main branch, ensuring the latest functionality is always available.
+- A public health check endpoint (`/health`) is now exposed for system monitoring and uptime verification.
 
 ## [Sprint 6] — 2026-04-27
 
