@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased Sprint 7]
 
 ### Added
+- Integration testing infrastructure using Neon branch databases
+- GitHub Actions workflow for automated integration tests on PRs
+- Local integration test runner script
+- EF migration application step in CI
+- Developer guide for running integration tests locally
 
 ## [Sprint 6] — 2026-04-27
 

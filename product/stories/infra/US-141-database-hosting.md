@@ -30,7 +30,6 @@ and early production.
 ## Acceptance Criteria
 
 - [ ] Database is provisioned on a free-tier cloud database service
-- [ ] Connection string is stored securely in the API hosting platform's environment variables
 - [ ] EF Core migrations run successfully against the hosted database
 - [ ] Existing seed data (if any) populates correctly
 - [ ] Database is accessible only from the API hosting platform (no public endpoint, or IP-restricted)

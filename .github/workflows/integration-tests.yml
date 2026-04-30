@@ -1,0 +1,56 @@
+# name: Integration Tests
+
+# on:
+#   pull_request:
+#     branches: [ main ]
+
+# jobs:
+#   integration-tests:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Setup .NET
+#         uses: actions/setup-dotnet@v4
+#         with:
+#           dotnet-version: 8.0.x
+
+#       - name: Restore solution
+#         run: dotnet restore
+
+#       - name: Create Neon Branch Database
+#         id: neon
+#         run: |
+#           curl -X POST \
+#             -H "Authorization: Bearer ${{ secrets.NEON_API_KEY }}" \
+#             -H "Content-Type: application/json" \
+#             -d "{\"branch\": {\"name\": \"pr-${{ github.event.number }}\"}}" \
+#             https://console.neon.tech/api/v2/projects/${{ secrets.NEON_PROJECT_ID }}/branches \
+#             > neon.json
+
+#           echo "DB_CONN=$(jq -r '.branch.endpoints[0].connection_uri' neon.json)" >> $GITHUB_ENV
+
+#       - name: Apply EF Migrations
+#         run: |
+#           dotnet tool install --global dotnet-ef
+#           export PATH="$PATH:/github/home/.dotnet/tools"
+#           dotnet ef database update \
+#             -s src/CampFitFurDogs.Api \
+#             -p src/CampFitFurDogs.Infrastructure \
+#             --connection "$DB_CONN"
+
+#       - name: Run Integration Tests
+#         env:
+#           ConnectionStrings__DefaultConnection: ${{ env.DB_CONN }}
+#         run: |
+#           dotnet test tests/CampFitFurDogs.IntegrationTests
+
+#       - name: Delete Neon Branch Database
+#         if: always()
+#         run: |
+#           BRANCH_ID=$(jq -r '.branch.id' neon.json)
+#           curl -X DELETE \
+#             -H "Authorization: Bearer ${{ secrets.NEON_API_KEY }}" \
+#             https://console.neon.tech/api/v2/projects/${{ secrets.NEON_PROJECT_ID }}/branches/$BRANCH_ID
