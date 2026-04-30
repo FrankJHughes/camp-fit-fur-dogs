@@ -27,6 +27,23 @@ These four files are the single source of truth for all repository rules.
 - When generating files, copilot must follow the rules defined in the conventions, including script generation rules, quoting rules, workflow rules, and architectural boundaries.
 - Guardrail tests exist to ensure copilot aligns with established rules.
 
+### Hosting & Deployment Guidance
+
+Copilot must follow the hosting and deployment conventions defined in:
+
+- `docs/conventions/architecture.md` (Hosting & Deployment Architecture)
+- `docs/conventions/workflow.md` (API Deployment Workflow)
+
+These documents define:
+- API hosting platform (Render)
+- Database hosting platform (Neon)
+- Environment variable requirements
+- Health check conventions
+- CORS requirements
+- Deployment triggers and expectations
+
+Copilot must not propose alternative hosting platforms or deployment models unless explicitly requested by the user.
+
 ## Lessons learned
 
 | Number | Sprint | Lesson | Mitigation |
