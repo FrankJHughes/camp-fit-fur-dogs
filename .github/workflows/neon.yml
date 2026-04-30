@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       db_url: ${{ steps.create_neon_branch_encode.outputs.db_url }}
-      db_url_with_pooler: ${{ steps.create_neon_branch_encode.outputs.db_url_with_pooler }}        neon_host: ${{ steps.create_neon_branch.outputs.db_host }}
+      db_url_with_pooler: ${{ steps.create_neon_branch_encode.outputs.db_url_with_pooler }}
       neon_host: ${{ steps.create_neon_branch_encode.outputs.host }}
       neon_branch_id: ${{ steps.create_neon_branch_encode.outputs.branch_id }}
       neon_password: ${{ steps.create_neon_branch_encode.outputs.password }}
