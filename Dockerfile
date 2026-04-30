@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
 # Copy solution + project files first (cache-friendly)
-COPY CampFitFurDogs.sln ./
+COPY CampFitFurDogs.slnx ./
 COPY Directory.Packages.props ./
 
 COPY src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj src/CampFitFurDogs.Api/
