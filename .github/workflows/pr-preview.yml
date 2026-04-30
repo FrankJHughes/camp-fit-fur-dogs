@@ -1,12 +1,8 @@
-name: PR Preview with Neon
+name: PR Preview with Neon + Render
 
 on:
   pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - closed
+    types: [opened, reopened, synchronize, closed]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,8 +10,8 @@ concurrency:
 jobs:
 
   preview_environment:
-    name: Create Neon Preview Environment
-    if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize'
+    name: Create Neon Preview Environment + Deploy API
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
 
     steps:
@@ -68,17 +64,49 @@ jobs:
       - name: Restore solution
         run: dotnet restore
 
-      - name: Run EF Core migrations
+      - name: Run Infrastructure Integration Tests
+        run: dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+
+      - name: Set Render PR Preview connection string
         run: |
-          dotnet ef database update \
-            --project src/CampFitFurDogs.Infrastructure \
-            --startup-project src/CampFitFurDogs.Api
+          curl -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"envVars\": [{\"key\": \"ConnectionStrings__DefaultConnection\", \"value\": \"${{ env.ConnectionStrings__DefaultConnection }}\", \"preview\": true}]}" \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/env-vars
 
-      - name: Run Integration Tests
-        run: dotnet test --logger "trx"
+      - name: Trigger Render PR Preview deploy
+        id: deploy
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"clearCache\": false}" \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
 
-  delete_neon_branch:
-    name: Delete Neon Branch
+  api_integration_tests:
+    name: API Integration Tests (Render Preview)
+    needs: preview_environment
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+
+    env:
+      API_BASE_URL: https://campfitfurdogs-api-pr-${{ github.event.number }}.onrender.com
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run API Integration Tests
+        run: dotnet test tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
+
+  cleanup:
+    name: Cleanup Neon + Render Preview
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
 
@@ -93,3 +121,9 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch: preview/pr-${{ github.event.number }}-${{ steps.branch_name.outputs.current_branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+
+      - name: Delete Render PR Preview Instance
+        run: |
+          curl -X DELETE \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/previews/pr-${{ github.event.number }}
