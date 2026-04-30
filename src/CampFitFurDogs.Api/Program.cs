@@ -11,10 +11,13 @@ using SharedKernel.Infrastructure.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(int.Parse(port));
+    options.Listen(System.Net.IPAddress.Any, int.Parse(port)); // IPv4 ANY
 });
+
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // 0. CORS: allow frontend host
 var allowedOrigin = builder.Configuration["Frontend:BaseUrl"];

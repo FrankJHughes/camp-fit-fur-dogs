@@ -33,6 +33,8 @@ RUN dotnet publish src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
+ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+
 COPY --from=build /app/publish .
 
 ENTRYPOINT ["dotnet", "CampFitFurDogs.Api.dll"]
