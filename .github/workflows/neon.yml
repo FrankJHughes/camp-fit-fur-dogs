@@ -61,6 +61,9 @@ jobs:
       - name: Add .NET tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
+      - name: Restore solution
+        run: dotnet restore
+
       - name: Run EF Core migrations
         run: |
           dotnet ef database update \
