@@ -66,13 +66,6 @@ jobs:
       - name: Convert Neon URL to .NET connection string
         id: convert_conn
         run: |
-          RAW_URL="${{ steps.create_neon_branch.outputs.db_url }}"
-          echo "RAW_URL=$RAW_URL"
-
-          # Remove scheme
-          URL_NO_SCHEME="${RAW_URL#postgres://}"
-          URL_NO_SCHEME="${URL_NO_SCHEME#postgresql://}"
-
           HOST="${{ steps.create_neon_branch.outputs.db_host }}"
           PORT="5432"
           DB="neondb"
@@ -134,7 +127,6 @@ jobs:
         id: render_preview
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
-          ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
         run: |
           PAYLOAD=$(jq -n \
             --arg image "${{ env.IMAGE_TAG }}" \
