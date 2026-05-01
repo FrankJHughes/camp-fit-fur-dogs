@@ -64,15 +64,23 @@ jobs:
         id: convert_conn
         run: |
           RAW_URL="${{ steps.create_neon_branch.outputs.db_url }}"
+
+          # Remove scheme
           URL_NO_SCHEME="${RAW_URL#postgres://}"
           URL_NO_SCHEME="${URL_NO_SCHEME#postgresql://}"
 
+          # Split user:pass and host/db?query
           USERPASS="${URL_NO_SCHEME%@*}"
-          HOSTDB="${URL_NO_SCHEME#*@}"
+          HOSTDBQ="${URL_NO_SCHEME#*@}"
 
+          # Strip query string
+          HOSTDB="${HOSTDBQ%%\?*}"
+
+          # Extract user/pass
           USER="${USERPASS%%:*}"
           PASS="${USERPASS#*:}"
 
+          # Extract host/db
           HOST="${HOSTDB%%/*}"
           DB="${HOSTDB#*/}"
 
