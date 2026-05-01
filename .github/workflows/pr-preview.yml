@@ -59,9 +59,9 @@ jobs:
           branch_name: ${{ steps.neon_branch.outputs.value }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
-      - run: echo db_url ${{ steps.create_neon_branch.outputs.db_url }} # the password is masked when printed
-      - run: echo host ${{ steps.create_neon_branch.outputs.db_host }}
-      - run: echo branch_id ${{ steps.create_neon_branch.outputs.branch_id }}
+      # - run: echo db_url ${{ steps.create_neon_branch.outputs.db_url }} # the password is masked when printed
+      # - run: echo host ${{ steps.create_neon_branch.outputs.db_host }}
+      # - run: echo branch_id ${{ steps.create_neon_branch.outputs.branch_id }}
 
       - name: Convert Neon URL to .NET connection string
         id: convert_conn
@@ -73,22 +73,13 @@ jobs:
           URL_NO_SCHEME="${RAW_URL#postgres://}"
           URL_NO_SCHEME="${URL_NO_SCHEME#postgresql://}"
 
-          # Split user:pass and host/db?query
-          USERPASS="${{ steps.create_neon_branch.outputs.password }}"
-          HOSTDBQ="${{ steps.create_neon_branch.outputs.db_host }}"
-
-          # # Strip query string
-          # HOSTDB="${HOSTDBQ%%\?*}"
-
-          # Extract user/pass
+          HOST="${{ steps.create_neon_branch.outputs.db_host }}"
+          PORT="5432"
+          DB="neondb"
           USER="neon_dbowner"
-          # PASS="${USERPASS#*:}"
+          PASS="${{ steps.create_neon_branch.outputs.password }}"
 
-          # Extract host/db
-          HOST="${HOSTDB%%/*}"
-          DB="${HOSTDB#*/}"
-
-          CONNECTION_STRING="Host=$HOST;Port=5432;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
+          CONNECTION_STRING="Host=$HOST;Port=$PORT;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
 
           echo "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" >> $GITHUB_ENV
 
@@ -152,11 +143,6 @@ jobs:
               ]
             }')
 
-          echo "IMAGE_TAG=${{ env.IMAGE_TAG }}"
-          echo "HOST=$HOST"
-          echo "DB=$DB"
-          echo "USER=$USER"
-          echo "PASS=$PASS"
           echo "CONNECTION_STRING=${{ env.ConnectionStrings__DefaultConnection }}"
 
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
