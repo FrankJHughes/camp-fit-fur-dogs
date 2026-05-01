@@ -64,6 +64,7 @@ jobs:
         id: convert_conn
         run: |
           RAW_URL="${{ steps.create_neon_branch_encode.outputs.db_url }}"
+          echo "RAW_URL=$RAW_URL"
 
           # Remove scheme
           URL_NO_SCHEME="${RAW_URL#postgres://}"
