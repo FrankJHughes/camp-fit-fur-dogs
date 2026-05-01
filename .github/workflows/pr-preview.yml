@@ -140,6 +140,13 @@ jobs:
               ]
             }')
 
+          echo "IMAGE_TAG=${{ env.IMAGE_TAG }}"
+          echo "HOST=$HOST"
+          echo "DB=$DB"
+          echo "USER=$USER"
+          echo "PASS=$PASS"
+          echo "CONNECTION_STRING=${{ env.ConnectionStrings__DefaultConnection }}"
+
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_API }}/preview" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
