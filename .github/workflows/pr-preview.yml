@@ -76,7 +76,7 @@ jobs:
           HOST="${{ steps.create_neon_branch.outputs.db_host }}"
           PORT="5432"
           DB="neondb"
-          USER="neon_dbowner"
+          USER="neondb_owner"
           PASS="${{ steps.create_neon_branch.outputs.password }}"
 
           CONNECTION_STRING="Host=$HOST;Port=$PORT;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
