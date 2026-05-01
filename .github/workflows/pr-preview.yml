@@ -59,6 +59,9 @@ jobs:
           branch_name: ${{ steps.neon_branch.outputs.value }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
+      - run: echo db_url ${{ steps.create_neon_branch.outputs.db_url }} # the password is masked when printed
+      - run: echo host ${{ steps.create_neon_branch.outputs.host }}
+      - run: echo branch_id ${{ steps.create_neon_branch.outputs.branch_id }}
 
       - name: Convert Neon URL to .NET connection string
         id: convert_conn
@@ -71,15 +74,15 @@ jobs:
           URL_NO_SCHEME="${URL_NO_SCHEME#postgresql://}"
 
           # Split user:pass and host/db?query
-          USERPASS="${URL_NO_SCHEME%@*}"
-          HOSTDBQ="${URL_NO_SCHEME#*@}"
+          USERPASS="${{ steps.create_neon_branch.outputs.password }}"
+          HOSTDBQ="${{ steps.create_neon_branch.outputs.db_host }}"
 
-          # Strip query string
-          HOSTDB="${HOSTDBQ%%\?*}"
+          # # Strip query string
+          # HOSTDB="${HOSTDBQ%%\?*}"
 
           # Extract user/pass
-          USER="${USERPASS%%:*}"
-          PASS="${USERPASS#*:}"
+          USER="neon_dbowner"
+          # PASS="${USERPASS#*:}"
 
           # Extract host/db
           HOST="${HOSTDB%%/*}"
