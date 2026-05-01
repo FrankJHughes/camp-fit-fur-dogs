@@ -1,150 +1,147 @@
-# ADR-0022 — PR Preview Pipeline with Neon, Render, and Layered Integration Tests
+# ADR‑0022: PR Preview Pipeline (Neon + Render)
 
-## Status
-Accepted
+**Status:** Accepted  
+**Date:** 2026‑04‑30  
+**Supersedes:** Earlier assumptions about PR Preview DB lifecycle and test responsibilities
+
+---
 
 ## Context
 
-The project requires a zero‑cost, fully automated PR Preview environment that validates changes across backend layers before merging into `main`. The existing CI baseline (US‑015) provides build and test automation, but does not provide:
+The system requires a reliable PR Preview pipeline that:
 
-- A hosted database for integration testing  
-- A hosted API instance for end‑to‑end verification  
-- A mechanism to run Infrastructure and API integration tests against real cloud resources  
-- Automatic cleanup of preview environments  
-- A unified workflow that ties Neon (database) and Render (API hosting) together  
+- Creates an **isolated PostgreSQL preview database** for each PR  
+- Deploys a **temporary API instance** to Render  
+- Runs **Infrastructure Integration Tests** against the real database  
+- Runs **API Integration Tests** against the real hosted API  
+- Supports **fixing broken migrations inside the same PR**  
+- Cleans up all preview resources when the PR is closed  
 
-Infrastructure stories US‑139 (Frontend Hosting), US‑140 (API Hosting), and US‑141 (Database Hosting) all require a hosted environment.  
-US‑140 explicitly states:
+The previous pipeline had two major issues:
 
-> “Platform decision should be recorded as an ADR.”
+1. **Neon preview branches persisted across workflow runs**, causing schema drift and “relation already exists” errors when migrations changed.  
+2. **Infrastructure Integration Tests ran migrations**, duplicating workflow behavior and causing failures when the workflow had already applied them.
 
-Documentation conventions require ADRs to capture significant architectural decisions.  
-Workflow conventions require full‑file regeneration and script‑first automation.
+These issues made PR previews unreliable and prevented iterative migration development within the same PR.
 
-The team also recently split integration tests into:
-
-- **Infrastructure Integration Tests** — persistence, EF Core, handlers  
-- **API Integration Tests** — routing, middleware, DI, HTTP behavior  
-
-This ADR formalizes the pipeline that supports both.
+---
 
 ## Decision
 
-We adopt a **PR Preview Pipeline** that provisions a temporary Neon database branch and a temporary Render API instance for every open PR. The pipeline runs in three phases:
+### 1. Recreate the Neon preview branch on every workflow run  
+The workflow now:
 
-### 1. Neon Preview Database Creation
-- A Neon branch is created per PR using the naming convention:  
-  `preview/pr-<PR_NUMBER>-<branch_name>`
-- The branch expires automatically after 14 days.
-- The connection string is converted into a .NET‑compatible format and injected into the CI environment.
+- Deletes the preview branch if it exists  
+- Creates a fresh preview branch  
+- Applies migrations once  
 
-### 2. Infrastructure Integration Tests (CI)
-- EF Core migrations run against the Neon preview database.
-- Infrastructure integration tests run against the same database.
-- If these tests fail, the pipeline stops and the API is not deployed.
+This ensures:
 
-### 3. Render PR Preview Deployment
-- The API is deployed to Render as a PR Preview instance.
-- The connection string is patched into the Render service using the Render API.
-- A deploy is triggered automatically.
-- The preview URL follows the deterministic pattern:  
-  `https://campfitfurdogs-api-pr-<PR_NUMBER>.onrender.com`
+- A clean database state  
+- No schema drift  
+- Deterministic CI behavior  
+- Ability to fix bad migrations inside the same PR  
 
-### 4. API Integration Tests (Live HTTP Tests)
-- A separate job runs after the Render deploy.
-- Tests use the environment variable:  
-  `API_BASE_URL=https://campfitfurdogs-api-pr-<PR_NUMBER>.onrender.com`
-- Tests validate:
-  - Routing
-  - Middleware
-  - Authorization
-  - Endpoint behavior
-  - Health checks
-  - DI configuration
-
-### 5. Automatic Cleanup on PR Close
-- The Neon preview branch is deleted.
-- The Render PR Preview instance is deleted.
-- No preview resources persist after merge or closure.
-
-### 6. Workflow File
-The pipeline is defined in:
+### 2. Workflow owns all schema creation  
+The workflow runs:
 
 ```
-.github/workflows/pr-preview.yml
+dotnet ef database update
 ```
 
-This replaces the previous `neon.yml` workflow.
+Infrastructure Integration Tests **must not** run migrations.  
+They assume the schema is already correct.
+
+### 3. Infrastructure Integration Tests run against the fresh Neon preview DB  
+They validate:
+
+- EF Core mappings  
+- Persistence logic  
+- Repository behavior  
+
+They do **not**:
+
+- Modify schema  
+- Spin up the API  
+- Use WebApplicationFactory  
+
+### 4. Render PR Preview is deployed using the same Neon preview branch  
+The API preview receives the Neon connection string via Render’s preview API.
+
+### 5. API Integration Tests hit the real hosted API  
+Tests use:
+
+```
+API_BASE_URL=https://campfitfurdogs-api-pr-<PR>.onrender.com
+```
+
+They validate:
+
+- Routing  
+- Controllers  
+- Middleware  
+- End‑to‑end behavior  
+
+### 6. Cleanup occurs only when the PR is closed  
+On PR close:
+
+- Neon preview branch is deleted  
+- Render preview instance is deleted  
+
+No preview resources persist beyond the PR lifecycle.
+
+---
+
+## Rationale
+
+This architecture:
+
+- Ensures **repeatable, deterministic** CI runs  
+- Prevents schema conflicts and migration duplication  
+- Matches the separation of concerns between:
+  - Workflow (schema creation)
+  - Infrastructure tests (persistence)
+  - API tests (end‑to‑end behavior)
+- Supports iterative development of migrations within the same PR  
+- Aligns with Neon’s and Render’s intended preview‑environment usage  
+- Eliminates manual cleanup and developer friction  
+
+---
 
 ## Consequences
 
 ### Positive
-- Full vertical slice validation before merging into `main`.
-- Zero‑cost: both Neon and Render free tiers support ephemeral environments.
-- Deterministic: every PR gets its own isolated database and API instance.
-- Safe: no shared state between PRs.
-- Aligned with conventions:
-  - Architecture: layered testing (Infrastructure vs API)
-  - Workflow: script‑first, deterministic automation
-  - Documentation: ADR captures the decision
-- Improved developer confidence: failures surface early and clearly.
+- PR previews are stable and reproducible  
+- Broken migrations can be fixed in the same PR  
+- No leftover schema from previous runs  
+- Infrastructure tests are clean and focused  
+- API tests validate the real deployed environment  
+- Automatic cleanup prevents resource leaks  
 
 ### Negative
-- Pipeline runtime increases due to:
-  - Neon provisioning
-  - Render deployment
-  - Live HTTP tests
-- Render PR Preview deploys may experience cold starts.
-- Requires maintaining API_BASE_URL conventions across tests.
+- Recreating the Neon branch adds ~1–2 seconds of overhead  
+- Preview DB data is not persisted between workflow runs  
+- Developers must rely on local DBs for iterative data testing  
 
-### Neutral / Tradeoffs
-- The team must maintain two integration test suites.
-- Render free tier sleeps after inactivity; acceptable for PR validation.
+---
 
 ## Alternatives Considered
 
-### 1. Local ephemeral containers (Docker Compose)
-Rejected because:
-- Does not validate real hosting behavior.
-- Does not test cold starts, routing, or platform differences.
-- Does not support frontend hosting integration.
+### 1. Keeping the Neon branch across runs  
+Rejected due to schema drift and inability to fix migrations.
 
-### 2. Azure App Service Free Tier
-Rejected because:
-- No free custom domain.
-- Cold start behavior inconsistent.
-- More complex provisioning.
+### 2. Running migrations inside Infrastructure tests  
+Rejected because it duplicates workflow behavior and causes conflicts.
 
-### 3. Fly.io
-Rejected for now:
-- Strong option, but Render PR Preview is simpler and integrates better with GitHub.
+### 3. Using per‑test schemas  
+Unnecessary once the workflow owns schema creation.
+
+---
 
 ## Notes
 
-- This ADR supports US‑139, US‑140, and US‑141.
-- Future ADRs may extend this pipeline to:
-  - Frontend PR Previews
-  - End‑to‑end browser tests
-  - Load testing
-- This ADR must be updated if:
-  - Hosting platform changes
-  - Database provider changes
-  - Test taxonomy changes
+This ADR formalizes the new PR Preview pipeline architecture and replaces any previous assumptions that:
 
-## Decision Drivers
-
-- Zero cost  
-- Predictability  
-- Developer experience  
-- Alignment with conventions  
-- Full vertical slice validation  
-- Automatic cleanup  
-
-## References
-
-- Documentation Conventions  
-- Workflow Conventions  
-- Architecture Conventions  
-- US‑140: API Hosting  
-- US‑141: Database Hosting  
-- US‑015: CI Baseline  
+- Infrastructure tests should run migrations  
+- Neon preview branches should persist across workflow runs  
+- API Integration Tests should use WebApplicationFactory  
