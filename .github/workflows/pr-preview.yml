@@ -63,7 +63,7 @@ jobs:
       - name: Convert Neon URL to .NET connection string
         id: convert_conn
         run: |
-          RAW_URL="${{ steps.create_neon_branch.outputs.db_url }}"
+          RAW_URL="${{ steps.create_neon_branch.outputs.connection_uri }}"
           URL_NO_SCHEME="${RAW_URL#postgres://}"
           URL_NO_SCHEME="${URL_NO_SCHEME#postgresql://}"
 
