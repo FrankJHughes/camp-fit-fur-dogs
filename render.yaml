@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: campfitfurdogs-api
+    runtime: image
+    image:
+      url: ghcr.io/frankjhughes/campfitfurdogs/api:latest
+
+    plan: starter
+    region: oregon
+    autoDeploy: true
+
+    # Your API listens on 8080 (Dockerfile: ASPNETCORE_URLS=http://+:8080)
+    envVars:
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:8080
+
+      - key: DOTNET_ENVIRONMENT
+        value: Production
+
+    healthCheckPath: /health
+    healthCheckTimeout: 30
+    healthCheckInterval: 30
+
+    # Render injects PORT automatically, but your container must listen on 8080
+    envVarsOverrides:
+      - key: PORT
+        value: "8080"
