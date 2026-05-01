@@ -1,0 +1,113 @@
+name: Deploy Production (Render + Neon + GHCR)
+
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+
+  deploy_production:
+    name: Build Image + Migrate DB + Deploy to Render
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # ============================
+      # BUILD & PUSH DOCKER IMAGE
+      # ============================
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build API image
+        run: docker build -t ghcr.io/frankjhughes/campfitfurdogs/api:${{ github.sha }} .
+
+      - name: Push API image
+        run: docker push ghcr.io/frankjhughes/campfitfurdogs/api:${{ github.sha }}
+
+      - name: Export image tag
+        run: echo "IMAGE_TAG=ghcr.io/frankjhughes/campfitfurdogs/api:${{ github.sha }}" >> $GITHUB_ENV
+
+      # ============================
+      # PRODUCTION DB MIGRATIONS
+      # ============================
+
+      - name: Convert Neon production URL to .NET connection string
+        id: convert_conn
+        run: |
+          RAW_URL="${{ secrets.NEON_PROD_DB_URL }}"
+          URL_NO_SCHEME="${RAW_URL#postgres://}"
+          URL_NO_SCHEME="${URL_NO_SCHEME#postgresql://}"
+
+          USERPASS="${URL_NO_SCHEME%@*}"
+          HOSTDB="${URL_NO_SCHEME#*@}"
+
+          USER="${USERPASS%%:*}"
+          PASS="${USERPASS#*:}"
+
+          HOST="${HOSTDB%%/*}"
+          DB="${HOSTDB#*/}"
+
+          CONNECTION_STRING="Host=$HOST;Port=5432;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
+
+          echo "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" >> $GITHUB_ENV
+
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Restore solution
+        run: dotnet restore
+
+      - name: Apply EF Core Migrations (Production)
+        env:
+          ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
+        run: dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
+
+      # ============================
+      # TRIGGER RENDER DEPLOY HOOK
+      # ============================
+
+      - name: Trigger Render Deploy Hook
+        run: |
+          PAYLOAD=$(jq -n \
+            --arg image "${{ env.IMAGE_TAG }}" \
+            --arg conn "${{ env.ConnectionStrings__DefaultConnection }}" \
+            '{
+              clearEnvVars: false,
+              envVars: [
+                { key: "ConnectionStrings__DefaultConnection", value: $conn }
+              ],
+              imagePath: $image
+            }')
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+
+          echo "Render Deploy Hook status: $STATUS"
+          echo "Render Deploy Hook response: $BODY"
+
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
+            echo "Failed to trigger Render deploy"
+            exit 1
+          fi
+
+          echo "Production deploy triggered successfully"
