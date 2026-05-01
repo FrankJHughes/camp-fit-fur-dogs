@@ -85,7 +85,8 @@ jobs:
       - name: Trigger Render PR Preview (with Neon connection string)
         id: render_preview
         run: |
-          curl -v -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_API }}/previews" \
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_API }}/previews" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{
@@ -93,7 +94,23 @@ jobs:
               \"envVars\": {
                 \"ConnectionStrings__DefaultConnection\": \"${{ env.ConnectionStrings__DefaultConnection }}\"
               }
-            }"
+            }")
+
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+
+          echo "Render API status: $STATUS"
+          echo "Render API response: $BODY"
+
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
+            echo "Failed to create Render preview"
+            exit 1
+          fi
+
+          PREVIEW_URL=$(echo "$BODY" | jq -r '.service.url')
+          echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+    outputs:
+      preview_url: ${{ steps.render_preview.outputs.preview_url }}
 
   api_integration_tests:
     name: API Integration Tests (Render Preview)
@@ -102,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      API_BASE_URL: https://campfitfurdogs-api-pr-${{ github.event.number }}.onrender.com
+      API_BASE_URL: ${{ needs.preview_environment.outputs.preview_url }}
 
     steps:
       - name: Checkout repository
