@@ -67,22 +67,19 @@ jobs:
       - name: Run Infrastructure Integration Tests
         run: dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
-      - name: Set Render PR Preview connection string
+      # ⭐ Render Free Tier: Create PR Preview with envVars in payload
+      - name: Trigger Render PR Preview (with Neon connection string)
+        id: render_preview
         run: |
-          curl -X PATCH \
+          curl -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_API }}/previews" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d "{\"envVars\": [{\"key\": \"ConnectionStrings__DefaultConnection\", \"value\": \"${{ env.ConnectionStrings__DefaultConnection }}\", \"preview\": true}]}" \
-            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/env-vars
-
-      - name: Trigger Render PR Preview deploy
-        id: deploy
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"clearCache\": false}" \
-            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
+            -d "{
+              \"commit\": \"${{ github.sha }}\",
+              \"envVars\": {
+                \"ConnectionStrings__DefaultConnection\": \"${{ env.ConnectionStrings__DefaultConnection }}\"
+              }
+            }"
 
   api_integration_tests:
     name: API Integration Tests (Render Preview)
@@ -101,6 +98,20 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: Wait for Render Preview to become ready
+        run: |
+          for i in {1..30}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/health")
+            if [ "$STATUS" = "200" ]; then
+              echo "API is ready"
+              exit 0
+            fi
+            echo "Waiting for API preview to be ready..."
+            sleep 10
+          done
+          echo "API preview did not become ready in time"
+          exit 1
 
       - name: Run API Integration Tests
         run: dotnet test tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
@@ -126,4 +137,4 @@ jobs:
         run: |
           curl -X DELETE \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/previews/pr-${{ github.event.number }}
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_API }}/previews/pr-${{ github.event.number }}"
