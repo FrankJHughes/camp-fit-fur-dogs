@@ -82,14 +82,15 @@ jobs:
         run: dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
       # ⭐ Render Free Tier: Create PR Preview with envVars in payload
-      - name: Trigger Render PR Preview (with Neon connection string)
+      - name: Trigger Render PR Preview (correct endpoint)
         id: render_preview
         run: |
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_API }}/previews" \
+            "https://api.render.com/v1/previews" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{
+              \"serviceId\": \"${{ secrets.RENDER_SERVICE_ID_API }}\",
               \"commit\": \"${{ github.sha }}\",
               \"envVars\": {
                 \"ConnectionStrings__DefaultConnection\": \"${{ env.ConnectionStrings__DefaultConnection }}\"
@@ -109,6 +110,7 @@ jobs:
 
           PREVIEW_URL=$(echo "$BODY" | jq -r '.service.url')
           echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+          echo "::set-output name=preview_url::$PREVIEW_URL"
     outputs:
       preview_url: ${{ steps.render_preview.outputs.preview_url }}
 
@@ -130,17 +132,22 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Wait for Render Preview to become ready
+      - name: Wait for API preview to be ready
         run: |
+          echo "Waiting for API preview to be ready at: $PREVIEW_URL"
+
           for i in {1..30}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/health")
-            if [ "$STATUS" = "200" ]; then
-              echo "API is ready"
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PREVIEW_URL/health")
+
+            if [ "$STATUS" -eq 200 ]; then
+              echo "API preview is ready"
               exit 0
             fi
-            echo "Waiting for API preview to be ready..."
+
+            echo "Waiting for API preview to be ready... (attempt $i/30)"
             sleep 10
           done
+
           echo "API preview did not become ready in time"
           exit 1
 
