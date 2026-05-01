@@ -76,7 +76,7 @@ jobs:
 
       # ⭐ Workflow owns migrations — tests do NOT run migrations
       - name: Apply EF Core Migrations
-        run: dotnet ef database update -s src\CampFitFurDogs.Api\ -p src\CampFitFurDogs.Infrastructure\
+        run: dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
       - name: Run Infrastructure Integration Tests
         run: dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
