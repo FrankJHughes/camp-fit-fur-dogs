@@ -79,9 +79,10 @@ jobs:
           USER="neondb_owner"
           PASS="${{ steps.create_neon_branch.outputs.password }}"
 
-          CONNECTION_STRING="Host=$HOST;Port=$PORT;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
-
-          echo "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" >> $GITHUB_ENV
+          # DO NOT echo the connection string
+          {
+            echo "ConnectionStrings__DefaultConnection=Host=$HOST;Port=$PORT;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
+          } >> $GITHUB_ENV
 
       # ============================
       # BUILD & PUSH DOCKER IMAGE
@@ -145,8 +146,6 @@ jobs:
                 { key: "ConnectionStrings__DefaultConnection", value: $conn }
               ]
             }')
-
-          echo "CONNECTION_STRING=${{ env.ConnectionStrings__DefaultConnection }}"
 
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_API }}/preview" \
