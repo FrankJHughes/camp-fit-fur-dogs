@@ -104,18 +104,18 @@ jobs:
         run: dotnet restore
 
       - name: Apply EF Core Migrations
-        run:
-          echo "ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }}" >> $GITHUB_ENV
+        run: |
+          ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }} \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
+
           unset ConnectionStrings__DefaultConnection
-          echo "ConnectionStrings__DefaultConnection=" >> $GITHUB_ENV
 
       - name: Run Infrastructure Integration Tests
-        run:
-          echo "ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }}" >> $GITHUB_ENV
+        run: |
+          ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }} \
           dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+
           unset ConnectionStrings__DefaultConnection
-          echo "ConnectionStrings__DefaultConnection=" >> $GITHUB_ENV
 
       # ============================
       # RENDER PREVIEW (image-backed)
