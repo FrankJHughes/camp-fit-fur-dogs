@@ -105,14 +105,14 @@ jobs:
 
       - name: Apply EF Core Migrations
         run: |
-          ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }} \
+          ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.ConnectionStrings__DefaultConnection }} \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
           unset ConnectionStrings__DefaultConnection
 
       - name: Run Infrastructure Integration Tests
         run: |
-          ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }} \
+          ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.ConnectionStrings__DefaultConnection }} \
           dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
           unset ConnectionStrings__DefaultConnection
@@ -131,7 +131,7 @@ jobs:
         run: |
           PAYLOAD=$(jq -n \
             --arg image "${{ env.IMAGE_TAG }}" \
-            --arg conn "${{ steps.convert_conn.outputs.value }}" \
+            --arg conn "${{ steps.convert_conn.outputs.ConnectionStrings__DefaultConnection }}" \
             '{
               imagePath: $image,
               plan: "starter",
