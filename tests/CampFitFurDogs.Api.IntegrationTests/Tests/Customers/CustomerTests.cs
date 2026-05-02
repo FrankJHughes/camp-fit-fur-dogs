@@ -8,7 +8,7 @@ public class CustomerTests : ApiTestBase
     [Fact]
     public async Task Can_Create_And_List_Customers()
     {
-        var createResponse = await Client.PostAsJsonAsync("/customers", new
+        var createResponse = await Client.PostAsJsonAsync("/api/customers", new
         {
             firstName = "Test",
             lastName = "User",
@@ -19,7 +19,7 @@ public class CustomerTests : ApiTestBase
 
         createResponse.EnsureSuccessStatusCode();
 
-        var listResponse = await Client.GetAsync("/customers");
+        var listResponse = await Client.GetAsync("/api/customers");
         listResponse.EnsureSuccessStatusCode();
     }
 }
