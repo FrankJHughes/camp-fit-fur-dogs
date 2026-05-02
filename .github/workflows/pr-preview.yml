@@ -72,7 +72,7 @@ jobs:
           # DO NOT echo the connection string
           {
             echo "ConnectionStrings__DefaultConnection=Host=$HOST;Port=$PORT;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
-          } >> $GITHUB_ENV
+          } >> $GITHUB_OUTPUT
 
       # ============================
       # BUILD & PUSH DOCKER IMAGE
@@ -104,10 +104,18 @@ jobs:
         run: dotnet restore
 
       - name: Apply EF Core Migrations
-        run: dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
+        run:
+          echo "ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }}" >> $GITHUB_ENV
+          dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
+          unset ConnectionStrings__DefaultConnection
+          echo "ConnectionStrings__DefaultConnection=" >> $GITHUB_ENV
 
       - name: Run Infrastructure Integration Tests
-        run: dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+        run:
+          echo "ConnectionStrings__DefaultConnection=${{ steps.convert_conn.outputs.value }}" >> $GITHUB_ENV
+          dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+          unset ConnectionStrings__DefaultConnection
+          echo "ConnectionStrings__DefaultConnection=" >> $GITHUB_ENV
 
       # ============================
       # RENDER PREVIEW (image-backed)
@@ -123,7 +131,7 @@ jobs:
         run: |
           PAYLOAD=$(jq -n \
             --arg image "${{ env.IMAGE_TAG }}" \
-            --arg conn "${{ env.ConnectionStrings__DefaultConnection }}" \
+            --arg conn "${{ steps.convert_conn.outputs.value }}" \
             '{
               imagePath: $image,
               plan: "starter",
@@ -154,12 +162,6 @@ jobs:
 
           echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
           echo "preview_id=$PREVIEW_ID" >> $GITHUB_OUTPUT
-
-      - name: Remove connection string from environment
-        run: |
-          unset ConnectionStrings__DefaultConnection
-          echo "ConnectionStrings__DefaultConnection=" >> $GITHUB_ENV
-
 
   # ============================
   # API INTEGRATION TESTS
