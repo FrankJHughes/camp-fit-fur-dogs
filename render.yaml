@@ -20,7 +20,7 @@ projects:
       envVars:
         - key: ConnectionStrings__DefaultConnection
           fromSecret: production-db-connection-string
-          # previewValue: $PREVIEW_DB_CONNECTION_STRING
+          previewValue: $PREVIEW_DB_CONNECTION_STRING
           sync: false
 
         - key: ASPNETCORE_ENVIRONMENT
