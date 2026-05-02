@@ -10,10 +10,10 @@ using SharedKernel.Infrastructure.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // hook for overriding the db connection string at deployment time
-var previewConnPath = "/app/override-db-connection.txt";
-if (File.Exists(previewConnPath))
+var overrideDbConnPath = "/app/override-db-connection.txt";
+if (File.Exists(overrideDbConnPath))
 {
-    var dynamicConn = File.ReadAllText(previewConnPath).Trim();
+    var dynamicConn = File.ReadAllText(overrideDbConnPath).Trim();
     if (!string.IsNullOrWhiteSpace(dynamicConn))
     {
         builder.Configuration["ConnectionStrings:DefaultConnection"] = dynamicConn;
