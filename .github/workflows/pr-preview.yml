@@ -59,9 +59,6 @@ jobs:
           branch_name: ${{ steps.neon_branch.outputs.value }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
-      # - run: echo db_url ${{ steps.create_neon_branch.outputs.db_url }} # the password is masked when printed
-      # - run: echo host ${{ steps.create_neon_branch.outputs.db_host }}
-      # - run: echo branch_id ${{ steps.create_neon_branch.outputs.branch_id }}
 
       - name: Convert Neon URL to .NET connection string
         id: convert_conn
@@ -107,13 +104,9 @@ jobs:
         run: dotnet restore
 
       - name: Apply EF Core Migrations
-        # env:
-        #   ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
         run: dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
       - name: Run Infrastructure Integration Tests
-        # env:
-        #   ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
         run: dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
       # ============================
