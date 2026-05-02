@@ -64,15 +64,12 @@ jobs:
         id: convert_conn
         run: |
           HOST="${{ steps.create_neon_branch.outputs.db_host }}"
-          PORT="5432"
-          DB="neondb"
-          USER="neondb_owner"
           PASS="${{ steps.create_neon_branch.outputs.password }}"
 
-          # DO NOT echo the connection string
-          {
-            echo "ConnectionStrings__DefaultConnection=Host=$HOST;Port=$PORT;Database=$DB;Username=$USER;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
-          } >> $GITHUB_OUTPUT
+          CONN="Host=$HOST;Port=5432;Database=neondb;Username=neondb_owner;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
+
+          # Write to output (safe)
+          echo "conn_string=$CONN" >> $GITHUB_OUTPUT
 
       # ============================
       # BUILD & PUSH DOCKER IMAGE
@@ -105,17 +102,13 @@ jobs:
 
       - name: Apply EF Core Migrations
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.ConnectionStrings__DefaultConnection }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.conn_string }}" \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
-
-          unset ConnectionStrings__DefaultConnection
 
       - name: Run Infrastructure Integration Tests
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.ConnectionStrings__DefaultConnection }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.conn_string }}" \
           dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
-
-          unset ConnectionStrings__DefaultConnection
 
       # ============================
       # RENDER PREVIEW (image-backed)
@@ -131,7 +124,7 @@ jobs:
         run: |
           PAYLOAD=$(jq -n \
             --arg image "${{ env.IMAGE_TAG }}" \
-            --arg conn "${{ steps.convert_conn.outputs.ConnectionStrings__DefaultConnection }}" \
+            --arg conn "${{ steps.convert_conn.outputs.conn_string }}" \
             '{
               imagePath: $image,
               plan: "starter",
