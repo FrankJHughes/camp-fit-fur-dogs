@@ -129,7 +129,7 @@ jobs:
               imagePath: $image,
               plan: "starter",
               envVars: [
-                { key: "ConnectionStrings__DefaultConnection", value: $conn }
+                { "ConnectionStrings__DefaultConnection": "$conn" }
               ]
             }')
 
