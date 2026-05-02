@@ -150,11 +150,18 @@ jobs:
             exit 1
           fi
 
-          PREVIEW_URL=$(echo "$BODY" | jq -r '.service.url')
+          PREVIEW_URL=$(echo "$BODY" | jq -r '.service.serviceDetails.url')
           PREVIEW_ID=$(echo "$BODY" | jq -r '.id')
 
           echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
           echo "preview_id=$PREVIEW_ID" >> $GITHUB_OUTPUT
+
+      - name: Validate preview URL
+        run: |
+          if [ -z "${{ steps.render_preview.outputs.preview_url }}" ]; then
+            echo "Preview URL missing — failing job"
+            exit 1
+          fi
 
   # ============================
   # API INTEGRATION TESTS
