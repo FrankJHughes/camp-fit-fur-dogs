@@ -155,6 +155,12 @@ jobs:
           echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
           echo "preview_id=$PREVIEW_ID" >> $GITHUB_OUTPUT
 
+      - name: Remove connection string from environment
+        run: |
+          unset ConnectionStrings__DefaultConnection
+          echo "ConnectionStrings__DefaultConnection=" >> $GITHUB_ENV
+
+
   # ============================
   # API INTEGRATION TESTS
   # ============================
