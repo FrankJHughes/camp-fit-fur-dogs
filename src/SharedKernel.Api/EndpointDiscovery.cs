@@ -1,11 +1,12 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Routing;
+using System.Collections.Concurrent;
 
 namespace SharedKernel.Api;
 
 public static class EndpointDiscovery
 {
-    private static readonly HashSet<Type> _endpointTypes = [];
+    private static readonly ConcurrentDictionary<Type, byte> _endpointTypes = new();
 
     /// <summary>
     /// Scans the given assembly for types implementing IEndpoint
@@ -17,9 +18,10 @@ public static class EndpointDiscovery
             .GetTypes()
             .Where(t =>
                 !t.IsAbstract &&
-                typeof(SharedKernel.Api.IEndpoint).IsAssignableFrom(t));
+                typeof(IEndpoint).IsAssignableFrom(t));
 
-        _endpointTypes.UnionWith(endpointTypes);
+        foreach (var type in endpointTypes)
+            _endpointTypes.TryAdd(type, 0);
     }
 
     /// <summary>
@@ -27,7 +29,7 @@ public static class EndpointDiscovery
     /// </summary>
     public static void MapEndpoints(IEndpointRouteBuilder app)
     {
-        foreach (var endpointType in _endpointTypes)
+        foreach (var endpointType in _endpointTypes.Keys)
         {
             var endpoint = (IEndpoint)Activator.CreateInstance(endpointType)!;
             endpoint.Map(app);

@@ -9,6 +9,7 @@ using SharedKernel.Api;
 using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine("DB: " + builder.Configuration.GetConnectionString("DefaultConnection"));
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 

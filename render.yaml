@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: camp-fit-fur-dogs-api
+    envVars:
+      - key: ConnectionStrings__DefaultConnection
+        value: Host=ep-patient-scene-akiv8zeo.c-3.us-west-2.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_aAe7sDY1UFKO;SSL Mode=VerifyFull;Channel Binding=Require;Trust Server Certificate=true;
+        previewValue: $PREVIEW_CONNECTION_STRING
