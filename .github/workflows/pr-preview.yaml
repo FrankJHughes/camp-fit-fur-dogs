@@ -94,6 +94,30 @@ jobs:
           dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
   # ============================
+  # API INTEGRATION TESTS
+  # ============================
+
+  api_integration_tests:
+    name: API Integration Tests (Preview API)
+    needs: preview_environment
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run API Integration Tests
+        env:
+          API_BASE_URL: https://campfitfurdogsapi-pr-${{ github.event.number }}.onrender.com
+        run: dotnet test tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
+
+  # ============================
   # CLEANUP
   # ============================
 
