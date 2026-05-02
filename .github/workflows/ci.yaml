@@ -75,7 +75,7 @@ jobs:
       - name: Clean build artifacts
         run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
 
-      # Build only the SharedKernel test projects
+      # Build SharedKernel unit test projects
       - name: Build SharedKernel.Tests
         working-directory: tests/SharedKernel.Tests
         run: dotnet build --configuration Debug
@@ -117,7 +117,7 @@ jobs:
       - name: Clean build artifacts
         run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
 
-      # Build only backend test projects
+      # Build backend unit test projects
       - name: Build CampFitFurDogs.Api.Tests
         working-directory: tests/CampFitFurDogs.Api.Tests
         run: dotnet build --configuration Debug

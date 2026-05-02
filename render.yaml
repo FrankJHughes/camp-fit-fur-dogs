@@ -1,7 +1,32 @@
-services:
-  - type: web
-    name: camp-fit-fur-dogs-api
-    envVars:
-      - key: ConnectionStrings__DefaultConnection
-        value: Host=ep-patient-scene-akiv8zeo.c-3.us-west-2.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_aAe7sDY1UFKO;SSL Mode=VerifyFull;Channel Binding=Require;Trust Server Certificate=true;
-        previewValue: $PREVIEW_CONNECTION_STRING
+# Exported from Render on 2026-05-02T19:55:56Z
+version: "1"
+projects:
+- name: Camp Fit Fur Dogs
+  environments:
+  - name: Production
+    services:
+    - type: web
+      name: campfitfurdogsapi
+      runtime: docker
+      repo: https://github.com/FrankJHughes/camp-fit-fur-dogs
+      plan: starter
+      region: oregon
+      healthCheckPath: /health
+      dockerContext: .
+      dockerfilePath: ./Dockerfile
+      autoDeployTrigger: commit
+      previews:
+        generation: automatic
+      envVars:
+        - key: ConnectionStrings__DefaultConnection
+          fromSecret: production-db-connection-string
+          previewValue: $PREVIEW_DB_CONNECTION_STRING
+          sync: false
+
+        - key: ASPNETCORE_ENVIRONMENT
+          value: Production
+
+        - key: Frontend__BaseUrl
+          fromSecret: production-ui-base-url
+          previewValue: $PREVIEW_UI_BASE_URL
+          sync: false

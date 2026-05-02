@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
-using Xunit;
-using CampFitFurDogs.Infrastructure.IntegrationTests.Fixtures;
 using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.Infrastructure.IntegrationTests.Fixtures;
 
-namespace CampFitFurDogs.Infrastructure.IntegrationTests.Tests.Customers;
+namespace CampFitFurDogs.Infrastructure.IntegrationTests.Customers;
 
 public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
 {
