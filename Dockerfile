@@ -21,11 +21,11 @@ COPY . .
 
 # Publish with ReadyToRun enabled
 RUN dotnet publish src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj \
-    -c Release \
-    -o /app/publish \
-    -p:PublishReadyToRun=true \
-    -p:PublishSingleFile=false \
-    -p:PublishTrimmed=false
+  -c Release \
+  -o /app/publish \
+  -p:PublishReadyToRun=true \
+  -p:PublishSingleFile=false \
+  -p:PublishTrimmed=false
 
 # ============================
 # RUNTIME STAGE
@@ -34,6 +34,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+
+COPY override-db-connection.txt /app/override-db-connection.txt
 
 COPY --from=build /app/publish .
 

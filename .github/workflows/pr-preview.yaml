@@ -63,7 +63,9 @@ jobs:
           CONN="Host=$HOST;Port=5432;Database=neondb;Username=neondb_owner;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
 
           echo "conn_string=$CONN" >> $GITHUB_OUTPUT
-          echo "PREVIEW_DB_CONNECTION_STRING=$CONN" >> $GITHUB_ENV
+
+          echo "$CONN" > override-db-connection.txt
+
 
       # ============================
       # APPLY MIGRATIONS + INFRA INTEGRATION TESTS
@@ -111,6 +113,21 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: Wait for PR Preview API to become healthy
+        run: |
+          echo "Waiting for PR Preview API to become ready..."
+          for i in {1..30}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/api/health")
+            if [ "$status" = "200" ]; then
+              echo "API is ready."
+              exit 0
+            fi
+            echo "API not ready yet (status: $status). Retrying in 5s..."
+            sleep 5
+          done
+          echo "API did not become ready in time."
+          exit 1
 
       - name: Run API Integration Tests
         env:
