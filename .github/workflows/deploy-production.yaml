@@ -1,4 +1,4 @@
-name: Deploy Production (Render + Neon + GHCR)
+name: Deploy Production (Neon Migrations Only)
 
 on:
   push:
@@ -10,8 +10,8 @@ concurrency:
 
 jobs:
 
-  deploy_production:
-    name: Build Image + Migrate DB + Deploy to Render
+  migrate_production:
+    name: Apply EF Core Migrations (Neon Production)
     runs-on: ubuntu-latest
 
     steps:
@@ -24,23 +24,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       # ============================
-      # BUILD & PUSH DOCKER IMAGE
-      # ============================
-
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build API image
-        run: docker build -t ghcr.io/frankjhughes/campfitfurdogs/api:${{ github.sha }} .
-
-      - name: Push API image
-        run: docker push ghcr.io/frankjhughes/campfitfurdogs/api:${{ github.sha }}
-
-      - name: Export image tag
-        run: echo "IMAGE_TAG=ghcr.io/frankjhughes/campfitfurdogs/api:${{ github.sha }}" >> $GITHUB_ENV
-
-      # ============================
-      # PRODUCTION DB MIGRATIONS
+      # CONVERT NEON URL → .NET CONNECTION STRING
       # ============================
 
       - name: Convert Neon production URL to .NET connection string
@@ -63,6 +47,10 @@ jobs:
 
           echo "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" >> $GITHUB_ENV
 
+      # ============================
+      # APPLY EF CORE MIGRATIONS
+      # ============================
+
       - name: Install EF Core CLI
         run: dotnet tool install --global dotnet-ef
 
@@ -78,36 +66,8 @@ jobs:
         run: dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
       # ============================
-      # TRIGGER RENDER DEPLOY HOOK
+      # DONE — RENDER AUTO‑DEPLOYS
       # ============================
 
-      - name: Trigger Render Deploy Hook
-        run: |
-          PAYLOAD=$(jq -n \
-            --arg image "${{ env.IMAGE_TAG }}" \
-            --arg conn "${{ env.ConnectionStrings__DefaultConnection }}" \
-            '{
-              clearEnvVars: false,
-              envVars: [
-                { key: "ConnectionStrings__DefaultConnection", value: $conn }
-              ],
-              imagePath: $image
-            }')
-
-          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-            "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD")
-
-          BODY=$(echo "$RESPONSE" | sed '$d')
-          STATUS=$(echo "$RESPONSE" | tail -n1)
-
-          echo "Render Deploy Hook status: $STATUS"
-          echo "Render Deploy Hook response: $BODY"
-
-          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
-            echo "Failed to trigger Render deploy"
-            exit 1
-          fi
-
-          echo "Production deploy triggered successfully"
+      - name: Complete
+        run: echo "Production migrations applied. Render will auto‑deploy from main."

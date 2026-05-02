@@ -63,7 +63,7 @@ jobs:
           CONN="Host=$HOST;Port=5432;Database=neondb;Username=neondb_owner;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
 
           echo "conn_string=$CONN" >> $GITHUB_OUTPUT
-          echo "PREVIEW_CONNECTION_STRING=$CONN" >> $GITHUB_ENV
+          echo "PREVIEW_DB_CONNECTION_STRING=$CONN" >> $GITHUB_ENV
 
       # ============================
       # APPLY MIGRATIONS
