@@ -114,7 +114,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Export API Base URL
+        id: api_base_url
+        run: echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ github.event.number }}.onrender.com" >> $GITHUB_OUTPUT
+
       - name: Wait for PR Preview API to become healthy
+        env:
+          API_BASE_URL: ${{ steps.api_base_url.outputs.API_BASE_URL }}
         run: |
           echo "Waiting for PR Preview API to become ready..."
           for i in {1..30}; do
@@ -131,7 +137,7 @@ jobs:
 
       - name: Run API Integration Tests
         env:
-          API_BASE_URL: https://campfitfurdogsapi-pr-${{ github.event.number }}.onrender.com
+          API_BASE_URL: ${{ steps.api_base_url.outputs.API_BASE_URL }}
         run: dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
 
   # ============================
