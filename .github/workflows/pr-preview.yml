@@ -107,13 +107,13 @@ jobs:
         run: dotnet restore
 
       - name: Apply EF Core Migrations
-        env:
-          ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
+        # env:
+        #   ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
         run: dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
       - name: Run Infrastructure Integration Tests
-        env:
-          ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
+        # env:
+        #   ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
         run: dotnet test tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
       # ============================
