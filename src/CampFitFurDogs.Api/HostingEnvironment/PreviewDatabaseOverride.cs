@@ -186,9 +186,10 @@ public static class PreviewDatabaseOverride
     private static async Task<GitHubArtifactsResponse?> GetArtifactResponse(string repoSlug, string artifactName, HttpClient http)
     {
         var artifactsUrl =
-            $"https://api.github.com/repos/{repoSlug}/actions/artifacts?per_page=100&name={artifactName}";
+            $"https://api.github.com/repos/{repoSlug}/actions/artifacts?per_page=100";
 
         var artifactsJson = await http.GetStringAsync(artifactsUrl);
+        Console.WriteLine($"Artifacts JSON: {artifactsJson}");
         return JsonSerializer.Deserialize<GitHubArtifactsResponse>(artifactsJson);
     }
 
