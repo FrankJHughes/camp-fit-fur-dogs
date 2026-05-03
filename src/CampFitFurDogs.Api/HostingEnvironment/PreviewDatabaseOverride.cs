@@ -6,86 +6,224 @@ namespace CampFitFurDogs.Api.HostingEnvironment;
 
 public static class PreviewDatabaseOverride
 {
+    private const string RenderEnv_GitRepoSlug = "RENDER_GIT_REPO_SLUG";
+    private const string RenderEnv_IsPullRequest = "IS_PULL_REQUEST";
+    private const string RenderEnv_GithubPat = "GITHUB_PAT";
+    private const string DbConnFileName = "db-conn.txt";
+    private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
+    private const string RenderEnvVar_RenderExternalUrl = "RENDER_EXTERNAL_URL";
+
     public static async Task ApplyAsync(WebApplicationBuilder builder)
     {
-        var isPreview = Environment.GetEnvironmentVariable("IS_PULL_REQUEST") == "true";
-        if (!isPreview)
-            return;
-
-        var prNumber = Render.GetPrNumber();
-        if (string.IsNullOrWhiteSpace(prNumber))
+        if (!TryGetAllRequiredEnvVars(
+            out var isPullRequest,
+            out var githubToken,
+            out var repoSlug,
+            out var renderExternalUrl))
         {
-            Console.WriteLine("[PR PREVIEW] Could not extract PR number from RENDER_EXTERNAL_URL.");
+            LogFailure($"The attempt to get all required environment variables failed.");
             return;
         }
 
-        var githubToken = Environment.GetEnvironmentVariable("GITHUB_PAT");
-        if (string.IsNullOrWhiteSpace(githubToken))
+        if (!isPullRequest!.Equals("true"))
         {
-            Console.WriteLine("[PR PREVIEW] Missing GITHUB_PAT.");
+            LogFailure("The environment is not a pull request environment.");
             return;
         }
 
         try
         {
-            using var http = new HttpClient();
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("CampFitFurDogs-Preview");
-            http.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", githubToken);
-
-            var owner = builder.Configuration["GitHub:Owner"];
-            var repo = builder.Configuration["GitHub:Repo"];
-
-            if (string.IsNullOrWhiteSpace(owner) || string.IsNullOrWhiteSpace(repo))
+            if (!Render.TryGetPrNumber(renderExternalUrl!, out var prNumber))
             {
-                Console.WriteLine("[PR PREVIEW] Missing GitHub:Owner or GitHub:Repo configuration.");
-                return;
-            }
-
-            var artifactsUrl =
-                $"https://api.github.com/repos/{owner}/{repo}/actions/artifacts?per_page=100";
-
-            var artifactsJson = await http.GetStringAsync(artifactsUrl);
-            var artifacts = JsonSerializer.Deserialize<GitHubArtifactsResponse>(artifactsJson);
-
-            if (artifacts?.Artifacts == null)
-            {
-                Console.WriteLine("[PR PREVIEW] GitHub API returned no artifacts.");
+                LogFailure("The attempt to get the pull request number failed.");
                 return;
             }
 
             var artifactName = $"pr-{prNumber}";
-            var artifact = artifacts.Artifacts
-                .FirstOrDefault(a => a.Name == artifactName);
 
-            if (artifact == null)
+            var dbConn = await GetDbConn(githubToken!, repoSlug!, artifactName);
+            if (dbConn is null)
             {
-                Console.WriteLine($"[PR PREVIEW] No artifact found for PR #{prNumber}.");
+                LogFailure("The attempt to get the DB connection override failed.");
                 return;
             }
 
-            var zipBytes = await http.GetByteArrayAsync(artifact.ArchiveDownloadUrl);
+            builder.Configuration[ConfigKey_DbConn] = dbConn;
 
-            using var zip = new ZipArchive(new MemoryStream(zipBytes));
-            var entry = zip.GetEntry("db-conn.txt");
-
-            if (entry == null)
-            {
-                Console.WriteLine($"[PR PREVIEW] Artifact pr-{prNumber} missing db-conn.txt.");
-                return;
-            }
-
-            using var reader = new StreamReader(entry.Open());
-            var connString = reader.ReadToEnd().Trim();
-
-            builder.Configuration["ConnectionStrings:DefaultConnection"] = connString;
-
-            Console.WriteLine($"[PR PREVIEW] Loaded DB connection for PR #{prNumber}.");
+            LogDbConnOverrideSucceeded();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[PR PREVIEW] Failed to load DB override: {ex.Message}");
+            LogFailure(ex.Message);
         }
+    }
+
+    private static void LogFailure(string message)
+    {
+        Console.WriteLine($"[PR PREVIEW] The attempt to override the DB connection failed: {message}");
+    }
+
+    private static void LogDbConnOverrideSucceeded()
+    {
+        Console.WriteLine($"[PR PREVIEW] The attempt to override the DB connection succeeded.");
+    }
+
+    private static bool TryGetAllRequiredEnvVars(
+        out string? isPullRequest,
+        out string? githubToken,
+        out string? repoSlug,
+        out string? renderExternalUrl)
+    {
+        isPullRequest = null;
+        githubToken = null;
+        repoSlug = null;
+        renderExternalUrl = null;
+
+        if (!TryGetEnvVar(RenderEnv_IsPullRequest, out isPullRequest))
+        {
+            return false;
+        }
+
+        if (!TryGetEnvVar(RenderEnv_GithubPat, out githubToken))
+        {
+            return false;
+        }
+
+        if (!TryGetEnvVar(RenderEnv_GitRepoSlug, out repoSlug))
+        {
+            return false;
+        }
+
+        if (!TryGetEnvVar(RenderEnvVar_RenderExternalUrl, out renderExternalUrl))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static void LogEnvVarUndefined(string envVarName)
+    {
+        LogFailure($"The attempt to get the environment variable {envVarName} failed.");
+    }
+
+    private static async Task<string?> GetDbConn(string githubToken, string repoSlug, string artifactName)
+    {
+        using var http = GetHttpClient(githubToken!);
+        var artifactResponse = await GetArtifactResponse(repoSlug!, artifactName, http);
+        if (artifactResponse is null)
+        {
+            return null;
+        }
+
+        if (!TryGetArtifactList(artifactName, artifactResponse!, out var artifactList))
+        {
+            return null;
+        }
+
+        if (!TryGetArtifact(artifactName, artifactList!, out var artifact))
+        {
+            return null;
+        }
+
+        var entry = await GetArtifactFile(http, artifact!);
+        if (entry is null)
+        {
+            return null;
+        }
+
+        if (!TryGetDbConn(entry!, out var connString))
+        {
+            return null;
+        }
+
+        return connString;
+    }
+
+    private static bool TryGetArtifactList(string artifactName, GitHubArtifactsResponse artifactResponse, out List<GitHubArtifact>? artifactList)
+    {
+        artifactList = artifactResponse!.Artifacts;
+        if (artifactList is null || artifactList.Count == 0)
+        {
+            LogFailure($"The attempt to get the artifact list for artifact {artifactName} failed.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryGetArtifact(string artifactName, List<GitHubArtifact> artifactList, out GitHubArtifact? artifact)
+    {
+        artifact = artifactList
+            .FirstOrDefault(a => a.Name == artifactName);
+        if (artifact is null)
+        {
+            LogFailure($"The attempt to get artifact {artifactName} failed.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryGetDbConn(ZipArchiveEntry entry, out string? connString)
+    {
+        var reader = new StreamReader(entry!.Open());
+        connString = reader.ReadToEnd();
+        if (string.IsNullOrWhiteSpace(connString))
+        {
+            LogFailure($"The DB connection is not present in the {entry.Name}.");
+            return false;
+        }
+
+        connString = connString.Trim();
+
+        return true;
+    }
+
+    private static async Task<ZipArchiveEntry?> GetArtifactFile(HttpClient http, GitHubArtifact artifact)
+    {
+        var zipBytes = await http.GetByteArrayAsync(artifact.ArchiveDownloadUrl);
+        var zip = new ZipArchive(new MemoryStream(zipBytes));
+        var entry = zip.GetEntry(DbConnFileName);
+        if (entry is null)
+        {
+            LogFailure($"The attempt to get the artifact file {DbConnFileName} from artifact {artifact.Name} failed.");
+            return null;
+        }
+
+        return entry;
+    }
+
+    private static async Task<GitHubArtifactsResponse?> GetArtifactResponse(string repoSlug, string artifactName, HttpClient http)
+    {
+        var artifactsUrl =
+            $"https://api.github.com/repos/{repoSlug}/actions/artifacts?per_page=100&name={artifactName}";
+
+        var artifactsJson = await http.GetStringAsync(artifactsUrl);
+        return JsonSerializer.Deserialize<GitHubArtifactsResponse>(artifactsJson);
+    }
+
+    private static HttpClient GetHttpClient(string githubToken)
+    {
+        var http = new HttpClient();
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("CampFitFurDogs-Preview");
+        http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.v3+json");
+        http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", githubToken);
+        http.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2026-03-10");
+        return http;
+    }
+
+    private static bool TryGetEnvVar(string envVarName, out string? value)
+    {
+        value = Environment.GetEnvironmentVariable(envVarName);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            LogEnvVarUndefined(envVarName);
+            return false;
+        }
+
+        return true;
     }
 
     private class GitHubArtifactsResponse
