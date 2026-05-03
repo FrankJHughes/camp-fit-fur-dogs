@@ -6,29 +6,22 @@ public static class Render
     /// Extracts the PR number from RENDER_EXTERNAL_URL.
     /// Expected format: https://pr-123-xxxxx.onrender.com
     /// </summary>
-    public static bool TryGetPrNumber(string renderExternalUrl, string renderServiceName, out string? prNumber)
+    public static bool TryGetPrNumber(string renderServiceName, out string? prNumber)
     {
-        Console.WriteLine($"RenderExternalUrl: {renderExternalUrl}");
-        Console.WriteLine($"RenderServiceName: {renderServiceName}");
-
         prNumber = null;
-        // "https://campfitfurdogsapi-pr-209.onrender.com"
 
-        var parts = renderExternalUrl.Split(
-            [
-                $"https://{renderServiceName}",
-                "-pr-",
-                ".onrender.com"
-            ],
-            StringSplitOptions.RemoveEmptyEntries);
-        // [ "209" ]
+        Console.WriteLine($"RenderServiceName: {renderServiceName}");
+        // "campfitfurdogsapi-pr-209"
 
-        if (parts.Length < 1)
+        var parts = renderServiceName.Split(["-"], StringSplitOptions.RemoveEmptyEntries);
+        // [ "campfitfurdogsapi", "pr", "209" ]
+
+        if (parts.Length < 3)
         {
             return false;
         }
 
-        prNumber = parts[0];
+        prNumber = parts.Last();
         return true;
     }
 }

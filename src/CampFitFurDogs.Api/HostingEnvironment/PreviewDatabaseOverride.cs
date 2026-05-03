@@ -10,19 +10,16 @@ public static class PreviewDatabaseOverride
     private const string RenderEnv_GitRepoSlug = "RENDER_GIT_REPO_SLUG";
     private const string RenderEnv_IsPullRequest = "IS_PULL_REQUEST";
     private const string RenderEnv_GithubPat = "GITHUB_PAT";
+    private const string RenderEnv_RenderServiceName = "RENDER_SERVICE_NAME";
     private const string DbConnFileName = "db-conn.txt";
     private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
-    private const string RenderEnvVar_RenderExternalUrl = "RENDER_EXTERNAL_URL";
-    private const string RenderEnvVar_RenderServiceName = "RENDER_SERVICE_NAME";
-
     public static async Task ApplyAsync(WebApplicationBuilder builder)
     {
         string[] requiredEnvVarsArr = [
             RenderEnv_IsPullRequest,
             RenderEnv_GitRepoSlug,
             RenderEnv_GithubPat,
-            RenderEnvVar_RenderExternalUrl,
-            RenderEnvVar_RenderServiceName];
+            RenderEnv_RenderServiceName];
 
         Dictionary<string, string?> requiredEnvVarsDict = requiredEnvVarsArr
             .ToDictionary(ev => ev, ev => (string?)null);
@@ -42,8 +39,7 @@ public static class PreviewDatabaseOverride
         try
         {
             if (!Render.TryGetPrNumber(
-                requiredEnvVarsDict[RenderEnvVar_RenderExternalUrl]!,
-                requiredEnvVarsDict[RenderEnvVar_RenderServiceName]!,
+                requiredEnvVarsDict[RenderEnv_RenderServiceName]!,
                 out var prNumber))
             {
                 LogFailure("The attempt to get the pull request number failed.");
