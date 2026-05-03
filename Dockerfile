@@ -35,8 +35,6 @@ WORKDIR /app
 
 ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
 
-COPY override-db-connection.txt /app/override-db-connection.txt
-
 COPY --from=build /app/publish .
 
 ENTRYPOINT ["dotnet", "CampFitFurDogs.Api.dll"]
