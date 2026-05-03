@@ -19,10 +19,10 @@ public static class PreviewDatabaseOverride
             return;
         }
 
-        var githubToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+        var githubToken = Environment.GetEnvironmentVariable("GITHUB_PAT");
         if (string.IsNullOrWhiteSpace(githubToken))
         {
-            Console.WriteLine("[PR PREVIEW] Missing GITHUB_TOKEN.");
+            Console.WriteLine("[PR PREVIEW] Missing GITHUB_PAT.");
             return;
         }
 
