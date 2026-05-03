@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -12,20 +13,27 @@ public static class PreviewDatabaseOverride
     private const string DbConnFileName = "db-conn.txt";
     private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
     private const string RenderEnvVar_RenderExternalUrl = "RENDER_EXTERNAL_URL";
+    private const string RenderEnvVar_RenderServiceName = "RENDER_SERVICE_NAME";
 
     public static async Task ApplyAsync(WebApplicationBuilder builder)
     {
-        if (!TryGetAllRequiredEnvVars(
-            out var isPullRequest,
-            out var githubToken,
-            out var repoSlug,
-            out var renderExternalUrl))
+        string[] requiredEnvVarsArr = [
+            RenderEnv_IsPullRequest,
+            RenderEnv_GitRepoSlug,
+            RenderEnv_GithubPat,
+            RenderEnvVar_RenderExternalUrl,
+            RenderEnvVar_RenderServiceName];
+
+        Dictionary<string, string?> requiredEnvVarsDict = requiredEnvVarsArr
+            .ToDictionary(ev => ev, ev => (string?)null);
+
+        if (!TryGetAllRequiredEnvVars(requiredEnvVarsDict))
         {
             LogFailure($"The attempt to get all required environment variables failed.");
             return;
         }
 
-        if (!isPullRequest!.Equals("true"))
+        if (!requiredEnvVarsDict[RenderEnv_IsPullRequest]!.Equals("true"))
         {
             LogFailure("The environment is not a pull request environment.");
             return;
@@ -33,7 +41,10 @@ public static class PreviewDatabaseOverride
 
         try
         {
-            if (!Render.TryGetPrNumber(renderExternalUrl!, out var prNumber))
+            if (!Render.TryGetPrNumber(
+                requiredEnvVarsDict[RenderEnvVar_RenderExternalUrl]!,
+                requiredEnvVarsDict[RenderEnvVar_RenderServiceName]!,
+                out var prNumber))
             {
                 LogFailure("The attempt to get the pull request number failed.");
                 return;
@@ -41,7 +52,8 @@ public static class PreviewDatabaseOverride
 
             var artifactName = $"pr-{prNumber}";
 
-            var dbConn = await GetDbConn(githubToken!, repoSlug!, artifactName);
+            var dbConn = await GetDbConn(requiredEnvVarsDict[RenderEnv_GithubPat]!,
+                requiredEnvVarsDict[RenderEnv_GitRepoSlug]!, artifactName);
             if (dbConn is null)
             {
                 LogFailure("The attempt to get the DB connection override failed.");
@@ -68,35 +80,16 @@ public static class PreviewDatabaseOverride
         Console.WriteLine($"[PR PREVIEW] The attempt to override the DB connection succeeded.");
     }
 
-    private static bool TryGetAllRequiredEnvVars(
-        out string? isPullRequest,
-        out string? githubToken,
-        out string? repoSlug,
-        out string? renderExternalUrl)
+    private static bool TryGetAllRequiredEnvVars(Dictionary<string, string?> requiredEnvVarsDict)
     {
-        isPullRequest = null;
-        githubToken = null;
-        repoSlug = null;
-        renderExternalUrl = null;
-
-        if (!TryGetEnvVar(RenderEnv_IsPullRequest, out isPullRequest))
+        foreach (var envVar in requiredEnvVarsDict)
         {
-            return false;
-        }
+            if (!TryGetEnvVar(envVar.Key, out var value))
+            {
+                return false;
+            }
 
-        if (!TryGetEnvVar(RenderEnv_GithubPat, out githubToken))
-        {
-            return false;
-        }
-
-        if (!TryGetEnvVar(RenderEnv_GitRepoSlug, out repoSlug))
-        {
-            return false;
-        }
-
-        if (!TryGetEnvVar(RenderEnvVar_RenderExternalUrl, out renderExternalUrl))
-        {
-            return false;
+            requiredEnvVarsDict[envVar.Key] = value!;
         }
 
         return true;
