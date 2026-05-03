@@ -115,7 +115,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }))
+app.MapGet("/api/health", () => Results.Ok(new { Status = "Healthy" }))
     .WithName("HealthCheck");
 
 app.Run();
