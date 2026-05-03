@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 
+using CampFitFurDogs.Api.HostingEnvironment;
 using CampFitFurDogs.Infrastructure;
 using CampFitFurDogs.Infrastructure.Data;
 using SharedKernel.DependencyInjection;
@@ -9,17 +10,7 @@ using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// hook for overriding the db connection string at deployment time
-var overrideDbConnPath = "/app/override-db-connection.txt";
-if (File.Exists(overrideDbConnPath))
-{
-    var dynamicConn = File.ReadAllText(overrideDbConnPath).Trim();
-    if (!string.IsNullOrWhiteSpace(dynamicConn))
-    {
-        builder.Configuration["ConnectionStrings:DefaultConnection"] = dynamicConn;
-    }
-}
-
+await EnvironmentBootstrapper.ApplyOverridesAsync(builder);
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 

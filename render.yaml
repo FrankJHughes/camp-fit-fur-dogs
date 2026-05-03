@@ -19,6 +19,7 @@ projects:
         generation: automatic
       envVars:
         - key: ConnectionStrings__DefaultConnection
+          value: "placeholder"
           previewValue: "placeholder"
           sync: false
 
