@@ -64,13 +64,13 @@ jobs:
 
           echo "conn_string=$CONN" >> $GITHUB_OUTPUT
 
-          echo "$CONN" > ${{ steps.branch_name.outputs.current_branch }}-db-conn.txt
+          echo "$CONN" > db-conn.txt
 
       - name: Upload PR Preview DB Connection String
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.branch_name.outputs.current_branch }}-db-conn
-          path: ${{ steps.branch_name.outputs.current_branch }}-db-conn.txt
+          name: pr-${{ github.event.number }}
+          path: db-conn.txt
           retention-days: 7
 
       # ============================
@@ -159,21 +159,21 @@ jobs:
       - name: Delete DB Conn Artifact
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: ${{ needs.preview_environment.outputs.neon_branch }} # or use branch_name output directly
+          PR_NAME: "pr-${{ github.event.number }}"
         run: |
           # List artifacts
           artifacts=$(gh api repos/${{ github.repository }}/actions/artifacts \
-            --jq '.artifacts[] | select(.name == "'"$BRANCH_NAME"'-db-conn") | .id')
+            --jq '.artifacts[] | select(.name == "'"$PR_NAME"'") | .id')
 
           if [ -n "$artifacts" ]; then
             for id in $artifacts; do
-              echo "Deleting artifact $id for branch $BRANCH_NAME"
+              echo "Deleting artifact $id for branch $PR_NAME"
               gh api \
                 --method DELETE \
                 repos/${{ github.repository }}/actions/artifacts/$id
             done
           else
-            echo "No preview artifact found for branch $BRANCH_NAME"
+            echo "No preview artifact found for branch $PR_NAME"
           fi
 
       - name: Delete Neon Branch (retry)

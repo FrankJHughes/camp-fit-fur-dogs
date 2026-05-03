@@ -12,12 +12,17 @@ public static class PreviewDatabaseOverride
         if (!isPreview)
             return;
 
-        var branch = Environment.GetEnvironmentVariable("RENDER_GIT_BRANCH");
-        var githubToken = Environment.GetEnvironmentVariable("GITHUB_PAT");
-
-        if (string.IsNullOrWhiteSpace(branch) || string.IsNullOrWhiteSpace(githubToken))
+        var prNumber = Render.GetPrNumber();
+        if (string.IsNullOrWhiteSpace(prNumber))
         {
-            Console.WriteLine("[PR PREVIEW] Missing RENDER_GIT_BRANCH or GITHUB_PAT.");
+            Console.WriteLine("[PR PREVIEW] Could not extract PR number from RENDER_EXTERNAL_URL.");
+            return;
+        }
+
+        var githubToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+        if (string.IsNullOrWhiteSpace(githubToken))
+        {
+            Console.WriteLine("[PR PREVIEW] Missing GITHUB_TOKEN.");
             return;
         }
 
@@ -43,25 +48,30 @@ public static class PreviewDatabaseOverride
             var artifactsJson = await http.GetStringAsync(artifactsUrl);
             var artifacts = JsonSerializer.Deserialize<GitHubArtifactsResponse>(artifactsJson);
 
-            var artifactName = $"{branch}-db-conn";
-
-            var artifact = artifacts?.Artifacts?
-                .FirstOrDefault(a => a?.Name == artifactName);
-
-            if (artifact is null)
+            if (artifacts?.Artifacts == null)
             {
-                Console.WriteLine($"[PR PREVIEW] No artifact found for branch '{branch}'.");
+                Console.WriteLine("[PR PREVIEW] GitHub API returned no artifacts.");
+                return;
+            }
+
+            var artifactName = $"pr-{prNumber}";
+            var artifact = artifacts.Artifacts
+                .FirstOrDefault(a => a.Name == artifactName);
+
+            if (artifact == null)
+            {
+                Console.WriteLine($"[PR PREVIEW] No artifact found for PR #{prNumber}.");
                 return;
             }
 
             var zipBytes = await http.GetByteArrayAsync(artifact.ArchiveDownloadUrl);
 
             using var zip = new ZipArchive(new MemoryStream(zipBytes));
-            var entry = zip.GetEntry($"{branch}-db-conn.txt");
+            var entry = zip.GetEntry("db-conn.txt");
 
             if (entry == null)
             {
-                Console.WriteLine($"[PR PREVIEW] ZIP missing expected file for '{branch}'.");
+                Console.WriteLine($"[PR PREVIEW] Artifact pr-{prNumber} missing db-conn.txt.");
                 return;
             }
 
@@ -70,7 +80,7 @@ public static class PreviewDatabaseOverride
 
             builder.Configuration["ConnectionStrings:DefaultConnection"] = connString;
 
-            Console.WriteLine($"[PR PREVIEW] Loaded DB connection for branch '{branch}'.");
+            Console.WriteLine($"[PR PREVIEW] Loaded DB connection for PR #{prNumber}.");
         }
         catch (Exception ex)
         {
