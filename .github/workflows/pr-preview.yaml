@@ -67,11 +67,13 @@ jobs:
           echo "$CONN" > db-conn.txt
 
       - name: Upload PR Preview DB Connection String
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pr-${{ github.event.number }}
           path: db-conn.txt
+          overwrite: true
           retention-days: 7
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       # ============================
       # APPLY MIGRATIONS + INFRA INTEGRATION TESTS
