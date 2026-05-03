@@ -23,6 +23,9 @@ projects:
           previewValue: "placeholder"
           sync: false
 
+        - key: GITHUB_PAT
+          value: "placeholder"
+
         - key: ASPNETCORE_ENVIRONMENT
           value: Production
 
