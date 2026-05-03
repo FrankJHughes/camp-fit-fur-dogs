@@ -130,7 +130,7 @@ jobs:
         run: |
           echo "Waiting for PR Preview API to become ready..."
           for i in {1..30}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/api/health")
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/health")
             if [ "$status" = "200" ]; then
               echo "API is ready."
               exit 0
