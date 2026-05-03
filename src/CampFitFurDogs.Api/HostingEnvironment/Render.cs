@@ -8,6 +8,9 @@ public static class Render
     /// </summary>
     public static bool TryGetPrNumber(string renderExternalUrl, string renderServiceName, out string? prNumber)
     {
+        Console.WriteLine($"RenderExternalUrl: {renderExternalUrl}");
+        Console.WriteLine($"RenderServiceName: {renderServiceName}");
+
         prNumber = null;
         // "https://campfitfurdogsapi-pr-209.onrender.com"
 
