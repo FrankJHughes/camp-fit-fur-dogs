@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
+      pr_number: ${{ github.event.number }}
       neon_branch: ${{ steps.neon_branch.outputs.value }}
       preview_connection_string: ${{ steps.convert_conn.outputs.conn_string }}
 
@@ -63,7 +64,6 @@ jobs:
           CONN="Host=$HOST;Port=5432;Database=neondb;Username=neondb_owner;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
 
           echo "conn_string=$CONN" >> $GITHUB_OUTPUT
-
           echo "$CONN" > db-conn.txt
 
       - name: Upload PR Preview DB Connection String
@@ -122,7 +122,7 @@ jobs:
 
       - name: Export API Base URL
         id: api_base_url
-        run: echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ github.event.number }}.onrender.com" >> $GITHUB_OUTPUT
+        run: echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ needs.preview_environment.outputs.pr_number }}.onrender.com" >> $GITHUB_OUTPUT
 
       - name: Wait for PR Preview API to become healthy
         env:
@@ -159,21 +159,18 @@ jobs:
       - name: Delete DB Conn Artifact
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NAME: "pr-${{ github.event.number }}"
+          PR_NAME: "pr-${{ needs.preview_environment.outputs.pr_number }}"
         run: |
-          # List artifacts
           artifacts=$(gh api repos/${{ github.repository }}/actions/artifacts \
             --jq '.artifacts[] | select(.name == "'"$PR_NAME"'") | .id')
 
           if [ -n "$artifacts" ]; then
             for id in $artifacts; do
-              echo "Deleting artifact $id for branch $PR_NAME"
-              gh api \
-                --method DELETE \
-                repos/${{ github.repository }}/actions/artifacts/$id
+              echo "Deleting artifact $id for $PR_NAME"
+              gh api --method DELETE repos/${{ github.repository }}/actions/artifacts/$id
             done
           else
-            echo "No preview artifact found for branch $PR_NAME"
+            echo "No preview artifact found for $PR_NAME"
           fi
 
       - name: Delete Neon Branch (retry)
