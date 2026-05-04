@@ -95,7 +95,6 @@ jobs:
     needs:
       - db_vars
       - destroy_db_preview
-      - destroy_preview_artifact
     outputs:
       pr_number: ${{ github.event.pull_request.number }}
       neon_branch: ${{ needs.db_vars.outputs.branch }}
@@ -178,17 +177,23 @@ jobs:
         run: echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}" >> $GITHUB_ENV
 
       - name: Run DB Integration Tests
-        run: dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+        run: |
+          echo "Using DB Connection String: $ConnectionStrings__DefaultConnection"
+          dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
   deploy_preview_artifact:
     name: Deploy Preview Artifact
-    needs: test_db_preview
+    needs:
+      - deploy_db_preview
+      - test_db_preview
+      - destroy_preview_artifact
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Write Preview Artifact File
         run: |
           echo "${{ needs.deploy_db_preview.outputs.preview_connection_string }}" > db-conn.txt
+
       - name: Upload DB Conn Artifact
         uses: actions/upload-artifact@v7
         with:
