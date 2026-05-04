@@ -11,9 +11,12 @@ concurrency:
 jobs:
   api_vars:
     name: API Vars
-    outputs:
-      base_url: "https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com"
     runs-on: ubuntu-latest
+    outputs:
+      base_url: ${{ steps.set_base_url.outputs.base_url }}
+    steps:
+      - id: set_base_url
+        run: echo "base_url=https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com" >> $GITHUB_OUTPUT
 
   destroy_api_preview:
     name: Remove Previous API Preview
