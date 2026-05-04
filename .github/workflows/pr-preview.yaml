@@ -154,12 +154,6 @@ jobs:
           echo "API did not become ready in time."
           exit 1
 
-      - name: Turn Off Render Preview Auto-Deploy (to prevent changes during testing)
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
-
       - name: Run API Integration Tests
         env:
           API_BASE_URL: ${{ steps.api_base_url.outputs.API_BASE_URL }}
