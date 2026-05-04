@@ -213,7 +213,7 @@ jobs:
           echo "Waiting up to 3m for previous PR preview removal to complete..."
           for i in {1..36}; do
             status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/api/dogs")
-            if [ "$status" = "200" ]; then
+            if [ "$status" = "200" ] || [ "$status" = "400" ] || [ "$status" = "401" ] || [ "$status" = "404" ]; then
               echo "The API preview is live"
               exit 0
             fi

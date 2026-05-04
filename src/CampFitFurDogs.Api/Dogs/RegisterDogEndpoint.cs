@@ -14,6 +14,7 @@ public class RegisterDogEndpoint : IEndpoint
             ICurrentUserService currentUserService,
             ICommandDispatcher dispatcher) =>
         {
+            Console.WriteLine($"Received RegisterDogRequest from user {currentUserService.CurrentUserId}");
             var command = new RegisterDogCommand(
                 currentUserService.CurrentUserId,
                 request.Name,
