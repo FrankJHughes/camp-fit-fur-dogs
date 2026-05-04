@@ -10,7 +10,6 @@ public static class Render
     {
         prNumber = null;
 
-        Console.WriteLine($"RenderServiceName: {renderServiceName}");
         // "campfitfurdogsapi-pr-209"
 
         var parts = renderServiceName.Split(["-"], StringSplitOptions.RemoveEmptyEntries);
