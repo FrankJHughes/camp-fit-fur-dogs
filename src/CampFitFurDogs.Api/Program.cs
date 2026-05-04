@@ -14,7 +14,6 @@ await EnvironmentBootstrapper.ApplyOverridesAsync(builder);
 
 var dbConn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
     ?? throw new InvalidOperationException("Connection string not set.");
-Console.WriteLine($"Using DB Connection String: {dbConn}");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 

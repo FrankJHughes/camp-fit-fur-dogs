@@ -178,7 +178,6 @@ jobs:
 
       - name: Run DB Integration Tests
         run: |
-          echo "Using DB Connection String: $ConnectionStrings__DefaultConnection"
           ConnectionStrings__DefaultConnection="${{ needs.deploy_db_preview.outputs.preview_connection_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
