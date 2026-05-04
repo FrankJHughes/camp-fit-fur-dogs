@@ -172,18 +172,18 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Set Environment Variables
-        run: |
-          echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}"
-          echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}" >> $GITHUB_ENV
+      # - name: Set Environment Variables
+      #   run: |
+      #     echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}" >> $GITHUB_ENV
 
       - name: Run DB Integration Tests
         run: |
           echo "Using DB Connection String: $ConnectionStrings__DefaultConnection"
+          ConnectionStrings__DefaultConnection="${{ needs.deploy_db_preview.outputs.preview_connection_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
-  deploy_preview_artifact:
-    name: Deploy Preview Artifact
+  deploy_artifact_preview:
+    name: Deploy Artifact Preview
     needs:
       - deploy_db_preview
       - test_db_preview
@@ -206,7 +206,7 @@ jobs:
     needs:
       - api_vars
       - destroy_api_preview
-      - deploy_preview_artifact
+      - deploy_artifact_preview
     if: github.event.action != 'closed' && github.event.action != 'opened' # No need to wait if the PR was just opened (no preview to remove) or closed (we're not creating a new preview)
     runs-on: ubuntu-latest
     permissions:
