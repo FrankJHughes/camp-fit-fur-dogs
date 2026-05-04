@@ -8,6 +8,23 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
+  delete_previous_preview:
+    name: Delete Previous Preview Environment (if exists)
+    if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Trigger Render PR Preview Removal
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
 
   preview_environment:
     name: Create Neon Preview Environment + Export Preview Connection String
@@ -17,9 +34,6 @@ jobs:
       pr_number: ${{ github.event.number }}
       neon_branch: ${{ steps.neon_branch.outputs.value }}
       preview_connection_string: ${{ steps.convert_conn.outputs.conn_string }}
-    permissions:
-      contents: read
-      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -124,6 +138,23 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+
+      - name: Wait for Previous PR Preview Removal to Complete
+        env:
+          API_BASE_URL: ${{ steps.api_base_url.outputs.API_BASE_URL }}
+        run: |
+          echo "Waiting up to 3m for previous PR preview removal to complete..."
+          for i in {1..36}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/health")
+            if [ "$status" = "502" ]; then
+              echo "Previous PR preview removal is complete."
+              exit 0
+            fi
+            echo "Previous PR preview is still being removed (status: $status). Retrying in 5s..."
+            sleep 5
+          done
+          echo "Previous PR preview was not removed in time."
+          exit 1
 
       - name: Checkout repository
         uses: actions/checkout@v4
