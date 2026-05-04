@@ -195,7 +195,9 @@ jobs:
       - name: Run API Integration Tests
         env:
           API_BASE_URL: ${{ needs.api_vars.outputs.base_url }}
-        run: dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
+        run: |
+          echo "$API_BASE_URL"
+          dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
 
   cleanup:
     if: always() && github.event.action == 'closed'

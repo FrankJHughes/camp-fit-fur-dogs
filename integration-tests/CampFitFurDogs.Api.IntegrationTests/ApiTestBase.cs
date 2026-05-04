@@ -8,6 +8,7 @@ public abstract class ApiTestBase
     {
         var baseUrl = Environment.GetEnvironmentVariable("API_BASE_URL")
             ?? throw new InvalidOperationException("API_BASE_URL not set");
+        Console.WriteLine($"Using API Base URL: {baseUrl}");
 
         Client = new HttpClient
         {
