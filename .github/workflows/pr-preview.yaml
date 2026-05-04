@@ -149,7 +149,7 @@ jobs:
           echo "Waiting up to 3m for previous PR preview removal to complete..."
           for i in {1..36}; do
             status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/health")
-            if [ "$status" = "502" ]; then
+            if [ "$status" = "404" ]; then
               echo "Previous PR preview removal is complete."
               exit 0
             fi
