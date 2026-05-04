@@ -206,6 +206,23 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Wait for the API Preview to Go Live
+        env:
+          api_base_url: ${{ needs.api_vars.outputs.base_url }}
+        run: |
+          echo "Waiting up to 3m for previous PR preview removal to complete..."
+          for i in {1..36}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/api/dogs")
+            if [ "$status" = "200" ]; then
+              echo "The API preview is live"
+              exit 0
+            fi
+            echo "The API preview is not live: (status: $status). Retrying in 5s..."
+            sleep 5
+          done
+          echo "The API preview was not go live in time."
+          exit 1
+
   test_api_preview:
     name: Test API Preview
     needs:
