@@ -121,12 +121,12 @@ public static class PreviewDatabaseOverride
             return null;
         }
 
-        if (!TryGetDbConn(entry!, out var connString))
+        if (!TryGetDbConn(entry!, out var dbConn))
         {
             return null;
         }
 
-        return connString;
+        return dbConn;
     }
 
     private static bool TryGetArtifactList(string artifactName, GitHubArtifactsResponse artifactResponse, out List<GitHubArtifact>? artifactList)
@@ -143,8 +143,9 @@ public static class PreviewDatabaseOverride
 
     private static bool TryGetArtifact(string artifactName, List<GitHubArtifact> artifactList, out GitHubArtifact? artifact)
     {
-        artifact = artifactList
-            .FirstOrDefault(a => a.Name == artifactName);
+        artifact = artifactList.Aggregate((latest, current) =>
+            current.CreatedAt > latest.CreatedAt ? current : latest);
+
         if (artifact is null)
         {
             LogFailure($"The attempt to get artifact {artifactName} failed.");
@@ -154,17 +155,17 @@ public static class PreviewDatabaseOverride
         return true;
     }
 
-    private static bool TryGetDbConn(ZipArchiveEntry entry, out string? connString)
+    private static bool TryGetDbConn(ZipArchiveEntry entry, out string? dbConn)
     {
         var reader = new StreamReader(entry!.Open());
-        connString = reader.ReadToEnd();
-        if (string.IsNullOrWhiteSpace(connString))
+        dbConn = reader.ReadToEnd();
+        if (string.IsNullOrWhiteSpace(dbConn))
         {
             LogFailure($"The DB connection is not present in the {entry.Name}.");
             return false;
         }
 
-        connString = connString.Trim();
+        dbConn = dbConn.Trim();
 
         return true;
     }
@@ -186,11 +187,16 @@ public static class PreviewDatabaseOverride
     private static async Task<GitHubArtifactsResponse?> GetArtifactResponse(string repoSlug, string artifactName, HttpClient http)
     {
         var artifactsUrl =
-            $"https://api.github.com/repos/{repoSlug}/actions/artifacts?per_page=100";
+            $"https://api.github.com/repos/{repoSlug}/actions/artifacts?per_page=100&name={artifactName}";
 
         var artifactsJson = await http.GetStringAsync(artifactsUrl);
         Console.WriteLine($"Artifacts JSON: {artifactsJson}");
-        return JsonSerializer.Deserialize<GitHubArtifactsResponse>(artifactsJson);
+
+        var serializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+        };
+        return JsonSerializer.Deserialize<GitHubArtifactsResponse>(artifactsJson, serializerOptions);
     }
 
     private static HttpClient GetHttpClient(string githubToken)
@@ -223,7 +229,8 @@ public static class PreviewDatabaseOverride
 
     private class GitHubArtifact
     {
-        public string? Name { get; set; }
-        public string? ArchiveDownloadUrl { get; set; }
+        public required string Name { get; set; }
+        public required DateTime CreatedAt { get; set; }
+        public required string ArchiveDownloadUrl { get; set; }
     }
 }
