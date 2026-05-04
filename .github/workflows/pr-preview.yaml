@@ -98,7 +98,7 @@ jobs:
     outputs:
       pr_number: ${{ github.event.pull_request.number }}
       neon_branch: ${{ needs.db_vars.outputs.branch }}
-      preview_connection_string: ${{ steps.db_conn.outputs.conn_string }}
+      # preview_connection_string: ${{ steps.db_conn.outputs.conn_string }}
 
     steps:
       - name: Checkout repository
@@ -172,13 +172,12 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # - name: Set Environment Variables
-      #   run: |
-      #     echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}" >> $GITHUB_ENV
+      - name: Set Environment Variables
+        run: |
+          export ConnectionStrings__DefaultConnection="$(cat db-conn.txt)"
 
       - name: Run DB Integration Tests
         run: |
-          ConnectionStrings__DefaultConnection="${{ needs.deploy_db_preview.outputs.preview_connection_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
   deploy_artifact_preview:
