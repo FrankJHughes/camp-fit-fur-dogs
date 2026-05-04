@@ -18,8 +18,17 @@ jobs:
       - id: set_base_url
         run: echo "base_url=https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com" >> $GITHUB_OUTPUT
 
+  db_vars:
+    name: DB Vars
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.set_branch.outputs.branch }}
+    steps:
+      - id: set_branch
+        run: echo "branch=preview/PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
   destroy_api_preview:
-    name: Remove Previous API Preview
+    name: Destroy Existing API Preview
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
     runs-on: ubuntu-latest
     needs:
@@ -55,14 +64,33 @@ jobs:
           echo "Previous PR preview was not removed in time."
           exit 1
 
+  destroy_db_preview:
+    name: Destroy Existing DB Preview
+    if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
+    runs-on: ubuntu-latest
+    needs:
+      - db_vars
+    steps:
+      - name: Delete DB if exists
+        continue-on-error: true
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          api_key: ${{ secrets.NEON_API_KEY }}
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: ${{ needs.db_vars.outputs.branch }}
+
+
   deploy_db_preview:
-    name: Deploy DB Preview
+    name: Deploy Fresh DB Preview
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
+    needs:
+      - db_vars
+      - destroy_db_preview
     outputs:
       pr_number: ${{ github.event.pull_request.number }}
-      neon_branch: ${{ steps.neon_branch.outputs.value }}
-      preview_connection_string: ${{ steps.convert_conn.outputs.conn_string }}
+      neon_branch: ${{ needs.db_vars.outputs.branch }}
+      preview_connection_string: ${{ steps.db_conn.outputs.conn_string }}
 
     steps:
       - name: Checkout repository
@@ -72,10 +100,6 @@ jobs:
         id: branch_name
         uses: tj-actions/branch-names@v8
 
-      - name: Compute Neon branch name
-        id: neon_branch
-        run: echo "value=preview/PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-
       - name: Get expiration date (2 weeks from now)
         run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
 
@@ -83,25 +107,17 @@ jobs:
       # NEON PREVIEW DB
       # ============================
 
-      - name: Delete Neon Branch if exists
-        continue-on-error: true
-        uses: neondatabase/delete-branch-action@v3
-        with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch: ${{ steps.neon_branch.outputs.value }}
-          api_key: ${{ secrets.NEON_API_KEY }}
-
       - name: Create Neon Branch
         id: create_neon_branch
         uses: neondatabase/create-branch-action@v6
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch_name: ${{ steps.neon_branch.outputs.value }}
           api_key: ${{ secrets.NEON_API_KEY }}
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: ${{ needs.db_vars.outputs.branch }}
           expires_at: ${{ env.EXPIRES_AT }}
 
-      - name: Convert Neon URL to .NET connection string
-        id: convert_conn
+      - name: Get DB Connection String
+        id: db_conn
         run: |
           HOST="${{ steps.create_neon_branch.outputs.db_host }}"
           PASS="${{ steps.create_neon_branch.outputs.password }}"
@@ -140,12 +156,12 @@ jobs:
 
       - name: Apply EF Core Migrations
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.conn_string }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.db_conn.outputs.conn_string }}" \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
       - name: Test DB Preview
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.conn_string }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.db_conn.outputs.conn_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
   deploy_api_preview:
@@ -194,9 +210,9 @@ jobs:
 
       - name: Run API Integration Tests
         env:
-          API_BASE_URL: ${{ needs.api_vars.outputs.base_url }}
+          api_base_url: ${{ needs.api_vars.outputs.base_url }}
         run: |
-          echo "$API_BASE_URL"
+          echo "API_BASE_URL=$api_base_url" >> $GITHUB_ENV
           dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
 
   cleanup:
