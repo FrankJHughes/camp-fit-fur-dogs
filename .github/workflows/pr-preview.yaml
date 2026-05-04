@@ -13,11 +13,13 @@ jobs:
     name: Create Neon Preview Environment + Export Preview Connection String
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
-
     outputs:
       pr_number: ${{ github.event.number }}
       neon_branch: ${{ steps.neon_branch.outputs.value }}
       preview_connection_string: ${{ steps.convert_conn.outputs.conn_string }}
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout repository
