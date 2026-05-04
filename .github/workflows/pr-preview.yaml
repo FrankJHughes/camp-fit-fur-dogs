@@ -8,8 +8,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  remove_previous_render_preview:
-    name: Delete Previous Preview Environment (if exists)
+  destroy_api_preview:
+    name: Remove Previous API Preview
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
     runs-on: ubuntu-latest
     permissions:
@@ -26,12 +26,17 @@ jobs:
         run: |
           gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
 
+  api_vars:
+    name: Render Vars
+    outputs:
+      base_url: "value=https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com"
+
   neon_preview:
     name: Create Neon Preview Environment + Export Preview Connection String
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     outputs:
-      pr_number: ${{ github.event.number }}
+      pr_number: ${{ github.event.pull_request.number }}
       neon_branch: ${{ steps.neon_branch.outputs.value }}
       preview_connection_string: ${{ steps.convert_conn.outputs.conn_string }}
 
@@ -45,7 +50,7 @@ jobs:
 
       - name: Compute Neon branch name
         id: neon_branch
-        run: echo "value=preview/pr-${{ github.event.number }}-${{ steps.branch_name.outputs.current_branch }}" >> $GITHUB_OUTPUT
+        run: echo "value=preview/PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
 
       - name: Get expiration date (2 weeks from now)
         run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
@@ -85,7 +90,7 @@ jobs:
       - name: Upload PR Preview DB Connection String
         uses: actions/upload-artifact@v7
         with:
-          name: pr-${{ github.event.number }}
+          name: pr-${{ github.event.pull_request.number }}
           path: db-conn.txt
           overwrite: true
           retention-days: 7
@@ -119,9 +124,12 @@ jobs:
           ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.conn_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
-  wait_for_remove_previous_render_preview:
-    name: Wait for Remove Previous PR Preview
-    needs: remove_previous_render_preview
+  deploy_api_preview:
+    name: Deploy API Preview
+    needs:
+      - destroy_api_preview
+      - api_vars
+      - neon_preview
     if: github.event.action != 'closed' && github.event.action != 'opened' # No need to wait if the PR was just opened (no preview to remove) or closed (we're not creating a new preview)
     runs-on: ubuntu-latest
     permissions:
@@ -131,11 +139,11 @@ jobs:
 
       - name: Wait for Previous PR Preview Removal to Complete
         env:
-          API_BASE_URL: ${{ steps.api_base_url.outputs.API_BASE_URL }}
+          api_base_url: ${{ jobs.api_vars.outputs.base_url }}
         run: |
           echo "Waiting up to 3m for previous PR preview removal to complete..."
           for i in {1..36}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/health")
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/health")
             if [ "$status" = "502" ]; then
               echo "Previous PR preview removal is complete."
               exit 0
@@ -146,23 +154,10 @@ jobs:
           echo "Previous PR preview was not removed in time."
           exit 1
 
-  # ============================
-  # API INTEGRATION TESTS
-  # ============================
-
-  api_integration_tests:
-    name: API Integration Tests (Preview API)
-    needs:
-      - neon_preview
-      - wait_for_remove_previous_render_preview
-    if: github.event.action != 'closed'
-    runs-on: ubuntu-latest
-    steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Trigger Render PR Preview Deployment
+      - name: Trigger API Preview Deployment
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -173,18 +168,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Export API Base URL
-        id: api_base_url
-        run: |
-          echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ needs.neon_preview.outputs.pr_number }}.onrender.com" >> $GITHUB_OUTPUT
-
-      - name: Wait for PR Preview API to become healthy
+      - name: Wait for API preview to become healthy
         env:
-          API_BASE_URL: ${{ steps.api_base_url.outputs.API_BASE_URL }}
+          api_base_url: ${{ jobs.api_vars.outputs.base_url }}
         run: |
-          echo "Waiting for PR Preview API to become ready..."
-          for i in {1..30}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL/health")
+          echo "Waiting upt 3m for API Preview to become healthy..."
+          for i in {1..36}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/health")
             if [ "$status" = "200" ]; then
               echo "API is ready."
               exit 0
@@ -195,9 +185,30 @@ jobs:
           echo "API did not become ready in time."
           exit 1
 
+  # ============================
+  # API INTEGRATION TESTS
+  # ============================
+
+  run_api_integration_tests:
+    name: Run API Integration Tests
+    needs:
+      - deploy_api_preview
+      - api_vars
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
       - name: Run API Integration Tests
         env:
-          API_BASE_URL: ${{ steps.api_base_url.outputs.API_BASE_URL }}
+          api_base_url: ${{ jobs.api_vars.outputs.base_url }}
         run: dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
 
   # ============================
