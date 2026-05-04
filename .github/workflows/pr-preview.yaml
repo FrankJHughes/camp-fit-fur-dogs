@@ -228,7 +228,7 @@ jobs:
 
       - name: Run API Integration Tests
         run: |
-          echo "API_BASE_URL=${{ needs.api_vars.outputs.base_url }}" >> $GITHUB_ENV
+          echo "API Base URL: $API_BASE_URL"
           dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
 
   cleanup:
