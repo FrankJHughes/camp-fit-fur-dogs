@@ -117,7 +117,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Trigger Render PR Preview Deployment
-        run:
+        run: |
           gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
           gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
 
@@ -131,7 +131,8 @@ jobs:
 
       - name: Export API Base URL
         id: api_base_url
-        run: echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ needs.preview_environment.outputs.pr_number }}.onrender.com" >> $GITHUB_OUTPUT
+        run: |
+          echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ needs.preview_environment.outputs.pr_number }}.onrender.com" >> $GITHUB_OUTPUT
 
       - name: Wait for PR Preview API to become healthy
         env:
@@ -149,6 +150,10 @@ jobs:
           done
           echo "API did not become ready in time."
           exit 1
+
+      - name: Turn Off Render Preview Auto-Deploy (to prevent changes during testing)
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
 
       - name: Run API Integration Tests
         env:
