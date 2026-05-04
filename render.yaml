@@ -20,7 +20,6 @@ projects:
       envVars:
         - key: ConnectionStrings__DefaultConnection
           value: "placeholder"
-          previewValue: "placeholder"
           sync: false
 
         - key: GITHUB_PAT
