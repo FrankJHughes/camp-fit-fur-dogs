@@ -30,6 +30,7 @@ jobs:
     name: Render Vars
     outputs:
       base_url: "value=https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com"
+    runs-on: ubuntu-latest
 
   neon_preview:
     name: Create Neon Preview Environment + Export Preview Connection String
