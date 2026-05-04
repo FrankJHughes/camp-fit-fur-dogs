@@ -27,6 +27,16 @@ jobs:
       - id: set_branch
         run: echo "branch=preview/PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
 
+  destroy_preview_artifact:
+    name: Destroy Preview Artifact
+    if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Destroy DB Conn Artifact
+        uses: actions/delete-artifact@v1
+        with:
+          name: pr-${{ github.event.pull_request.number }}
+
   destroy_api_preview:
     name: Destroy Existing API Preview
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
@@ -79,7 +89,6 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch: ${{ needs.db_vars.outputs.branch }}
 
-
   deploy_db_preview:
     name: Deploy Fresh DB Preview
     if: github.event.action != 'closed'
@@ -87,6 +96,7 @@ jobs:
     needs:
       - db_vars
       - destroy_db_preview
+      - destroy_preview_artifact
     outputs:
       pr_number: ${{ github.event.pull_request.number }}
       neon_branch: ${{ needs.db_vars.outputs.branch }}
@@ -125,16 +135,6 @@ jobs:
           CONN="Host=$HOST;Port=5432;Database=neondb;Username=neondb_owner;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
 
           echo "conn_string=$CONN" >> $GITHUB_OUTPUT
-          echo "$CONN" > db-conn.txt
-
-      - name: Create DB Conn Artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: pr-${{ github.event.pull_request.number }}
-          path: db-conn.txt
-          overwrite: true
-          retention-days: 7
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       # ============================
       # APPLY MIGRATIONS + INFRA INTEGRATION TESTS
@@ -164,12 +164,28 @@ jobs:
           ConnectionStrings__DefaultConnection="${{ steps.db_conn.outputs.conn_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
+  deploy_preview_artifact:
+    name: Deploy Preview Artifact
+    needs: deploy_db_preview
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write Preview Artifact File
+        run: |
+          echo "${{ needs.deploy_db_preview.outputs.preview_connection_string }}" > db-conn.txt
+      - name: Upload DB Conn Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: pr-${{ needs.deploy_db_preview.outputs.pr_number }}
+          path: db-conn.txt
+
   deploy_api_preview:
     name: Deploy API Preview
     needs:
       - destroy_api_preview
       - api_vars
       - deploy_db_preview
+      - deploy_preview_artifact
     if: github.event.action != 'closed' && github.event.action != 'opened' # No need to wait if the PR was just opened (no preview to remove) or closed (we're not creating a new preview)
     runs-on: ubuntu-latest
     permissions:
@@ -238,22 +254,3 @@ jobs:
           else
             echo "No preview artifact found for $PR_NAME"
           fi
-
-      - name: Delete Neon Branch (retry)
-        run: |
-          for i in {1..5}; do
-            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE \
-              "https://console.neon.tech/api/v2/projects/${{ vars.NEON_PROJECT_ID }}/branches/${{ needs.deploy_db_preview.outputs.neon_branch }}" \
-              -H "Authorization: Bearer ${{ secrets.NEON_API_KEY }}")
-
-            if [ "$RESPONSE" -eq 204 ] || [ "$RESPONSE" -eq 404 ]; then
-              echo "Neon branch deleted"
-              exit 0
-            fi
-
-            echo "Neon delete failed with $RESPONSE, retrying..."
-            sleep 5
-          done
-
-          echo "Failed to delete Neon branch after retries"
-          exit 1
