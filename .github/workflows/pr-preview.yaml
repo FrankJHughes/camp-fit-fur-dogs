@@ -28,7 +28,7 @@ jobs:
         run: echo "branch=preview/PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
 
   destroy_preview_artifact:
-    name: Destroy Preview Artifact
+    name: Destroy Stale Preview Artifact
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +37,7 @@ jobs:
           name: pr-${{ github.event.pull_request.number }}
 
   destroy_api_preview:
-    name: Destroy Existing API Preview
+    name: Destroy Stale API Preview
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
     runs-on: ubuntu-latest
     needs:
@@ -74,7 +74,7 @@ jobs:
           exit 1
 
   destroy_db_preview:
-    name: Destroy Existing DB Preview
+    name: Destroy Stale DB Preview
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
     runs-on: ubuntu-latest
     needs:
@@ -158,14 +158,31 @@ jobs:
           ConnectionStrings__DefaultConnection="${{ steps.db_conn.outputs.conn_string }}" \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
-      - name: Test DB Preview
-        run: |
-          ConnectionStrings__DefaultConnection="${{ steps.db_conn.outputs.conn_string }}" \
-          dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+  test_db_preview:
+    name: Test DB Preview
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    needs:
+      - db_vars
+      - deploy_db_preview
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Set Environment Variables
+        run: echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}" >> $GITHUB_ENV
+
+      - name: Run DB Integration Tests
+        run: dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
   deploy_preview_artifact:
     name: Deploy Preview Artifact
-    needs: deploy_db_preview
+    needs: test_db_preview
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
@@ -181,9 +198,8 @@ jobs:
   deploy_api_preview:
     name: Deploy API Preview
     needs:
-      - destroy_api_preview
       - api_vars
-      - deploy_db_preview
+      - destroy_api_preview
       - deploy_preview_artifact
     if: github.event.action != 'closed' && github.event.action != 'opened' # No need to wait if the PR was just opened (no preview to remove) or closed (we're not creating a new preview)
     runs-on: ubuntu-latest
