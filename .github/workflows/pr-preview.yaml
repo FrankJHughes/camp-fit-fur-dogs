@@ -8,7 +8,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  delete_previous_preview:
+  remove_previous_render_preview:
     name: Delete Previous Preview Environment (if exists)
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
         run: |
           gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
 
-  preview_environment:
+  neon_preview:
     name: Create Neon Preview Environment + Export Preview Connection String
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
@@ -38,12 +38,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Trigger Render PR Preview Removal
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
 
       - name: Get branch name
         id: branch_name
@@ -125,14 +119,10 @@ jobs:
           ConnectionStrings__DefaultConnection="${{ steps.convert_conn.outputs.conn_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
-  # ============================
-  # API INTEGRATION TESTS
-  # ============================
-
-  api_integration_tests:
-    name: API Integration Tests (Preview API)
-    needs: preview_environment
-    if: github.event.action != 'closed'
+  wait_for_remove_previous_render_preview:
+    name: Wait for Remove Previous PR Preview
+    needs: remove_previous_render_preview
+    if: github.event.action != 'closed' && github.event.action != 'opened' # No need to wait if the PR was just opened (no preview to remove) or closed (we're not creating a new preview)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -156,6 +146,19 @@ jobs:
           echo "Previous PR preview was not removed in time."
           exit 1
 
+  # ============================
+  # API INTEGRATION TESTS
+  # ============================
+
+  api_integration_tests:
+    name: API Integration Tests (Preview API)
+    needs:
+      - neon_preview
+      - wait_for_remove_previous_render_preview
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -173,7 +176,7 @@ jobs:
       - name: Export API Base URL
         id: api_base_url
         run: |
-          echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ needs.preview_environment.outputs.pr_number }}.onrender.com" >> $GITHUB_OUTPUT
+          echo "API_BASE_URL=https://campfitfurdogsapi-pr-${{ needs.neon_preview.outputs.pr_number }}.onrender.com" >> $GITHUB_OUTPUT
 
       - name: Wait for PR Preview API to become healthy
         env:
@@ -204,13 +207,13 @@ jobs:
   cleanup:
     if: always() && github.event.action == 'closed'
     runs-on: ubuntu-latest
-    needs: preview_environment
+    needs: neon_preview
 
     steps:
       - name: Delete DB Conn Artifact
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NAME: "pr-${{ needs.preview_environment.outputs.pr_number }}"
+          PR_NAME: "pr-${{ needs.neon_preview.outputs.pr_number }}"
         run: |
           artifacts=$(gh api repos/${{ github.repository }}/actions/artifacts \
             --jq '.artifacts[] | select(.name == "'"$PR_NAME"'") | .id')
@@ -228,7 +231,7 @@ jobs:
         run: |
           for i in {1..5}; do
             RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE \
-              "https://console.neon.tech/api/v2/projects/${{ vars.NEON_PROJECT_ID }}/branches/${{ needs.preview_environment.outputs.neon_branch }}" \
+              "https://console.neon.tech/api/v2/projects/${{ vars.NEON_PROJECT_ID }}/branches/${{ needs.neon_preview.outputs.neon_branch }}" \
               -H "Authorization: Bearer ${{ secrets.NEON_API_KEY }}")
 
             if [ "$RESPONSE" -eq 204 ] || [ "$RESPONSE" -eq 404 ]; then
