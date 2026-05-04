@@ -1,4 +1,4 @@
-name: PR Preview with Neon + Render
+name: Preview
 
 on:
   pull_request:
@@ -8,6 +8,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
+  api_vars:
+    name: API Vars
+    outputs:
+      base_url: "https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com"
+    runs-on: ubuntu-latest
+
   destroy_api_preview:
     name: Remove Previous API Preview
     if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
@@ -25,12 +31,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
-
-  api_vars:
-    name: Render Vars
-    outputs:
-      base_url: "value=https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com"
-    runs-on: ubuntu-latest
 
   neon_preview:
     name: Create Neon Preview Environment + Export Preview Connection String
@@ -140,7 +140,7 @@ jobs:
 
       - name: Wait for Previous PR Preview Removal to Complete
         env:
-          api_base_url: ${{ jobs.api_vars.outputs.base_url }}
+          api_base_url: ${{ needs.api_vars.outputs.base_url }}
         run: |
           echo "Waiting up to 3m for previous PR preview removal to complete..."
           for i in {1..36}; do
@@ -171,7 +171,7 @@ jobs:
 
       - name: Wait for API preview to become healthy
         env:
-          api_base_url: ${{ jobs.api_vars.outputs.base_url }}
+          api_base_url: ${{ needs.api_vars.outputs.base_url }}
         run: |
           echo "Waiting upt 3m for API Preview to become healthy..."
           for i in {1..36}; do
@@ -209,7 +209,7 @@ jobs:
 
       - name: Run API Integration Tests
         env:
-          api_base_url: ${{ jobs.api_vars.outputs.base_url }}
+          api_base_url: ${{ needs.api_vars.outputs.base_url }}
         run: dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
 
   # ============================
