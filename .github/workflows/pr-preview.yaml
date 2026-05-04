@@ -162,7 +162,6 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     needs:
-      - db_vars
       - deploy_db_preview
     steps:
       - name: Checkout repository
@@ -174,7 +173,9 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Set Environment Variables
-        run: echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}" >> $GITHUB_ENV
+        run: |
+          echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}"
+          echo "ConnectionStrings__DefaultConnection=${{ needs.deploy_db_preview.outputs.preview_connection_string }}" >> $GITHUB_ENV
 
       - name: Run DB Integration Tests
         run: |
