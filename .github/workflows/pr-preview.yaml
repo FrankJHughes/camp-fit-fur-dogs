@@ -112,8 +112,15 @@ jobs:
     needs: preview_environment
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
+      - name: Trigger Render PR Preview Deployment
+        run:
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 

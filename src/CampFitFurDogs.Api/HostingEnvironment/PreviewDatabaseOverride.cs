@@ -190,7 +190,6 @@ public static class PreviewDatabaseOverride
             $"https://api.github.com/repos/{repoSlug}/actions/artifacts?per_page=100&name={artifactName}";
 
         var artifactsJson = await http.GetStringAsync(artifactsUrl);
-        Console.WriteLine($"Artifacts JSON: {artifactsJson}");
 
         var serializerOptions = new JsonSerializerOptions
         {

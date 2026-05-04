@@ -16,7 +16,7 @@ projects:
       dockerfilePath: ./Dockerfile
       autoDeployTrigger: commit
       previews:
-        generation: automatic
+        generation: manual
       envVars:
         - key: ConnectionStrings__DefaultConnection
           value: "placeholder"
