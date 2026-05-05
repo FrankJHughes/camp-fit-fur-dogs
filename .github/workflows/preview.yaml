@@ -44,7 +44,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
-      - uses: ./.github/actions/wait-for-endpoint
+      - uses: ./.github/actions/wait-for-endpoint-v2
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}/health"
           healthy: "404"
@@ -160,7 +160,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Wait for API
-        uses: ./.github/actions/wait-for-endpoint
+        uses: ./.github/actions/wait-for-endpoint-v2
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}${{ needs.preview_context.outputs.api_live_endpoint }}"
           healthy: "200,400,401,404"
