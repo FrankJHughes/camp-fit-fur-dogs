@@ -130,9 +130,10 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Set Expiration Date (2 weeks from now)
+      - name: Set Expiration Date
         id: set_expiration_date
-        run: echo "expiration_date=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUTS
+        run: |
+          echo "expiration_date=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
       # ============================
       # NEON PREVIEW DB
@@ -154,7 +155,7 @@ jobs:
           PASS="${{ steps.create_neon_branch.outputs.password }}"
 
           db_conn_string="Host=$HOST;Port=5432;Database=neondb;Username=neondb_owner;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
-          echo "db_conn_string=$db_conn_string" >> $GITHUB_OUTPUTS
+          echo "db_conn_string=$db_conn_string" >> $GITHUB_OUTPUT
 
       # ============================
       # APPLY MIGRATIONS + INFRA INTEGRATION TESTS
