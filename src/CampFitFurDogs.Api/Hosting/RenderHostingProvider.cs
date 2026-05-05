@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
 using SharedKernel.Api.Hosting;
 
 namespace CampFitFurDogs.Api.Hosting;
@@ -55,8 +56,6 @@ public sealed class RenderHostingProvider : IHostingProvider
             return;
         }
 
-        // CONTRACT:artifact-naming — shared with preview.yaml
-        // See docs/conventions/workflow.md → "Artifact Naming Contract"
         var artifactName = $"pr-{prNumber}";
         var dbConn = await DownloadDbConnFromArtifactAsync(
             githubPat, repoSlug, artifactName);
