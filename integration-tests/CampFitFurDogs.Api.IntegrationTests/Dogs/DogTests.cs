@@ -6,7 +6,7 @@ namespace CampFitFurDogs.Api.IntegrationTests.Dogs;
 public class DogTests : ApiTestBase
 {
     private static readonly Guid PlaceholderUserId =
-        Guid.Parse("8e390654-a834-4594-8f83-0c6838b0a50c"); // Test User #1 in the preview database
+        Guid.Parse("d37a2a6b-c581-490d-89ce-f60d73800732");
 
     [Fact]
     public async Task Can_Register_And_Retrieve_Dog_Profile()
