@@ -120,7 +120,7 @@ jobs:
 
       - name: Apply Migrations
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.db_conn_string }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
       - name: Run DB Tests
