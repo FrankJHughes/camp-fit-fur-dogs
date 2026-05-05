@@ -47,6 +47,7 @@ Copilot must follow the hosting and deployment conventions defined in:
 
 - `docs/conventions/architecture.md` (Hosting & Deployment Architecture)
 - `docs/conventions/workflow.md` (API Deployment Workflow and PR Preview Workflow)
+- `docs/guides/developer/api-hosting.md` (**Developer API Hosting Guide**)
 
 These documents define:
 
@@ -57,7 +58,7 @@ These documents define:
 - Environment variable requirements, including:
   - `ConnectionStrings__DefaultConnection`
   - `PREVIEW_DB_CONNECTION_STRING` for PR previews
-- Health check conventions (`/health`)
+- Health check conventions (`/health`, `/api/dogs`)
 - Deployment triggers and expectations
 
 Copilot must not propose alternative hosting platforms or deployment models unless explicitly requested by the user.
@@ -106,4 +107,3 @@ These rules prevent corruption, drift, and ambiguity.
 | 26 | 12 | Manual Render API calls conflicted with native PR Preview behavior | Never manually create preview instances for Git‑backed services |
 | 27 | 12 | Preview URL detection failed because reopened PRs do not receive new comments | Compute preview URLs deterministically instead of relying on PR comments |
 | 28 | 12 | Misunderstanding of Render environment variable injection | Document that Render only reads variables available in the Render build environment and injected via `previewValue` |
-
