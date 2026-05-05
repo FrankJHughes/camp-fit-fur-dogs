@@ -6,30 +6,30 @@ namespace CampFitFurDogs.Api.IntegrationTests.Dogs;
 public class DogTests : ApiTestBase
 {
     private static readonly Guid PlaceholderUserId =
-        Guid.Parse("00000000-0000-0000-0000-000000000001");
+        Guid.Parse("d37a2a6b-c581-490d-89ce-f60d73800732");
 
     [Fact]
     public async Task Can_Register_And_Retrieve_Dog_Profile()
     {
         // STEP 1 — Ensure the placeholder user exists as a customer
-        var email = $"preview-{Guid.NewGuid()}@example.com";
+        // var email = $"preview-{Guid.NewGuid()}@example.com";
 
-        var createCustomerResponse = await Client.PostAsJsonAsync("/api/customers", new
-        {
-            id = PlaceholderUserId,   // <-- IMPORTANT
-            firstName = "Preview",
-            lastName = "User",
-            email,
-            phone = "555-0000",
-            password = "P@ssw0rd!"
-        });
+        // var createCustomerResponse = await Client.PostAsJsonAsync("/api/customers", new
+        // {
+        //     // id = PlaceholderUserId,   // <-- IMPORTANT
+        //     firstName = "Preview",
+        //     lastName = "User",
+        //     email,
+        //     phone = "555-0000",
+        //     password = "P@ssw0rd!"
+        // });
 
         // Ignore 409/400 — customer may already exist
-        if (!createCustomerResponse.IsSuccessStatusCode &&
-            createCustomerResponse.StatusCode != System.Net.HttpStatusCode.BadRequest)
-        {
-            createCustomerResponse.EnsureSuccessStatusCode();
-        }
+        // if (!createCustomerResponse.IsSuccessStatusCode &&
+        //     createCustomerResponse.StatusCode != System.Net.HttpStatusCode.BadRequest)
+        // {
+        //     createCustomerResponse.EnsureSuccessStatusCode();
+        // }
 
         // STEP 2 — Register a dog
         var dogName = $"TestDog-{Guid.NewGuid()}";

@@ -1,0 +1,88 @@
+name: Convert PostgreSQL URI to Npgsql Connection String
+description: Convert a PostgreSQL URI (postgres://...) or Neon host string into an Npgsql/ADO.NET connection string.
+
+inputs:
+  postgres_uri:
+    description: "PostgreSQL URI or Neon host string"
+    required: true
+
+  pooling:
+    default: "true"
+  timeout:
+    default: "15"
+  ssl_mode:
+    default: "Require"
+
+outputs:
+  npgsql_connection_string:
+    value: ${{ steps.convert.outputs.npgsql_connection_string }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: convert
+      shell: bash
+      run: |
+        raw="${{ inputs.postgres_uri }}"
+
+        echo "Raw input: $raw"
+
+        # ---------------------------------------------------------------------
+        # NORMALIZATION
+        # ---------------------------------------------------------------------
+
+        # If missing scheme, add postgres://
+        if [[ ! "$raw" =~ ^postgres:// ]]; then
+          raw="postgres://$raw"
+        fi
+
+        # If missing credentials, inject Neon defaults
+        # (Neon always uses neondb_owner + password)
+        if ! echo "$raw" | grep -q "@"; then
+          echo "WARNING: No credentials found in URI. Injecting Neon defaults."
+          raw="postgres://neondb_owner:$(echo "$raw" | sed 's#postgres://##')"
+        fi
+
+        # ---------------------------------------------------------------------
+        # VALIDATION
+        # ---------------------------------------------------------------------
+        if [[ ! "$raw" =~ ^postgres:// ]]; then
+          echo "ERROR: Normalized URI is still invalid: $raw"
+          exit 1
+        fi
+
+        # ---------------------------------------------------------------------
+        # PARSING
+        # ---------------------------------------------------------------------
+        creds="$(echo "$raw" | sed -E 's#.*://([^@]+)@.*#\1#')"
+        user="$(echo "$creds" | cut -d: -f1)"
+        pass="$(echo "$creds" | cut -d: -f2)"
+
+        hostport="$(echo "$raw" | sed -E 's#.*@([^/]+)/.*#\1#')"
+        host="$(echo "$hostport" | cut -d: -f1)"
+        port="$(echo "$hostport" | cut -d: -f2)"
+
+        # If there was no colon, $port == $host → no explicit port
+        if [[ "$port" == "$host" ]]; then
+          port=""
+        fi
+
+        # If port is empty or non-numeric, default to 5432
+        if [[ -z "$port" || ! "$port" =~ ^[0-9]+$ ]]; then
+          port="5432"
+        fi
+
+        db="$(echo "$raw" | sed -E 's#.*/([^?]+)\?.*#\1#')"
+
+        sslmode="${{ inputs.ssl_mode }}"
+        pooling="${{ inputs.pooling }}"
+        timeout="${{ inputs.timeout }}"
+
+        # ---------------------------------------------------------------------
+        # BUILD CONNECTION STRING
+        # ---------------------------------------------------------------------
+        conn="Host=$host;Port=${port:-5432};Database=$db;Username=$user;Password=$pass;"
+        conn+="Ssl Mode=$sslmode;Trust Server Certificate=true;"
+        conn+="Pooling=$pooling;Timeout=$timeout;"
+
+        echo "npgsql_connection_string=$conn" >> $GITHUB_OUTPUT

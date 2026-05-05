@@ -1,0 +1,176 @@
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+concurrency:
+  group: ${{ github.workflow }}-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+
+  preview_context:
+    name: Preview Context
+    runs-on: ubuntu-latest
+    outputs:
+      common_prefix: ${{ steps.out.outputs.common_prefix }}
+      artifact_name: ${{ steps.out.outputs.artifact_name }}
+      artifact_file_path: ${{ steps.out.outputs.artifact_file_path }}
+      db_branch: ${{ steps.out.outputs.db_branch }}
+      api_base_url: ${{ steps.out.outputs.api_base_url }}
+      api_live_endpoint: "/api/dogs"
+    steps:
+      - id: out
+        run: |
+          common_prefix="pr-${{ github.event.pull_request.number }}"
+          echo "common_prefix=$common_prefix" >> $GITHUB_OUTPUT
+          echo "artifact_name=$common_prefix" >> $GITHUB_OUTPUT
+          echo "artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
+          echo "db_branch=$common_prefix" >> $GITHUB_OUTPUT
+          echo "api_base_url=https://campfitfurdogsapi-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
+
+  destroy_stale_api:
+    name: Destroy Stale API
+    if: github.event.action != 'opened'
+    runs-on: ubuntu-latest
+    needs: preview_context
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove render-preview label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
+      - uses: ./.github/actions/wait-for-endpoint
+        with:
+          url: "${{ needs.preview_context.outputs.api_base_url }}/health"
+          healthy: "404"
+          timeout: 300
+          consecutive_successes_required: 3
+          adjective: "down"
+
+  destroy_stale_artifact:
+    name: Destroy Stale Artifact
+    if: github.event.action != 'opened'
+    runs-on: ubuntu-latest
+    needs: preview_context
+    steps:
+      - uses: geekyeggo/delete-artifact@v6
+        with:
+          name: ${{ needs.preview_context.outputs.artifact_name }}
+
+  destroy_stale_db:
+    name: Destroy Stale DB
+    if: github.event.action != 'opened'
+    runs-on: ubuntu-latest
+    needs: preview_context
+    steps:
+      - uses: neondatabase/delete-branch-action@v3
+        continue-on-error: true
+        with:
+          api_key: ${{ secrets.NEON_API_KEY }}
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: ${{ needs.preview_context.outputs.db_branch }}
+
+  deploy_fresh_db:
+    name: Deploy Fresh DB
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    needs:
+      - preview_context
+      - destroy_stale_api
+      - destroy_stale_artifact
+      - destroy_stale_db
+    outputs:
+      db_conn_string: ${{ steps.conn.outputs.db_conn_string }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute Expiration
+        id: exp
+        run: echo "expiration=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+
+      - name: Create Neon Branch
+        id: neon
+        uses: neondatabase/create-branch-action@v6
+        with:
+          api_key: ${{ secrets.NEON_API_KEY }}
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: ${{ needs.preview_context.outputs.db_branch }}
+          expires_at: ${{ steps.exp.outputs.expiration }}
+
+      - name: Convert PostgreSQL URI to Npgsql Connection String
+        id: conn
+        uses: ./.github/actions/postgres-uri-to-npgsql-connection-string
+        with:
+          postgres_uri: ${{ steps.neon.outputs.db_url }}   # Neon’s official output
+          # pooling: "true"
+          # timeout: "15"
+          # ssl_mode: "Require"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - run: dotnet tool install --global dotnet-ef
+      - run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+      - run: dotnet restore
+
+      - name: Apply Migrations
+        run: |
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
+          dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
+
+      - name: Run DB Tests
+        run: |
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
+          dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+
+      - name: Write Artifact
+        run: echo "${{ steps.conn.outputs.npgsql_connection_string }}" > db-conn.txt
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ needs.preview_context.outputs.artifact_name }}
+          path: ${{ needs.preview_context.outputs.artifact_file_path }}
+
+  deploy_fresh_api:
+    name: Deploy Fresh API
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    needs:
+      - preview_context
+      - deploy_fresh_db
+      - destroy_stale_api
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add render-preview label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Wait for API
+        uses: ./.github/actions/wait-for-endpoint
+        with:
+          url: "${{ needs.preview_context.outputs.api_base_url }}${{ needs.preview_context.outputs.api_live_endpoint }}"
+          healthy: "200,400,401"
+          timeout: 300
+          adjective: "up"
+          consecutive_successes_required: 3
+
+      - name: Test API
+        run: |
+          API_BASE_URL=${{ needs.preview_context.outputs.api_base_url }} \
+          dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"

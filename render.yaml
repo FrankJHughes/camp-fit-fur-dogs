@@ -16,17 +16,19 @@ projects:
       dockerfilePath: ./Dockerfile
       autoDeployTrigger: commit
       previews:
-        generation: automatic
+        generation: manual
       envVars:
         - key: ConnectionStrings__DefaultConnection
-          fromSecret: production-db-connection-string
-          previewValue: $PREVIEW_DB_CONNECTION_STRING
+          value: "placeholder"
           sync: false
+
+        - key: GITHUB_PAT
+          value: "placeholder"
 
         - key: ASPNETCORE_ENVIRONMENT
           value: Production
 
         - key: Frontend__BaseUrl
-          fromSecret: production-ui-base-url
-          previewValue: $PREVIEW_UI_BASE_URL
+          value: "placeholder"
+          previewValue: "placeholder"
           sync: false

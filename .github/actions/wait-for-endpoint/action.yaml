@@ -1,0 +1,61 @@
+name: Wait for Endpoint
+description: Wait for an HTTP endpoint to return a healthy status code.
+
+inputs:
+  url:
+    description: "The full URL to poll"
+    required: true
+  healthy:
+    description: "Comma-separated list of healthy HTTP status codes"
+    required: true
+  timeout:
+    description: "Timeout in seconds"
+    required: true
+  consecutive_successes_required:
+    description: "Number of consecutive healthy responses required"
+    default: 1
+  adjective:
+    description: "Adjective to use in logs (e.g. 'up', 'available', etc.)"
+    default: "up"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Wait for endpoint
+      shell: bash
+      run: |
+        url="${{ inputs.url }}"
+        healthy="${{ inputs.healthy }}"
+        timeout="${{ inputs.timeout }}"
+        adjective="${{ inputs.adjective }}"
+        consecutive_successes_required="${{ inputs.consecutive_successes_required }}"
+
+        echo "Waiting for endpoint: $url"
+        echo "Healthy status codes: $healthy"
+        echo "Timeout: $timeout seconds"
+        echo "Adjective: $adjective"
+        echo "Consecutive successes required: $consecutive_successes successes"
+
+        end=$((SECONDS + timeout))
+
+        consecutive_successes=0
+
+        while [ $SECONDS -lt $end ]; do
+          status=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
+
+          if [[ ",$healthy," == *",$status,"* ]]; then
+            consecutive_successes=$((consecutive_successes + 1))
+            if [ $consecutive_successes -ge $consecutive_successes_required ]; then
+              echo "Endpoint is $adjective (status: $status)"
+              exit 0
+            fi
+          else
+            consecutive_successes=0
+          fi
+
+          echo "Endpoint not $adjective (status: $status). Retrying in 5s..."
+          sleep 5
+        done
+
+        echo "ERROR: Endpoint did not get $adjective within timeout."
+        exit 1

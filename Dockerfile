@@ -21,11 +21,11 @@ COPY . .
 
 # Publish with ReadyToRun enabled
 RUN dotnet publish src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj \
-    -c Release \
-    -o /app/publish \
-    -p:PublishReadyToRun=true \
-    -p:PublishSingleFile=false \
-    -p:PublishTrimmed=false
+  -c Release \
+  -o /app/publish \
+  -p:PublishReadyToRun=true \
+  -p:PublishSingleFile=false \
+  -p:PublishTrimmed=false
 
 # ============================
 # RUNTIME STAGE

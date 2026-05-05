@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 
-using CampFitFurDogs.Api;
+using CampFitFurDogs.Api.HostingEnvironment;
 using CampFitFurDogs.Infrastructure;
 using CampFitFurDogs.Infrastructure.Data;
 using SharedKernel.DependencyInjection;
@@ -9,13 +9,14 @@ using SharedKernel.Api;
 using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-Console.WriteLine("DB: " + builder.Configuration.GetConnectionString("DefaultConnection"));
+
+await EnvironmentBootstrapper.ApplyOverridesAsync(builder);
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(System.Net.IPAddress.Any, int.Parse(port)); // IPv4 ANY
+    options.ListenAnyIP(int.Parse(port)); // IPv4 ANY
 });
 
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
