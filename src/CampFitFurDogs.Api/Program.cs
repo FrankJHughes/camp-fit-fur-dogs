@@ -1,29 +1,30 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
-
-using CampFitFurDogs.Api.HostingEnvironment;
+using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Infrastructure;
 using CampFitFurDogs.Infrastructure.Data;
+using SharedKernel.Api.Hosting;
 using SharedKernel.DependencyInjection;
 using SharedKernel.Api;
 using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-await EnvironmentBootstrapper.ApplyOverridesAsync(builder);
+// ── Hosting-provider overrides (pluggable) ───────────────────────
+// Add new providers here in priority order.  The first whose
+// IsActive() returns true wins; the rest are skipped.
+await builder.UseHostingProviders(
+    new RenderHostingProvider());
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(port)); // IPv4 ANY
 });
-
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // 0. CORS: allow frontend host
 var allowedOrigin = builder.Configuration["Frontend:BaseUrl"];
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -33,7 +34,7 @@ builder.Services.AddCors(options =>
 });
 
 // 1. register infrastructure layer
-//          db context
+// db context
 builder.Services.AddInfrastructure(builder.Configuration);
 
 //
@@ -41,11 +42,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 //
 
 // 2. register ef core infrastructure layer:
-//          unit of work
+//    unit of work
 builder.Services.AddSharedKernelEfCore<AppDbContext>();
 
 // 3. register application layer:
-//          handlers, validators, dispatchers
+//    handlers, validators, dispatchers
 builder.Services.AddSharedKernel(
     applicationAssemblies: new[]
     {
@@ -54,8 +55,8 @@ builder.Services.AddSharedKernel(
     configure: options =>
     {
         // 4. register infrastructure layer:
-        //          repositories, readers,
-        //          providers, services
+        //    repositories, readers,
+        //    providers, services
         options.AddInfrastructureAutoRegistration(
             assemblies: new[]
             {
@@ -63,13 +64,13 @@ builder.Services.AddSharedKernel(
             },
             rules => rules
                 .Add("Repository", ServiceLifetime.Scoped)
-                .Add("Reader", ServiceLifetime.Scoped)
-                .Add("Provider", ServiceLifetime.Scoped)
-                .Add("Service", ServiceLifetime.Scoped));
+                .Add("Reader",     ServiceLifetime.Scoped)
+                .Add("Provider",   ServiceLifetime.Scoped)
+                .Add("Service",    ServiceLifetime.Scoped));
     });
 
 // 5. register api layer:
-//          endpoints
+//    endpoints
 var apiAssembly = typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
 EndpointDiscovery.AddEndpoints(apiAssembly);
 
@@ -82,18 +83,17 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.MapEndpoints();
-
 app.UseCors();
 
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
     {
-        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-
+        var exception = context.Features
+            .Get<IExceptionHandlerFeature>()?.Error;
         if (exception is ValidationException validationException)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.StatusCode  = StatusCodes.Status400BadRequest;
             context.Response.ContentType = "application/json";
 
             var errors = validationException.Errors
@@ -116,6 +116,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }))
-    .WithName("HealthCheck");
+   .WithName("HealthCheck");
 
 app.Run();

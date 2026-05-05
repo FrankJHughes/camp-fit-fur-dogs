@@ -77,7 +77,9 @@ jobs:
 
   deploy_fresh_db:
     name: Deploy Fresh DB
-    if: github.event.action != 'closed'
+    if: |
+      always() && !failure() && !cancelled() &&
+      github.event.action != 'closed'
     runs-on: ubuntu-latest
     needs:
       - preview_context
@@ -140,7 +142,9 @@ jobs:
 
   deploy_fresh_api:
     name: Deploy Fresh API
-    if: github.event.action != 'closed'
+    if: |
+      always() && !failure() && !cancelled() &&
+      github.event.action != 'closed'
     runs-on: ubuntu-latest
     needs:
       - preview_context
