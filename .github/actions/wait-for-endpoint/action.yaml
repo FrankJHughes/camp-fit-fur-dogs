@@ -11,9 +11,12 @@ inputs:
   timeout:
     description: "Timeout in seconds"
     required: true
-  consecutive_successes:
+  consecutive_successes_required:
     description: "Number of consecutive healthy responses required"
     default: 1
+  adjective:
+    description: "Adjective to use in logs (e.g. 'up', 'available', etc.)"
+    default: "up"
 
 runs:
   using: "composite"
@@ -24,10 +27,13 @@ runs:
         url="${{ inputs.url }}"
         healthy="${{ inputs.healthy }}"
         timeout="${{ inputs.timeout }}"
-        consecutive_successes_required="${{ inputs.consecutive_successes }}"
+        adjective="${{ inputs.adjective }}"
+        consecutive_successes_required="${{ inputs.consecutive_successes_required }}"
+
         echo "Waiting for endpoint: $url"
         echo "Healthy status codes: $healthy"
         echo "Timeout: $timeout seconds"
+        echo "Adjective: $adjective"
         echo "Consecutive successes required: $consecutive_successes successes"
 
         end=$((SECONDS + timeout))
@@ -38,13 +44,18 @@ runs:
           status=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
 
           if [[ ",$healthy," == *",$status,"* ]]; then
-            echo "Endpoint is healthy (status: $status)"
-            exit 0
+            consecutive_successes=$((consecutive_successes + 1))
+            if [ $consecutive_successes -ge $consecutive_successes_required ]; then
+              echo "Endpoint is $adjective (status: $status)"
+              exit 0
+            fi
+          else
+            consecutive_successes=0
           fi
 
-          echo "Endpoint not ready (status: $status). Retrying in 5s..."
+          echo "Endpoint not $adjective (status: $status). Retrying in 5s..."
           sleep 5
         done
 
-        echo "ERROR: Endpoint did not become healthy within timeout."
+        echo "ERROR: Endpoint did not get $adjective within timeout."
         exit 1
