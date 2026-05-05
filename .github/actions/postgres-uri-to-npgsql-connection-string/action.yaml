@@ -1,29 +1,20 @@
 name: Convert PostgreSQL URI to Npgsql Connection String
-description: Convert a PostgreSQL URI (postgres://...) into an Npgsql/ADO.NET keyword-value connection string.
+description: Convert a PostgreSQL URI (postgres://...) or Neon host string into an Npgsql/ADO.NET connection string.
 
 inputs:
   postgres_uri:
-    description: "PostgreSQL URI (postgres://user:pass@host:port/db?sslmode=require)"
+    description: "PostgreSQL URI or Neon host string"
     required: true
 
   pooling:
-    description: "Enable connection pooling (true/false). Default: true"
-    required: false
     default: "true"
-
   timeout:
-    description: "Connection timeout in seconds. Default: 15"
-    required: false
     default: "15"
-
   ssl_mode:
-    description: "Override SSL Mode (Require/Disable/Prefer). Default: Require"
-    required: false
     default: "Require"
 
 outputs:
   npgsql_connection_string:
-    description: "The constructed Npgsql/ADO.NET connection string"
     value: ${{ steps.convert.outputs.npgsql_connection_string }}
 
 runs:
@@ -32,37 +23,56 @@ runs:
     - id: convert
       shell: bash
       run: |
-        uri="${{ inputs.postgres_uri }}"
+        raw="${{ inputs.postgres_uri }}"
 
-        # --- VALIDATION -------------------------------------------------------
-        if [[ ! "$uri" =~ ^postgres:// ]]; then
-          echo "ERROR: Input is not a valid PostgreSQL URI: $uri"
+        echo "Raw input: $raw"
+
+        # ---------------------------------------------------------------------
+        # NORMALIZATION
+        # ---------------------------------------------------------------------
+
+        # If missing scheme, add postgres://
+        if [[ ! "$raw" =~ ^postgres:// ]]; then
+          raw="postgres://$raw"
+        fi
+
+        # If missing credentials, inject Neon defaults
+        # (Neon always uses neondb_owner + password)
+        if ! echo "$raw" | grep -q "@"; then
+          echo "WARNING: No credentials found in URI. Injecting Neon defaults."
+          raw="postgres://neondb_owner:$(echo "$raw" | sed 's#postgres://##')"
+        fi
+
+        # ---------------------------------------------------------------------
+        # VALIDATION
+        # ---------------------------------------------------------------------
+        if [[ ! "$raw" =~ ^postgres:// ]]; then
+          echo "ERROR: Normalized URI is still invalid: $raw"
           exit 1
         fi
 
-        if ! echo "$uri" | grep -q "@"; then
-          echo "ERROR: PostgreSQL URI missing credentials or host section."
-          exit 1
-        fi
-
-        # --- PARSE URI --------------------------------------------------------
-        creds="$(echo "$uri" | sed -E 's#.*://([^@]+)@.*#\1#')"
+        # ---------------------------------------------------------------------
+        # PARSING
+        # ---------------------------------------------------------------------
+        creds="$(echo "$raw" | sed -E 's#.*://([^@]+)@.*#\1#')"
         user="$(echo "$creds" | cut -d: -f1)"
         pass="$(echo "$creds" | cut -d: -f2)"
 
-        hostport="$(echo "$uri" | sed -E 's#.*@([^/]+)/.*#\1#')"
+        hostport="$(echo "$raw" | sed -E 's#.*@([^/]+)/.*#\1#')"
         host="$(echo "$hostport" | cut -d: -f1)"
         port="$(echo "$hostport" | cut -d: -f2)"
 
-        db="$(echo "$uri" | sed -E 's#.*/([^?]+)\?.*#\1#')"
+        db="$(echo "$raw" | sed -E 's#.*/([^?]+)\?.*#\1#')"
 
-        sslmode_input="${{ inputs.ssl_mode }}"
+        sslmode="${{ inputs.ssl_mode }}"
         pooling="${{ inputs.pooling }}"
         timeout="${{ inputs.timeout }}"
 
-        # --- CONSTRUCT CONNECTION STRING --------------------------------------
-        conn="Host=$host;Port=$port;Database=$db;Username=$user;Password=$pass;"
-        conn+="Ssl Mode=$sslmode_input;Trust Server Certificate=true;"
+        # ---------------------------------------------------------------------
+        # BUILD CONNECTION STRING
+        # ---------------------------------------------------------------------
+        conn="Host=$host;Port=${port:-5432};Database=$db;Username=$user;Password=$pass;"
+        conn+="Ssl Mode=$sslmode;Trust Server Certificate=true;"
         conn+="Pooling=$pooling;Timeout=$timeout;"
 
         echo "npgsql_connection_string=$conn" >> $GITHUB_OUTPUT

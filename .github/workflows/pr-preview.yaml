@@ -14,7 +14,7 @@ jobs:
     name: Preview Context
     runs-on: ubuntu-latest
     outputs:
-      prefix: ${{ steps.out.outputs.prefix }}
+      common-prefix: ${{ steps.out.outputs.common-prefix }}
       artifact_name: ${{ steps.out.outputs.artifact_name }}
       artifact_file_path: ${{ steps.out.outputs.artifact_file_path }}
       db_branch: ${{ steps.out.outputs.db_branch }}
@@ -23,12 +23,12 @@ jobs:
     steps:
       - id: out
         run: |
-          prefix="pr-${{ github.event.pull_request.number }}"
-          echo "prefix=$prefix" >> $GITHUB_OUTPUT
-          echo "artifact_name=$prefix" >> $GITHUB_OUTPUT
+          common-prefix="pr-${{ github.event.pull_request.number }}"
+          echo "common-prefix=$common-prefix" >> $GITHUB_OUTPUT
+          echo "artifact_name=$common-prefix" >> $GITHUB_OUTPUT
           echo "artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
-          echo "db_branch=$prefix" >> $GITHUB_OUTPUT
-          echo "api_base_url=https://campfitfurdogsapi-$prefix.onrender.com" >> $GITHUB_OUTPUT
+          echo "db_branch=$common-prefix" >> $GITHUB_OUTPUT
+          echo "api_base_url=https://campfitfurdogsapi-$common-prefix.onrender.com" >> $GITHUB_OUTPUT
 
   destroy_stale_api:
     name: Destroy Stale API
