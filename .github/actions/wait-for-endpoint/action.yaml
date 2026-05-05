@@ -11,6 +11,9 @@ inputs:
   timeout:
     description: "Timeout in seconds"
     required: true
+  consecutive_successes:
+    description: "Number of consecutive healthy responses required"
+    default: 1
 
 runs:
   using: "composite"
@@ -21,12 +24,15 @@ runs:
         url="${{ inputs.url }}"
         healthy="${{ inputs.healthy }}"
         timeout="${{ inputs.timeout }}"
-
+        consecutive_successes_required="${{ inputs.consecutive_successes }}"
         echo "Waiting for endpoint: $url"
         echo "Healthy status codes: $healthy"
         echo "Timeout: $timeout seconds"
+        echo "Consecutive successes required: $consecutive_successes successes"
 
         end=$((SECONDS + timeout))
+
+        consecutive_successes=0
 
         while [ $SECONDS -lt $end ]; do
           status=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
