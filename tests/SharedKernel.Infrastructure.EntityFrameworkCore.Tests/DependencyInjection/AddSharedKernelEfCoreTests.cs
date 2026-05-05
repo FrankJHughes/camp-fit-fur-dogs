@@ -16,7 +16,9 @@ public sealed class AddSharedKernelEfCoreTests
         var services = new ServiceCollection();
 
         services.AddDbContext<FakeDbContext>(o => o.UseInMemoryDatabase("test"));
-        services.AddSharedKernelEfCore<FakeDbContext>();
+        services.AddSharedKernelEfCore<FakeDbContext>(
+            [typeof(FakeDbContext).Assembly]
+        );
 
         var provider = services.BuildServiceProvider();
 

@@ -16,14 +16,14 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration
         )
     {
-        var assembly = typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly;
-
         services.AddDbContext<AppDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
 
-        services.AddSharedKernelEfCore<AppDbContext>();
+        services.AddSharedKernelEfCore<AppDbContext>(
+            [typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly]
+        );
 
         return services;
     }

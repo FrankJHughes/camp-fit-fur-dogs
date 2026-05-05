@@ -8,6 +8,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(
         this IServiceCollection services)
-        => services.AddSharedKernel(
-            [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
+    {
+        services.AddSharedKernel(
+        [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
+
+        return services;
+    }
 }
