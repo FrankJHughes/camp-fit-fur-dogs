@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: common_vars
     outputs:
-      artifact_name: ${{ steps.set_artifact_name.outputs.artifact_name }}"
+      artifact_name: ${{ steps.set_artifact_name.outputs.artifact_name }}
       artifact_file_path: ${{ steps.set_artifact_file_path.outputs.artifact_file_path }}
     steps:
 
@@ -189,7 +189,7 @@ jobs:
         run: |
           echo "${{ steps.set_db_conn.outputs.db_conn_string }}" > db-conn.txt
 
-      - name: Deploy Artifact
+      - name: Deploy Fresh Artifact
         uses: actions/upload-artifact@v7
         with:
           name: ${{ needs.artifact_vars.outputs.artifact_name }}
