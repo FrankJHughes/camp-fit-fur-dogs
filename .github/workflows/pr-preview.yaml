@@ -125,11 +125,11 @@ jobs:
 
       - name: Run DB Tests
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.db_conn_string }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
       - name: Write Artifact
-        run: echo "${{ steps.conn.outputs.db_conn_string }}" > db-conn.txt
+        run: echo "${{ steps.conn.outputs.npgsql_connection_string }}" > db-conn.txt
 
       - uses: actions/upload-artifact@v7
         with:
