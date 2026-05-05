@@ -10,6 +10,7 @@ public interface ICommandHandler<TCommand>
     Task Handle(TCommand command, CancellationToken ct);
 }
 
+[AutoRegister(ServiceLifetime.Scoped)]
 public interface ICommandHandler<TCommand, TResponse>
     where TCommand : ICommand<TResponse>
 {
