@@ -79,7 +79,7 @@ jobs:
         run: |
           echo "Waiting up to 3m for previous PR preview removal to complete..."
           for i in {1..36}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/health")
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/health" || echo "000")
             if [ "$status" = "404" ]; then
               echo "Previous PR preview removal is complete."
               exit 0
@@ -229,7 +229,7 @@ jobs:
         run: |
           echo "Waiting up to 3m for API..."
           for i in {1..36}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url$api_live_endpoint")
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url$api_live_endpoint" || echo "000")
             if [ "$status" = "200" ] || [ "$status" = "400" ] || [ "$status" = "401" ] || [ "$status" = "404" ]; then
               echo "Fresh Baked API"
               exit 0
