@@ -12,14 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 await EnvironmentBootstrapper.ApplyOverridesAsync(builder);
 
-var dbConn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string not set.");
-
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(System.Net.IPAddress.Any, int.Parse(port)); // IPv4 ANY
+    options.ListenAnyIP(int.Parse(port)); // IPv4 ANY
 });
 
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
