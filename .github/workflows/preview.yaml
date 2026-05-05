@@ -49,6 +49,7 @@ jobs:
           url: "${{ needs.preview_context.outputs.api_base_url }}/health"
           healthy: "404"
           timeout: 180
+          consecutive_successes_required: 2
           adjective: "down"
 
   destroy_stale_artifact:
