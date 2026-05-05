@@ -1,12 +1,11 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 
+using SharedKernel.Api;
+
 using CampFitFurDogs.Api.HostingEnvironment;
 using CampFitFurDogs.Infrastructure;
-using CampFitFurDogs.Infrastructure.Data;
-using SharedKernel.DependencyInjection;
-using SharedKernel.Api;
-using SharedKernel.Infrastructure.EntityFrameworkCore;
+using CampFitFurDogs.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,44 +31,10 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// 1. register infrastructure layer
-//          db context
+builder.Services.AddApplication();
+
 builder.Services.AddInfrastructure(builder.Configuration);
 
-//
-// BEGIN SHARED KERNEL ASSISTED REGISTRATION
-//
-
-// 2. register ef core infrastructure layer:
-//          unit of work
-builder.Services.AddSharedKernelEfCore<AppDbContext>();
-
-// 3. register application layer:
-//          handlers, validators, dispatchers
-builder.Services.AddSharedKernel(
-    applicationAssemblies: new[]
-    {
-        typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
-    },
-    configure: options =>
-    {
-        // 4. register infrastructure layer:
-        //          repositories, readers,
-        //          providers, services
-        options.AddInfrastructureAutoRegistration(
-            assemblies: new[]
-            {
-                typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly
-            },
-            rules => rules
-                .Add("Repository", ServiceLifetime.Scoped)
-                .Add("Reader", ServiceLifetime.Scoped)
-                .Add("Provider", ServiceLifetime.Scoped)
-                .Add("Service", ServiceLifetime.Scoped));
-    });
-
-// 5. register api layer:
-//          endpoints
 var apiAssembly = typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
 EndpointDiscovery.AddEndpoints(apiAssembly);
 

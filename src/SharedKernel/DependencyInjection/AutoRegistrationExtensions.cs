@@ -7,28 +7,34 @@ public static class AutoRegistrationExtensions
 {
     public static IServiceCollection AddAutoRegistration(
         this IServiceCollection services,
-        Assembly assembly,
-        IEnumerable<AutoRegistrationRule> rules)
+        params Assembly[] assemblies)
     {
-        foreach (var rule in rules)
-        {
-            var types = assembly
-                .GetTypes()
-                .Where(t =>
-                    t.IsClass &&
-                    !t.IsAbstract &&
-                    t.Name.EndsWith(rule.Suffix))
-                .ToList();
+        var contracts = typeof(AutoRegisterAttribute).Assembly
+            .GetTypes()
+            .Select(t => (Type: t, Attr: t.GetCustomAttribute<AutoRegisterAttribute>()))
+            .Where(x => x.Attr is not null)
+            .ToList();
 
-            foreach (var type in types)
-            {
-                var iface = type.GetInterfaces().FirstOrDefault();
-                if (iface is null) continue;
+        var registrations = assemblies
+            .SelectMany(a => a.GetTypes())
+            .Where(t => t.IsClass && !t.IsAbstract)
+            .SelectMany(impl => impl.GetInterfaces(),
+                (impl, iface) => (impl, iface))
+            .Select(x => (
+                x.impl,
+                x.iface,
+                contract: contracts.FirstOrDefault(c => Matches(x.iface, c.Type))))
+            .Where(x => x.contract.Attr is not null);
 
-                services.Add(new ServiceDescriptor(iface, type, rule.Lifetime));
-            }
-        }
+        foreach (var (impl, iface, contract) in registrations)
+            services.Add(new ServiceDescriptor(iface, impl, contract.Attr!.Lifetime));
 
         return services;
     }
+
+    private static bool Matches(Type candidate, Type contract)
+        => contract.IsGenericTypeDefinition
+            ? candidate.IsGenericType
+              && candidate.GetGenericTypeDefinition() == contract
+            : candidate == contract;
 }

@@ -1,5 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
+using SharedKernel.DependencyInjection;
+
 namespace SharedKernel.Abstractions;
 
+[AutoRegister(ServiceLifetime.Scoped)]
 public interface ICommandHandler<TCommand>
     where TCommand : ICommand
 {

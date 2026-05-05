@@ -4,7 +4,7 @@ using SharedKernel.Abstractions;
 
 namespace SharedKernel.Infrastructure.EntityFrameworkCore;
 
-public static class SharedKernelEfCoreServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSharedKernelEfCore<TContext>(
         this IServiceCollection services)

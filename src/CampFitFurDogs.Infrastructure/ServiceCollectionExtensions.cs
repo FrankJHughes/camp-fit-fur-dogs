@@ -1,20 +1,20 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Scrutor;
 
-using SharedKernel.Abstractions;
 using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 using CampFitFurDogs.Infrastructure.Data;
 
+
 namespace CampFitFurDogs.Infrastructure;
 
-public static class DependencyInjection
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+        )
     {
         var assembly = typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly;
 
@@ -22,6 +22,8 @@ public static class DependencyInjection
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
+
+        services.AddSharedKernelEfCore<AppDbContext>();
 
         return services;
     }
