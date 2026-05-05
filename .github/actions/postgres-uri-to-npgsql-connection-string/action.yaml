@@ -62,8 +62,13 @@ runs:
         host="$(echo "$hostport" | cut -d: -f1)"
         port="$(echo "$hostport" | cut -d: -f2)"
 
-        # Default port if missing
-        if [[ -z "$port" ]]; then
+        # If there was no colon, $port == $host → no explicit port
+        if [[ "$port" == "$host" ]]; then
+          port=""
+        fi
+
+        # If port is empty or non-numeric, default to 5432
+        if [[ -z "$port" || ! "$port" =~ ^[0-9]+$ ]]; then
           port="5432"
         fi
 
