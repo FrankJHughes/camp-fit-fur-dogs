@@ -10,238 +10,162 @@ concurrency:
 
 jobs:
 
-  common_vars:
-    name: Common Vars
+  preview_context:
+    name: Preview Context
     runs-on: ubuntu-latest
     outputs:
-      prefix: ${{ steps.set_common_prefix.outputs.prefix }}
+      prefix: ${{ steps.out.outputs.prefix }}
+      artifact_name: ${{ steps.out.outputs.artifact_name }}
+      artifact_file_path: ${{ steps.out.outputs.artifact_file_path }}
+      db_branch: ${{ steps.out.outputs.db_branch }}
+      api_base_url: ${{ steps.out.outputs.api_base_url }}
+      api_live_endpoint: "/api/dogs"
     steps:
-      - id: set_common_prefix
-        run: echo "prefix=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-
-  artifact_vars:
-    name: Artifact Vars
-    runs-on: ubuntu-latest
-    needs: common_vars
-    outputs:
-      artifact_name: ${{ steps.set_artifact_name.outputs.artifact_name }}
-      artifact_file_path: ${{ steps.set_artifact_file_path.outputs.artifact_file_path }}
-    steps:
-
-      - id: set_artifact_name
-        run: echo "artifact_name=${{ needs.common_vars.outputs.prefix }}" >> $GITHUB_OUTPUT
-
-      - id: set_artifact_file_path
-        run: echo "artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
-
-  db_vars:
-    name: DB Vars
-    runs-on: ubuntu-latest
-    needs: common_vars
-    outputs:
-      branch: ${{ steps.set_branch.outputs.branch }}
-    steps:
-      - id: set_branch
-        run: echo "branch=${{ needs.common_vars.outputs.prefix }}" >> $GITHUB_OUTPUT
-
-  api_vars:
-    name: API Vars
-    runs-on: ubuntu-latest
-    needs: common_vars
-    outputs:
-      api_base_url: ${{ steps.set_api_base_url.outputs.api_base_url }}
-    steps:
-      - id: set_api_base_url
-        run: echo "api_base_url=https://campfitfurdogsapi-${{ needs.common_vars.outputs.prefix }}.onrender.com" >> $GITHUB_OUTPUT
+      - id: out
+        run: |
+          prefix="pr-${{ github.event.pull_request.number }}"
+          echo "prefix=$prefix" >> $GITHUB_OUTPUT
+          echo "artifact_name=$prefix" >> $GITHUB_OUTPUT
+          echo "artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
+          echo "db_branch=$prefix" >> $GITHUB_OUTPUT
+          echo "api_base_url=https://campfitfurdogsapi-$prefix.onrender.com" >> $GITHUB_OUTPUT
 
   destroy_stale_api:
     name: Destroy Stale API
-    if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
+    if: github.event.action != 'opened'
     runs-on: ubuntu-latest
-    needs:
-      - api_vars
+    needs: preview_context
     permissions:
       contents: read
       pull-requests: write
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Remove "render-preview" Label
+      - uses: actions/checkout@v4
+      - name: Remove render-preview label
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
-
-      - name: Wait for Render to Destroy the Stale API Preview
-        env:
-          api_base_url: ${{ needs.api_vars.outputs.api_base_url }}
-        run: |
-          echo "Waiting up to 3m for previous PR preview removal to complete..."
-          for i in {1..36}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url/health" || echo "000")
-            if [ "$status" = "404" ]; then
-              echo "Previous PR preview removal is complete."
-              exit 0
-            fi
-            echo "Previous PR preview is still being removed (status: $status). Retrying in 5s..."
-            sleep 5
-          done
-          echo "Previous PR preview was not removed in time."
-          exit 1
+        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
+      - uses: ./.github/actions/wait-for-endpoint
+        with:
+          url: "${{ needs.preview_context.outputs.api_base_url }}/health"
+          healthy: "404"
+          timeout: 180
 
   destroy_stale_artifact:
-    name: Destroy Stale Preview Artifact
-    if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
+    name: Destroy Stale Artifact
+    if: github.event.action != 'opened'
     runs-on: ubuntu-latest
-    needs:
-      - artifact_vars
+    needs: preview_context
     steps:
       - uses: geekyeggo/delete-artifact@v6
         with:
-          name: ${{ needs.artifact_vars.outputs.artifact_name }}
+          name: ${{ needs.preview_context.outputs.artifact_name }}
 
   destroy_stale_db:
     name: Destroy Stale DB
-    if: github.event.action != 'opened' # Don't attempt to delete a preview on the initial PR creation, as it won't exist yet
+    if: github.event.action != 'opened'
     runs-on: ubuntu-latest
-    needs:
-      - db_vars
+    needs: preview_context
     steps:
-      - name: Delete Branch
+      - uses: neondatabase/delete-branch-action@v3
         continue-on-error: true
-        uses: neondatabase/delete-branch-action@v3
         with:
           api_key: ${{ secrets.NEON_API_KEY }}
           project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch: ${{ needs.db_vars.outputs.branch }}
+          branch: ${{ needs.preview_context.outputs.db_branch }}
 
   deploy_fresh_db:
     name: Deploy Fresh DB
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     needs:
-      - db_vars
-      - artifact_vars
+      - preview_context
+      - destroy_stale_api
       - destroy_stale_artifact
       - destroy_stale_db
-
+    outputs:
+      db_conn_string: ${{ steps.conn.outputs.db_conn_string }}
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set Expiration Date
-        id: set_expiration_date
-        run: |
-          echo "expiration_date=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
-
-      # ============================
-      # NEON PREVIEW DB
-      # ============================
+      - name: Compute Expiration
+        id: exp
+        run: echo "expiration=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
       - name: Create Neon Branch
-        id: create_neon_branch
+        id: neon
         uses: neondatabase/create-branch-action@v6
         with:
           api_key: ${{ secrets.NEON_API_KEY }}
           project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch_name: ${{ needs.db_vars.outputs.branch }}
-          expires_at: ${{ steps.set_expiration_date.outputs.expiration_date }}
+          branch_name: ${{ needs.preview_context.outputs.db_branch }}
+          expires_at: ${{ steps.exp.outputs.expiration }}
 
-      - name: Set DB Connection
-        id: set_db_conn
-        run: |
-          HOST="${{ steps.create_neon_branch.outputs.db_host }}"
-          PASS="${{ steps.create_neon_branch.outputs.password }}"
-
-          db_conn_string="Host=$HOST;Port=5432;Database=neondb;Username=neondb_owner;Password=$PASS;Ssl Mode=Require;Trust Server Certificate=true;"
-          echo "db_conn_string=$db_conn_string" >> $GITHUB_OUTPUT
-
-      # ============================
-      # APPLY MIGRATIONS + INFRA INTEGRATION TESTS
-      # ============================
+      - name: Convert PostgreSQL URI to Npgsql Connection String
+        id: conn
+        uses: ./.github/actions/postgres-uri-to-npgsql-connection-string
+        with:
+          postgres_uri: ${{ steps.neon.outputs.db_url }}   # Neon’s official output
+          # pooling: "true"
+          # timeout: "15"
+          # ssl_mode: "Require"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install EF Core CLI
-        run: dotnet tool install --global dotnet-ef
+      - run: dotnet tool install --global dotnet-ef
+      - run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+      - run: dotnet restore
 
-      - name: Add .NET tools to PATH
-        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
-      - name: Restore solution
-        run: dotnet restore
-
-      - name: Apply EF Core Migrations
+      - name: Apply Migrations
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.set_db_conn.outputs.db_conn_string }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.db_conn_string }}" \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
 
-      - name: Run DB Integration Tests
+      - name: Run DB Tests
         run: |
-          ConnectionStrings__DefaultConnection="${{ steps.set_db_conn.outputs.db_conn_string }}" \
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.db_conn_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
-      - name: Write Preview Artifact File
-        run: |
-          echo "${{ steps.set_db_conn.outputs.db_conn_string }}" > db-conn.txt
+      - name: Write Artifact
+        run: echo "${{ steps.conn.outputs.db_conn_string }}" > db-conn.txt
 
-      - name: Deploy Fresh Artifact
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         with:
-          name: ${{ needs.artifact_vars.outputs.artifact_name }}
-          path: ${{ needs.artifact_vars.outputs.artifact_file_path }}
+          name: ${{ needs.preview_context.outputs.artifact_name }}
+          path: ${{ needs.preview_context.outputs.artifact_file_path }}
 
   deploy_fresh_api:
     name: Deploy Fresh API
-    needs:
-      - api_vars
-      - destroy_stale_api
-      - deploy_fresh_db
-    if: github.event.action != 'closed' && github.event.action != 'opened' # No need to wait if the PR was just opened (no preview to remove) or closed (we're not creating a new preview)
+    if: github.event.action != 'closed' && github.event.action != 'opened'
     runs-on: ubuntu-latest
+    needs:
+      - preview_context
+      - deploy_fresh_db
+      - destroy_stale_api
     permissions:
       contents: read
       pull-requests: write
     steps:
+      - uses: actions/checkout@v4
 
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Add "render-preview" Label
+      - name: Add render-preview label
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Wait for API
-        env:
-          api_base_url: ${{ needs.api_vars.outputs.api_base_url }}
-          api_live_endpoint: "/api/dogs"
-        run: |
-          echo "Waiting up to 3m for API..."
-          for i in {1..36}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$api_base_url$api_live_endpoint" || echo "000")
-            if [ "$status" = "200" ] || [ "$status" = "400" ] || [ "$status" = "401" ] || [ "$status" = "404" ]; then
-              echo "Fresh Baked API"
-              exit 0
-            fi
-            echo "API Baking: (status: $status). Retrying in 5s..."
-            sleep 5
-          done
-          echo "API Not Ready in Time"
-          exit 1
+      - uses: ./.github/actions/wait-for-endpoint
+        with:
+          url: "${{ needs.preview_context.outputs.api_base_url }}${{ needs.preview_context.outputs.api_live_endpoint }}"
+          healthy: "200,400,401,404"
+          timeout: 180
 
       - name: Test API
         run: |
-          API_BASE_URL=${{ needs.api_vars.outputs.api_base_url }} \
+          API_BASE_URL=${{ needs.preview_context.outputs.api_base_url }} \
           dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
-
