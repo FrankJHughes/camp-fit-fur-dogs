@@ -168,7 +168,7 @@ jobs:
           healthy: "200,400,401"
           timeout: 300
           adjective: "up"
-          consecutive_successes_required: 2
+          consecutive_successes_required: 3
 
       - name: Test API
         run: |
