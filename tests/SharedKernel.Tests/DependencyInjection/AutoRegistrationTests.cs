@@ -1,5 +1,6 @@
 using SharedKernel.DependencyInjection;
 using SharedKernel.Events;
+using SharedKernel.Tests.DependencyInjection.Fakes;
 
 namespace SharedKernel.Tests.DependencyInjection;
 
@@ -11,13 +12,12 @@ public sealed class AutoRegistrationTests
         var services = new ServiceCollection();
 
         services.AddSharedKernel(
-            new[] { typeof(SharedKernel.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
+            [typeof(FakeCommand).Assembly]
         );
 
         using var provider = services.BuildServiceProvider();
 
-        var handler = provider.GetService<ICommandHandler<SharedKernel.Tests.DependencyInjection.Fakes.FakeCommand, SharedKernel.Tests.DependencyInjection.Fakes.FakeResponse>>();
-
+        var handler = provider.GetService<ICommandHandler<FakeCommand, FakeResponse>>();
         handler.Should().NotBeNull();
     }
 
@@ -27,12 +27,12 @@ public sealed class AutoRegistrationTests
         var services = new ServiceCollection();
 
         services.AddSharedKernel(
-            new[] { typeof(SharedKernel.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
+            [typeof(Fakes.AssemblyMarker).Assembly]
         );
 
         using var provider = services.BuildServiceProvider();
 
-        var handler = provider.GetService<IQueryHandler<SharedKernel.Tests.DependencyInjection.Fakes.FakeQuery, SharedKernel.Tests.DependencyInjection.Fakes.FakeResponse>>();
+        var handler = provider.GetService<IQueryHandler<FakeQuery, FakeResponse>>();
 
         handler.Should().NotBeNull();
     }

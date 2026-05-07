@@ -15,7 +15,7 @@ public class EditDogProfileHandler : ICommandHandler<EditDogProfileCommand>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(EditDogProfileCommand command, CancellationToken ct)
+    public async Task HandleAsync(EditDogProfileCommand command, CancellationToken ct)
     {
         var dog = await _dogRepository.GetByIdAsync(
             DogId.From(command.DogId), ct);

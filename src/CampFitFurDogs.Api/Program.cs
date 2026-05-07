@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 
+using SharedKernel.DependencyInjection;
 using SharedKernel.Api;
 
 using CampFitFurDogs.Api.HostingEnvironment;
@@ -31,16 +32,18 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+builder.Services.AddSharedKernel([
+    typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
+    typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
+    typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+]);
+
 builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var apiAssembly = typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
 EndpointDiscovery.AddEndpoints(apiAssembly);
-
-//
-// END SHARED KERNEL ASSISTED REGISTRATION
-//
 
 builder.Services.AddOpenApi();
 

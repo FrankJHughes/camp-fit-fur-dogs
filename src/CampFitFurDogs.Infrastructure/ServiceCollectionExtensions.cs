@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 using CampFitFurDogs.Infrastructure.Data;
+using SharedKernel.DependencyInjection;
 
 
 namespace CampFitFurDogs.Infrastructure;

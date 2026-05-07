@@ -49,11 +49,17 @@ public class CampFitFurDogsApiFactory : WebApplicationFactory<Program>
             //
             // 3. Replace ICurrentUserService with test double
             //
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(ICurrentUserService));
+            var descriptors =
+                services
+                .Where(
+                    d => d.ServiceType == typeof(ICurrentUserService))
+                .ToList();
 
-            if (descriptor != null)
-                services.Remove(descriptor);
+            foreach (var descriptor in descriptors)
+            {
+                if (descriptor != null)
+                    services.Remove(descriptor);
+            }
 
             // Correct: instance override using lambda to force the instance overload
             services.AddScoped<ICurrentUserService>(_ => TestUser);

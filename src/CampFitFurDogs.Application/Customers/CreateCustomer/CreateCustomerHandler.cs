@@ -17,7 +17,7 @@ public sealed class CreateCustomerHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken ct)
+    public async Task<Guid> HandleAsync(CreateCustomerCommand request, CancellationToken ct)
     {
         var email = Email.From(request.Email);
         if (await _repo.EmailExistsAsync(email, ct))

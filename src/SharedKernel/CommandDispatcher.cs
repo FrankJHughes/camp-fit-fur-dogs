@@ -39,7 +39,7 @@ public sealed class CommandDispatcher : ICommandDispatcher
         var handler = (object)_provider.GetRequiredService(handlerType);
 
         // 3. Execute handler
-        return await ((dynamic)handler).Handle((dynamic)command, ct);
+        return await ((dynamic)handler).HandleAsync((dynamic)command, ct);
     }
 
     public async Task DispatchAsync(ICommand command, CancellationToken ct)
@@ -67,7 +67,7 @@ public sealed class CommandDispatcher : ICommandDispatcher
         var handler = (object)_provider.GetRequiredService(handlerType);
 
         // 3. Execute handler
-        await ((dynamic)handler).Handle((dynamic)command, ct);
+        await ((dynamic)handler).HandleAsync((dynamic)command, ct);
     }
 
 }

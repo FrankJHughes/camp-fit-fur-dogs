@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 using SharedKernel.DependencyInjection;
+using System.Reflection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 
@@ -30,11 +31,10 @@ public class DiGuardrailTests
             from d in descriptors
             where d.ServiceType.IsInterface
             let impl = d.ImplementationType
+            let arAttr = d.ServiceType.GetCustomAttribute<AutoRegisterAttribute>()
             where impl is not null
-                  && impl.Namespace is not null
-                  && impl.Namespace.StartsWith("CampFitFurDogs.Application")
-                  && !AllowedInterfaceOnly.Contains(d.ServiceType.Name)
-                  && !descriptors.Any(x => x.ServiceType == impl)
+                && arAttr is not null && arAttr.RegisterConcreteType
+                && !descriptors.Any(x => x.ServiceType == impl)
             select $"{d.ServiceType.Name} -> {impl.Name}";
 
         Assert.False(offenders.Any(),
