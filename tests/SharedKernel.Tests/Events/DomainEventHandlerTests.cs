@@ -14,7 +14,7 @@ public sealed class DomainEventHandlerTests
         public TestEvent? LastEvent { get; private set; }
         public CancellationToken? LastToken { get; private set; }
 
-        public Task Handle(TestEvent domainEvent, CancellationToken cancellationToken)
+        public Task HandleAsync(TestEvent domainEvent, CancellationToken cancellationToken)
         {
             CallCount++;
             LastEvent = domainEvent;
@@ -29,7 +29,7 @@ public sealed class DomainEventHandlerTests
         var evt = new TestEvent();
         var handler = new TrackingHandler();
 
-        await handler.Handle(evt, CancellationToken.None);
+        await handler.HandleAsync(evt, CancellationToken.None);
 
         handler.CallCount.Should().Be(1);
         handler.LastEvent.Should().Be(evt);
@@ -42,7 +42,7 @@ public sealed class DomainEventHandlerTests
         var handler = new TrackingHandler();
         var token = new CancellationTokenSource().Token;
 
-        await handler.Handle(evt, token);
+        await handler.HandleAsync(evt, token);
 
         handler.LastToken.Should().Be(token);
     }

@@ -1,196 +1,128 @@
 # Code Conventions
 
 This document defines the coding‑level rules for backend and frontend code.  
-It complements the architectural conventions and ensures all code remains consistent, testable, and aligned with the system’s guardrails.
+It complements the architectural and workflow conventions and ensures code remains consistent, testable, and aligned with the system’s guardrails.
 
 ---
 
-# Backend Conventions
+## Backend Conventions
 
-Backend code follows the layered architecture and CQRS pipelines defined in `architecture.md`.
-
-## Layer Responsibilities
-
-- **Api** — endpoints, DTO binding, authorization, dispatching commands/queries.
-- **Application** — use‑case orchestration, validation, domain interaction.
-- **Domain** — business rules, aggregates, value objects, domain events.
-- **Infrastructure** — persistence, external integrations, EF Core, repositories, unit of work.
+### Layer responsibilities
+- **Api** — endpoints, DTO binding, authorization, dispatching commands/queries.  
+- **Application** — use‑case orchestration, validation, domain interaction.  
+- **Domain** — business rules, aggregates, value objects, domain events.  
+- **Infrastructure** — persistence, external integrations, EF Core, repositories, unit of work.  
 - **SharedKernel** — cross‑cutting primitives, CQRS abstractions, endpoint discovery, DI conventions.
 
-Domain logic must never leak into Api, Application, or Infrastructure plumbing.
+**Rules**
+- Domain must not depend on Application, Infrastructure, or Api.  
+- Application must not depend on Infrastructure or Api.  
+- Infrastructure must not depend on Api.  
+- Api must not contain business logic.  
+- Prefer SharedKernel for cross‑cutting primitives; do not reimplement.
 
 ---
 
-# CQRS Handler Conventions
+## CQRS Handler Conventions
 
-Commands and queries live in Application slices.
+**Placement**
+- Commands, queries, and handlers live in Application slices.
 
-Handlers must be thin coordinators:
+**Handler responsibilities**
+- Validate inputs via validators.  
+- Load aggregates or required state.  
+- Invoke domain behavior (aggregate methods, domain services).  
+- Persist changes via repositories and `IUnitOfWork`.  
+- Publish domain events via the dispatcher.
 
-- Validate inputs (via validators).
-- Load aggregates or state.
-- Invoke domain behavior.
-- Persist changes via repositories and unit of work.
-- Publish domain events (via dispatcher).
-
-Handlers must not:
-
-- Contain business rules.
-- Perform persistence logic directly.
-- Bypass the dispatcher pipeline.
-
----
-
-# Endpoint Conventions
-
-Endpoints are **slice‑scoped** and discovered automatically via SharedKernel.Api.
-
-## Structure
-
-- Each vertical slice defines its own endpoint class.
-- Endpoints live alongside the slice’s commands, queries, and DTOs.
-- Endpoints implement `IEndpoint` and expose:
-
-```
-void Map(IEndpointRouteBuilder app)
-```
-
-## Behavioral Rules
-
-Endpoints may only perform:
-
-- DTO binding
-- Shape validation
-- Authorization
-- Dispatching commands or queries
-- Returning DTOs
-
-Endpoints must not:
-
-- Contain business logic
-- Return domain entities
-- Reference Infrastructure directly
-- Accept identity from the request body
-
-Identity is resolved exclusively via `ICurrentUserService`.
-
-## Routing Rules
-
-- Routes map one‑to‑one to commands or queries.
-- Routing must be explicit inside each endpoint class.
-- No attribute routing.
-- No monolithic `Endpoints.cs` files.
-
-## Testability
-
-- Endpoint logic should be extractable into pure functions where possible.
-- Endpoints must be testable via unit or integration tests.
+**Prohibitions**
+- Handlers must not contain business rules.  
+- Handlers must not perform low‑level persistence logic directly.  
+- Do not bypass the dispatcher pipeline.
 
 ---
 
-# Identity and Security
+## Endpoint Conventions
 
-## Identity
+**Discovery and structure**
+- Endpoints are slice‑scoped and implement `IEndpoint`.  
+- Each endpoint exposes `void Map(IEndpointRouteBuilder app)`.  
+- Endpoints live alongside slice commands, queries, and DTOs.
 
-- Always resolved via `ICurrentUserService`.
-- Never accepted from request bodies.
-- Application code depends only on the abstraction.
+**Allowed responsibilities**
+- DTO binding and shape validation.  
+- Authorization checks.  
+- Dispatching commands/queries.  
+- Returning DTOs or appropriate HTTP results.
 
-## Security
+**Forbidden responsibilities**
+- No business logic in endpoints.  
+- Do not return domain entities.  
+- Do not reference Infrastructure directly.  
+- Do not accept identity from request bodies — use `ICurrentUserService`.
 
-- Never store plaintext passwords.
-- Use BCrypt with work factor 11.
-- Authorization checks belong in endpoints and, when necessary, in handlers.
-- Avoid duplicating security logic; centralize policies.
-
----
-
-# Password Hashing
-
-Password hashing is implemented via the `PasswordHash` value object in the Domain.
-
-Entry points:
-
-- `PasswordHash.Create(rawPassword)`
-- `PasswordHash.Verify(rawPassword)`
-- `PasswordHash.From(existingHash)`
-
-Rules:
-
-- No custom hashing logic outside this value object.
-- No plaintext passwords persisted or logged.
-- Application and Infrastructure must use the value object.
+**Routing**
+- Routes map one‑to‑one to commands or queries.  
+- Use explicit mapping inside the endpoint class.  
+- Avoid attribute routing and monolithic endpoint files.
 
 ---
 
-# SharedKernel Usage
+## Identity and Security
 
-SharedKernel provides:
+**Identity**
+- Resolve identity via `ICurrentUserService` only.  
+- Application depends on the abstraction; Infrastructure provides the implementation; Api tests provide a test implementation.
 
-- CQRS abstractions and dispatchers
-- Validation pipeline integration
-- DI conventions and auto‑registration
-- Domain primitives (`ValueObject`, `Entity`, `AggregateRoot`, `AggregateId`)
-- Domain event abstractions and dispatcher
-- EF Core base classes
-- Endpoint discovery infrastructure
-- `SharedKernelOptions`
+**Passwords and hashing**
+- Use the domain `PasswordHash` value object for hashing and verification.  
+- No plaintext passwords persisted or logged.  
+- Use BCrypt with a work factor consistent with SharedKernel defaults.
 
-Product layers:
-
-- Must not reimplement these patterns.
-- Must depend on SharedKernel types and extensions.
-- Must keep SharedKernel free of product‑specific concerns.
+**Authorization**
+- Authorization checks belong in endpoints and, when necessary, in handlers.  
+- Centralize policies; avoid duplicating security logic.
 
 ---
 
-# PR Preview Coding Rules
+## EF Core and Persistence Conventions
 
-The system uses Neon + Render PR Previews. Code must be preview‑safe.
+**Mapping**
+- Aggregate root maps to a table; Id is the key and not value‑generated.  
+- Domain events are ignored by EF Core and not persisted.  
+- Use derived configurations to map properties, relationships, and indexes.
 
-## Requirements
+**Unit of Work**
+- `DbContext` is the only layer that talks directly to the database.  
+- Unit of Work coordinates `SaveChangesAsync` and domain event dispatch after persistence.  
+- Unit of Work contains no business logic.
 
-- API must expose `/health` for readiness checks.
-- API must not assume a persistent database.
-- Migrations must run cleanly against empty Neon branches.
-- Connection strings must be read from `ConnectionStrings__DefaultConnection`.
-- No environment‑specific branching in code.
-- No hardcoded URLs or secrets.
-
-## Behavior
-
-- All preview instances use ephemeral Neon branches.
-- All preview instances run the same code as production.
-- Code must tolerate cold starts and transient connections.
+**Migrations**
+- Migrations are applied by CI workflows only; tests must not apply migrations.  
+- Code must support clean migration runs against empty preview branches.
 
 ---
 
-# EF Core Conventions
+## PR Preview Safety Rules
 
-Infrastructure provides base configurations for aggregates.
+Code must be safe to run in ephemeral preview environments (Neon + Render).
 
-Rules:
+**Requirements**
+- Expose `/health` for teardown readiness checks.  
+- Do not assume persistent DB state; tolerate empty databases.  
+- Read connection strings from `ConnectionStrings__DefaultConnection`.  
+- Avoid environment‑specific branching in code.  
+- Do not hardcode URLs, credentials, or secrets.
 
-- Aggregate root maps to a table.
-- Id is the key and not value‑generated.
-- Domain events are ignored by EF Core.
-- Derived configurations map properties, relationships, and indexes.
-- DbContext is the only layer that talks directly to the database.
-
-Unit of Work:
-
-- Uses DbContext to save changes.
-- Contains no business logic.
-- Coordinates domain event dispatch after persistence.
+**Behavioral expectations**
+- Code must tolerate cold starts and transient connection failures.  
+- Migrations must be idempotent and safe to run in CI against preview branches.
 
 ---
 
-# Frontend Conventions
+## Frontend Conventions
 
-The frontend follows a **layer + aggregate** structure that mirrors backend slices.
-
-## Directory Structure
-
+**Structure**
 ```
 frontend/
   src/
@@ -205,89 +137,79 @@ frontend/
   test/...
 ```
 
-### Layer Responsibilities
+**Layer responsibilities**
+- `api/` — server‑call functions (one per slice).  
+- `components/` — presentational React components.  
+- `lib/` — pure logic and action functions.  
+- `hooks/` — behavioral hooks for UI state and API calls.  
+- `app/` — Next.js routing layer.
 
-- `api/` — server‑call functions (one per slice)
-- `components/` — presentational components
-- `lib/` — pure logic and action functions
-- `hooks/` — behavioral hooks orchestrating UI state, API calls, navigation
-- `app/` — Next.js routing layer (untouched by conventions)
+**Naming**
+- `api/`: `camelCaseVerb.ts` (e.g., `getDogProfile.ts`).  
+- `components/`: `PascalCase.tsx` (e.g., `DogProfileCard.tsx`).  
+- `lib/`: `camelCase.ts` (e.g., `dogProfileActions.ts`).  
+- `app/`: follow Next.js conventions (`page.tsx`, `layout.tsx`).
 
-### Shared Infrastructure
+**Shared infra**
+- `lib/api/` — API client, `CommandResult`, `QueryResult`.  
+- `lib/hooks/` — shared hooks (`useApiQuery`, `useCommand`).  
+- `lib/components/` — cross‑aggregate components.
 
-- `lib/api/` — API client, `CommandResult`, `QueryResult`
-- `lib/hooks/` — shared hooks (`useApiQuery`, `useCommand`, `useConfirmDialog`)
-- `lib/components/` — cross‑aggregate components (`ConfirmDialog`, `ActionsCard`)
-
-### Naming Conventions
-
-- `api/`: `camelCaseVerb.ts` (e.g., `getDogProfile.ts`)
-- `components/`: `PascalCase.tsx` (e.g., `DogProfileCard.tsx`)
-- `lib/`: `camelCase.ts` (e.g., `dogProfileActions.ts`)
-- `app/`: `page.tsx` (Next.js convention)
-
-### Dynamic Route Safety
-
-PowerShell treats `[id]` as a wildcard.  
-All file operations involving dynamic route folders must use:
-
-```
--LiteralPath
-```
-
-Never use `-Path` with bracket characters.
-
-### Testing
-
-- Vitest v3 multi‑project setup
-- React Testing Library
-- `@testing-library/jest-dom` assertions
-- `test/` mirrors `src/` exactly
-
-Rules:
-
-- Keep components small and focused.
-- Prefer composition over inheritance.
-- Keep side‑effects at the edges (hooks, data‑fetching boundaries).
+**Dynamic route safety**
+- When scripting file operations on dynamic route folders (e.g., `[id]`), use literal path semantics (`-LiteralPath` in PowerShell) to avoid globbing issues.
 
 ---
 
-# Testing Conventions
+## Testing Conventions
 
-Tests must be:
+**Principles**
+- Tests must be fast, deterministic, and isolated.  
+- Follow red–green–refactor discipline.
 
-- Fast
-- Deterministic
-- Isolated
+**Backend**
+- Unit tests: domain logic, handlers, small infra pieces.  
+- Integration tests: persistence, endpoint behavior, cross‑layer flows.  
+- Infrastructure tests run against the fresh preview DB and must not apply migrations.
 
-## Backend Testing
+**Frontend**
+- Use Vitest v3, React Testing Library, and `@testing-library/jest-dom`.  
+- Component tests focus on behavior, not implementation details.  
+- `test/` mirrors `src/`.
 
-- Unit tests cover domain logic, application handlers, and small infrastructure pieces.
-- Integration tests cover persistence, endpoint behavior, and cross‑layer flows.
-- Endpoint tests verify routing, binding, authorization, and dispatch behavior.
-
-## Frontend Testing
-
-- Component tests verify rendering and behavior.
-- Use React Testing Library and jest‑dom.
-- Avoid testing implementation details.
-
-## Naming
-
-- Tests should describe behavior, not implementation.
-- Prefer scenario‑style names that read like specifications.
+**Naming**
+- Tests should describe behavior and read like specifications.
 
 ---
 
-# Summary
+## Tooling and Scripts
+
+**Shell and encoding**
+- Primary shell: PowerShell.  
+- Generated files: `utf8NoBOM`.  
+- Scripts must be copy‑pasteable and idempotent.
+
+**File generation**
+- Use single‑quoted here‑strings for file generation.  
+- Avoid nested here‑strings, backticks, and problematic quoting sequences.
+
+---
+
+## Enforcement and Guardrails
+
+- Guardrail tests validate layering and dependency rules.  
+- Document which guardrail tests exist and where they run.  
+- When a convention is enforced by SharedKernel or tests, reference the exact type or test name in code comments or docs.
+
+---
+
+## Summary
 
 These conventions ensure:
 
-- Clean layering  
-- Predictable behavior  
-- Preview‑safe code  
-- Consistent frontend structure  
-- Guardrail‑compliant endpoints  
-- Testable, maintainable slices  
+- Clear layering and separation of concerns.  
+- Deterministic CI and preview behavior.  
+- Preview‑safe code that tolerates ephemeral databases and cold starts.  
+- Testable, maintainable backend and frontend slices.  
+- Consistent use of SharedKernel for cross‑cutting concerns.
 
-All code must follow these rules.
+All contributors must follow these rules.

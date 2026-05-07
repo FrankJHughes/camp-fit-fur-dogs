@@ -26,7 +26,7 @@ public class RegisterDogHandlerTests
             DateOfBirth: new DateOnly(2022, 6, 15),
             Sex: "Female");
 
-        var dogId = await _handler.Handle(command, CancellationToken.None);
+        var dogId = await _handler.HandleAsync(command, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, dogId);
         Assert.Single(_repo.Dogs);
@@ -49,7 +49,7 @@ public class RegisterDogHandlerTests
             Sex: "Unknown");
 
         await Assert.ThrowsAsync<ArgumentException>(
-            () => _handler.Handle(command, CancellationToken.None));
+            () => _handler.HandleAsync(command, CancellationToken.None));
 
         Assert.Empty(_repo.Dogs);
     }
@@ -64,7 +64,7 @@ public class RegisterDogHandlerTests
             DateOfBirth: new DateOnly(2022, 6, 15),
             Sex: "Female");
 
-        await _handler.Handle(command, CancellationToken.None);
+        await _handler.HandleAsync(command, CancellationToken.None);
 
         Assert.True(_unitOfWork.Committed);
         Assert.Equal(1, _unitOfWork.CommitCount);
@@ -81,7 +81,7 @@ public class RegisterDogHandlerTests
             Sex: "Unknown");
 
         await Assert.ThrowsAsync<ArgumentException>(
-            () => _handler.Handle(command, CancellationToken.None));
+            () => _handler.HandleAsync(command, CancellationToken.None));
 
         Assert.False(_unitOfWork.Committed);
         Assert.Equal(0, _unitOfWork.CommitCount);

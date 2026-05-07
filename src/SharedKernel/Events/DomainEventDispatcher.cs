@@ -24,7 +24,7 @@ public sealed class DomainEventDispatcher : IDomainEventDispatcher
         // Invoke handlers
         foreach (var handler in handlers)
         {
-            await handler.Handle(domainEvent, ct);
+            await handler.HandleAsync(domainEvent, ct);
         }
     }
 }

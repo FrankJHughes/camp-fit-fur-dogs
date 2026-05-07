@@ -20,21 +20,31 @@ jobs:
       db_branch: ${{ steps.out.outputs.db_branch }}
       api_base_url: ${{ steps.out.outputs.api_base_url }}
       api_live_endpoint: "/api/dogs"
+      should_destroy: ${{ steps.out.outputs.should_destroy }}
+      should_deploy: ${{ steps.out.outputs.should_deploy }}
     steps:
       - id: out
         run: |
+          # CONTRACT:artifact-naming — shared with RenderHostingProvider.cs
+          # See docs/conventions/workflow.md → "Artifact Naming Contract"
           common_prefix="pr-${{ github.event.pull_request.number }}"
           echo "common_prefix=$common_prefix" >> $GITHUB_OUTPUT
           echo "artifact_name=$common_prefix" >> $GITHUB_OUTPUT
           echo "artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
           echo "db_branch=$common_prefix" >> $GITHUB_OUTPUT
           echo "api_base_url=https://campfitfurdogsapi-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
+          action="${{ github.event.action }}"
+          should_destroy=$([[ "$action" != "opened" ]] && echo "true" || echo "false")
+          should_deploy=$([[ "$action" != "closed" ]] && echo "true" || echo "false")
+          echo "should_destroy=$should_destroy" >> $GITHUB_OUTPUT
+          echo "should_deploy=$should_deploy" >> $GITHUB_OUTPUT
 
   destroy_stale_api:
     name: Destroy Stale API
-    if: github.event.action != 'opened'
     runs-on: ubuntu-latest
     needs: preview_context
+    if: |
+      needs.preview_context.outputs.should_destroy == 'true'
     permissions:
       contents: read
       pull-requests: write
@@ -54,9 +64,10 @@ jobs:
 
   destroy_stale_artifact:
     name: Destroy Stale Artifact
-    if: github.event.action != 'opened'
     runs-on: ubuntu-latest
     needs: preview_context
+    if: |
+      needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: geekyeggo/delete-artifact@v6
         with:
@@ -64,9 +75,10 @@ jobs:
 
   destroy_stale_db:
     name: Destroy Stale DB
-    if: github.event.action != 'opened'
     runs-on: ubuntu-latest
     needs: preview_context
+    if: |
+      needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: neondatabase/delete-branch-action@v3
         continue-on-error: true
@@ -77,13 +89,14 @@ jobs:
 
   deploy_fresh_db:
     name: Deploy Fresh DB
-    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     needs:
       - preview_context
       - destroy_stale_api
       - destroy_stale_artifact
       - destroy_stale_db
+    if: |
+      needs.preview_context.outputs.should_deploy == 'true'
     outputs:
       db_conn_string: ${{ steps.conn.outputs.db_conn_string }}
     steps:
@@ -140,12 +153,13 @@ jobs:
 
   deploy_fresh_api:
     name: Deploy Fresh API
-    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     needs:
       - preview_context
       - deploy_fresh_db
       - destroy_stale_api
+    if: |
+      needs.preview_context.outputs.should_deploy == 'true'
     permissions:
       contents: read
       pull-requests: write

@@ -1,13 +1,18 @@
+using Microsoft.Extensions.DependencyInjection;
+using SharedKernel.DependencyInjection;
+
 namespace SharedKernel.Abstractions;
 
-public interface ICommandHandler<TCommand>
+[AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
+public interface ICommandHandler<in TCommand>
     where TCommand : ICommand
 {
-    Task Handle(TCommand command, CancellationToken ct);
+    Task HandleAsync(TCommand command, CancellationToken ct);
 }
 
-public interface ICommandHandler<TCommand, TResponse>
+[AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
+public interface ICommandHandler<in TCommand, TResponse>
     where TCommand : ICommand<TResponse>
 {
-    Task<TResponse> Handle(TCommand command, CancellationToken ct);
+    Task<TResponse> HandleAsync(TCommand command, CancellationToken ct);
 }

@@ -41,7 +41,7 @@ public class ListDogsByOwnerHandlerTests
 
         var query = new ListDogsByOwnerQuery(ownerId.Value);
 
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(2);
         result.Dogs.Should().Contain(d => d.Name == "Biscuit" && d.Breed == "Golden Retriever");
@@ -53,7 +53,7 @@ public class ListDogsByOwnerHandlerTests
     {
         var query = new ListDogsByOwnerQuery(Guid.NewGuid());
 
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         result.Dogs.Should().BeEmpty();
     }
@@ -83,7 +83,7 @@ public class ListDogsByOwnerHandlerTests
 
         var query = new ListDogsByOwnerQuery(ownerA.Value);
 
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(1);
         result.Dogs[0].Name.Should().Be("Biscuit");

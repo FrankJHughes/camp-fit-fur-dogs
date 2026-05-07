@@ -10,7 +10,7 @@ public sealed class TrackingCommandHandler<TCommand, TResponse>
     public TCommand? LastCommand { get; private set; }
     public CancellationToken? LastToken { get; private set; }
 
-    public Task<TResponse> Handle(TCommand command, CancellationToken ct)
+    public Task<TResponse> HandleAsync(TCommand command, CancellationToken ct)
     {
         CallCount++;
         LastCommand = command;

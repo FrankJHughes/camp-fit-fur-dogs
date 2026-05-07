@@ -20,6 +20,9 @@
     <Project Path="tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj" />
     <Project Path="tests/SharedKernel.Tests/SharedKernel.Tests.csproj" />
+    <Project Path="tests/SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers/SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers.csproj" />
+    <Project Path="tests/SharedKernel.Tests.DependencyInjection.Fakes/SharedKernel.Tests.DependencyInjection.Fakes.csproj" />
+    <Project Path="tests/SharedKernel.Tests.EmptyAssembly/SharedKernel.Tests.EmptyAssembly.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.Tests/SharedKernel.Infrastructure.Tests.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/SharedKernel.Api.Tests/SharedKernel.Api.Tests.csproj" />

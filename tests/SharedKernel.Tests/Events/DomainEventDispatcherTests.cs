@@ -13,7 +13,7 @@ public sealed class DomainEventDispatcherTests
     {
         public List<TestEvent> Received { get; } = new();
 
-        public Task Handle(TestEvent domainEvent, CancellationToken cancellationToken)
+        public Task HandleAsync(TestEvent domainEvent, CancellationToken cancellationToken)
         {
             Received.Add(domainEvent);
             return Task.CompletedTask;
@@ -22,7 +22,7 @@ public sealed class DomainEventDispatcherTests
 
     private sealed class ThrowingHandler : IDomainEventHandler<TestEvent>
     {
-        public Task Handle(TestEvent domainEvent, CancellationToken cancellationToken)
+        public Task HandleAsync(TestEvent domainEvent, CancellationToken cancellationToken)
             => throw new InvalidOperationException("boom");
     }
 

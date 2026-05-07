@@ -14,19 +14,19 @@ public abstract class ApiTestBase : IAsyncLifetime
 {
     protected readonly CampFitFurDogsApiFactory Factory;
     protected readonly PostgresFixture Fixture;
-    protected readonly HttpClient Client;
+    protected HttpClient Client;
 
     protected ApiTestBase(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
     {
         Fixture = fixture;
         Factory = factory;
         Factory.UseContainer(fixture.Container);
-
         Client = Factory.CreateClient();
     }
 
     public virtual async Task InitializeAsync()
     {
+
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 

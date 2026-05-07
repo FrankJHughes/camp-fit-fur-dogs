@@ -8,12 +8,12 @@ public class NoManualInfrastructureRegistrationGuardrailTests
     : ApiTestBase
 {
     public NoManualInfrastructureRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture){ }
+        : base(factory, fixture) { }
 
     [Fact]
     public void Should_Not_Have_Manual_Infrastructure_Registrations()
     {
-        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.DependencyInjection).Assembly;
+        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.ServiceCollectionExtensions).Assembly;
 
         var infraTypes = DiRegistrationScanner.FindTypesWithInterfaces(
             infraAssembly,

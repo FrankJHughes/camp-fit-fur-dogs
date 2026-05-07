@@ -10,7 +10,7 @@ public sealed class TrackingQueryHandler<TQuery, TResponse>
     public TQuery? LastQuery { get; private set; }
     public CancellationToken? LastToken { get; private set; }
 
-    public Task<TResponse> Handle(TQuery query, CancellationToken ct)
+    public Task<TResponse> HandleAsync(TQuery query, CancellationToken ct)
     {
         CallCount++;
         LastQuery = query;
