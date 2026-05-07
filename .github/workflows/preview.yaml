@@ -89,10 +89,6 @@ jobs:
 
   deploy_fresh_db:
     name: Deploy Fresh DB
-<<<<<<< Updated upstream
-    if: github.event.action != 'closed'
-=======
->>>>>>> Stashed changes
     runs-on: ubuntu-latest
     needs:
       - preview_context
@@ -157,10 +153,6 @@ jobs:
 
   deploy_fresh_api:
     name: Deploy Fresh API
-<<<<<<< Updated upstream
-    if: github.event.action != 'closed'
-=======
->>>>>>> Stashed changes
     runs-on: ubuntu-latest
     needs:
       - preview_context
