@@ -27,7 +27,7 @@ public class CreateCustomerHandlerTests
             Phone: "555-123-4567",
             Password: "ValidP@ss1");
 
-        var customerId = await _handler.Handle(command, CancellationToken.None);
+        var customerId = await _handler.HandleAsync(command, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, customerId);
         Assert.Single(_repo.Customers);
@@ -43,7 +43,7 @@ public class CreateCustomerHandlerTests
             Phone: "555-123-4567",
             Password: "ValidP@ss1");
 
-        await _handler.Handle(command, CancellationToken.None);
+        await _handler.HandleAsync(command, CancellationToken.None);
 
         Assert.True(_unitOfWork.Committed);
         Assert.Equal(1, _unitOfWork.CommitCount);
@@ -59,10 +59,10 @@ public class CreateCustomerHandlerTests
             Phone: "555-123-4567",
             Password: "ValidP@ss1");
 
-        await _handler.Handle(command, CancellationToken.None);
+        await _handler.HandleAsync(command, CancellationToken.None);
 
         await Assert.ThrowsAsync<EmailAlreadyExistsException>(
-            () => _handler.Handle(command, CancellationToken.None));
+            () => _handler.HandleAsync(command, CancellationToken.None));
 
         Assert.Equal(1, _unitOfWork.CommitCount);
     }

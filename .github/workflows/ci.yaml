@@ -33,8 +33,8 @@ jobs:
             frontend:
               - 'frontend/**'
             shared-kernel:
-              - 'src/SharedKernel/**'
-              - 'tests/SharedKernel.*/**'
+              - 'src/SharedKernel*/**'
+              - 'tests/SharedKernel*/**'
             infra:
               - '.github/**'
               - '*.sln'
@@ -70,102 +70,56 @@ jobs:
       needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-
-      - name: Clean build artifacts
-        run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
-
-      # Build SharedKernel unit test projects
-      - name: Build SharedKernel.Tests
-        working-directory: tests/SharedKernel.Tests
-        run: dotnet build --configuration Debug
-
-      - name: Build SharedKernel.Api.Tests
-        working-directory: tests/SharedKernel.Api.Tests
-        run: dotnet build --configuration Debug
-
-      - name: Build SharedKernel.Infrastructure.EntityFrameworkCore.Tests
-        working-directory: tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
-        run: dotnet build --configuration Debug
-
-      # Run tests
-      - name: Run SharedKernel.Tests
-        working-directory: tests/SharedKernel.Tests
-        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
-
-      - name: Run SharedKernel.Api.Tests
-        working-directory: tests/SharedKernel.Api.Tests
-        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
-
-      - name: Run SharedKernel.Infrastructure.EntityFrameworkCore.Tests
-        working-directory: tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
-        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+      - uses: ./.github/actions/run-dotnet-tests
+        with:
+          projects: |
+            tests/SharedKernel.Tests
+            tests/SharedKernel.Api.Tests
+            tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
 
   backend:
     name: Backend Tests
     runs-on: ubuntu-latest
     needs: [determine-changes, validate-ci-deps, shared-kernel]
     if: |
-      github.ref == 'refs/heads/main' ||
-      needs.determine-changes.outputs.backend == 'true' ||
-      needs.determine-changes.outputs.shared-kernel == 'true' ||
-      needs.determine-changes.outputs.infra == 'true'
+      always() && !failure() && !cancelled() && (
+        github.ref == 'refs/heads/main' ||
+        needs.determine-changes.outputs.backend == 'true' ||
+        needs.determine-changes.outputs.shared-kernel == 'true' ||
+        needs.determine-changes.outputs.infra == 'true'
+      )
+
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-
-      - name: Clean build artifacts
-        run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
-
-      # Build backend unit test projects
-      - name: Build CampFitFurDogs.Api.Tests
-        working-directory: tests/CampFitFurDogs.Api.Tests
-        run: dotnet build --configuration Debug
-
-      - name: Build CampFitFurDogs.Application.Tests
-        working-directory: tests/CampFitFurDogs.Application.Tests
-        run: dotnet build --configuration Debug
-
-      - name: Build CampFitFurDogs.Domain.Tests
-        working-directory: tests/CampFitFurDogs.Domain.Tests
-        run: dotnet build --configuration Debug
-
-      - name: Build CampFitFurDogs.Infrastructure.Tests
-        working-directory: tests/CampFitFurDogs.Infrastructure.Tests
-        run: dotnet build --configuration Debug
-
-      # Run tests
-      - name: Run CampFitFurDogs.Api.Tests
-        working-directory: tests/CampFitFurDogs.Api.Tests
-        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
-
-      - name: Run CampFitFurDogs.Application.Tests
-        working-directory: tests/CampFitFurDogs.Application.Tests
-        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
-
-      - name: Run CampFitFurDogs.Domain.Tests
-        working-directory: tests/CampFitFurDogs.Domain.Tests
-        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
-
-      - name: Run CampFitFurDogs.Infrastructure.Tests
-        working-directory: tests/CampFitFurDogs.Infrastructure.Tests
-        run: dotnet test --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+      - uses: ./.github/actions/run-dotnet-tests
+        with:
+          projects: |
+            tests/CampFitFurDogs.Api.Tests
+            tests/CampFitFurDogs.Application.Tests
+            tests/CampFitFurDogs.Domain.Tests
+            tests/CampFitFurDogs.Infrastructure.Tests
+            tests/CampFitFurDogs.Api.Tests
+            tests/CampFitFurDogs.Application.Tests
+            tests/CampFitFurDogs.Domain.Tests
+            tests/CampFitFurDogs.Infrastructure.Tests
 
   frontend:
     name: Frontend Tests
     runs-on: ubuntu-latest
+
     needs: [determine-changes, validate-ci-deps, backend]
     if: |
-      github.ref == 'refs/heads/main' ||
-      needs.determine-changes.outputs.frontend == 'true' ||
-      needs.determine-changes.outputs.backend == 'true' ||
-      needs.determine-changes.outputs.infra == 'true'
+      always() && !failure() && !cancelled() && (
+        github.ref == 'refs/heads/main' ||
+        needs.determine-changes.outputs.frontend == 'true' ||
+        needs.determine-changes.outputs.backend == 'true' ||
+        needs.determine-changes.outputs.infra == 'true'
+      )
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-
       - name: Install dependencies
         run: npm ci --prefix frontend
-
       - name: Run frontend tests
         run: npm test --prefix frontend

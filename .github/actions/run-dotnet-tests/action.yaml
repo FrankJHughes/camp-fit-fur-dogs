@@ -1,0 +1,28 @@
+name: Run .NET Tests
+description: Run .NET tests for the specified projects.
+inputs:
+  projects:
+    description: 'Newline-separated list of test project paths'
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-dotnet@v4
+    - shell: bash
+      run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
+    - shell: bash
+      run: |
+        while IFS= read -r project; do
+          [[ -z "$project" ]] && continue
+          echo "::group::Build $project"
+          dotnet build "$project" --configuration Debug
+          echo "::endgroup::"
+        done <<< "${{ inputs.projects }}"
+    - shell: bash
+      run: |
+        while IFS= read -r project; do
+          [[ -z "$project" ]] && continue
+          echo "::group::Test $project"
+          dotnet test "$project" --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
+          echo "::endgroup::"
+        done <<< "${{ inputs.projects }}"

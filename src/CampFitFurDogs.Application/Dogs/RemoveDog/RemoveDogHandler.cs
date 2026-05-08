@@ -15,7 +15,7 @@ public sealed class RemoveDogHandler : ICommandHandler<RemoveDogCommand>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(RemoveDogCommand command, CancellationToken cancellationToken)
+    public async Task HandleAsync(RemoveDogCommand command, CancellationToken cancellationToken)
     {
         var dogId = DogId.From(command.DogId);
         var dog = await _dogRepository.GetByIdAsync(dogId, cancellationToken)

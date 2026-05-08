@@ -5,14 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased Sprint 7]
 
 ### Added
-- Integration testing infrastructure using Neon branch databases
-- GitHub Actions workflow for automated integration tests on PRs
-- Local integration test runner script
-- EF migration application step in CI
-- Developer guide for running integration tests locally
-- The Camp Fit Fur Dogs API is now hosted and available over HTTPS, enabling external access to dog profiles, registration flows, and future customer‑facing features.
-- Automatic deployment is now active for all updates merged into the main branch, ensuring the latest functionality is always available.
-- A public health check endpoint (`/health`) is now exposed for system monitoring and uptime verification.
+- Public HTTPS‑hosted Camp Fit Fur Dogs API, enabling external access to dog profiles, registration flows, and future customer‑facing features.
+- Automatic deployment pipeline for all updates merged into `main`, ensuring customers always receive the latest stable functionality without manual intervention.
+- Public health check endpoint (`/health`) for uptime verification and external monitoring tools.
+- Reliable API startup and readiness behavior, reducing customer‑visible downtime during deployments and cold starts.
+- Stable PR Preview environments backed by isolated Neon databases, allowing reviewers to interact with accurate, production‑like previews.
+- Consistent database schema validation through automated migration application in CI, ensuring previews always reflect the latest data model.
+- Developer‑facing API Hosting Guide documenting how the API is deployed, previewed, and tested across Render and Neon.
 
 ## [Sprint 6] — 2026-04-27
 

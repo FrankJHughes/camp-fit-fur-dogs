@@ -16,7 +16,7 @@ public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Gui
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Guid> Handle(RegisterDogCommand command, CancellationToken ct)
+    public async Task<Guid> HandleAsync(RegisterDogCommand command, CancellationToken ct)
     {
         if (!Enum.TryParse<Sex>(command.Sex, ignoreCase: true, out var sex))
             throw new ArgumentException("Sex must be 'Male' or 'Female'.");

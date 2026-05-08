@@ -7,7 +7,7 @@ public class InfrastructureMustNotReferenceApiGuardrailTests
     [Fact]
     public void Infrastructure_Should_Not_Reference_Api()
     {
-        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.DependencyInjection).Assembly;
+        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.ServiceCollectionExtensions).Assembly;
 
         var offenders = ReferenceScanner.FindForbiddenReferences(
             infraAssembly,
