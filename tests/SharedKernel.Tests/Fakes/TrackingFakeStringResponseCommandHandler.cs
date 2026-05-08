@@ -9,7 +9,7 @@ public sealed class TrackingFakeStringResponseCommandHandler
     public FakeStringResponseCommand? LastCommand { get; private set; }
     public CancellationToken? LastToken { get; private set; }
 
-    public Task<string> Handle(FakeStringResponseCommand command, CancellationToken ct)
+    public Task<string> HandleAsync(FakeStringResponseCommand command, CancellationToken ct)
     {
         CallCount++;
         LastCommand = command;

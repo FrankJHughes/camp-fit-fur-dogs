@@ -32,7 +32,7 @@ public class GetDogProfileHandlerTests
 
         var query = new GetDogProfileQuery(dog.Id.Value, ownerId.Value);
 
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         Assert.Equal(dog.Id.Value, result!.Id);
         Assert.Equal(ownerId.Value, result.OwnerId);
@@ -46,7 +46,7 @@ public class GetDogProfileHandlerTests
     public async Task Handle_DogNotFound_ResultShouldBeNull()
     {
         var query = new GetDogProfileQuery(Guid.NewGuid(), Guid.NewGuid());
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.HandleAsync(query, CancellationToken.None);
         result.Should().BeNull();
     }
 
@@ -68,7 +68,7 @@ public class GetDogProfileHandlerTests
         var handler = new GetDogProfileHandler(_reader);
         var query = new GetDogProfileQuery(dog.Id.Value, ownerB);
 
-        var result = await handler.Handle(query, CancellationToken.None);
+        var result = await handler.HandleAsync(query, CancellationToken.None);
 
         result.Should().BeNull();
     }

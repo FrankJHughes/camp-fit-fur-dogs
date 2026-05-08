@@ -35,7 +35,7 @@ public class EditDogProfileHandlerTests
             Sex: "Female");
 
         // Act
-        await handler.Handle(command, CancellationToken.None);
+        await handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         var updated = await repo.GetByIdAsync(dog.Id);
@@ -63,7 +63,7 @@ public class EditDogProfileHandlerTests
             Sex: "Female");
 
         // Act
-        var act = () => handler.Handle(command, CancellationToken.None);
+        var act = () => handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
@@ -96,7 +96,7 @@ public class EditDogProfileHandlerTests
             Sex: "Female");
 
         // Act
-        var act = () => handler.Handle(command, CancellationToken.None);
+        var act = () => handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();

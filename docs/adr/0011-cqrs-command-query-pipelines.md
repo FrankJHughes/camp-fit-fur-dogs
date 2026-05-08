@@ -40,7 +40,7 @@ The pattern consists of six interfaces in `Application/Abstractions/`:
 - `ICommand<TResponse>` — Marker interface. A command carries input
   data and declares its response type.
 - `ICommandHandler<TCommand, TResponse>` — Handles one command type.
-  Single method: `Task<TResponse> Handle(TCommand, CancellationToken)`.
+  Single method: `Task<TResponse> HandleAsync(TCommand, CancellationToken)`.
 - `ICommandDispatcher` — Resolves and invokes the correct handler for
   any `ICommand<TResponse>`.
 
@@ -49,7 +49,7 @@ The pattern consists of six interfaces in `Application/Abstractions/`:
 - `IQuery<TResponse>` — Marker interface. A query carries filter/lookup
   criteria and declares its response type.
 - `IQueryHandler<TQuery, TResponse>` — Handles one query type. Single
-  method: `Task<TResponse> Handle(TQuery, CancellationToken)`.
+  method: `Task<TResponse> HandleAsync(TQuery, CancellationToken)`.
 - `IQueryDispatcher` — Resolves and invokes the correct handler for any
   `IQuery<TResponse>`.
 

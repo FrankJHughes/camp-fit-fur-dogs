@@ -21,6 +21,7 @@
   <ItemGroup>
     <!-- Reference the SharedKernel project under test -->
     <ProjectReference Include="..\..\src\SharedKernel\SharedKernel.csproj" />
+    <ProjectReference Include="..\SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers\SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers.csproj" />
     <ProjectReference Include="..\SharedKernel.Tests.DependencyInjection.Fakes\SharedKernel.Tests.DependencyInjection.Fakes.csproj" />
     <ProjectReference Include="..\SharedKernel.Tests.EmptyAssembly\SharedKernel.Tests.EmptyAssembly.csproj" />
   </ItemGroup>

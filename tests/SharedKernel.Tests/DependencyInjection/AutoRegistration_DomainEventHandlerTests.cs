@@ -11,7 +11,7 @@ public sealed class AutoRegistration_DomainEventHandlerTests
         var services = new ServiceCollection();
 
         services.AddSharedKernel(
-            new[] { typeof(SharedKernel.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
+            [typeof(SharedKernel.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly]
         );
 
         using var provider = services.BuildServiceProvider();

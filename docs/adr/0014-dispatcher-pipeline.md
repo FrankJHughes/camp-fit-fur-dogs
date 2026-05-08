@@ -68,7 +68,7 @@ var handler = _provider.GetRequiredService(handlerType);
 This allows runtime binding to the correct generic handler without reflection.
 
 ```csharp
-return await ((dynamic)handler).Handle((dynamic)command, ct);
+return await ((dynamic)handler).HandleAsync((dynamic)command, ct);
 ```
 
 ### 6. The same pipeline applies to both commands and queries
@@ -120,7 +120,7 @@ var handlerType = typeof(ICommandHandler<,>)
 
 var handler = _provider.GetRequiredService(handlerType);
 
-return await ((dynamic)handler).Handle((dynamic)command, ct);
+return await ((dynamic)handler).HandleAsync((dynamic)command, ct);
 ```
 
 ### QueryDispatcher
@@ -140,7 +140,7 @@ var handlerType = typeof(IQueryHandler<,>)
 
 var handler = _provider.GetRequiredService(handlerType);
 
-return await ((dynamic)handler).Handle((dynamic)query, ct);
+return await ((dynamic)handler).HandleAsync((dynamic)query, ct);
 ```
 
 ## Notes

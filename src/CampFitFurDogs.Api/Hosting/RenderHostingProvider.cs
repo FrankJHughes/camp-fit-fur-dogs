@@ -1,7 +1,6 @@
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Microsoft.AspNetCore.Builder;
 using SharedKernel.Api.Hosting;
 
 namespace CampFitFurDogs.Api.Hosting;
@@ -15,10 +14,10 @@ namespace CampFitFurDogs.Api.Hosting;
 public sealed class RenderHostingProvider : IHostingProvider
 {
     // ── Environment variable names set by Render ──────────────────────
-    private const string Env_IsPullRequest       = "IS_PULL_REQUEST";
-    private const string Env_GitRepoSlug         = "RENDER_GIT_REPO_SLUG";
-    private const string Env_RenderServiceName   = "RENDER_SERVICE_NAME";
-    private const string Env_GithubPat           = "GITHUB_PAT";
+    private const string Env_IsPullRequest = "IS_PULL_REQUEST";
+    private const string Env_GitRepoSlug = "RENDER_GIT_REPO_SLUG";
+    private const string Env_RenderServiceName = "RENDER_SERVICE_NAME";
+    private const string Env_GithubPat = "GITHUB_PAT";
 
     // ── Artifact / config constants ──────────────────────────────────
     private const string DbConnFileName = "db-conn.txt";
@@ -46,9 +45,9 @@ public sealed class RenderHostingProvider : IHostingProvider
 
     public async Task ConfigureAsync(WebApplicationBuilder builder)
     {
-        var repoSlug    = GetRequiredEnvVar(Env_GitRepoSlug);
+        var repoSlug = GetRequiredEnvVar(Env_GitRepoSlug);
         var serviceName = GetRequiredEnvVar(Env_RenderServiceName);
-        var githubPat   = GetRequiredEnvVar(Env_GithubPat);
+        var githubPat = GetRequiredEnvVar(Env_GithubPat);
 
         if (!TryGetPrNumber(serviceName, out var prNumber))
         {
@@ -56,6 +55,8 @@ public sealed class RenderHostingProvider : IHostingProvider
             return;
         }
 
+        // CONTRACT:artifact-naming — shared with preview.yaml
+        // See docs/conventions/workflow.md → "Artifact Naming Contract"
         var artifactName = $"pr-{prNumber}";
         var dbConn = await DownloadDbConnFromArtifactAsync(
             githubPat, repoSlug, artifactName);
@@ -172,8 +173,8 @@ public sealed class RenderHostingProvider : IHostingProvider
 
     private sealed class Artifact
     {
-        public required string   Name               { get; set; }
-        public required DateTime CreatedAt           { get; set; }
-        public required string   ArchiveDownloadUrl  { get; set; }
+        public required string Name { get; set; }
+        public required DateTime CreatedAt { get; set; }
+        public required string ArchiveDownloadUrl { get; set; }
     }
 }

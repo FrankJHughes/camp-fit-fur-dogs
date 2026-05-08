@@ -39,7 +39,7 @@ public sealed class QueryDispatcher : IQueryDispatcher
         var handler = (object)_provider.GetRequiredService(handlerType);
 
         // 3. Execute handler
-        return await ((dynamic)handler).Handle((dynamic)query, ct);
+        return await ((dynamic)handler).HandleAsync((dynamic)query, ct);
     }
 }
 
