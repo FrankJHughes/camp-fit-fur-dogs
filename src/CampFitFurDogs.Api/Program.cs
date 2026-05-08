@@ -62,7 +62,7 @@ app.UseExceptionHandler(errorApp =>
             .Get<IExceptionHandlerFeature>()?.Error;
         if (exception is ValidationException validationException)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.StatusCode  = StatusCodes.Status400BadRequest;
             context.Response.ContentType = "application/json";
 
             var errors = validationException.Errors
