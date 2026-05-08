@@ -1,29 +1,31 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 
+using SharedKernel.Api.Hosting;
 using SharedKernel.DependencyInjection;
 using SharedKernel.Api;
 
-using CampFitFurDogs.Api.HostingEnvironment;
-using CampFitFurDogs.Infrastructure;
+using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Application;
+using CampFitFurDogs.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-await EnvironmentBootstrapper.ApplyOverridesAsync(builder);
+// ── Hosting-provider overrides (pluggable) ───────────────────────
+// Add new providers here in priority order.  The first whose
+// IsActive() returns true wins; the rest are skipped.
+await builder.UseHostingProviders(
+    new RenderHostingProvider());
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(port)); // IPv4 ANY
 });
-
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // 0. CORS: allow frontend host
 var allowedOrigin = builder.Configuration["Frontend:BaseUrl"];
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -50,18 +52,17 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.MapEndpoints();
-
 app.UseCors();
 
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
     {
-        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-
+        var exception = context.Features
+            .Get<IExceptionHandlerFeature>()?.Error;
         if (exception is ValidationException validationException)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.StatusCode  = StatusCodes.Status400BadRequest;
             context.Response.ContentType = "application/json";
 
             var errors = validationException.Errors
@@ -84,6 +85,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }))
-    .WithName("HealthCheck");
+   .WithName("HealthCheck");
 
 app.Run();
