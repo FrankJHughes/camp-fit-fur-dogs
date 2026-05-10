@@ -139,6 +139,7 @@ jobs:
             --token "$VERCEL_PAT" \
             --build-env NEXT_PUBLIC_API_BASE_URL="https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com")
 
+          echo "$url"
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
       - name: Write Frontend URL Artifact
@@ -155,6 +156,7 @@ jobs:
     needs:
       - preview_context
       - destroy_stale_db
+      - deploy_fresh_frontend
     if: needs.preview_context.outputs.should_deploy == 'true'
     outputs:
       db_conn_string: ${{ steps.conn.outputs.npgsql_connection_string }}
