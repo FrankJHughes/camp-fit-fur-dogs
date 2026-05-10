@@ -132,22 +132,19 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      - name: Prepare Vercel project binding
-        run: |
-          mkdir -p frontend/.vercel
-          echo "{\"projectId\":\"prj_6ZLrqVo7ghuuUdFhJWo0FuTI58H6\",\"orgId\":\"frank-j-hughes-projects\"}" > frontend/.vercel/project.json
-
       - name: Link Vercel project
         working-directory: frontend
-        run: vercel link --yes --token "$VERCEL_PAT" --scope "$VERCEL_ORG_ID"
+        run: |
+          vercel link --yes \
+            --project prj_6ZLrqVo7ghuuUdFhJWo0FuTI58H6 \
+            --token "$VERCEL_PAT"
 
       - name: Deploy to Vercel
         working-directory: frontend
         run: |
           url=$(vercel deploy \
             --token "$VERCEL_PAT" \
-            --scope "$VERCEL_ORG_ID" \
-            --build-env NEXT_PUBLIC_API_BASE_URL="${{ needs.preview_context.outputs.api_base_url }}")
+            --build-env NEXT_PUBLIC_API_BASE_URL="https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com")
 
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
