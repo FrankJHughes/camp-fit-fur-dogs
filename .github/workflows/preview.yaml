@@ -156,6 +156,7 @@ jobs:
         run: |
           cd frontend
           url=$(vercel deploy \
+            --yes \
             --token "$VERCEL_PAT" \
             --build-env NEXT_PUBLIC_API_URL="${{ needs.preview_context.outputs.api_base_url }}")
 
