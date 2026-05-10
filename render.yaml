@@ -11,7 +11,7 @@ projects:
       repo: https://github.com/FrankJHughes/camp-fit-fur-dogs
       plan: starter
       region: oregon
-      healthCheckPath: /health
+      healthCheckPath: /api/health
       dockerContext: .
       dockerfilePath: ./Dockerfile
       autoDeployTrigger: commit

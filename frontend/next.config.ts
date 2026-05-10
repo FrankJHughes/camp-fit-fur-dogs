@@ -1,15 +1,15 @@
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
+const isDev = process.env.NODE_ENV === 'development';
+
+const nextConfig = {
   async rewrites() {
+    if (!isDev) return [];
+
     return [
       {
         source: '/api/:path*',
         destination: 'http://localhost:5209/api/:path*',
-      },
-      {
-        source: '/health',
-        destination: 'http://localhost:5209/health',
       },
     ];
   },

@@ -55,7 +55,7 @@ jobs:
         run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
       - uses: ./.github/actions/wait-for-endpoint
         with:
-          url: "${{ needs.preview_context.outputs.api_base_url }}/health"
+          url: "${{ needs.preview_context.outputs.api_base_url }}/api/health"
           healthy: "404"
           timeout: 360
           consecutive_successes_required: 5

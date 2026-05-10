@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RegisterDogPage from '@/app/dogs/register/page';
+import { resolveBaseUrl } from '@/lib/api/resolveBaseUrl';
 
 const pushMock = vi.fn();
 
@@ -40,6 +41,20 @@ describe('Register Dog (integration)', () => {
 
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith('/dogs/register/success');
+    });
+
+    const apiBase = resolveBaseUrl();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${apiBase}/api/dogs/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Buddy',
+        breed: 'Golden Retriever',
+        dateOfBirth: '2023-06-15',
+        sex: 'Male',
+      }),
     });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/dogs/register', {
