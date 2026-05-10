@@ -132,9 +132,18 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
+      - name: Prepare Vercel project binding
+        working-directory: frontend
+        run: |
+          mkdir -p .vercel
+          echo "{\"projectId\":\"${{ secrets.VERCEL_PROJECT_ID }}\",\"orgId\":\"${{ secrets.VERCEL_ORG_ID }}\"}" > .vercel/project.json
+
       - name: Deploy to Vercel
         id: vercel
         working-directory: frontend
+        env:
+          VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           url=$(vercel deploy \
             --token "$VERCEL_PAT" \
