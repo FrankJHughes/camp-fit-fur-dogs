@@ -57,8 +57,8 @@ jobs:
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}/health"
           healthy: "404"
-          timeout: 300
-          consecutive_successes_required: 3
+          timeout: 360
+          consecutive_successes_required: 5
           adjective: "down"
 
   destroy_stale_db_artifact:
@@ -253,7 +253,7 @@ jobs:
           healthy: "200,400,401"
           timeout: 360
           adjective: "up"
-          consecutive_successes_required: 3
+          consecutive_successes_required: 5
 
       - name: Test API
         run: |
