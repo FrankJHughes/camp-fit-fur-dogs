@@ -142,6 +142,7 @@ jobs:
         working-directory: frontend
         run: |
           url=$(vercel deploy \
+            -- yes \
             --token "$VERCEL_PAT" \
             --build-env NEXT_PUBLIC_API_BASE_URL="https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com")
 
