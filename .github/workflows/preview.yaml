@@ -138,6 +138,14 @@ jobs:
           mkdir -p .vercel
           echo "{\"projectId\":\"${{ secrets.VERCEL_PROJECT_ID }}\",\"orgId\":\"${{ secrets.VERCEL_ORG_ID }}\"}" > .vercel/project.json
 
+      - name: Debug Vercel project.json location
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Contents:"
+          ls -R .
+        working-directory: frontend
+
       - name: Deploy to Vercel
         id: vercel
         working-directory: frontend
