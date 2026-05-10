@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { FieldError } from '../../lib/components/FieldError';
 import { FormField } from '../../lib/components/FormField';
 import { validateDogForm } from '../../lib/dogs/validateDogForm';
+import { useFormErrors } from '@/lib/hooks/useFormErrors';
 import type { DogFormValues } from '../../types/dog';
 
 export type { DogFormValues };
@@ -32,25 +33,29 @@ export function DogForm({
   isSubmitting,
 }: DogFormProps) {
   const [values, setValues] = useState<DogFormValues>(initialValues);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  const displayErrors = { ...validationErrors, ...errors };
+  // ⭐ NEW: unified error handling
+  const { setClient, merge, clear } = useFormErrors();
 
-  const update = (field: keyof DogFormValues) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-      setValues((prev) => ({ ...prev, [field]: e.target.value }));
+  // ⭐ NEW: merged errors (client + server)
+  const displayErrors = merge(errors);
+
+  const update =
+    (field: keyof DogFormValues) =>
+      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+        setValues((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateDogForm(values);
+    const clientErrors = validateDogForm(values);
 
-    if (Object.keys(newErrors).length > 0) {
-      setValidationErrors(newErrors);
+    if (Object.keys(clientErrors).length > 0) {
+      setClient(clientErrors); // ⭐ replaces setValidationErrors
       return;
     }
 
-    setValidationErrors({});
+    clear(); // ⭐ replaces setValidationErrors({})
     onSubmit(values);
   };
 
@@ -107,7 +112,9 @@ export function DogForm({
         )}
       </FormField>
 
-      <button type="submit" disabled={isSubmitting}>{submitLabel}</button>
+      <button type="submit" disabled={isSubmitting}>
+        {submitLabel}
+      </button>
     </form>
   );
 }
