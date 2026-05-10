@@ -132,6 +132,11 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
+      - name: Prepare Vercel project binding
+        run: |
+          mkdir -p frontend/.vercel
+          echo "{\"projectId\":\"prj_6ZLrqVo7ghuuUdFhJWo0FuTI58H6\",\"orgId\":\"frank-j-hughes-projects\"}" > frontend/.vercel/project.json
+
       - name: Link Vercel project
         working-directory: frontend
         run: vercel link --yes --token "$VERCEL_PAT" --scope "$VERCEL_ORG_ID"
