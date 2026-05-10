@@ -136,6 +136,7 @@ jobs:
         working-directory: frontend
         run: |
           vercel link --yes \
+            --project campfitfurdogs \
             --token "$VERCEL_PAT"
 
       - name: Deploy to Vercel
