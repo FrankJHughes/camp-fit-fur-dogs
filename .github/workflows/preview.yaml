@@ -34,7 +34,7 @@ jobs:
           echo "db_branch=$common_prefix" >> $GITHUB_OUTPUT
           echo "ui_artifact_name=$common_prefix-ui" >> $GITHUB_OUTPUT
           echo "ui_artifact_file_path=frontend-url.txt" >> $GITHUB_OUTPUT
-          echo "api_base_url=https://campfitfurdogsapi-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
+          echo "api_base_url=https://campfitfurdogs-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
 
           action="${{ github.event.action }}"
           should_destroy=$([[ "$action" != "opened" ]] && echo "true" || echo "false")
@@ -150,7 +150,7 @@ jobs:
           url=$(vercel deploy \
             --yes \
             --token "$VERCEL_PAT" \
-            --build-env NEXT_PUBLIC_API_BASE_URL="https://campfitfurdogsapi-pr-${{ github.event.pull_request.number }}.onrender.com")
+            --build-env NEXT_PUBLIC_API_BASE_URL="${{ needs.preview_context.outputs.api_base_url }}")
 
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
