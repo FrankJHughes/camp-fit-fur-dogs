@@ -167,7 +167,7 @@ jobs:
         id: deploy
         run: |
           cd frontend
-          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_PAT }})
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_PAT }})
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
       - name: Write Frontend URL Artifact
