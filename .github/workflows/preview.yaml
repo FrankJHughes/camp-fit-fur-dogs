@@ -132,12 +132,6 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      # - name: Link Vercel project
-      #   working-directory: frontend
-      #   run: |
-      #     vercel link --yes \
-      #       --token "$VERCEL_PAT"
-
       - name: Deploy to Vercel
         working-directory: frontend
         run: |
@@ -226,11 +220,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Preview Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.preview_context.outputs.artifact_name }}
-
+      - name: Add render-preview label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
