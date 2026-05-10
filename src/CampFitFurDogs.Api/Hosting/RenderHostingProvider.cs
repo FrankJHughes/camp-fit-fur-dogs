@@ -8,9 +8,10 @@ namespace CampFitFurDogs.Api.Hosting;
 
 /// <summary>
 /// Hosting provider for Render (https://render.com).
-/// Detects a Render PR-preview environment and overrides the database connection
-/// string by downloading the Neon branch connection string from a GitHub Actions
-/// artifact.
+/// Detects a Render PR-preview environment and overrides configuration
+/// by downloading values from a GitHub Actions artifact:
+/// - Database connection string (db-conn.txt)
+/// - Frontend base URL (frontend-url.txt)
 /// </summary>
 public sealed class RenderHostingProvider : IHostingProvider
 {
@@ -22,7 +23,10 @@ public sealed class RenderHostingProvider : IHostingProvider
 
     // ── Artifact / config constants ──────────────────────────────────
     private const string DbConnFileName = "db-conn.txt";
+    private const string FrontendUrlFileName = "frontend-url.txt";
+
     private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
+    private const string ConfigKey_FrontendBaseUrl = "Frontend__BaseUrl";
 
     // ── IHostingProvider ─────────────────────────────────────────────
 
@@ -57,17 +61,29 @@ public sealed class RenderHostingProvider : IHostingProvider
         }
 
         var artifactName = $"pr-{prNumber}";
-        var dbConn = await DownloadDbConnFromArtifactAsync(
+
+        var (dbConn, frontendUrl) = await DownloadPreviewArtifactsAsync(
             githubPat, repoSlug, artifactName);
 
-        if (dbConn is null)
+        if (dbConn is not null)
         {
-            Log("DB connection override skipped — artifact not found or empty.");
-            return;
+            builder.Configuration[ConfigKey_DbConn] = dbConn;
+            Log("DB connection string overridden from GitHub artifact.");
+        }
+        else
+        {
+            Log("DB connection override skipped — db-conn.txt not found or empty.");
         }
 
-        builder.Configuration[ConfigKey_DbConn] = dbConn;
-        Log("DB connection string overridden from GitHub artifact.");
+        if (frontendUrl is not null)
+        {
+            builder.Configuration[ConfigKey_FrontendBaseUrl] = frontendUrl;
+            Log("Frontend base URL overridden from GitHub artifact.");
+        }
+        else
+        {
+            Log("Frontend base URL override skipped — frontend-url.txt not found or empty.");
+        }
     }
 
     // ── PR-number extraction ─────────────────────────────────────────
@@ -92,8 +108,8 @@ public sealed class RenderHostingProvider : IHostingProvider
 
     // ── GitHub artifact download ─────────────────────────────────────
 
-    private static async Task<string?> DownloadDbConnFromArtifactAsync(
-        string githubToken, string repoSlug, string artifactName)
+    private static async Task<(string? DbConn, string? FrontendUrl)>
+        DownloadPreviewArtifactsAsync(string githubToken, string repoSlug, string artifactName)
     {
         using var http = CreateGitHubClient(githubToken);
 
@@ -108,13 +124,12 @@ public sealed class RenderHostingProvider : IHostingProvider
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
         };
 
-        var response = JsonSerializer.Deserialize<ArtifactsResponse>(
-            json, options);
+        var response = JsonSerializer.Deserialize<ArtifactsResponse>(json, options);
 
         if (response?.Artifacts is not { Count: > 0 } artifacts)
         {
             Log($"No artifacts found matching '{artifactName}'.");
-            return null;
+            return (null, null);
         }
 
         // Single-pass O(n) selection — find the most recent artifact
@@ -124,17 +139,22 @@ public sealed class RenderHostingProvider : IHostingProvider
 
         var zipBytes = await http.GetByteArrayAsync(latest.ArchiveDownloadUrl);
         using var zip = new ZipArchive(new MemoryStream(zipBytes));
-        var entry = zip.GetEntry(DbConnFileName);
 
-        if (entry is null)
+        string? ReadEntry(string fileName)
         {
-            Log($"Artifact '{artifactName}' does not contain {DbConnFileName}.");
-            return null;
+            var entry = zip.GetEntry(fileName);
+            if (entry is null)
+                return null;
+
+            using var reader = new StreamReader(entry.Open());
+            var value = reader.ReadToEnd().Trim();
+            return string.IsNullOrWhiteSpace(value) ? null : value;
         }
 
-        using var reader = new StreamReader(entry.Open());
-        var value = (await reader.ReadToEndAsync()).Trim();
-        return string.IsNullOrWhiteSpace(value) ? null : value;
+        var dbConn = ReadEntry(DbConnFileName);
+        var frontendUrl = ReadEntry(FrontendUrlFileName);
+
+        return (dbConn, frontendUrl);
     }
 
     private static HttpClient CreateGitHubClient(string token)

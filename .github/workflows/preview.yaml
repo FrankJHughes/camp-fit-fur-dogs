@@ -43,8 +43,7 @@ jobs:
     name: Destroy Stale API
     runs-on: ubuntu-latest
     needs: preview_context
-    if: |
-      needs.preview_context.outputs.should_destroy == 'true'
+    if: needs.preview_context.outputs.should_destroy == 'true'
     permissions:
       contents: read
       pull-requests: write
@@ -66,8 +65,7 @@ jobs:
     name: Destroy Stale Artifact
     runs-on: ubuntu-latest
     needs: preview_context
-    if: |
-      needs.preview_context.outputs.should_destroy == 'true'
+    if: needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: geekyeggo/delete-artifact@v6
         with:
@@ -77,8 +75,7 @@ jobs:
     name: Destroy Stale DB
     runs-on: ubuntu-latest
     needs: preview_context
-    if: |
-      needs.preview_context.outputs.should_destroy == 'true'
+    if: needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: neondatabase/delete-branch-action@v3
         continue-on-error: true
@@ -87,16 +84,91 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch: ${{ needs.preview_context.outputs.db_branch }}
 
+  destroy_stale_frontend:
+    name: Destroy Stale Frontend
+    runs-on: ubuntu-latest
+    needs: preview_context
+    if: needs.preview_context.outputs.should_destroy == 'true'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node (for Vercel CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Remove vercel-preview label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "vercel-preview"
+
+      - name: Remove stale Vercel deployments
+        env:
+          VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          # Remove all preview deployments for this PR
+          vercel ls --token "$VERCEL_PAT" --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID" \
+            | grep "pr-${{ github.event.pull_request.number }}" \
+            | awk '{print $2}' \
+            | xargs -I {} vercel rm {} --safe --yes --token "$VERCEL_PAT" --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+
+  deploy_fresh_frontend:
+    name: Deploy Fresh Frontend
+    runs-on: ubuntu-latest
+    needs:
+      - preview_context
+      - destroy_stale_frontend
+    if: needs.preview_context.outputs.should_deploy == 'true'
+    outputs:
+      vercel_preview_url: ${{ steps.vercel.outputs.preview_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node (for Vercel CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Write .env.preview for frontend
+        run: |
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ needs.preview_context.outputs.api_base_url }}" > .env.preview
+
+      - name: Trigger Vercel Deployment
+        id: vercel
+        env:
+          VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          url=$(vercel --token "$VERCEL_PAT" --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID" --env-file=.env.preview)
+          echo "preview_url=$url" >> $GITHUB_OUTPUT
+
+      - name: Write Frontend URL Artifact
+        run: echo "${{ steps.vercel.outputs.preview_url }}" > frontend-url.txt
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ needs.preview_context.outputs.artifact_name }}
+          path: frontend-url.txt
+
   deploy_fresh_db:
     name: Deploy Fresh DB
     runs-on: ubuntu-latest
     needs:
       - preview_context
-      - destroy_stale_api
-      - destroy_stale_artifact
       - destroy_stale_db
-    if: |
-      needs.preview_context.outputs.should_deploy == 'true'
+    if: needs.preview_context.outputs.should_deploy == 'true'
     outputs:
       db_conn_string: ${{ steps.conn.outputs.db_conn_string }}
     steps:
@@ -119,10 +191,7 @@ jobs:
         id: conn
         uses: ./.github/actions/postgres-uri-to-npgsql-connection-string
         with:
-          postgres_uri: ${{ steps.neon.outputs.db_url }}   # Neon’s official output
-          # pooling: "true"
-          # timeout: "15"
-          # ssl_mode: "Require"
+          postgres_uri: ${{ steps.neon.outputs.db_url }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -143,7 +212,7 @@ jobs:
           ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
-      - name: Write Artifact
+      - name: Write DB Artifact
         run: echo "${{ steps.conn.outputs.npgsql_connection_string }}" > db-conn.txt
 
       - uses: actions/upload-artifact@v7
@@ -157,9 +226,9 @@ jobs:
     needs:
       - preview_context
       - deploy_fresh_db
+      - deploy_fresh_frontend
       - destroy_stale_api
-    if: |
-      needs.preview_context.outputs.should_deploy == 'true'
+    if: needs.preview_context.outputs.should_deploy == 'true'
     permissions:
       contents: read
       pull-requests: write
@@ -170,6 +239,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
+
+      - name: Download Preview Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.preview_context.outputs.artifact_name }}
+
+      # At this point, db-conn.txt and frontend-url.txt are available.
+      # RenderHostingProvider.cs is responsible for consuming these
+      # according to the existing artifact contract.
 
       - uses: actions/setup-dotnet@v4
         with:
