@@ -103,11 +103,6 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      - name: Remove vercel-preview label
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "vercel-preview"
-
       - name: Remove stale Vercel deployments
         env:
           VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
