@@ -139,7 +139,6 @@ jobs:
           url=$(vercel deploy \
             --token "$VERCEL_PAT" \
             --scope "$VERCEL_ORG_ID" \
-            --project "$VERCEL_PROJECT_ID" \
             --build-env NEXT_PUBLIC_API_BASE_URL="${{ needs.preview_context.outputs.api_base_url }}")
 
           echo "preview_url=$url" >> $GITHUB_OUTPUT
