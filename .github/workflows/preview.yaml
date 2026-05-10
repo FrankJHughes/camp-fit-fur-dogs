@@ -156,9 +156,8 @@ jobs:
         run: |
           cd frontend
           url=$(vercel deploy \
-            --yes \
             --token "$VERCEL_PAT" \
-            --build-env NEXT_PUBLIC_API_BASE_URL="${{ needs.preview_context.outputs.api_base_url }}")
+            --build-env NEXT_PUBLIC_API_URL="${{ needs.preview_context.outputs.api_base_url }}")
 
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
