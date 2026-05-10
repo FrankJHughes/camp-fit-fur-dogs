@@ -107,13 +107,29 @@ jobs:
         env:
           VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          # Remove all preview deployments for this PR
-          vercel ls --token "$VERCEL_PAT" --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID" \
+          echo "Checking for stale Vercel deployments…"
+
+          # List deployments and filter by PR number
+          deployments=$(vercel list --token "$VERCEL_PAT" --scope "$VERCEL_ORG_ID" \
             | grep "pr-${{ github.event.pull_request.number }}" \
-            | awk '{print $2}' \
-            | xargs -I {} vercel rm {} --safe --yes --token "$VERCEL_PAT" --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+            | awk '{print $1}' || true)
+
+          if [ -z "$deployments" ]; then
+            echo "No stale Vercel deployments found."
+            exit 0
+          fi
+
+          echo "Found stale deployments:"
+          echo "$deployments"
+
+          # Remove each deployment safely
+          for d in $deployments; do
+            echo "Removing $d…"
+            vercel remove "$d" --yes --token "$VERCEL_PAT" --scope "$VERCEL_ORG_ID"
+          done
+
+          echo "Stale Vercel deployments removed."
 
   deploy_fresh_frontend:
     name: Deploy Fresh Frontend
@@ -146,7 +162,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          url=$(vercel --token "$VERCEL_PAT" --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID" --env-file=.env.preview)
+          url=$(vercel deploy --token "$VERCEL_PAT" --scope "$VERCEL_ORG_ID" --env-file=.env.preview)
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
       - name: Write Frontend URL Artifact
