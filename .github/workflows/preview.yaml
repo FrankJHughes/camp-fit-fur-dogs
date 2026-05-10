@@ -25,14 +25,13 @@ jobs:
     steps:
       - id: out
         run: |
-          # CONTRACT:artifact-naming — shared with RenderHostingProvider.cs
-          # See docs/conventions/workflow.md → "Artifact Naming Contract"
           common_prefix="pr-${{ github.event.pull_request.number }}"
           echo "common_prefix=$common_prefix" >> $GITHUB_OUTPUT
           echo "artifact_name=$common_prefix" >> $GITHUB_OUTPUT
           echo "artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
           echo "db_branch=$common_prefix" >> $GITHUB_OUTPUT
           echo "api_base_url=https://campfitfurdogsapi-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
+
           action="${{ github.event.action }}"
           should_destroy=$([[ "$action" != "opened" ]] && echo "true" || echo "false")
           should_deploy=$([[ "$action" != "closed" ]] && echo "true" || echo "false")
@@ -44,15 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: preview_context
     if: needs.preview_context.outputs.should_destroy == 'true'
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - name: Remove render-preview label
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
       - uses: ./.github/actions/wait-for-endpoint
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}/health"
@@ -89,28 +81,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: preview_context
     if: needs.preview_context.outputs.should_destroy == 'true'
-    permissions:
-      contents: read
-      pull-requests: write
+    env:
+      VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node (for Vercel CLI)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
       - name: Remove stale Vercel deployments
-        env:
-          VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           echo "Checking for stale Vercel deployments…"
 
-          # List deployments and filter by PR number
           deployments=$(vercel list --token "$VERCEL_PAT" --scope "$VERCEL_ORG_ID" \
             | grep "pr-${{ github.event.pull_request.number }}" \
             | awk '{print $1}' || true)
@@ -123,7 +101,6 @@ jobs:
           echo "Found stale deployments:"
           echo "$deployments"
 
-          # Remove each deployment safely
           for d in $deployments; do
             echo "Removing $d…"
             vercel remove "$d" --yes --token "$VERCEL_PAT" --scope "$VERCEL_ORG_ID"
@@ -140,10 +117,14 @@ jobs:
     if: needs.preview_context.outputs.should_deploy == 'true'
     outputs:
       vercel_preview_url: ${{ steps.vercel.outputs.preview_url }}
+    env:
+      VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node (for Vercel CLI)
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -151,21 +132,16 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      - name: Write .env.preview for frontend
-        run: |
-          echo "NEXT_PUBLIC_API_BASE_URL=${{ needs.preview_context.outputs.api_base_url }}" > .env.preview
-
-      - name: Trigger Vercel Deployment
+      - name: Deploy to Vercel
         id: vercel
-        env:
-          VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
         run: |
           url=$(vercel deploy \
             --token "$VERCEL_PAT" \
             --scope "$VERCEL_ORG_ID" \
+            --project "$VERCEL_PROJECT_ID" \
             --build-env NEXT_PUBLIC_API_BASE_URL="${{ needs.preview_context.outputs.api_base_url }}")
+
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
       - name: Write Frontend URL Artifact
@@ -184,7 +160,7 @@ jobs:
       - destroy_stale_db
     if: needs.preview_context.outputs.should_deploy == 'true'
     outputs:
-      db_conn_string: ${{ steps.conn.outputs.db_conn_string }}
+      db_conn_string: ${{ steps.conn.outputs.npgsql_connection_string }}
     steps:
       - uses: actions/checkout@v4
 
@@ -232,7 +208,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ needs.preview_context.outputs.artifact_name }}
-          path: ${{ needs.preview_context.outputs.artifact_file_path }}
+          path: db-conn.txt
 
   deploy_fresh_api:
     name: Deploy Fresh API
@@ -243,25 +219,13 @@ jobs:
       - deploy_fresh_frontend
       - destroy_stale_api
     if: needs.preview_context.outputs.should_deploy == 'true'
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
-
-      - name: Add render-preview label
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
 
       - name: Download Preview Artifacts
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.preview_context.outputs.artifact_name }}
-
-      # At this point, db-conn.txt and frontend-url.txt are available.
-      # RenderHostingProvider.cs is responsible for consuming these
-      # according to the existing artifact contract.
 
       - uses: actions/setup-dotnet@v4
         with:
