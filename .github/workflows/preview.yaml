@@ -123,7 +123,7 @@ jobs:
           echo "$deployments"
 
           echo  | vercel remove --yes --token "$VERCEL_PAT" \
-            "[$deployments]"
+            [$deployments]
 
           # deployments=$(vercel list --yes --token "$VERCEL_PAT" \
           #   | grep "^https.*" \
