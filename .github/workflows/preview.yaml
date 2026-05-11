@@ -118,14 +118,13 @@ jobs:
             exit 0
           fi
 
-          if
-
           count=$(echo "$deployments" | wc -l)
 
           if [ "$count" -gt 1 ]; then
-            deployments = "[$deployments]"
+            deployments="[$deployments]"
           fi
-          vercel remove --yes --token "$VERCEL_PAT" "$deployments"
+
+          vercel remove --yes --token "$VERCEL_PAT" $deployments
 
   deploy_fresh_frontend:
     name: Deploy Fresh Frontend
