@@ -111,6 +111,7 @@ jobs:
           echo "Checking for stale Vercel deployments…"
 
           deployments=$(vercel list --yes --token "$VERCEL_PAT" \
+            --meta PR_NUMBER=${{github.event.pull_request.number}} \
             | grep "^https")
 
           if [ -z "$deployments" ]; then
@@ -120,27 +121,6 @@ jobs:
 
           echo  | vercel remove --yes --token "$VERCEL_PAT" \
             [$deployments]
-
-          # deployments=$(vercel list --yes --token "$VERCEL_PAT" \
-          #   | grep "^https.*" \
-          #   | awk '{print $1}' || true)
-
-          # echo $deployments
-
-          # if [ -z "$deployments" ]; then
-          #   echo "No stale Vercel deployments found."
-          #   exit 0
-          # fi
-
-          # echo "Found stale deployments:"
-          # echo "$deployments"
-
-          # for d in $deployments; do
-          #   echo "Removing $d…"
-          #   vercel remove "$d" --yes --token "$VERCEL_PAT"
-          # done
-
-          # echo "Stale Vercel deployments removed."
 
   deploy_fresh_frontend:
     name: Deploy Fresh Frontend
@@ -169,19 +149,16 @@ jobs:
 
       - name: Pull Vercel Environment Information
         run: |
-          cd frontend
           vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_PAT }}
 
       - name: Build Project Artifacts
         run: |
-          cd frontend
           echo NEXT_PUBLIC_API_URL=${{ needs.preview_context.outputs.api_base_url }} > .env.local
           vercel build --token=${{ secrets.VERCEL_PAT }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
         run: |
-          cd frontend
           url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_PAT }} --meta PR_NUMBER=${{github.event.pull_request.number}})
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
