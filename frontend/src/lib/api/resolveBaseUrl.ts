@@ -1,4 +1,3 @@
-// src/lib/resolveBaseUrl.ts
 export function resolveBaseUrl() {
   const envBase = process.env.NEXT_PUBLIC_API_URL;
   const localBase = "http://localhost:5209";

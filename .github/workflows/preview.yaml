@@ -164,7 +164,8 @@ jobs:
           RAW_URL="${{ needs.preview_context.outputs.api_base_url }}"
           CLEAN_URL="$(echo "$RAW_URL" | sed 's/}*$//')"
           echo NEXT_PUBLIC_API_URL="$CLEAN_URL" > .env.local
-          vercel build --token=${{ secrets.VERCEL_PAT }}
+          vercel build --token=${{ secrets.VERCEL_PAT }} /
+            --force
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
