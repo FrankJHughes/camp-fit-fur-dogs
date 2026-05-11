@@ -170,7 +170,7 @@ jobs:
           cd frontend
           url=$(vercel deploy --token=${{ secrets.VERCEL_PAT }} \
             --prebuilt \
-            --environment=preview \
+            --target=preview \
             --meta PR_NUMBER=${{github.event.pull_request.number}})
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
