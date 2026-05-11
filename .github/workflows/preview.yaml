@@ -118,9 +118,6 @@ jobs:
             exit 0
           fi
 
-          echo "Removing stale deployments:"
-          echo "$deployments"
-
           echo  | vercel remove --yes --token "$VERCEL_PAT" \
             [$deployments]
 
