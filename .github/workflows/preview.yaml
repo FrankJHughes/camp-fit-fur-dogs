@@ -110,7 +110,6 @@ jobs:
         run: |
           deployments=$(vercel list --yes --token "$VERCEL_PAT" \
             --environment=preview \
-            --meta PR_NUMBER= \
             --meta PR_NUMBER=212 | grep "^https" || true)
 
           echo $deployments
@@ -154,7 +153,8 @@ jobs:
 
       - name: Pull Vercel Environment Information
         run: |
-          vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_PAT }}
+          vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_PAT }} \
+            --project {{ serets.VERCEL_PROJECT_ID }}
 
       - name: Build Project Artifacts
         run: |
