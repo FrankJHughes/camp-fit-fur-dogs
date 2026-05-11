@@ -106,9 +106,13 @@ jobs:
         run: |
           echo "Checking for stale Vercel deployments…"
 
+          vercel --yes list --token "$VERCEL_PAT"
+
           deployments=$(vercel --yes list --token "$VERCEL_PAT" \
             | grep "pr-${{ github.event.pull_request.number }}" \
             | awk '{print $1}' || true)
+
+          echo $deployments
 
           if [ -z "$deployments" ]; then
             echo "No stale Vercel deployments found."
