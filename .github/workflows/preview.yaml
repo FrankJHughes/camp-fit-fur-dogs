@@ -119,7 +119,7 @@ jobs:
           fi
 
           vercel remove --yes --token "$VERCEL_PAT" \
-            [$deployments | grep "^https"]
+            [echo $deployments | grep "^https"]
 
   deploy_fresh_frontend:
     name: Deploy Fresh Frontend
