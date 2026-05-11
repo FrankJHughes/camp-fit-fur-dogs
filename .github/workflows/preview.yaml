@@ -111,10 +111,11 @@ jobs:
           echo "Checking for stale Vercel deployments…"
 
           vercel list --yes --token "$VERCEL_PAT" \
-            | grep "^https://.*${{needs.preview_context.outputs.common_prefix}}.*"
+            | grep "^https.*${{needs.preview_context.outputs.common_prefix}}" \
+            | awk '{print $1}' || true
 
           deployments=$(vercel list --yes --token "$VERCEL_PAT" \
-            | grep "^https://.*${{needs.preview_context.outputs.common_prefix}}.*" \
+            | grep "^https.*${{needs.preview_context.outputs.common_prefix}}.*" \
             | awk '{print $1}' || true)
 
           echo $deployments
