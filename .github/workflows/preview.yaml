@@ -112,6 +112,8 @@ jobs:
             --environment=preview \
             --meta PR_NUMBER=212 | grep "^https" || true)
 
+          echo $deployments
+
           if [ -z "$deployments" ]; then
             exit 0
           fi
