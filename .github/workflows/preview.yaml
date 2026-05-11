@@ -108,18 +108,15 @@ jobs:
 
       - name: Remove stale Vercel deployments
         run: |
-          echo "Checking for stale Vercel deployments…"
-
           deployments=$(vercel list --yes --token "$VERCEL_PAT" \
             --environment=preview \
-            --meta PR_NUMBER=${{github.event.pull_request.number}})
+            --meta PR_NUMBER=212 | grep "^https" || true)
 
-          if ! echo $deployments | grep -q "^https"; then
+          if [ -z "$deployments" ]; then
             exit 0
           fi
 
-          vercel remove --yes --token "$VERCEL_PAT" \
-            [echo $deployments | grep "^https"]
+          vercel remove --yes --token "$VERCEL_PAT" "[$deployments]"
 
   deploy_fresh_frontend:
     name: Deploy Fresh Frontend
