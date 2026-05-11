@@ -159,7 +159,7 @@ jobs:
         run: |
           cd frontend
           vercel build --token=${{ secrets.VERCEL_PAT }} \
-            --env NEXT_PUBLIC_API_URL=${{ needs.preview_context.outputs.api_base_url }}
+            --build-env NEXT_PUBLIC_API_URL=${{ needs.preview_context.outputs.api_base_url }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
