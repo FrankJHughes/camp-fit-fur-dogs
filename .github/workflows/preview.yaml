@@ -102,6 +102,10 @@ jobs:
     env:
       VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
     steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
       - name: Remove stale Vercel deployments
         run: |
           echo "Checking for stale Vercel deployments…"
