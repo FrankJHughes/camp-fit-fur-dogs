@@ -161,14 +161,17 @@ jobs:
       - name: Build Project Artifacts
         run: |
           cd frontend
-          echo NEXT_PUBLIC_API_URL=${{ needs.preview_context.outputs.api_base_url }} > .env.local
+          echo NEXT_PUBLIC_API_URL="${{ needs.preview_context.outputs.api_base_url }}" | sed 's/}$//' > .env.local
           vercel build --token=${{ secrets.VERCEL_PAT }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
         run: |
           cd frontend
-          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_PAT }} --meta PR_NUMBER=${{github.event.pull_request.number}})
+          url=$(vercel deploy --token=${{ secrets.VERCEL_PAT }} \
+            --prebuilt \
+            --environment=preview \
+            --meta PR_NUMBER=${{github.event.pull_request.number}})
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
       - name: Write Frontend URL Artifact
