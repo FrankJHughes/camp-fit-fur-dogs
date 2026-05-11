@@ -158,13 +158,17 @@ jobs:
           cd frontend
           vercel pull --yes --token=${{ secrets.VERCEL_PAT }} \
             --environment=preview
-
-      - name: Build Project Artifacts
+      - name: Create File .env.local
         run: |
           cd frontend
           RAW_URL="${{ needs.preview_context.outputs.api_base_url }}"
           CLEAN_URL="$(echo "$RAW_URL" | sed 's/}*$//')"
           echo NEXT_PUBLIC_API_URL="$CLEAN_URL" > .env.local
+
+      - name: Build Project Artifacts
+        run: |
+          cd frontend
+          cat .env.local
           vercel build --token=${{ secrets.VERCEL_PAT }}
 
       - name: Deploy Project Artifacts to Vercel
