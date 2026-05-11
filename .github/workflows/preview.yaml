@@ -271,7 +271,7 @@ jobs:
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}${{ needs.preview_context.outputs.api_live_endpoint }}"
           healthy: "200,400,401"
-          timeout: 360
+          timeout: 600
           adjective: "up"
           consecutive_successes_required: 5
 
