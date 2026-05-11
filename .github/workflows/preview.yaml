@@ -114,7 +114,7 @@ jobs:
             --environment=preview \
             --meta PR_NUMBER=${{github.event.pull_request.number}})
 
-          if ! $deployments | grep -q "^https"; then
+          if ! echo $deployments | grep -q "^https"; then
             exit 0
           fi
 
