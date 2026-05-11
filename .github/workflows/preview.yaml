@@ -138,9 +138,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Change into app directory
+      - name: Remove Folder .vercel
         run: |
           cd frontend
+          rm -rf .vercel
 
       - name: Setup Node
         uses: actions/setup-node@v4
