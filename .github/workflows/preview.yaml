@@ -147,7 +147,6 @@ jobs:
         with:
           node-version: '20'
 
-      - uses: actions/checkout@v2
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
