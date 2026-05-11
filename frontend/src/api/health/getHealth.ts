@@ -8,7 +8,7 @@ export interface GetHealthQuery {
 const client = createApiClient();
 
 export async function getHealth(): Promise<QueryResult<GetHealthQuery>> {
-  const result = await client.get<GetHealthQuery>(`/health}`);
+  const result = await client.get<GetHealthQuery>(`/health`);
   if (result.ok) {
     return { success: true, data: result.data };
   }
