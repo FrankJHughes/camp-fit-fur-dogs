@@ -122,7 +122,7 @@ jobs:
           echo "Removing stale deployments:"
           echo "$deployments"
 
-          echo $deployments | vercel remove --yes --token "$VERCEL_PAT"
+          echo "[$deployments]" | vercel remove --yes --token "$VERCEL_PAT"
 
           # deployments=$(vercel list --yes --token "$VERCEL_PAT" \
           #   | grep "^https.*" \
