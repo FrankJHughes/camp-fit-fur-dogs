@@ -161,9 +161,7 @@ jobs:
       - name: Create File .env.local
         run: |
           cd frontend
-          RAW_URL="${{ needs.preview_context.outputs.api_base_url }}"
-          CLEAN_URL="$(echo "$RAW_URL" | sed 's/}*$//')"
-          echo NEXT_PUBLIC_API_URL="$CLEAN_URL" > .env.local
+          echo NEXT_PUBLIC_API_URL="${{ needs.preview_context.outputs.api_base_url }}" > .env.local
 
       - name: Build Project Artifacts
         run: |

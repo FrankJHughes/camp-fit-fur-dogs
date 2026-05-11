@@ -79,7 +79,7 @@ public sealed class RenderHostingProvider : IHostingProvider
         if (frontendUrl is not null)
         {
             builder.Configuration[ConfigKey_FrontendBaseUrl] = frontendUrl;
-            Log("Frontend base URL overridden from GitHub artifact.");
+            Log($"Frontend base URL overridden from GitHub artifact{":" + frontendUrl}.");
         }
         else
         {
