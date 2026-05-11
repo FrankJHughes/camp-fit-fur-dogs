@@ -114,7 +114,16 @@ jobs:
             --meta PR_NUMBER=${{github.event.pull_request.number}} \
             | grep "^https")
 
-          echo $deployments
+          if [ -z "$deployments" ]; then
+            echo "No stale Vercel deployments found."
+            exit 0
+          fi
+
+          echo "Removing stale deployments:"
+          echo "$deployments"
+
+          echo $deployments | vercel remove --yes --token "$VERCEL_PAT"
+
           # deployments=$(vercel list --yes --token "$VERCEL_PAT" \
           #   | grep "^https.*" \
           #   | awk '{print $1}' || true)
