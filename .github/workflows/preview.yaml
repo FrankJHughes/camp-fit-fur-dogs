@@ -54,7 +54,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
 
-      - uses: ./.github/actions/wait-for-endpoint
+      - name: Give API Some Space
+        run: sleep 300
+
+      - name: Poll API Down
+        uses: ./.github/actions/wait-for-endpoint
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}/api/health"
           healthy: "404"
@@ -269,7 +273,10 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Wait for API
+      - name: Give API Some Space
+        run: sleep 300
+
+      - name: Poll API Up
         uses: ./.github/actions/wait-for-endpoint
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}${{ needs.preview_context.outputs.api_live_endpoint }}"
