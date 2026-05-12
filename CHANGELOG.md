@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased Sprint 7]
+## [Sprint 7 ] - 2026-05-11
 
 ### Added
 - Public HTTPS‑hosted Camp Fit Fur Dogs API, enabling external access to dog profiles, registration flows, and future customer‑facing features.
