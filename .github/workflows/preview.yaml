@@ -53,13 +53,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
+
       - uses: ./.github/actions/wait-for-endpoint
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}/api/health"
           healthy: "404"
-          timeout: 360
+          timeout: 600
           consecutive_successes_required: 5
           adjective: "down"
+          check_interval: 60
 
   destroy_stale_db_artifact:
     name: Destroy Stale DB Artifact
@@ -274,7 +276,8 @@ jobs:
           healthy: "200,400,401"
           timeout: 900
           adjective: "up"
-          consecutive_successes_required: 6
+          consecutive_successes_required: 5
+          check_interval: 60
 
       - name: Test API
         run: |

@@ -17,7 +17,9 @@ inputs:
   adjective:
     description: "Adjective to use in logs (e.g. 'up', 'available', etc.)"
     default: "up"
-
+  check_interval:
+    description: "Number of seconds to wait before the next attempt"
+    default: 60
 runs:
   using: "composite"
   steps:
@@ -29,12 +31,14 @@ runs:
         timeout="${{ inputs.timeout }}"
         adjective="${{ inputs.adjective }}"
         consecutive_successes_required="${{ inputs.consecutive_successes_required }}"
+        check_interval="${{ inputs.check_interval }}"
 
         echo "Waiting for endpoint: $url"
         echo "Healthy status codes: $healthy"
         echo "Timeout: $timeout seconds"
         echo "Adjective: $adjective"
         echo "Consecutive successes required: $consecutive_successes successes"
+        echo "Seconds to wait in between: $check_interval seconds"
 
         end=$((SECONDS + timeout))
 
@@ -53,8 +57,8 @@ runs:
             consecutive_successes=0
           fi
 
-          echo "Endpoint not $adjective (status: $status). Retrying in 5s..."
-          sleep 5
+          echo "Endpoint not $adjective (status: $status). Retrying in $check_interval seconds..."
+          sleep $check_interval
         done
 
         echo "ERROR: Endpoint did not get $adjective within timeout."
