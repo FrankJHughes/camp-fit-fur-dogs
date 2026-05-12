@@ -10,6 +10,11 @@ dependencies:
   - US-144
   - US-147
   - US-150
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-158: CAN-SPAM & TCPA Compliance Hardening

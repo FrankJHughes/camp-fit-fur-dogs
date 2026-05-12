@@ -1,4 +1,3 @@
-````markdown
 # Workflow Conventions
 
 Canonical standards for GitHub Actions workflows in this repository.  
@@ -7,8 +6,8 @@ These conventions reflect the actual behavior of `ci.yaml` and `preview.yaml`.
 ## Related Documents
 
 - `architecture.md` — hosting, layering, preview architecture  
-- `Code.md` — preview‑safe rules, script‑first patterns  
-- `Docs.md` — documentation structure  
+- `code.md` — preview‑safe rules, script‑first patterns  
+- `docs.md` — documentation structure  
 - `adr/` — decision history for CI/CD and automation
 
 ---
@@ -79,8 +78,6 @@ Runs when:
 - SharedKernel changed  
 - Infra changed
 
-Uses composite action `run-dotnet-tests`.
-
 Projects:
 
 - `tests/SharedKernel.Tests`  
@@ -134,6 +131,40 @@ Steps:
 - Fail‑fast behavior  
 - Nightly full runs  
 - Script‑first logic (no complex inline shell)
+
+---
+
+# Selective CI Testing
+
+The CI pipeline uses a **path‑based, dependency‑aware test selection model** to keep builds fast and deterministic.
+
+## Dependency Model
+
+- Backend changes impact the frontend.  
+- Frontend changes do **not** impact the backend.  
+- SharedKernel changes impact both backend and frontend.  
+- Infrastructure changes impact all integration tests.  
+- Governance changes (stories, catalog, scripts) require governance checks only.
+
+## Path Mapping
+
+| Area        | Paths                                      | CI Actions                                |
+|-------------|---------------------------------------------|--------------------------------------------|
+| Backend     | `src/**`, `tests/**`                        | Backend tests + frontend tests             |
+| Frontend    | `frontend/**`                               | Frontend tests, lint, build                |
+| SharedKernel| `src/SharedKernel/**`, `tests/SharedKernel/**` | SharedKernel tests + backend + frontend |
+| Governance  | `product/stories/**`, `scripts/**`, `catalog.csv` | Catalog + frontmatter checks          |
+| Infra       | `docker-compose.yml`, `infrastructure/**`   | Compose validation + infra tests           |
+
+## Workflow Behavior
+
+1. CI detects changed paths via `dorny/paths-filter`.  
+2. CI computes impacted areas using the dependency model.  
+3. CI runs only the required Make targets.  
+4. Backend changes automatically trigger frontend tests.  
+5. Nightly runs always execute the full test suite.
+
+This model keeps CI fast, predictable, and aligned with the repository architecture.
 
 ---
 
@@ -313,7 +344,6 @@ API integration tests
 # Related Documentation
 
 - `architecture.md`  
-- `Code.md`  
-- `Docs.md`  
+- `code.md`  
+- `docs.md`  
 - ADR index under `adr/`
-````

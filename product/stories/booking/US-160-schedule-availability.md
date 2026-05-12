@@ -8,6 +8,11 @@ domain: booking
 vertical_slice: false
 dependencies:
   - US-159
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-160: Schedule & Availability

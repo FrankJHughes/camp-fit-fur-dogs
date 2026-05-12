@@ -1,16 +1,17 @@
 ---
 id: US-114
 title: "Command Dispatch Failure"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-114 — US‑114 — Dispatch Commands With Clear Failure When No Handler Exists
 

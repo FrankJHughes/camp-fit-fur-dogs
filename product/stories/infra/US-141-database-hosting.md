@@ -2,13 +2,18 @@
 id: US-141
 title: "Database Hosting"
 epic: Infrastructure
-milestone: M2
-status: backlog
+milestone: M1
+status: shipped
 domain: infra
 vertical_slice: false
 dependencies:
   - US-050
   - US-107
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-141: Database Hosting

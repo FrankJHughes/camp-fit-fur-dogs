@@ -9,6 +9,11 @@ vertical_slice: false
 dependencies:
   - US-103
   - US-156
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-157: Cookie Consent & Tracking Transparency

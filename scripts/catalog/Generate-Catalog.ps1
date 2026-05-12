@@ -1,129 +1,159 @@
 <#
 .SYNOPSIS
-    Reads all story files under product/stories/ and generates product/catalog.csv.
+    Generates catalog.csv from story frontmatter, backing up the existing file first.
 
 .DESCRIPTION
-    Parses YAML frontmatter from each story markdown file and outputs a CSV
-    catalog suitable for grooming and sprint planning. Run from the repo root.
-
-.EXAMPLE
-    .\scripts\Generate-Catalog.ps1
+    - Scans product/stories recursively
+    - Extracts frontmatter fields
+    - Normalizes list fields
+    - Populates canonical catalog schema
+    - Backs up existing catalog.csv before overwriting it
+    - Dependencies come from story frontmatter (source of truth)
 #>
 
-$ErrorActionPreference = "Stop"
-$storyRoot = "product/stories"
-$outputPath = "product/catalog.csv"
-
-$fields = @(
-    "id", "title", "epic", "milestone", "status", "domain",
-    "urgency", "importance", "covey_quadrant", "vertical_slice",
-    "emotional_guarantees", "legal_guarantees", "file_path"
+param(
+  [string]$StoryRoot = "product/stories",
+  [string]$OutputPath = "product/catalog.csv"
 )
 
-# List fields that are stored as YAML arrays in frontmatter
-$listFields = @("emotional_guarantees", "legal_guarantees", "dependencies")
+$ErrorActionPreference = "Stop"
 
-function Convert-Frontmatter {
-    param(
-        [switch]$OutputString,
-        [string]$Content,
-        [string]$FilePath
-    )
-
-    if ($Content -notmatch '(?s)^---\r?\n(.+?)\r?\n---') {
-        Write-Host "$filePath does not match the expected format." -ForegroundColor Red
-        return $null
-    }
-
-    $fm = $Matches[1]
-    $result = @{}
-    $result["file_path"] = $FilePath -replace "\\", "/"
-
-    $currentList = $null
-    $currentItems = @()
-
-    foreach ($rawLine in ($fm -split "`n")) {
-        $line = $rawLine.TrimEnd()
-
-        # Continuation of a list
-        if ($null -ne $currentList -and $line -match '^\s+-\s+(.+)') {
-            $currentItems += $Matches[1].Trim().Trim('"')
-            continue
-        }
-        # End of list — flush
-        if ($null -ne $currentList) {
-            $result[$currentList] = $currentItems -join ";"
-            $currentList = $null
-            $currentItems = @()
-        }
-        # Key with empty value (start of list)
-        if ($line -match '^(\w[\w_]*):\s*$') {
-            $key = $Matches[1]
-            $currentList = $key
-            $currentItems = @()
-            continue
-        }
-        # Key: value (scalar)
-        if ($line -match '^(\w[\w_]*):\s*(.+)$') {
-            $key = $Matches[1]
-            if ($key -eq 'file_path') { continue }  # ignore YAML file_path
-
-            $val = $Matches[2].Trim().Trim('"').Trim("'")
-            $result[$key] = $val
-        }
-    }
-    # Flush trailing list
-    if ($null -ne $currentList) {
-        $result[$currentList] = $currentItems -join ";"
-        $currentList = $null
-    }
-
-    return $result
+# -------------------------------
+# 1. Backup existing catalog.csv before overwriting
+# -------------------------------
+if (Test-Path $OutputPath) {
+  $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+  $backupPath = (Join-Path (Split-Path $OutputPath -Parent) "catalog.backup-$timestamp.csv")
+  Copy-Item -Path $OutputPath -Destination $backupPath -Force
+  Write-Host "Existing catalog backed up to: $backupPath" -ForegroundColor Yellow
 }
 
+# Canonical schema (Option A)
+$schema = @(
+  "id",
+  "title",
+  "epic",
+  "milestone",
+  "status",
+  "domain",
+  "urgency",
+  "importance",
+  "covey_quadrant",
+  "vertical_slice",
+  "dependencies",
+  "emotional_guarantees",
+  "legal_guarantees",
+  "file_path"
+)
+
+# List fields
+$listFields = @(
+  "dependencies",
+  "emotional_guarantees",
+  "legal_guarantees"
+)
+
+function Parse-Frontmatter {
+  param([string]$Content)
+
+  if ($Content -notmatch '(?s)^---\r?\n(.*?)\r?\n---\r?\n') {
+    return $null
+  }
+
+  return ($Matches[1] -split "`n")
+}
+
+function Extract-Scalar {
+  param([string[]]$Lines, [string]$Field)
+
+  foreach ($line in $Lines) {
+    if ($line -match "^${Field}:\s*(.*)$") {
+      $value = $Matches[1].Trim()
+
+      # Strip surrounding double quotes
+      if ($value -match '^"(.*)"$') {
+        return $Matches[1]
+      }
+
+      # Strip surrounding single quotes
+      if ($value -match "^'(.*)'$") {
+        return $Matches[1]
+      }
+
+      return $value
+    }
+  }
+
+  return ""
+}
+
+function Extract-List {
+  param([string[]]$Lines, [string]$Field)
+
+  $items = @()
+  $inBlock = $false
+
+  foreach ($line in $Lines) {
+
+    if ($line -match "^${Field}:\s*$") {
+      $inBlock = $true
+      continue
+    }
+
+    if ($inBlock) {
+      if ($line -match '^\s+-\s*(.+)$') {
+        $items += $Matches[1].Trim()
+      }
+      elseif ($line -match '^\S') {
+        break
+      }
+    }
+  }
+
+  return ($items -join ";")
+}
+
+# Collect rows
 $rows = @()
-Get-ChildItem -Path $storyRoot -Filter "*.md" -Recurse |
-Where-Object { $_.Name -ne "STORY-TEMPLATE.md" -and $_.Name -ne "README.md" } |
-ForEach-Object {
-    $content = Get-Content $_.FullName -Raw -Encoding utf8
-    $relativePath = $_.FullName.Substring((Get-Location).Path.Length + 1)
 
-    # Write-Host "Processing $relativePath" -ForegroundColor Yellow
-    $parsed = Convert-Frontmatter -Content $content -FilePath $relativePath
+$files = Get-ChildItem -Path $StoryRoot -Recurse -Filter "US-*.md"
 
-    # if ($parsed -eq $null) {
-    #     Write-Host "Failed to parse frontmatter for $relativePath" -ForegroundColor Red
-    # }
+foreach ($file in $files) {
 
-    # if ($parsed.ContainsKey("id")) {
-    #     Write-Host "Parsed story ID: $($parsed["id"])" -ForegroundColor Green
-    # }
-    # else {
-    #     Write-Host "No story ID found in $relativePath" -ForegroundColor Red
-    # }
+  $raw = Get-Content $file.FullName -Raw -Encoding utf8
+  $fm = Parse-Frontmatter -Content $raw
 
-    if ($null -ne $parsed -and $parsed.ContainsKey("id")) {
+  if ($null -eq $fm) {
+    Write-Warning "No frontmatter in $($file.FullName) — skipping"
+    continue
+  }
 
-        $obj = [ordered]@{}
-        foreach ($f in $fields) {
-            $obj[$f] = if ($parsed.ContainsKey($f)) { $parsed[$f] } else { "" }
-        }
-        $rows += [PSCustomObject]$obj
-    }
+  $row = [ordered]@{}
+
+  # Populate scalar fields
+  foreach ($field in $schema) {
+    if ($listFields -contains $field) { continue }
+    if ($field -eq "file_path") { continue }
+
+    $row[$field] = Extract-Scalar -Lines $fm -Field $field
+  }
+
+  # Populate list fields
+  foreach ($lf in $listFields) {
+    $row[$lf] = Extract-List -Lines $fm -Field $lf
+  }
+
+  # Add file_path
+  $row["file_path"] = $file.FullName.Replace("\", "/")
+
+  $rows += New-Object PSObject -Property $row
 }
 
+# Write CSV
 $rows |
-Sort-Object { [int]($_.id -replace '\D', '') } |
-Export-Csv -Path $outputPath -NoTypeInformation -Encoding utf8NoBOM
+Select-Object $schema |
+Export-Csv -Path $OutputPath -NoTypeInformation -Encoding utf8
 
-$count = $rows.Count
-Write-Host "Generated $outputPath with $count stories." -ForegroundColor Green
-
-# Existing logic generates $catalogContent
-
-if ($OutputString) {
-    $catalogContent
-    exit 0
-}
-
-# Existing write-mode behavior continues here
+Write-Host ""
+Write-Host "Catalog generation complete." -ForegroundColor Green
+Write-Host "Updated catalog written to $OutputPath" -ForegroundColor Cyan

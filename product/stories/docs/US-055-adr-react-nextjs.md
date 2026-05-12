@@ -1,16 +1,17 @@
 ---
 id: US-055
 title: "Adr React Nextjs"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: docs
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-055 — ADR-0012: Frontend Technology (React/Next.js)
 

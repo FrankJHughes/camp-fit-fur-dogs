@@ -8,6 +8,11 @@ domain: infra
 vertical_slice: true
 dependencies:
   - US-128
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-130: Login with Apple

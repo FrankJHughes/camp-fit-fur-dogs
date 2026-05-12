@@ -1,16 +1,17 @@
 ---
 id: US-123
 title: "Prevent Silent Failures"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-123 — US‑123 — Prevent Silent Failures in CQRS Pipelines
 

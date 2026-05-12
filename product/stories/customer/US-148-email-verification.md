@@ -13,74 +13,85 @@ dependencies:
   - US-144
 ---
 
-# US-148: Email Verification
+# US‑148: Email Verification
 
 ## Intent
-
-As a **new owner**, I must verify my email address after creating an account so
-that Camp Fit Fur Dogs knows the email belongs to me and can communicate with me
-reliably.
+As a **new owner**, I must verify my email address after creating an account so that Camp Fit Fur Dogs knows the email belongs to me and can communicate with me reliably.
 
 ## Value
+Unverified email addresses create security, deliverability, and trust problems.  
+Verification ensures:
 
-Unverified email addresses are a security and deliverability risk. A verification
-step confirms ownership before the system trusts the address for password resets,
-booking confirmations, and account recovery. Without it, typos, disposable
-addresses, and malicious registrations pollute the customer database and erode
-trust in the communication channel.
+- The email truly belongs to the owner  
+- Password resets and booking confirmations reach the right person  
+- Typos and disposable emails don’t pollute the customer database  
+- The communication channel is trustworthy before sensitive actions occur  
+
+This story also establishes the sequencing rules for the welcome email (US‑145).
 
 ## Acceptance Criteria
 
-### Registration flow
-- [ ] After successful account creation (US-126), the owner sees a "Check your email" confirmation page
-- [ ] The confirmation page explains what to expect and offers a "Resend verification email" option
-- [ ] A `CustomerCreated` domain event triggers a verification email via the outbox (US-143)
-- [ ] The verification email contains a unique, time-limited, single-use token embedded in a link
-- [ ] Token is stored server-side as a hash (not plaintext) with an expiration timestamp
-- [ ] Token expires after a configurable window (e.g., 24 hours)
+### Registration Flow
+- After successful account creation (US‑126), the owner sees a **“Check your email”** confirmation page.
+- The page explains what to expect and includes a **“Resend verification email”** option.
+- A `CustomerCreated` domain event triggers a verification email via the outbox (US‑143 → US‑144).
+- The verification email contains:
+  - A unique, time‑limited, single‑use token embedded in a link  
+  - Warm, branded messaging  
+  - Clear next steps  
+- Token is stored server‑side as a **hash**, not plaintext.
+- Token includes an expiration timestamp (default: 24 hours).
 
-### Verification flow
-- [ ] Clicking the verification link navigates to a verification endpoint
-- [ ] Valid token marks the email as verified and displays a success confirmation with a "Log in" call-to-action
-- [ ] Expired token displays a clear message with a "Resend verification email" option
-- [ ] Already-used token displays a message indicating the email is already verified
-- [ ] Invalid/tampered token displays a generic error (does not reveal token structure)
+### Verification Flow
+- Clicking the verification link navigates to a verification endpoint.
+- Valid token:
+  - Marks the email as verified  
+  - Displays a success confirmation  
+  - Includes a **“Log in”** call‑to‑action  
+- Expired token:
+  - Shows a clear message  
+  - Offers a **“Resend verification email”** option  
+- Already‑used token:
+  - Shows a message indicating the email is already verified  
+- Invalid or tampered token:
+  - Returns a **generic error** (no token structure revealed)
 
-### Account state
-- [ ] Accounts have an `EmailVerified` boolean (or `EmailVerifiedAt` timestamp) on the customer entity
-- [ ] Unverified accounts can log in but see a persistent, non-blocking banner prompting verification
-- [ ] Unverified accounts cannot perform sensitive actions (e.g., password change, booking) — scope TBD
-- [ ] Resend verification is rate-limited (e.g., max 3 per hour) to prevent abuse
+### Account State
+- Customer entity includes `EmailVerified` or `EmailVerifiedAt`.
+- Unverified accounts:
+  - Can log in  
+  - See a persistent, non‑blocking banner prompting verification  
+  - Cannot perform sensitive actions (password change, booking) — scope TBD  
+- Resend verification is **rate‑limited** (e.g., max 3 per hour).
 
-### Social login bypass
-- [ ] Accounts created via social login (US-128 through US-131) are auto-verified — the provider has already confirmed the email
-- [ ] The verification flow only applies to email/password registration (US-126)
+### Social Login Bypass
+- Accounts created via social login (Microsoft, Google, Apple, Amazon) are **auto‑verified**.
+- Verification flow applies **only** to email/password registration (US‑126).
+- For social login accounts, `EmailVerifiedAt` is set to the account creation timestamp.
 
-### Welcome email sequencing
-- [ ] Welcome email (US-145) is sent AFTER successful verification, not at account creation
-- [ ] The verification email itself serves as the first contact — warm, branded, and clear
+### Welcome Email Sequencing
+- Welcome email (US‑145) is sent **after successful verification**, not at account creation.
+- The verification email itself must be warm enough to serve as the first impression.
 
 ## Emotional Guarantees
-
-- **EG-01 No Surprises** — The "check your email" page sets clear expectations; no confusion about next steps
-- **EG-02 No Blame** — Expired tokens offer a resend option, never scold
-- **EG-03 Calm Protection** — Verification protects the owner from someone else registering with their email
-- **EG-05 Responsible Partner** — Verification and welcome are separate emails, but the verification email is warm enough to also feel welcoming
+- **EG‑01 — No Surprises**  
+  The “check your email” page sets clear expectations; no confusion about next steps.
+- **EG‑02 — No Blame**  
+  Expired tokens offer a resend option — never scolding or punitive.
+- **EG‑03 — Calm Protection**  
+  Verification protects owners from someone else registering with their email.
+- **EG‑05 — Responsible Partner**  
+  Verification and welcome are separate emails, but both feel warm and human.
 
 ## Design Seam: Hybrid Login Model
-
-> Email verification only applies to the email/password registration path.
-> Social login providers (Microsoft, Google, Apple, Amazon) have already verified
-> the email through their own flows. Accounts created via social login skip
-> verification entirely and are immediately fully active. This means
-> `EmailVerifiedAt` can be set to the account creation timestamp for social
-> login accounts.
+> Email verification applies only to the email/password registration path.  
+> Social login providers have already verified the email through their own flows.  
+> Accounts created via social login skip verification entirely and are immediately active.
 
 ## Notes
-
-- Depends on US-027 (Create Customer Account), US-126 (Create Account Page), US-143 (Outbox), US-144 (Email)
-- US-145 (Welcome Email) sequencing changes — welcome is sent on `EmailVerified` event, not `CustomerCreated`
-- The verification email IS the first impression — invest in its tone and design
-- Consider: should the verification link auto-log-in the owner, or redirect to the login page?
-- Consider: grace period before restricting unverified accounts (allow exploration, restrict commitment)
-- **Demo:** Register with email/password, check inbox, click verification link, see success, log in — banner is gone, welcome email arrives
+- Depends on US‑027 (Create Customer Account), US‑126 (Create Account Page), US‑143 (Outbox), US‑144 (Email).
+- Welcome email sequencing changes: welcome is sent on `EmailVerified`, not `CustomerCreated`.
+- The verification email **is the first impression** — invest in tone and design.
+- Consider whether the verification link should auto‑log‑in the owner or redirect to login.
+- Consider a grace period before restricting unverified accounts.
+- **Demo:** Register with email/password → see “Check your email” → click verification link → see success → log in → banner disappears → welcome email arrives.

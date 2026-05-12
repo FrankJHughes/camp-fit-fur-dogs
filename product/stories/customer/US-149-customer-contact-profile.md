@@ -10,6 +10,11 @@ dependencies:
   - US-027
   - US-126
   - US-148
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-149: Customer Contact Profile

@@ -3,7 +3,7 @@ id: US-171
 title: "CI Path-Based Test Skipping"
 epic: Infrastructure
 milestone: M1
-status: backlog
+status: shipped
 domain: infra
 vertical_slice: false
 dependencies:
@@ -11,7 +11,11 @@ dependencies:
 emotional_guarantees:
   - EG-01
   - EG-05
-legal_guarantees: []
+legal_guarantees:
+  - []
+urgency: 
+importance: 
+covey_quadrant: 
 ---
 
 # US-171: CI Path-Based Test Skipping

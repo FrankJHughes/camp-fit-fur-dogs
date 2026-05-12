@@ -1,16 +1,17 @@
 ---
 id: US-052
 title: "Developer Guide Feature Slice Walkthrough"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: docs
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-052 — Developer Guide: Adding a New Feature Slice
 

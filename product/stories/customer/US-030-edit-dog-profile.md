@@ -1,16 +1,17 @@
 ---
 id: US-030
 title: "Edit Dog Profile"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: customer
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-030 — Edit Dog Profile
 

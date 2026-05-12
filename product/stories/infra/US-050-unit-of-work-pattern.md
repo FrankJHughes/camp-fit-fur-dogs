@@ -1,16 +1,17 @@
 ---
 id: US-050
 title: "Unit Of Work Pattern"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-050 — Unit of Work Pattern
 

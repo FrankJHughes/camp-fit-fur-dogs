@@ -10,6 +10,11 @@ dependencies:
   - US-018
   - US-159
   - US-167
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-168: Vaccination Tracking

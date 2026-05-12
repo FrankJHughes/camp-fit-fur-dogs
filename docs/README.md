@@ -1,75 +1,136 @@
 # Documentation
 
-Single entry point for all Camp Fit Fur Dogs documentation.
+This directory contains all product, engineering, and operational documentation for the Camp Fit Fur Dogs system.  
+Documentation is organized by purpose: **conventions**, **guides**, **runbooks**, **architecture decisions**, and **historical artifacts**.
+
+The structure is intentionally simple, predictable, and AI‑friendly.
 
 ---
 
-## Guides
+# Documentation Structure
 
-### Role Guides
+## Conventions (`docs/conventions/`)
+Authoritative, non‑negotiable rules that define how the system must be built and operated.
 
-| Guide | Audience | Purpose |
-|-------|----------|---------|
-| [Contributing](../CONTRIBUTING.md) | All | Branch naming, commit messages, PR workflow |
-| [Developer Guide](guides/developer-guide.md) | Developers | Onboarding, dev loop, quick links |
-| [Product Owner Guide](guides/product-owner-guide.md) | Product Owner | Backlog, stories, DoR, milestones |
-| [Scrum Master Guide](guides/scrum-master-guide.md) | Scrum Master | Ceremonies, board, sprint workflow |
+- **[Architecture](conventions/architecture.md)** — layering, boundaries, hosting model  
+- **[Workflow](conventions/workflow.md)** — CI/CD, preview environments, selective testing  
+- **[Code](conventions/code.md)** — coding standards, patterns, safety rules  
 
-### Architecture & Technical Guides
-
-| Guide | Purpose |
-|-------|---------|
-| [Folder Structure](guides/developer/folder-structure.md) | Solution layout and vertical slice organization |
-| [Abstractions Contract](guides/developer/abstractions-contract.md) | Commands, queries, and the public Application API |
-| [Dispatcher Pipeline](guides/developer/dispatcher-pipeline.md) | Command and query flow through the system |
-| [Domain Events](guides/developer/domain-events.md) | Raising, collecting, and dispatching domain events |
-| [API Endpoint Purity](guides/developer/api-endpoint-purity.md) | Keeping endpoints thin and HTTP-only |
-| [Shared Kernel](guides/developer/shared-kernel.md) | What belongs in SharedKernel and why |
-| [Purity Rules](guides/developer/purity-rules.md) | Cross-layer architectural purity constraints |
-| [Test Architecture](guides/developer/test-architecture.md) | Guardrails, test patterns, layer-specific testing |
-| [DI Conventions](guides/developer/di-conventions.md) | Dependency injection registration rules |
-| [Frontend Testing](guides/developer/frontend-testing.md) | Patterns and conventions for frontend tests |
-| [Feature Slice Walkthrough](guides/developer/feature-slice-walkthrough.md) | Step-by-step TDD walkthrough for adding command and query slices |
+Conventions are the **rulebooks** of the system.
 
 ---
 
-## Architecture Decisions
+## Guides (`docs/guides/`)
+Role‑specific or topic‑specific explanations.  
+Guides teach *how to work within the system*, not what the rules are.
 
-| Document | Purpose |
-|----------|---------|
-| [ADR Index](adr/README.md) | All architecture decision records |
+Examples include:
 
----
+- Developer Guide  
+- Product Owner Guide  
+- Scrum Master Guide  
+- Domain or feature walkthroughs  
 
-## Product
-
-| Document | Purpose |
-|----------|---------|
-| [Product Vision](../product/VISION.md) | Vision, customer profile, scope |
-| [Product Stories](../product/stories/) | Feature specs, acceptance criteria, emotional safety guarantees |
+Guides are **explanatory**, not normative.
 
 ---
 
-## Governance
+## Runbooks (`docs/runbooks/`)
+Operational, step‑by‑step procedures for real tasks.
 
-| Document | Purpose |
-|----------|---------|
-| [Governance](governance/governance.md) | Roles, ceremonies, ADR process, security, CI |
+Runbooks cover:
 
----
+- Local development  
+- Database migrations  
+- Incident response  
+- Preview environment recovery  
+- Sprint planning  
+- Release process  
 
-## Operations
-
-| Document | Purpose |
-|----------|---------|
-| [Runbooks](runbooks/) | Local setup, migrations, deployments, incident response |
-| [Sprint Reviews](sprint-reviews/) | Sprint-by-sprint progress and retrospectives |
-| [Changelog](../CHANGELOG.md) | All notable changes by sprint |
+Runbooks are **action playbooks**, not design documents.
 
 ---
 
-## Roadmap
+## Architecture Decision Records (`docs/adr/`)
+ADRs capture **significant, irreversible, or high‑impact decisions** in the system’s architecture, tooling, workflows, and documentation structure.
 
-See the [Product Owner Guide — Milestones](guides/product-owner-guide.md#milestones) for the authoritative milestone table and progress tracking.
+ADRs are:
 
-[View milestone progress on GitHub](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones)
+- permanent historical records  
+- numbered sequentially (`0001`, `0002`, …)  
+- never deleted — only superseded  
+- the source of truth for architectural intent  
+
+Use the standard template:
+
+- **[ADR Template](adr/TEMPLATE.md)**
+
+See the ADR index:
+
+- **[ADR Index](adr/README.md)**
+
+---
+
+## Sprint Reviews (`docs/sprint-reviews/`)
+Historical summaries of each sprint.
+
+Each review includes:
+
+- What shipped  
+- Completed stories  
+- Incomplete stories  
+- Key decisions  
+- Learnings  
+- Next sprint focus  
+
+Use the standard template:
+
+- **[Sprint Review Template](sprint-reviews/sprint-review-template.md)**
+
+Sprint reviews are **historical artifacts**, not planning documents.
+
+---
+
+## Product Stories (`product/stories/`)
+The product backlog.  
+Each story is a Markdown file using Story Grammar:
+
+> **As a <role>, I must/should be able to <verb>… so that <value>…**
+
+Stories define **intent**, **value**, and **acceptance criteria**.
+
+Tasks are created as GitHub Issues and reference stories.
+
+---
+
+## ADRs vs. Conventions vs. Runbooks vs. Guides
+
+- **ADRs** → record *decisions*  
+- **Conventions** → define *rules*  
+- **Guides** → explain *how to work*  
+- **Runbooks** → describe *how to execute*  
+- **Sprint reviews** → capture *what happened*  
+- **Stories** → define *product intent*  
+
+This separation keeps documentation:
+
+- discoverable  
+- maintainable  
+- stable  
+- low‑friction  
+- AI‑friendly  
+
+---
+
+# Documentation Philosophy
+
+Documentation should be:
+
+- **Minimal** — only what is needed  
+- **Structured** — predictable locations and formats  
+- **Durable** — stable over time  
+- **Actionable** — runbooks and guides are practical  
+- **Historical** — ADRs and sprint reviews preserve context  
+
+This folder is the backbone of the system’s shared understanding.
+

@@ -6,7 +6,12 @@ milestone: M3
 status: backlog
 domain: booking
 vertical_slice: false
-dependencies: []
+dependencies:
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-159: Service Catalog

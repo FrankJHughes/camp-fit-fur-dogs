@@ -1,16 +1,17 @@
 ---
 id: US-044
 title: "Returning Customer"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: customer
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-044 — Returning Customer Confidence
 

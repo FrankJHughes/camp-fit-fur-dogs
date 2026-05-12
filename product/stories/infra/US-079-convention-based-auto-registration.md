@@ -1,16 +1,17 @@
 ---
 id: US-079
 title: "Convention Based Auto Registration"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-079 — Convention-Based Auto-Registration
 

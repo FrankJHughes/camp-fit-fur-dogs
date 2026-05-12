@@ -9,6 +9,11 @@ vertical_slice: true
 dependencies:
   - US-143
   - US-144
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-147: Notification Preferences

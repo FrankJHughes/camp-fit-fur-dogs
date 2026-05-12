@@ -9,6 +9,11 @@ vertical_slice: false
 dependencies:
   - US-103
   - US-126
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-155: Web Accessibility (WCAG 2.1 AA)

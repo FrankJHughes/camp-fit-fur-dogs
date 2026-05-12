@@ -1,16 +1,17 @@
 ---
 id: US-040
 title: "Reassurance"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: retired
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-040 — Reassurance on Failure
 

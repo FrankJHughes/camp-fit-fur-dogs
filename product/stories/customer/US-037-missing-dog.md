@@ -1,16 +1,17 @@
 ---
 id: US-037
 title: "Missing Dog"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: customer
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-037 — Missing Dog
 

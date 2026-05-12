@@ -9,6 +9,11 @@ vertical_slice: true
 dependencies:
   - US-110
   - US-111
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-128: Login with Microsoft

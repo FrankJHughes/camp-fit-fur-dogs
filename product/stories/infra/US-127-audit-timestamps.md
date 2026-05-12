@@ -10,6 +10,11 @@ dependencies:
   - US-050
   - US-107
   - US-108
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-127: Audit Timestamps

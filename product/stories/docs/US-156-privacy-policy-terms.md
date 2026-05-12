@@ -8,6 +8,11 @@ domain: docs
 vertical_slice: false
 dependencies:
   - US-103
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-156: Privacy Policy & Terms of Service

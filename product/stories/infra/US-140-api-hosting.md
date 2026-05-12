@@ -2,13 +2,18 @@
 id: US-140
 title: "API Hosting & Deployment"
 epic: Infrastructure
-milestone: M2
-status: backlog
+milestone: M1
+status: shipped
 domain: infra
 vertical_slice: false
 dependencies:
   - US-056
   - US-015
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-140: API Hosting & Deployment

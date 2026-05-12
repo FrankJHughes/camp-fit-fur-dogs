@@ -12,6 +12,11 @@ dependencies:
   - US-159
   - US-160
   - US-161
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-162: Book a Service

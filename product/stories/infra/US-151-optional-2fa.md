@@ -11,6 +11,11 @@ dependencies:
   - US-111
   - US-144
   - US-150
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-151: Optional Two-Factor Authentication
