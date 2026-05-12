@@ -15,9 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       common_prefix: ${{ steps.out.outputs.common_prefix }}
-      artifact_name: ${{ steps.out.outputs.artifact_name }}
-      artifact_file_path: ${{ steps.out.outputs.artifact_file_path }}
+      db_artifact_name: ${{ steps.out.outputs.db_artifact_name }}
+      db_artifact_file_path: ${{ steps.out.outputs.db_artifact_file_path }}
       db_branch: ${{ steps.out.outputs.db_branch }}
+      frontend_artifact_name: ${{ steps.out.outputs.frontend_artifact_name }}
+      frontend_artifact_file_path: ${{ steps.out.outputs.frontend_artifact_file_path }}
       api_base_url: ${{ steps.out.outputs.api_base_url }}
       api_live_endpoint: "/api/dogs"
       should_destroy: ${{ steps.out.outputs.should_destroy }}
@@ -25,14 +27,15 @@ jobs:
     steps:
       - id: out
         run: |
-          # CONTRACT:artifact-naming — shared with RenderHostingProvider.cs
-          # See docs/conventions/workflow.md → "Artifact Naming Contract"
           common_prefix="pr-${{ github.event.pull_request.number }}"
           echo "common_prefix=$common_prefix" >> $GITHUB_OUTPUT
-          echo "artifact_name=$common_prefix" >> $GITHUB_OUTPUT
-          echo "artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
+          echo "db_artifact_name=$common_prefix-db" >> $GITHUB_OUTPUT
+          echo "db_artifact_file_path=db-conn.txt" >> $GITHUB_OUTPUT
           echo "db_branch=$common_prefix" >> $GITHUB_OUTPUT
-          echo "api_base_url=https://campfitfurdogsapi-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
+          echo "frontend_artifact_name=$common_prefix-frontend" >> $GITHUB_OUTPUT
+          echo "frontend_artifact_file_path=frontend-url.txt" >> $GITHUB_OUTPUT
+          echo "api_base_url=https://campfitfurdogs-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
+
           action="${{ github.event.action }}"
           should_destroy=$([[ "$action" != "opened" ]] && echo "true" || echo "false")
           should_deploy=$([[ "$action" != "closed" ]] && echo "true" || echo "false")
@@ -43,42 +46,52 @@ jobs:
     name: Destroy Stale API
     runs-on: ubuntu-latest
     needs: preview_context
-    if: |
-      needs.preview_context.outputs.should_destroy == 'true'
-    permissions:
-      contents: read
-      pull-requests: write
+    if: needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: actions/checkout@v4
       - name: Remove render-preview label
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "render-preview"
-      - uses: ./.github/actions/wait-for-endpoint
-        with:
-          url: "${{ needs.preview_context.outputs.api_base_url }}/health"
-          healthy: "404"
-          timeout: 300
-          consecutive_successes_required: 3
-          adjective: "down"
 
-  destroy_stale_artifact:
-    name: Destroy Stale Artifact
+      - name: Give API Some Space
+        run: sleep 300
+
+      - name: Poll API Down
+        uses: ./.github/actions/wait-for-endpoint
+        with:
+          url: "${{ needs.preview_context.outputs.api_base_url }}/api/health"
+          healthy: "404"
+          timeout: 600
+          consecutive_successes_required: 5
+          adjective: "down"
+          check_interval: 60
+
+  destroy_stale_db_artifact:
+    name: Destroy Stale DB Artifact
     runs-on: ubuntu-latest
     needs: preview_context
-    if: |
-      needs.preview_context.outputs.should_destroy == 'true'
+    if: needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: geekyeggo/delete-artifact@v6
         with:
-          name: ${{ needs.preview_context.outputs.artifact_name }}
+          name: ${{ needs.preview_context.outputs.db_artifact_name }}
+
+  destroy_stale_frontend_artifact:
+    name: Destroy Stale Frontend Artifact
+    runs-on: ubuntu-latest
+    needs: preview_context
+    if: needs.preview_context.outputs.should_destroy == 'true'
+    steps:
+      - uses: geekyeggo/delete-artifact@v6
+        with:
+          name: ${{ needs.preview_context.outputs.frontend_artifact_name }}
 
   destroy_stale_db:
     name: Destroy Stale DB
     runs-on: ubuntu-latest
     needs: preview_context
-    if: |
-      needs.preview_context.outputs.should_destroy == 'true'
+    if: needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: neondatabase/delete-branch-action@v3
         continue-on-error: true
@@ -87,18 +100,109 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch: ${{ needs.preview_context.outputs.db_branch }}
 
+  destroy_stale_frontend:
+    name: Destroy Stale Frontend
+    runs-on: ubuntu-latest
+    needs: preview_context
+    if: needs.preview_context.outputs.should_destroy == 'true'
+    env:
+      VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Remove stale Vercel deployments
+        run: |
+          deployments=$(vercel list --yes --token "$VERCEL_PAT" \
+            --environment=preview \
+            --meta PR_NUMBER=212 | grep "^https" || true)
+
+          echo $deployments
+
+          if [ -z "$deployments" ]; then
+            exit 0
+          fi
+
+          count=$(echo "$deployments" | wc -l)
+
+          if [ "$count" -gt 1 ]; then
+            deployments="[$deployments]"
+          fi
+
+          vercel remove --yes --token "$VERCEL_PAT" $deployments
+
+  deploy_fresh_frontend:
+    name: Deploy Fresh Frontend
+    runs-on: ubuntu-latest
+    needs:
+      - preview_context
+      - destroy_stale_frontend
+    if: needs.preview_context.outputs.should_deploy == 'true'
+    outputs:
+      vercel_preview_url: ${{ steps.deploy.outputs.preview_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove Folder .vercel
+        run: |
+          cd frontend
+          rm -rf .vercel
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: |
+          cd frontend
+          npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: |
+          cd frontend
+          vercel pull --yes --token=${{ secrets.VERCEL_PAT }} \
+            --environment=preview
+      - name: Create File .env.local
+        run: |
+          cd frontend
+          echo NEXT_PUBLIC_API_URL="${{ needs.preview_context.outputs.api_base_url }}" > .env.local
+
+      - name: Build Project Artifacts
+        run: |
+          cd frontend
+          cat .env.local
+          vercel build --token=${{ secrets.VERCEL_PAT }}
+
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          cd frontend
+          url=$(vercel deploy --token=${{ secrets.VERCEL_PAT }} \
+            --prebuilt \
+            --target=preview \
+            --meta PR_NUMBER=${{github.event.pull_request.number}})
+          echo "preview_url=$url" >> $GITHUB_OUTPUT
+
+      - name: Write Frontend URL Artifact
+        run: echo "${{ steps.deploy.outputs.preview_url }}" > ${{ needs.preview_context.outputs.frontend_artifact_file_path }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ needs.preview_context.outputs.frontend_artifact_name }}
+          path: ${{ needs.preview_context.outputs.frontend_artifact_file_path }}
+          overwrite: true
+
   deploy_fresh_db:
     name: Deploy Fresh DB
     runs-on: ubuntu-latest
     needs:
       - preview_context
-      - destroy_stale_api
-      - destroy_stale_artifact
       - destroy_stale_db
-    if: |
-      needs.preview_context.outputs.should_deploy == 'true'
+    if: needs.preview_context.outputs.should_deploy == 'true'
     outputs:
-      db_conn_string: ${{ steps.conn.outputs.db_conn_string }}
+      db_conn_string: ${{ steps.conn.outputs.npgsql_connection_string }}
     steps:
       - uses: actions/checkout@v4
 
@@ -119,10 +223,7 @@ jobs:
         id: conn
         uses: ./.github/actions/postgres-uri-to-npgsql-connection-string
         with:
-          postgres_uri: ${{ steps.neon.outputs.db_url }}   # Neon’s official output
-          # pooling: "true"
-          # timeout: "15"
-          # ssl_mode: "Require"
+          postgres_uri: ${{ steps.neon.outputs.db_url }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -143,13 +244,14 @@ jobs:
           ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
           dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
 
-      - name: Write Artifact
-        run: echo "${{ steps.conn.outputs.npgsql_connection_string }}" > db-conn.txt
+      - name: Write DB Artifact
+        run: echo "${{ steps.conn.outputs.npgsql_connection_string }}" > ${{ needs.preview_context.outputs.db_artifact_file_path }}
 
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ needs.preview_context.outputs.artifact_name }}
-          path: ${{ needs.preview_context.outputs.artifact_file_path }}
+          name: ${{ needs.preview_context.outputs.db_artifact_name }}
+          path: ${{ needs.preview_context.outputs.db_artifact_file_path }}
+          overwrite: true
 
   deploy_fresh_api:
     name: Deploy Fresh API
@@ -157,12 +259,9 @@ jobs:
     needs:
       - preview_context
       - deploy_fresh_db
+      - deploy_fresh_frontend
       - destroy_stale_api
-    if: |
-      needs.preview_context.outputs.should_deploy == 'true'
-    permissions:
-      contents: read
-      pull-requests: write
+    if: needs.preview_context.outputs.should_deploy == 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -170,19 +269,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
-
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Wait for API
+      - name: Poll API Up
         uses: ./.github/actions/wait-for-endpoint
         with:
           url: "${{ needs.preview_context.outputs.api_base_url }}${{ needs.preview_context.outputs.api_live_endpoint }}"
           healthy: "200,400,401"
-          timeout: 360
+          timeout: 900
           adjective: "up"
-          consecutive_successes_required: 3
+          consecutive_successes_required: 5
+          check_interval: 60
 
       - name: Test API
         run: |

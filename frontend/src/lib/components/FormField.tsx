@@ -1,32 +1,27 @@
+import type { ReactNode } from 'react';
+import { useFormField } from '../hooks/useFormField';
 import { FieldError } from './FieldError';
 
 export interface FieldProps {
-  'aria-invalid'?: true;
+  'aria-invalid'?: boolean;
   'aria-describedby'?: string;
 }
 
-interface FormFieldProps {
+export interface FormFieldProps {
   label: string;
   name: string;
-  error: string | undefined;
-  children: (fieldProps: FieldProps) => React.ReactNode;
+  error?: string;
+  children: (fieldProps: FieldProps) => ReactNode;
 }
 
 export function FormField({ label, name, error, children }: FormFieldProps) {
-  const errorId = `error-${name}`;
-
-  const fieldProps: FieldProps = {
-    'aria-invalid': error ? true : undefined,
-    'aria-describedby': error ? errorId : undefined,
-  };
+  const { labelProps, fieldProps, errorId } = useFormField(name, error);
 
   return (
-    <>
-      <label>
-        {label}
-        {children(fieldProps)}
-      </label>
+    <div>
+      <label {...labelProps}>{label}</label>
+      {children(fieldProps)}
       <FieldError id={errorId} message={error} />
-    </>
+    </div>
   );
 }

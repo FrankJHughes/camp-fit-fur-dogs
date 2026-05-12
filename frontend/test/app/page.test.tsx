@@ -1,17 +1,27 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Home from '@/app/page';
+import { getHealth } from '@/api/health/getHealth';
+
+vi.mock('@/api/health/getHealth');
 
 describe('Home page', () => {
-  it('renders the heading', () => {
-    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => { })));
+  beforeEach(() => {
+    vi.mocked(getHealth).mockReset();
+  });
+
+  it('renders the heading', async () => {
+    vi.mocked(getHealth).mockResolvedValue({
+      success: true,
+      data: { status: 'Healthy' }
+    });
 
     render(<Home />);
 
-    expect(
-      screen.getByRole('heading', { level: 1, name: /camp fit fur dogs/i })
-    ).toBeInTheDocument();
-
-    vi.restoreAllMocks();
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { level: 1, name: /camp fit fur dogs/i })
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -1,87 +1,103 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import RegisterDogPage from '@/app/dogs/register/page';
+import { fillDogForm } from '../helpers/dogs/fillDogForm.test';
 
+// IMPORTANT: mock next/navigation BEFORE importing the page
 const pushMock = vi.fn();
-
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: pushMock }),
 }));
 
-async function fillAndSubmitForm(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText(/name/i), 'Buddy');
-  await user.type(screen.getByLabelText(/breed/i), 'Golden Retriever');
-  await user.type(screen.getByLabelText(/date of birth/i), '2023-06-15');
-  await user.selectOptions(screen.getByLabelText(/sex/i), 'Male');
-  await user.click(screen.getByRole('button', { name: /register/i }));
-}
+// IMPORTANT: mock the API client BEFORE importing the page
+import { apiClientMock } from '../setup';
 
 describe('Register Dog (integration)', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetModules();          // force fresh component tree
+    pushMock.mockClear();       // reset navigation
+    apiClientMock.get.mockClear();
+    apiClientMock.post.mockClear();
+    apiClientMock.put.mockClear();
+    apiClientMock.delete.mockClear();
   });
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.restoreAllMocks();
-  });
+  async function loadPage() {
+    // dynamically import AFTER mocks are applied
+    const mod = await import('@/app/dogs/register/page');
+    return mod.default;
+  }
 
   it('submits through the real API client and navigates on success', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
-    });
-    vi.stubGlobal('fetch', fetchMock);
-
+    const RegisterDogPage = await loadPage();
     const user = userEvent.setup();
+
     render(<RegisterDogPage />);
 
-    await fillAndSubmitForm(user);
+    await fillDogForm(user);
+
+    await user.click(screen.getByRole('button', { name: /register/i }));
 
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith('/dogs/register/success');
     });
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/dogs/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    expect(apiClientMock.post).toHaveBeenCalledWith(
+      '/dogs/register',
+      {
         name: 'Buddy',
         breed: 'Golden Retriever',
         dateOfBirth: '2023-06-15',
         sex: 'Male',
-      }),
-    });
+      }
+    );
   });
 
   it('displays server validation errors without navigating', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+    apiClientMock.post.mockResolvedValueOnce({
       ok: false,
-      json: () => Promise.resolve({
-        errors: { name: 'Name is already taken' },
-      }),
-    }));
+      error: {
+        type: 'validation',
+        message: 'Validation failed',
+        errors: { name: ['Name is already taken'] },
+      },
+    });
 
+    const RegisterDogPage = await loadPage();
     const user = userEvent.setup();
+
     render(<RegisterDogPage />);
 
-    await fillAndSubmitForm(user);
+    await fillDogForm(user);
+
+    await user.click(screen.getByRole('button', { name: /register/i }));
 
     expect(await screen.findByText('Name is already taken')).toBeInTheDocument();
     expect(pushMock).not.toHaveBeenCalled();
   });
 
   it('displays a network error when the server is unreachable', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+    apiClientMock.post.mockResolvedValueOnce({
+      ok: false,
+      error: {
+        type: 'network',
+        message: 'Failed to fetch',
+      },
+    });
 
+    const RegisterDogPage = await loadPage();
     const user = userEvent.setup();
+
     render(<RegisterDogPage />);
 
-    await fillAndSubmitForm(user);
+    await fillDogForm(user);
+
+    await user.click(screen.getByRole('button', { name: /register/i }));
 
     expect(
       await screen.findByText('A network error occurred. Please try again.')
     ).toBeInTheDocument();
+
     expect(pushMock).not.toHaveBeenCalled();
   });
 });

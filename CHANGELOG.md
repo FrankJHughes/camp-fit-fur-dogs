@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Public HTTPS‑hosted Camp Fit Fur Dogs API, enabling external access to dog profiles, registration flows, and future customer‑facing features.
 - Automatic deployment pipeline for all updates merged into `main`, ensuring customers always receive the latest stable functionality without manual intervention.
-- Public health check endpoint (`/health`) for uptime verification and external monitoring tools.
+- Public health check endpoint (`/api/health`) for uptime verification and external monitoring tools.
 - Reliable API startup and readiness behavior, reducing customer‑visible downtime during deployments and cold starts.
 - Stable PR Preview environments backed by isolated Neon databases, allowing reviewers to interact with accurate, production‑like previews.
 - Consistent database schema validation through automated migration application in CI, ensuring previews always reflect the latest data model.

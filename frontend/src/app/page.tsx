@@ -1,20 +1,20 @@
 'use client';
-
-import { useEffect, useState } from 'react';
+import { useApiQuery } from '@/lib/hooks/useApiQuery';
+import { getHealth } from '@/api/health/getHealth';
+import { toQueryState } from '@/lib/api/queryResult';
 
 type HealthStatus = 'Checking...' | 'Healthy' | 'Unreachable';
 
 export default function Home() {
-  const [status, setStatus] = useState<HealthStatus>('Checking...');
 
-  useEffect(() => {
-    fetch('/health')
-      .then((res) => res.json())
-      .then((data) =>
-        setStatus(data.status === 'Healthy' ? 'Healthy' : 'Unreachable')
-      )
-      .catch(() => setStatus('Unreachable'));
-  }, []);
+  const state = useApiQuery(
+    () => getHealth().then(toQueryState),
+    []
+  );
+
+  if (state.status === 'loading') return <p>Loading…</p>;
+  if (state.status === 'not-found') return <p>Health Not Found</p>;
+  if (state.status === 'error') return <p>{state.error}</p>;
 
   return (
     <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
@@ -24,10 +24,10 @@ export default function Home() {
         <span
           style={{
             fontWeight: 'bold',
-            color: status === 'Healthy' ? 'green' : 'orange',
+            color: state.data.status === 'Healthy' ? 'green' : 'orange',
           }}
         >
-          {status}
+          {state.data.status}
         </span>
       </p>
     </main>

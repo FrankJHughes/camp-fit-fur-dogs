@@ -8,9 +8,10 @@ namespace CampFitFurDogs.Api.Hosting;
 
 /// <summary>
 /// Hosting provider for Render (https://render.com).
-/// Detects a Render PR-preview environment and overrides the database connection
-/// string by downloading the Neon branch connection string from a GitHub Actions
-/// artifact.
+/// Detects a Render PR-preview environment and overrides configuration
+/// by downloading values from GitHub Actions artifacts:
+/// - Database connection string (db-conn.txt) from pr-XXX-db
+/// - Frontend base URL (frontend-url.txt) from pr-XXX-ui
 /// </summary>
 public sealed class RenderHostingProvider : IHostingProvider
 {
@@ -22,16 +23,13 @@ public sealed class RenderHostingProvider : IHostingProvider
 
     // ── Artifact / config constants ──────────────────────────────────
     private const string DbConnFileName = "db-conn.txt";
-    private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
+    private const string FrontendUrlFileName = "frontend-url.txt";
 
-    // ── IHostingProvider ─────────────────────────────────────────────
+    private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
+    private const string ConfigKey_FrontendBaseUrl = "Frontend__BaseUrl";
 
     public string ProviderName => "Render";
 
-    /// <summary>
-    /// Returns <c>true</c> when all four Render-specific environment variables
-    /// are present and <c>IS_PULL_REQUEST</c> equals <c>"true"</c>.
-    /// </summary>
     public bool IsActive()
     {
         return HasEnvVar(Env_IsPullRequest)
@@ -56,28 +54,42 @@ public sealed class RenderHostingProvider : IHostingProvider
             return;
         }
 
-        var artifactName = $"pr-{prNumber}";
-        var dbConn = await DownloadDbConnFromArtifactAsync(
-            githubPat, repoSlug, artifactName);
+        // NEW: separate artifact names
+        var dbArtifactName = $"pr-{prNumber}-db";
+        var uiArtifactName = $"pr-{prNumber}-ui";
 
-        if (dbConn is null)
+        // Fetch DB connection string
+        var dbConn = await DownloadSingleArtifactFileAsync(
+            githubPat, repoSlug, dbArtifactName, DbConnFileName);
+
+        if (dbConn is not null)
         {
-            Log("DB connection override skipped — artifact not found or empty.");
-            return;
+            builder.Configuration[ConfigKey_DbConn] = dbConn;
+            Log("DB connection string overridden from GitHub artifact.");
+        }
+        else
+        {
+            Log("DB connection override skipped — db-conn.txt not found or empty.");
         }
 
-        builder.Configuration[ConfigKey_DbConn] = dbConn;
-        Log("DB connection string overridden from GitHub artifact.");
+        // Fetch frontend base URL
+        var frontendUrl = await DownloadSingleArtifactFileAsync(
+            githubPat, repoSlug, uiArtifactName, FrontendUrlFileName);
+
+        if (frontendUrl is not null)
+        {
+            builder.Configuration[ConfigKey_FrontendBaseUrl] = frontendUrl;
+            Log($"Frontend base URL overridden from GitHub artifact{":" + frontendUrl}.");
+        }
+        else
+        {
+            Log("Frontend base URL override skipped — frontend-url.txt not found or empty.");
+        }
     }
 
     // ── PR-number extraction ─────────────────────────────────────────
 
-    /// <summary>
-    /// Extracts the PR number from RENDER_SERVICE_NAME.
-    /// Expected format: "campfitfurdogsapi-pr-209" → "209".
-    /// </summary>
-    private static bool TryGetPrNumber(
-        string renderServiceName, out string? prNumber)
+    private static bool TryGetPrNumber(string renderServiceName, out string? prNumber)
     {
         prNumber = null;
         var parts = renderServiceName.Split(
@@ -90,10 +102,13 @@ public sealed class RenderHostingProvider : IHostingProvider
         return true;
     }
 
-    // ── GitHub artifact download ─────────────────────────────────────
+    // ── GitHub artifact download (single file per artifact) ──────────
 
-    private static async Task<string?> DownloadDbConnFromArtifactAsync(
-        string githubToken, string repoSlug, string artifactName)
+    private static async Task<string?> DownloadSingleArtifactFileAsync(
+        string githubToken,
+        string repoSlug,
+        string artifactName,
+        string fileName)
     {
         using var http = CreateGitHubClient(githubToken);
 
@@ -108,8 +123,7 @@ public sealed class RenderHostingProvider : IHostingProvider
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
         };
 
-        var response = JsonSerializer.Deserialize<ArtifactsResponse>(
-            json, options);
+        var response = JsonSerializer.Deserialize<ArtifactsResponse>(json, options);
 
         if (response?.Artifacts is not { Count: > 0 } artifacts)
         {
@@ -117,23 +131,19 @@ public sealed class RenderHostingProvider : IHostingProvider
             return null;
         }
 
-        // Single-pass O(n) selection — find the most recent artifact
-        // without sorting the entire list.
+        // Select newest artifact
         var latest = artifacts.Aggregate((newest, candidate) =>
             candidate.CreatedAt > newest.CreatedAt ? candidate : newest);
 
         var zipBytes = await http.GetByteArrayAsync(latest.ArchiveDownloadUrl);
         using var zip = new ZipArchive(new MemoryStream(zipBytes));
-        var entry = zip.GetEntry(DbConnFileName);
 
+        var entry = zip.GetEntry(fileName);
         if (entry is null)
-        {
-            Log($"Artifact '{artifactName}' does not contain {DbConnFileName}.");
             return null;
-        }
 
         using var reader = new StreamReader(entry.Open());
-        var value = (await reader.ReadToEndAsync()).Trim();
+        var value = reader.ReadToEnd().Trim();
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
@@ -152,8 +162,7 @@ public sealed class RenderHostingProvider : IHostingProvider
     // ── Helpers ──────────────────────────────────────────────────────
 
     private static bool HasEnvVar(string name)
-        => !string.IsNullOrWhiteSpace(
-               Environment.GetEnvironmentVariable(name));
+        => !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(name));
 
     private static string GetRequiredEnvVar(string name)
         => Environment.GetEnvironmentVariable(name)

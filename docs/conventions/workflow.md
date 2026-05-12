@@ -1,115 +1,319 @@
+````markdown
 # Workflow Conventions
 
-> Standards and structure for GitHub Actions workflows in this repository.
+Canonical standards for GitHub Actions workflows in this repository.  
+These conventions reflect the actual behavior of `ci.yaml` and `preview.yaml`.
 
-## Overview
+## Related Documents
 
-All CI/CD automation is defined as GitHub Actions workflows stored in
-`.github/workflows/`. Workflows orchestrate jobs and steps that build, test,
-deploy, and validate the project on every push and pull request.
+- `architecture.md` — hosting, layering, preview architecture  
+- `Code.md` — preview‑safe rules, script‑first patterns  
+- `Docs.md` — documentation structure  
+- `adr/` — decision history for CI/CD and automation
 
-## Workflow Structure
+---
 
-Each workflow file should follow this general layout:
+# Overview
 
-1. **Trigger block** — define the events that start the workflow (`on:`).
-2. **Permissions block** — declare the minimum `GITHUB_TOKEN` permissions
-   required.
-3. **Jobs** — group related steps into logically named jobs.
-4. **Steps** — within each job, order steps so that setup precedes action
-   precedes validation.
+All CI/CD automation lives under `.github/workflows/`.
 
-## Naming Conventions
+Two primary pipelines:
 
-- Workflow files: lowercase, hyphen-separated (e.g., `pr-preview.yml`).
-- Job IDs: lowercase, hyphen-separated, descriptive (e.g., `deploy-preview`).
-- Step names: sentence case, imperative mood (e.g., `Build application`,
-  `Run integration tests`).
+1. **Build & Test (`ci.yaml`)**  
+2. **Preview Environments (`preview.yaml`)**
 
-## Custom GitHub Actions in the PR Preview Workflow
+Both workflows emphasize determinism, minimal permissions, and reproducibility.
 
-The PR Preview workflow (`pr-preview.yml`) uses custom composite actions to
-encapsulate complex or reusable logic that would otherwise clutter the workflow
-file. These actions live under `.github/actions/` and are invoked with
-`uses: ./.github/actions/{action-name}`.
+---
 
-### Role of Custom Actions
+# 1. Build & Test Workflow (`ci.yaml`)
 
-Custom actions serve three purposes within the PR Preview pipeline:
+## Purpose
 
-1. **Abstraction** — they hide implementation details (URI parsing, polling
-   loops) behind a clean inputs/outputs interface, keeping the workflow
-   readable.
-2. **Reusability** — the same action can be called from multiple workflows
-   or multiple jobs within a single workflow without duplicating shell
-   scripts.
-3. **Testability** — because each action is self-contained, it can be tested
-   in isolation with a dedicated test workflow.
+Ensures:
 
-### Actions Used in PR Preview
+- Correct dependency graph  
+- Targeted test execution  
+- Full test coverage on `main` and nightly runs  
+- Deterministic execution of backend, frontend, and SharedKernel tests
 
-| Stage | Action | Purpose |
-|-------|--------|---------|
-| Database provisioning | [`postgres-uri-to-npgsql-connection-string`](../../.github/actions/postgres-uri-to-npgsql-connection-string/README.md) | Converts the Neon branch URI into an Npgsql connection string consumed by the .NET application container. |
-| Health check | [`wait-for-endpoint`](../../.github/actions/wait-for-endpoint/README.md) | Polls the deployed preview URL until it returns HTTP 200, gating all downstream test and audit steps. |
+---
 
-### Pipeline Flow
+## Triggers
+
+- Pushes to `main`  
+- PRs targeting `main`  
+- Manual dispatch  
+- Nightly schedule (`0 9 * * *`)
+
+---
+
+## Job Structure
+
+### `determine-changes`
+
+Uses `dorny/paths-filter` to compute:
+
+- `backend`  
+- `frontend`  
+- `shared-kernel`  
+- `infra`  
+- `docs-only`
+
+These outputs drive conditional execution.
+
+---
+
+### `validate-ci-deps`
+
+Runs `scripts/ci/validate-ci-dependencies.mjs`.  
+Ensures workflow dependency graph remains correct.
+
+---
+
+### `shared-kernel`
+
+Runs when:
+
+- On `main`  
+- SharedKernel changed  
+- Infra changed
+
+Uses composite action `run-dotnet-tests`.
+
+Projects:
+
+- `tests/SharedKernel.Tests`  
+- `tests/SharedKernel.Api.Tests`  
+- `tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests`
+
+---
+
+### `backend`
+
+Runs when:
+
+- On `main`  
+- Backend changed  
+- SharedKernel changed  
+- Infra changed
+
+Projects:
+
+- `tests/CampFitFurDogs.Api.Tests`  
+- `tests/CampFitFurDogs.Application.Tests`  
+- `tests/CampFitFurDogs.Domain.Tests`  
+- `tests/CampFitFurDogs.Infrastructure.Tests`
+
+---
+
+### `frontend`
+
+Runs when:
+
+- On `main`  
+- Frontend changed  
+- Backend changed  
+- Infra changed
+
+Steps:
+
+- Checkout  
+- Setup Node  
+- `npm ci`  
+- `npm test`
+
+---
+
+## CI Conventions
+
+- Path‑based test selection  
+- Dependency validation  
+- Composite actions for .NET tests  
+- Explicit job ordering  
+- Fail‑fast behavior  
+- Nightly full runs  
+- Script‑first logic (no complex inline shell)
+
+---
+
+# 2. Preview Environment Workflow (`preview.yaml`)
+
+## Purpose
+
+Provisions a **full ephemeral environment per PR**, including:
+
+- Neon DB branch  
+- Render API deployment  
+- Vercel frontend deployment  
+- Health checks  
+- Integration tests  
+- Artifact publication
+
+Also destroys stale preview resources.
+
+---
+
+## Triggers
+
+- `opened`  
+- `reopened`  
+- `synchronize`  
+- `closed`
+
+---
+
+## Concurrency
+
+```yaml
+group: preview-pr-<number>
+cancel-in-progress: true
+```
+
+---
+
+## Job Structure
+
+### `preview_context`
+
+Computes:
+
+- `common_prefix`  
+- Artifact names  
+- Neon branch name  
+- API base URL  
+- Flags: `should_destroy`, `should_deploy`
+
+---
+
+# Destroy Phase (conditional)
+
+Executed when `should_destroy == true`.
+
+### `destroy_stale_api`
+
+- Remove `render-preview` label  
+- Sleep 300 seconds  
+- Confirm teardown via `wait-for-endpoint` (`/api/health` → `404`)
+
+### `destroy_stale_db_artifact`  
+### `destroy_stale_frontend_artifact`  
+### `destroy_stale_db`
+
+- Delete Neon branch
+
+### `destroy_stale_frontend`
+
+- Remove Vercel preview deployments
+
+---
+
+# Deploy Phase (conditional)
+
+Executed when `should_deploy == true`.
+
+### `deploy_fresh_frontend`
+
+- Remove `.vercel`  
+- `vercel pull`  
+- Write `.env.local` with `NEXT_PUBLIC_API_URL`  
+- `vercel build`  
+- `vercel deploy --prebuilt --target=preview`  
+- Publish `frontend-url.txt`
+
+### `deploy_fresh_db`
+
+- Create Neon branch  
+- Convert URI → Npgsql  
+- Apply EF Core migrations  
+- Run infrastructure integration tests  
+- Publish `db-conn.txt`
+
+### `deploy_fresh_api`
+
+- Add `render-preview` label  
+- Poll `/api/dogs` until healthy  
+- Run API integration tests
+
+---
+
+# Timeouts & Retries
+
+**Teardown waits**
+
+- Timeout: 600s  
+- Consecutive successes: 5  
+- Interval: 60s  
+
+**Readiness waits**
+
+- Timeout: 900s  
+- Consecutive successes: 5  
+- Interval: 60s  
+
+These values must remain aligned with `architecture.md`.
+
+---
+
+# Artifacts
+
+- `db-conn.txt` — Npgsql connection string  
+- `frontend-url.txt` — Vercel preview URL  
+
+Artifacts must be deterministic and sensitive.
+
+---
+
+# Composite Actions
+
+| Action | Purpose |
+|--------|---------|
+| `postgres-uri-to-npgsql-connection-string` | Convert Neon URI → Npgsql |
+| `wait-for-endpoint` | Poll API health |
+
+These must remain stable and script‑first compatible.
+
+---
+
+# Preview Pipeline Flow
 
 ```text
 PR opened / updated
   |
   v
-Build application
+preview_context
+  |
+  +--> destroy_stale_* (if should_destroy)
   |
   v
-Provision database branch
+deploy_fresh_frontend (if should_deploy)
+deploy_fresh_db       (if should_deploy)
   |
   v
-postgres-uri-to-npgsql-connection-string   <-- custom action
+deploy_fresh_api      (if should_deploy)
   |
   v
-Deploy preview environment
-  |
-  v
-wait-for-endpoint                           <-- custom action
-  |
-  v
-Run tests and audits
-  |
-  v
-Post results to PR
+API integration tests
 ```
 
-### Adding a New Action to the Pipeline
+---
 
-1. Create the action directory and files under `.github/actions/`.
-2. Document it using the
-   [Action README Template](../guides/developer/action-readme-template.md).
-3. Register it in the
-   [Actions Index](../guides/developer/actions-index.md).
-4. Add a row to the **Actions Used in PR Preview** table above if the action
-   participates in the PR Preview pipeline.
-5. Update the **Pipeline Flow** diagram if the action introduces a new stage.
+# General Workflow Conventions
 
-## General Conventions
+### Composite actions first  
+### No complex inline shell  
+### Pin third‑party actions  
+### Explicit permissions  
+### Explicit timeouts  
+### Deterministic artifacts  
+### Reproducibility via scripts and documented env vars  
 
-- **Prefer composite actions over inline scripts** — if a block of shell
-  logic exceeds ~10 lines or is used in more than one place, extract it into
-  a custom action.
-- **Pin action versions** — reference third-party actions by full commit SHA,
-  not mutable tags.
-- **Minimize permissions** — request only the `GITHUB_TOKEN` scopes the
-  workflow actually needs.
-- **Fail fast** — set `fail-fast: true` on matrix strategies unless partial
-  results are valuable.
-- **Use `timeout-minutes`** — set explicit timeouts on jobs to prevent
-  runaway builds.
+---
 
-## Related Documentation
+# Related Documentation
 
-- [Actions Index](../guides/developer/actions-index.md) — catalog of all
-  custom actions.
-- [Action README Template](../guides/developer/action-readme-template.md) —
-  canonical format for action documentation.
-- [Developer Guide](../guides/developer/developer-guide.md) — onboarding
-  guide and quick links.
+- `architecture.md`  
+- `Code.md`  
+- `Docs.md`  
+- ADR index under `adr/`
+````

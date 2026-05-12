@@ -1,3 +1,4 @@
+import { resolveBaseUrl } from "./resolveBaseUrl";
 export interface ApiError {
   type: 'network' | 'http' | 'validation';
   message: string;
@@ -9,7 +10,7 @@ export type ApiResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: ApiError };
 
-export function createApiClient(baseUrl: string = '/api') {
+export function createApiClient(baseUrl: string = resolveBaseUrl()) {
   async function request<T>(
     method: string,
     path: string,

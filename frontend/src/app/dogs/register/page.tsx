@@ -2,22 +2,16 @@
 
 import { useRouter } from 'next/navigation';
 import { RegisterDogForm } from '@/components/dogs/RegisterDogForm';
-import { registerDog, type RegisterDogCommand } from '@/api/dogs/registerDog';
-import { useCommand } from '@/lib/hooks/useCommand';
+import type { RegisterDogCommand } from '@/api/dogs/registerDog';
+import { useApiCommand } from '@/lib/hooks/useApiCommand';
 
 export default function RegisterDogPage() {
   const router = useRouter();
 
-  const { errors, isSubmitting, handleSubmit } = useCommand<RegisterDogCommand>(
-    (data) => registerDog(data),
+  const command = useApiCommand<RegisterDogCommand>(
+    '/dogs/register',
     () => router.push('/dogs/register/success')
   );
 
-  return (
-    <RegisterDogForm
-      onSubmit={handleSubmit}
-      errors={errors}
-      isSubmitting={isSubmitting}
-    />
-  );
+  return <RegisterDogForm command={command} />;
 }

@@ -13,15 +13,16 @@ containing an `action.yml` manifest and a `README.md` that follows the
 
 | Action | Path | Purpose | Primary Workflow |
 |--------|------|---------|-----------------|
-| [postgres-uri-to-npgsql-connection-string](../../../.github/actions/postgres-uri-to-npgsql-connection-string/README.md) | `.github/actions/postgres-uri-to-npgsql-connection-string/` | Converts a PostgreSQL URI to an Npgsql-compatible connection string for .NET applications. | `pr-preview.yml` |
-| [wait-for-endpoint](../../../.github/actions/wait-for-endpoint/README.md) | `.github/actions/wait-for-endpoint/` | Polls an HTTP endpoint until it returns a healthy response or a timeout is reached. | `pr-preview.yml` |
+| [postgres-uri-to-npgsql-connection-string](../../../.github/actions/postgres-uri-to-npgsql-connection-string/README.md) | `.github/actions/postgres-uri-to-npgsql-connection-string/` | Converts a PostgreSQL URI into a fully normalized Npgsql connection string used by EF Core and .NET clients. | `preview.yaml` |
+| [wait-for-endpoint](../../../.github/actions/wait-for-endpoint/README.md) | `.github/actions/wait-for-endpoint/` | Polls an HTTP endpoint until it reaches a healthy or unhealthy state, supporting teardown and readiness checks with configurable timeouts and success thresholds. | `preview.yaml` |
+| [run-dotnet-tests](../../../.github/actions/run-dotnet-tests/README.md) | `.github/actions/run-dotnet-tests/` | Standardized .NET test runner used across SharedKernel, backend, and integration test suites. Ensures consistent logging, exit behavior, and test isolation. | `ci.yaml` |
 
 ## Conventions
 
 1. **One action per directory** — each action occupies its own folder directly
    under `.github/actions/`.
-2. **Composite actions preferred** — use composite run steps (`using:
-   composite`) with Bash unless the action requires Node.js or Docker.
+2. **Composite actions preferred** — use composite run steps (`using: composite`)
+   with Bash unless the action requires Node.js or Docker.
 3. **README required** — every action must include a `README.md` that follows
    the [Action README Template](action-readme-template.md).
 4. **Minimal surface area** — actions should do one thing well. If an action
