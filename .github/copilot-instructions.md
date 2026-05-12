@@ -2,10 +2,15 @@
 
 This file provides top‑level guidance for how Copilot should behave in this repository.
 All detailed conventions live in the `docs/conventions` folder.
+All governance documents live in `docs/governance`.
 
-## Purpose
+Copilot must always follow the repository’s **conventions**, **governance**, and **guardrails**.
 
-Copilot must follow the established architecture, workflow, coding, and documentation rules defined in the conventions folder.
+---
+
+# Purpose
+
+Copilot must follow the established architecture, workflow, coding, documentation, and governance rules defined in this repository.
 This file defines how Copilot interprets and applies those rules, how it generates files, and how it avoids corruption or drift.
 
 Copilot’s behavior must always align with:
@@ -15,8 +20,11 @@ Copilot’s behavior must always align with:
 - the code and documentation conventions
 - the script‑first and patch‑first rules
 - the guardrail tests that enforce repository expectations
+- the governance rules that define process, responsibilities, and enforcement
 
-## Conventions Index
+---
+
+# Conventions Index (Canonical)
 
 All conventions are defined in the following files:
 
@@ -25,10 +33,27 @@ All conventions are defined in the following files:
 - `docs/conventions/code.md`
 - `docs/conventions/docs.md`
 
-These four files are the **single source of truth** for all repository rules.
+These four files are the **single source of truth** for all repository conventions.
 Copilot must treat them as canonical.
 
-## How Copilot Must Use the Conventions
+---
+
+# Governance Index (Reference Only)
+
+Governance defines **process**, **responsibilities**, **boundaries**, and **enforcement**.
+Governance overrides conventions when they conflict.
+
+Governance lives in:
+
+- `docs/governance/product/`
+- `docs/governance/technical/`
+- `docs/governance/enforcement/`
+
+Copilot must respect governance rules but must not duplicate or reinterpret them.
+
+---
+
+# How Copilot Must Use the Conventions
 
 - Copilot must always consult the conventions files before generating or modifying code, documentation, or scripts.
 - Copilot must not invent new patterns or workflows that contradict the conventions.
@@ -40,14 +65,17 @@ Copilot must treat them as canonical.
   - architectural boundaries
   - test‑driven development expectations
 - Guardrail tests exist to ensure Copilot aligns with established rules.
+- Copilot must not modify governance files unless explicitly instructed.
 
-## Hosting & Deployment Guidance
+---
+
+# Hosting & Deployment Guidance
 
 Copilot must follow the hosting and deployment conventions defined in:
 
 - `docs/conventions/architecture.md` (Hosting & Deployment Architecture)
 - `docs/conventions/workflow.md` (API Deployment Workflow and PR Preview Workflow)
-- `docs/guides/developer/api-hosting.md` (**Developer API Hosting Guide**)
+- `docs/guides/developer/api-hosting.md` (Developer API Hosting Guide)
 
 These documents define:
 
@@ -55,15 +83,17 @@ These documents define:
 - API service name: **`campfitfurdogsapi`**
 - Database hosting platform: **Neon**
 - PR Preview model: Git‑backed Render PR Previews + Neon ephemeral branches
-- Environment variable requirements, including:
+- Required environment variables:
   - `ConnectionStrings__DefaultConnection`
-  - `PREVIEW_DB_CONNECTION_STRING` for PR previews
+  - `PREVIEW_DB_CONNECTION_STRING`
 - Health check conventions (`/api/health`, `/api/dogs`)
 - Deployment triggers and expectations
 
-Copilot must not propose alternative hosting platforms or deployment models unless explicitly requested by the user.
+Copilot must not propose alternative hosting platforms or deployment models unless explicitly requested.
 
-## File Generation Rules
+---
+
+# File Generation Rules
 
 Copilot must:
 
@@ -75,7 +105,9 @@ Copilot must:
 
 These rules prevent corruption, drift, and ambiguity.
 
-## Lessons Learned
+---
+
+# Lessons Learned
 
 | Number | Sprint | Lesson | Mitigation |
 |--------|--------|--------|------------|
