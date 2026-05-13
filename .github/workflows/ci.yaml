@@ -61,8 +61,10 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Enable Corepack and activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
 
       - name: Install validator dependencies
         run: pnpm add js-yaml
@@ -133,8 +135,10 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Enable Corepack and activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
 
       - name: Install frontend dependencies
         working-directory: frontend

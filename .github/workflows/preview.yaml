@@ -116,8 +116,10 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Enable Corepack and activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
 
       - name: Install Vercel CLI
         run: pnpm add -g vercel@latest
@@ -166,8 +168,10 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Enable Corepack and activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
 
       - name: Install Vercel CLI
         working-directory: frontend
