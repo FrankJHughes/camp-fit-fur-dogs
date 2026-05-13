@@ -28,3 +28,6 @@ scratch.txt
 scripts/secrets/Activate-NeonDb*.ps1
 _scratch/scratch.json
 _scratch/scratch.yaml
+scripts/scratch/scratch.csv
+scripts/scratch/scratch.json
+scripts/scratch/scratch.yaml
