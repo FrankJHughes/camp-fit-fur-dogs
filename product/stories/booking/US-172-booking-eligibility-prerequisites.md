@@ -13,6 +13,11 @@ dependencies:
   - US-168
   - US-169
   - US-170
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-172: Booking Eligibility & Prerequisites Management

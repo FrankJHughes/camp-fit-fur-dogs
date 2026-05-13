@@ -1,16 +1,17 @@
 ---
 id: US-017
 title: "Shared Kernel Ddd Building Blocks"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # Shared Kernel — DDD Building Blocks
 

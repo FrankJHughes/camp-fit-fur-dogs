@@ -9,6 +9,11 @@ vertical_slice: false
 dependencies:
   - US-143
   - US-149
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-150: SMS Notification Infrastructure

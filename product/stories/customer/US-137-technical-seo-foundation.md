@@ -8,6 +8,11 @@ domain: customer
 vertical_slice: false
 dependencies:
   - US-103
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-137: Technical SEO Foundation

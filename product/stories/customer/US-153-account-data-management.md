@@ -9,6 +9,11 @@ vertical_slice: true
 dependencies:
   - US-027
   - US-125
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-153: Account Data Export & Deletion

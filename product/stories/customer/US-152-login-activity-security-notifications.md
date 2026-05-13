@@ -11,6 +11,11 @@ dependencies:
   - US-111
   - US-143
   - US-144
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-152: Login Activity & Security Notifications

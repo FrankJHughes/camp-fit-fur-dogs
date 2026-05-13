@@ -10,6 +10,11 @@ dependencies:
   - US-107
   - US-141
   - US-140
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-173: Native AOT Migration Plan

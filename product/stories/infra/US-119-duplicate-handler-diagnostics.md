@@ -1,16 +1,17 @@
 ---
 id: US-119
 title: "Duplicate Handler Diagnostics"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-119 — US‑119 — Receive Clear Diagnostics for Duplicate Handlers
 

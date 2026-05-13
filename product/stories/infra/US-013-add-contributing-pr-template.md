@@ -1,16 +1,17 @@
 ---
 id: US-013
 title: "Add Contributing Pr Template"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # Add CONTRIBUTING Guide, PR Template, and .gitignore
 

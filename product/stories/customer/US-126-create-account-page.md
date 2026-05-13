@@ -12,6 +12,11 @@ dependencies:
   - US-056
   - US-102
   - US-103
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-126: Create Account Page

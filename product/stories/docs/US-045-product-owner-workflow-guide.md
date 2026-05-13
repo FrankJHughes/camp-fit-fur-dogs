@@ -1,16 +1,17 @@
 ---
 id: US-045
 title: "Product Owner Workflow Guide"
-epic: ""
-milestone: ""
+epic: 
+milestone: M0
 status: shipped
 domain: docs
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-045 — Product Owner Workflow Guide
 

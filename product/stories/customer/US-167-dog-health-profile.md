@@ -9,6 +9,11 @@ vertical_slice: true
 dependencies:
   - US-018
   - US-029
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-167: Dog Health Profile

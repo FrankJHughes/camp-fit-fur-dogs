@@ -1,16 +1,17 @@
 ---
 id: US-109
 title: "Architecture Boundary Roslyn Analyzer"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-109 — Architecture Boundary Roslyn Analyzer
 

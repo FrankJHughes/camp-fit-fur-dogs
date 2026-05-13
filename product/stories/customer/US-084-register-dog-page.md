@@ -2,7 +2,7 @@
 id: US-084
 title: "Register Dog Page"
 epic: Customer
-milestone: M1+
+milestone: M0
 status: done
 sprint: S4
 sprint_order: 6
@@ -13,6 +13,11 @@ dependencies:
   - US-102
   - US-103
 replaces: "Frontend Testing Setup (completed, moved to US-103)"
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-084: Register Dog Page

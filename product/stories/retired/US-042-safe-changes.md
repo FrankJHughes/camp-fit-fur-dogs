@@ -1,16 +1,17 @@
 ---
 id: US-042
 title: "Safe Changes"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: retired
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-042 — Safe Changes
 

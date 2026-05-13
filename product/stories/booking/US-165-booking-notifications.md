@@ -11,6 +11,11 @@ dependencies:
   - US-144
   - US-147
   - US-162
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-165: Booking Notifications

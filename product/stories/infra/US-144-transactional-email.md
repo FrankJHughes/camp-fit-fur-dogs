@@ -8,6 +8,11 @@ domain: infra
 vertical_slice: false
 dependencies:
   - US-143
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-144: Transactional Email Infrastructure

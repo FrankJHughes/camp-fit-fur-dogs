@@ -9,6 +9,11 @@ vertical_slice: true
 dependencies:
   - US-162
   - US-163
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-164: Cancel Booking

@@ -1,16 +1,17 @@
 ---
 id: US-116
 title: "Query Dispatch Failure"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: infra
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-116 — US‑116 — Dispatch Queries With Clear Failure When No Handler Exists
 

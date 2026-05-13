@@ -1,16 +1,17 @@
 ---
 id: US-120
 title: "Handler Resolution Guidance"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: docs
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-120 — US‑120 — Receive Helpful Guidance When Handler Resolution Fails
 

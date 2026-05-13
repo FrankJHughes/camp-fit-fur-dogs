@@ -10,6 +10,11 @@ dependencies:
   - US-103
   - US-159
   - US-160
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-161: Browse Available Services

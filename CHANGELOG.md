@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased Sprint 7]
+## [Sprint 8] - Unreleased
+
+## [Sprint 7 ] - 2026-05-11
+| Story  | Title                              | Issue |
+|--------|------------------------------------|-------|
+| US-139 | Frontend Hosting & Deployment      | #188 |
+| US-140 | API Hosting & Deployment           | #189 |
+| US-141 | Database Hosting & Deployment      | #190 |
+| US-171 | CI Path-Based Test Skipping        | #192 |
 
 ### Added
 - Public HTTPS‑hosted Camp Fit Fur Dogs API, enabling external access to dog profiles, registration flows, and future customer‑facing features.
@@ -155,7 +163,8 @@ All notable changes to this project will be documented in this file.
 | US-005 | One-Command Local Bootstrap      | #55  |
 | US-008 | Doc Audit & Defragmentation      | —    |
 | US-012 | Story Naming Convention          | —    |
-| — owners see all their registered dogs at `/dogs` with quick links to view, edit, or register a new dog (US-031)
+
+— owners see all their registered dogs at `/dogs` with quick links to view, edit, or register a new dog (US-031)
 - Remove Dog — owners can remove a dog from their profile with a confirmation step to prevent accidents (US-032)
 - Form validation — clear, accessible inline error messages guide owners when required fields are missing or invalid (US-035)
 - Confirmation dialog — destructive actions like removing a dog prompt for confirmation before proceeding; Escape key and focus behavior default to the safe choice (US-038)

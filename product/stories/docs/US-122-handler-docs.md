@@ -1,16 +1,17 @@
 ---
 id: US-122
 title: "Handler Docs"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: docs
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-122 — US‑122 — Understand Handler Registration Through Documentation and Examples
 

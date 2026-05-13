@@ -2,14 +2,19 @@
 id: US-139
 title: "Frontend Hosting & Deployment"
 epic: Infrastructure
-milestone: M2
-status: backlog
+milestone: M1
+status: shipped
 domain: infra
 vertical_slice: false
 dependencies:
   - US-056
   - US-103
   - US-015
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-139: Frontend Hosting & Deployment

@@ -1,16 +1,17 @@
 ---
 id: US-041
 title: "Understand Steps"
-epic: ""
-milestone: ""
+epic: 
+milestone: 
 status: backlog
 domain: retired
-urgency: ""
-importance: ""
-covey_quadrant: ""
+urgency: 
+importance: 
+covey_quadrant: 
 vertical_slice: false
-emotional_guarantees: ""
-legal_guarantees: ""
+emotional_guarantees:
+legal_guarantees:
+dependencies:
 ---
 # US-041 — Understand Steps
 

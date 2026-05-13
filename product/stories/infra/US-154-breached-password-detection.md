@@ -9,6 +9,11 @@ vertical_slice: false
 dependencies:
   - US-049
   - US-126
+urgency: 
+importance: 
+covey_quadrant: 
+emotional_guarantees:
+legal_guarantees:
 ---
 
 # US-154: Breached Password Detection
