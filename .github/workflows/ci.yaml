@@ -64,8 +64,11 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Add pnpm global bin to PATH
+        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
+
       - name: Install validator dependencies
-        run: pnpm add js-yaml
+      run: pnpm add js-yaml
 
       - name: Validate CI Dependencies
         run: node scripts/ci/validate-ci-dependencies.mjs
@@ -134,6 +137,9 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
+
+      - name: Add pnpm global bin to PATH
+        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
 
       - name: Install frontend dependencies
         working-directory: frontend

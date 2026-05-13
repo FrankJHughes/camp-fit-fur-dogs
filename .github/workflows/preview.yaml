@@ -119,6 +119,9 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Add pnpm global bin to PATH
+        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
+
       - name: Install Vercel CLI
         run: pnpm add -g vercel@latest
 
@@ -167,6 +170,9 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
+
+      - name: Add pnpm global bin to PATH
+        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
 
       - name: Install Vercel CLI
         working-directory: frontend
