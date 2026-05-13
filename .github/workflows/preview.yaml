@@ -109,16 +109,20 @@ jobs:
       VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
     steps:
       - uses: actions/checkout@v2
+
+      - name: Enable Corepack (pnpm)
+        run: corepack enable
+
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: pnpm add -g vercel@latest
 
       - name: Remove stale Vercel deployments
         run: |
           deployments=$(vercel list --yes --token "$VERCEL_PAT" \
             --environment=preview \
-            --meta PR_NUMBER=212 | grep "^https" || true)
+            --meta PR_NUMBER=${{ github.event.pull_request.number }} | grep "^https" || true)
 
-          echo $deployments
+          echo "$deployments"
 
           if [ -z "$deployments" ]; then
             exit 0
@@ -153,36 +157,44 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Enable Corepack (pnpm)
+        run: corepack enable
 
       - name: Install Vercel CLI
-        run: |
-          cd frontend
-          npm install --global vercel@latest
+        working-directory: frontend
+        run: pnpm add -g vercel@latest
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
 
       - name: Pull Vercel Environment Information
-        run: |
-          cd frontend
-          vercel pull --yes --token=${{ secrets.VERCEL_PAT }} \
-            --environment=preview
+        working-directory: frontend
+        run: vercel pull --yes --token=${{ secrets.VERCEL_PAT }} \
+          --environment=preview
+
       - name: Create File .env.local
+        working-directory: frontend
         run: |
-          cd frontend
           echo NEXT_PUBLIC_API_URL="${{ needs.preview_context.outputs.api_base_url }}" > .env.local
 
       - name: Build Project Artifacts
+        working-directory: frontend
         run: |
-          cd frontend
           cat .env.local
           vercel build --token=${{ secrets.VERCEL_PAT }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
+        working-directory: frontend
         run: |
-          cd frontend
           url=$(vercel deploy --token=${{ secrets.VERCEL_PAT }} \
             --prebuilt \
             --target=preview \
-            --meta PR_NUMBER=${{github.event.pull_request.number}})
+            --meta PR_NUMBER=${{ github.event.pull_request.number }})
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
       - name: Write Frontend URL Artifact
@@ -269,6 +281,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
+
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
