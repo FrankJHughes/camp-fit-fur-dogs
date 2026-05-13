@@ -56,7 +56,7 @@ public sealed class RenderHostingProvider : IHostingProvider
 
         // NEW: separate artifact names
         var dbArtifactName = $"pr-{prNumber}-db";
-        var uiArtifactName = $"pr-{prNumber}-ui";
+        var frontendArtifactName = $"pr-{prNumber}-frontend";
 
         // Fetch DB connection string
         var dbConn = await DownloadSingleArtifactFileAsync(
@@ -74,7 +74,7 @@ public sealed class RenderHostingProvider : IHostingProvider
 
         // Fetch frontend base URL
         var frontendUrl = await DownloadSingleArtifactFileAsync(
-            githubPat, repoSlug, uiArtifactName, FrontendUrlFileName);
+            githubPat, repoSlug, frontendArtifactName, FrontendUrlFileName);
 
         if (frontendUrl is not null)
         {
