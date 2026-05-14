@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   workflow_dispatch: {}
   schedule:
-    - cron: "0 9 * * *" # nightly full run
+    - cron: "0 9 * * *"
 
 jobs:
 
@@ -62,6 +62,14 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-
 
       - name: Install validator dependencies
         run: pnpm add js-yaml
@@ -128,6 +136,14 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-
 
       - name: Install frontend dependencies
         working-directory: frontend

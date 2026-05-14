@@ -49,6 +49,7 @@ jobs:
     if: needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: actions/checkout@v4
+
       - name: Remove render-preview label
         env:
           GH_TOKEN: ${{ github.token }}
@@ -118,6 +119,14 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-
+
       - name: Remove stale Vercel deployments
         run: |
           deployments=$(npx vercel list --yes --token "$VERCEL_PAT" \
@@ -161,6 +170,14 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-
 
       - name: Install frontend dependencies
         working-directory: frontend
