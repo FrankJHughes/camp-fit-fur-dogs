@@ -60,15 +60,11 @@ jobs:
         with:
           node-version: 22
 
-
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Add pnpm global bin to PATH
-        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
-
       - name: Install validator dependencies
-      run: pnpm add js-yaml
+        run: pnpm add js-yaml
 
       - name: Validate CI Dependencies
         run: node scripts/ci/validate-ci-dependencies.mjs
@@ -110,10 +106,6 @@ jobs:
             tests/CampFitFurDogs.Application.Tests
             tests/CampFitFurDogs.Domain.Tests
             tests/CampFitFurDogs.Infrastructure.Tests
-            tests/CampFitFurDogs.Api.Tests
-            tests/CampFitFurDogs.Application.Tests
-            tests/CampFitFurDogs.Domain.Tests
-            tests/CampFitFurDogs.Infrastructure.Tests
 
   frontend:
     name: Frontend Tests
@@ -134,12 +126,8 @@ jobs:
         with:
           node-version: 22
 
-
       - name: Install pnpm
         run: npm install -g pnpm
-
-      - name: Add pnpm global bin to PATH
-        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
 
       - name: Install frontend dependencies
         working-directory: frontend

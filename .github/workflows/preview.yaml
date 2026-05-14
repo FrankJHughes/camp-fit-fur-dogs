@@ -108,26 +108,19 @@ jobs:
     env:
       VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Add pnpm global bin to PATH
-        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
-
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
-
       - name: Remove stale Vercel deployments
         run: |
-          deployments=$(vercel list --yes --token "$VERCEL_PAT" \
+          deployments=$(npx vercel list --yes --token "$VERCEL_PAT" \
             --environment=preview \
             --meta PR_NUMBER=${{ github.event.pull_request.number }} | grep "^https" || true)
 
@@ -143,7 +136,7 @@ jobs:
             deployments="[$deployments]"
           fi
 
-          vercel remove --yes --token "$VERCEL_PAT" $deployments
+          npx vercel remove --yes --token "$VERCEL_PAT" $deployments
 
   deploy_fresh_frontend:
     name: Deploy Fresh Frontend
@@ -157,26 +150,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Remove Folder .vercel
-        run: |
-          cd frontend
-          rm -rf .vercel
+      - name: Clean Vercel metadata
+        working-directory: frontend
+        run: rm -rf .vercel
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-
       - name: Install pnpm
         run: npm install -g pnpm
-
-      - name: Add pnpm global bin to PATH
-        run: echo "$HOME/.local/share/pnpm/bin" >> $GITHUB_PATH
-
-      - name: Install Vercel CLI
-        working-directory: frontend
-        run: pnpm add -g vercel@latest
 
       - name: Install frontend dependencies
         working-directory: frontend
@@ -184,8 +168,7 @@ jobs:
 
       - name: Pull Vercel Environment Information
         working-directory: frontend
-        run: vercel pull --yes --token=${{ secrets.VERCEL_PAT }} \
-          --environment=preview
+        run: npx vercel pull --yes --token=${{ secrets.VERCEL_PAT }} --environment=preview
 
       - name: Create File .env.local
         working-directory: frontend
@@ -196,13 +179,13 @@ jobs:
         working-directory: frontend
         run: |
           cat .env.local
-          vercel build --token=${{ secrets.VERCEL_PAT }}
+          npx vercel build --token=${{ secrets.VERCEL_PAT }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
         working-directory: frontend
         run: |
-          url=$(vercel deploy --token=${{ secrets.VERCEL_PAT }} \
+          url=$(npx vercel deploy --token=${{ secrets.VERCEL_PAT }} \
             --prebuilt \
             --target=preview \
             --meta PR_NUMBER=${{ github.event.pull_request.number }})
