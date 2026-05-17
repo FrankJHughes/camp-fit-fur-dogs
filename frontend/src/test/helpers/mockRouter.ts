@@ -1,4 +1,3 @@
-// test/helpers/auth/mockRouter.ts
 import { vi } from "vitest";
 
 export const pushMock = vi.fn();

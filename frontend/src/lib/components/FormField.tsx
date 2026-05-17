@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
-import { useFormField } from '../hooks/useFormField';
-import { FieldError } from './FieldError';
+import { useFormField } from '@/lib/hooks/useFormField';
+import { FieldError } from '@/lib/components/FieldError';
 
 export interface FieldProps {
+  id: string;
   'aria-invalid'?: boolean;
   'aria-describedby'?: string;
+  [key: string]: any;
 }
 
 export interface FormFieldProps {

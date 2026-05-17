@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { pushMock } from "@/test/helpers/auth/mockRouter";
+import { pushMock } from "@/test/helpers/mockRouter";
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fillDogForm } from '@/test/helpers/dogs/fillDogForm';
