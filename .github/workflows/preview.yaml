@@ -158,6 +158,8 @@ jobs:
       vercel_preview_url: ${{ steps.deploy.outputs.preview_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # ← REQUIRED for prebuilt deployments
 
       - name: Clean Vercel metadata
         working-directory: frontend
