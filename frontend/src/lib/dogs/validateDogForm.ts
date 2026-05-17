@@ -5,7 +5,11 @@ export const DogFormSchema = z.object({
   breed: z.string().trim().min(1, 'Please enter a breed'),
   dateOfBirth: z.string().trim().min(1, 'Please enter a date of birth'),
   sex: z
-    .string()
+    .union([
+      z.literal('Male'),
+      z.literal('Female'),
+      z.literal(''), // allow empty string in type
+    ])
     .refine((v) => v === 'Male' || v === 'Female', {
       message: 'Please select a sex',
     }),
