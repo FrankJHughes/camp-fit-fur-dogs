@@ -1,0 +1,3567 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.6 [39m[90mC:/Users/Frank/source/repos/camp-fit-fur-dogs/frontend[39m
+
+stderr | src/test/app/(auth)/create-account/CreateAccountPage.test.tsx > CreateAccountPage ΓÇö Slice 1 > disables the submit button while the form is submitting
+An update to CreateAccountPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/test/app/(auth)/create-account/CreateAccountPage.test.tsx > CreateAccountPage ΓÇö Slice 1 > disables the submit button while the form is submitting
+An update to CreateAccountPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [31mΓ¥»[39m src/test/app/(auth)/create-account/CreateAccountPage.test.tsx [2m([22m[2m13 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 11336[2mms[22m[39m
+     [32mΓ£ô[39m renders the create account form fields[32m 213[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m submits form values through React Hook Form [33m 945[2mms[22m[39m
+     [32mΓ£ô[39m shows validation errors when submitting an empty form[32m 107[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows an error when the email is invalid [33m 767[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows an error when the password is too short [33m 578[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows an error when the passwords do not match [33m 829[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m disables the submit button while the form is submitting [33m 877[2mms[22m[39m
+[31m     [31m├ù[31m clears validation errors after fixing the inputs[39m[33m 1820[2mms[22m[39m
+[31m     [31m├ù[31m disables all fields while the form is submitting[39m[33m 750[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m prevents double submission while the form is submitting [33m 796[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows a success message after successful submission [33m 866[2mms[22m[39m
+[31m     [31m├ù[31m clears the success message when the user edits any field after success[39m[33m 1976[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m redirects to the success page after successful submission [33m 807[2mms[22m[39m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 3 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  src/test/app/(auth)/create-account/CreateAccountPage.test.tsx > CreateAccountPage ΓÇö Slice 1 > clears validation errors after fixing the inputs
+AssertionError: expected Promise{ΓÇª} to be null
+
+- Expected:
+null
+
++ Received:
+Promise {}
+
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:38
+    110|
+    111|     await vi.waitFor(() => {
+    112|       expect(selectors.emailError()).toBeNull();
+       |                                      ^
+    113|       expect(selectors.passwordError()).toBeNull();
+    114|       expect(selectors.confirmPasswordError()).toBeNull();
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/3]ΓÄ»
+
+ FAIL  src/test/app/(auth)/create-account/CreateAccountPage.test.tsx > CreateAccountPage ΓÇö Slice 1 > disables all fields while the form is submitting
+Error: expect(received).not.toBeDisabled()
+
+received value must be an HTMLElement or an SVGElement.
+Received has type:  Function
+Received has value: [Function email]
+ Γ¥» expectFieldsEnabled src/test/helpers/auth/expectFields.ts:11:21
+      9|   confirmPassword: HTMLInputElement;
+     10| }) {
+     11|   expect(email).not.toBeDisabled();
+       |                     ^
+     12|   expect(password).not.toBeDisabled();
+     13|   expect(confirmPassword).not.toBeDisabled();
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:124:5
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/3]ΓÄ»
+
+ FAIL  src/test/app/(auth)/create-account/CreateAccountPage.test.tsx > CreateAccountPage ΓÇö Slice 1 > clears the success message when the user edits any field after success
+AssertionError: expected Promise{ΓÇª} to be null
+
+- Expected:
+null
+
++ Received:
+Promise {}
+
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:42
+    180|
+    181|     await vi.waitFor(() => {
+    182|       expect(selectors.successMessage()).toBeNull();
+       |                                          ^
+    183|     });
+    184|   });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/3]ΓÄ»
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Errors ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+Vitest caught 29 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3402:7
+ Γ¥» Object.waitFor node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3363:9
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:111:14
+ Γ¥» node_modules/.pnpm/@vitest+runner@4.1.6/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "clears validation errors after fixing the inputs". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "disables all fields while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "prevents double submission while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "prevents double submission while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "prevents double submission while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /^email is required$/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.emailError src/test/helpers/auth/selectors.ts:11:28
+      9|
+     10|   // Validation errors
+     11|   emailError: () => screen.findByText(/^email is required$/i),
+       |                            ^
+     12|   passwordError: () => screen.findByText(/^password is required$/i),
+     13|   confirmPasswordError: () => screen.findByText(/^confirm password is ΓÇª
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:112:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "prevents double submission while the form is submitting". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3402:7
+ Γ¥» Object.waitFor node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3363:9
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:181:14
+ Γ¥» node_modules/.pnpm/@vitest+runner@4.1.6/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "clears the success message when the user edits any field after success". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TestingLibraryElementError: Unable to find an element with the text: /account created successfully/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <form>
+      <div>
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="text"
+        />
+      </div>
+      <div>
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+        />
+      </div>
+      <div>
+        <label
+          for="confirmPassword"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+        />
+      </div>
+      <button
+        type="submit"
+      >
+        Create Account
+      </button>
+    </form>
+  </div>
+</body>
+ Γ¥» waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ Γ¥» Object.successMessage src/test/helpers/auth/selectors.ts:20:32
+     18|
+     19|   // Success message
+     20|   successMessage: () => screen.findByText(/account created successfullΓÇª
+       |                                ^
+     21| };
+     22|
+ Γ¥» src/test/app/(auth)/create-account/CreateAccountPage.test.tsx:182:24
+ Γ¥» Timeout.checkCallback node_modules/.pnpm/vitest@4.1.6_@types+node@20_f4e808e582c7d88311ef903e4d6e7414/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3383:20
+ Γ¥» listOnTimeout node:internal/timers:588:17
+ Γ¥» processTimers node:internal/timers:523:7
+
+This error originated in "src/test/app/(auth)/create-account/CreateAccountPage.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "redirects to the success page after successful submission". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m10 passed[39m[22m[90m (13)[39m
+[2m     Errors [22m [1m[31m29 errors[39m[22m
+[2m   Start at [22m 09:39:40
+[2m   Duration [22m 15.18s[2m (transform 159ms, setup 297ms, import 831ms, tests 11.34s, environment 2.32s)[22m
+

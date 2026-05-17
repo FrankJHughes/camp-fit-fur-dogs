@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { apiClientMock } from '../../../setup';
-import { fillDogForm } from '../../../helpers/dogs/fillDogForm.test';
+import { apiClientMock } from '@/test/setup';
+import { fillDogForm } from '@/test/helpers/dogs/fillDogForm';
 import RegisterDogPage from '@/app/dogs/register/page';
 
 

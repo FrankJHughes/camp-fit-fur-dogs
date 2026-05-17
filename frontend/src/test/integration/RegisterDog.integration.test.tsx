@@ -1,16 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { pushMock } from "@/test/helpers/auth/mockRouter";
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fillDogForm } from '../helpers/dogs/fillDogForm.test';
-
-// IMPORTANT: mock next/navigation BEFORE importing the page
-const pushMock = vi.fn();
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: pushMock }),
-}));
+import { fillDogForm } from '@/test/helpers/dogs/fillDogForm';
 
 // IMPORTANT: mock the API client BEFORE importing the page
-import { apiClientMock } from '../setup';
+import { apiClientMock } from '@/test/setup';
 
 describe('Register Dog (integration)', () => {
   beforeEach(() => {

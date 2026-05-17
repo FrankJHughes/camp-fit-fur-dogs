@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DogForm } from '../../../src/components/dogs/DogForm';
+import { describe, it, expect, vi } from 'vitest';
+import { DogForm } from '@/components/dogs/DogForm';
 
 describe('DogForm validation UX (US-035)', () => {
   it('marks the name input as aria-invalid when it has an error', async () => {

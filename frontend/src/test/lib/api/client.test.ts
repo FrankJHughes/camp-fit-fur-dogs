@@ -1,7 +1,11 @@
-// @vitest-environment node
-
+/** @vitest-environment node */
+vi.mock("@/lib/api/resolveBaseUrl", () => ({
+  resolveBaseUrl: () => "http://localhost",
+}));
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createApiClient } from '@/lib/api/client';
+const { createApiClient } = await vi.importActual<typeof import('@/lib/api/client')>(
+  '@/lib/api/client'
+);
 
 describe('ApiClient', () => {
   beforeEach(() => {
