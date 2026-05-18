@@ -7,8 +7,6 @@ import { useFormErrors } from '@/lib/hooks/useFormErrors';
 import { validateDogForm } from '@/lib/dogs/validateDogForm';
 import { DogFormValues } from '@/lib/dogs/DogFormSchema';
 
-export type { DogFormValues };
-
 interface DogFormProps {
   title?: string;
   submitLabel?: string;
