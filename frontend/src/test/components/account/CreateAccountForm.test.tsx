@@ -1,110 +1,24 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
-import { AccountForm } from '@/components/account/AccountForm';
+import { CreateAccountForm } from '@/components/account/CreateAccountForm';
 
-describe('AccountForm validation UX', () => {
-  it('marks the email input as aria-invalid when it has an error', async () => {
+describe('CreateAccountForm wrapper', () => {
+  it('adapts CreateAccountValues into CreateAccountCommand and calls command.submit', async () => {
     const user = userEvent.setup();
+
+    const submit = vi.fn();
     render(
-      <AccountForm
-        title="Create Account"
-        submitLabel="Create Account"
-        onSubmit={vi.fn()}
+      <CreateAccountForm
+        command={{
+          submit,
+          errors: {},
+          isSubmitting: false,
+        }}
       />
     );
 
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
-
-    expect(screen.getByLabelText(/email/i)).toHaveAttribute(
-      'aria-invalid',
-      'true'
-    );
-  }, 10000);
-
-  it('links the email input to its error via aria-describedby', async () => {
-    const user = userEvent.setup();
-    render(
-      <AccountForm
-        title="Create Account"
-        submitLabel="Create Account"
-        onSubmit={vi.fn()}
-      />
-    );
-
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
-
-    const input = screen.getByLabelText(/email/i);
-    const errorId = input.getAttribute('aria-describedby');
-
-    expect(errorId).toBeTruthy();
-    expect(document.getElementById(errorId!)).toHaveTextContent(
-      /email is required/i
-    );
-  }, 10000);
-
-  it('uses invitational tone for validation messages', async () => {
-    const user = userEvent.setup();
-    render(
-      <AccountForm
-        title="Create Account"
-        submitLabel="Create Account"
-        onSubmit={vi.fn()}
-      />
-    );
-
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
-
-    expect(screen.getByText('Email is required')).toBeInTheDocument();
-    expect(screen.getByText('Password is required')).toBeInTheDocument();
-    expect(
-      screen.getByText('Confirm password is required')
-    ).toBeInTheDocument();
-  }, 10000);
-
-  it('renders field errors with role="alert" for screen readers', async () => {
-    const user = userEvent.setup();
-    render(
-      <AccountForm
-        title="Create Account"
-        submitLabel="Create Account"
-        onSubmit={vi.fn()}
-      />
-    );
-
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
-
-    const alerts = screen.getAllByRole('alert');
-    expect(alerts.length).toBeGreaterThanOrEqual(3);
-  }, 10000);
-
-  it('clears aria-invalid when fields are corrected and resubmitted', async () => {
-    const user = userEvent.setup();
-    render(
-      <AccountForm
-        title="Create Account"
-        submitLabel="Create Account"
-        onSubmit={vi.fn()}
-      />
-    );
-
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
-
-    expect(screen.getByLabelText(/email/i)).toHaveAttribute(
-      'aria-invalid',
-      'true'
-    );
-
+    // Fill out the inner AccountForm
     await user.type(screen.getByLabelText(/email/i), 'frank@example.com');
     await user.type(screen.getByLabelText(/^password$/i), 'Password123!');
     await user.type(
@@ -112,27 +26,42 @@ describe('AccountForm validation UX', () => {
       'Password123!'
     );
 
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
+    await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(screen.getByLabelText(/email/i)).not.toHaveAttribute(
-      'aria-invalid'
-    );
-  }, 10000);
+    expect(submit).toHaveBeenCalledWith({
+      email: 'frank@example.com',
+      password: 'Password123!',
+      confirmPassword: 'Password123!',
+    });
+  });
 
-  it('renders form-level errors with role="alert"', () => {
+  it('passes errors through to AccountForm', () => {
     render(
-      <AccountForm
-        title="Create Account"
-        submitLabel="Create Account"
-        onSubmit={vi.fn()}
-        errors={{ form: 'Something went wrong. Please try again.' }}
+      <CreateAccountForm
+        command={{
+          submit: vi.fn(),
+          errors: { form: 'Server exploded' },
+          isSubmitting: false,
+        }}
       />
     );
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Something went wrong. Please try again.'
+    expect(screen.getByRole('alert')).toHaveTextContent('Server exploded');
+  });
+
+  it('passes isSubmitting through to AccountForm', () => {
+    render(
+      <CreateAccountForm
+        command={{
+          submit: vi.fn(),
+          errors: {},
+          isSubmitting: true,
+        }}
+      />
     );
+
+    expect(
+      screen.getByRole('button', { name: /create account/i })
+    ).toBeDisabled();
   });
 });

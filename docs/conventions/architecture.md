@@ -201,20 +201,59 @@ The frontend mirrors backend aggregate grouping.
 - Slice subfolders appear only when an aggregate accumulates 10+ files  
 - `test/` mirrors `src/` exactly
 
-## Form Architecture
+## Form Architecture (RHF + Zod)
 
-All frontend forms use a unified architecture based on **React Hook Form (RHF)** for state management and **Zod** for schema validation. This ensures deterministic validation, consistent error handling, and strong type‑safety across the application.
+All forms in the application follow a unified architecture built on **React Hook Form (RHF)** and **Zod**. This ensures deterministic validation, consistent error handling, and predictable behavior across all vertical slices.
 
-### Key Architectural Elements
-- **React Hook Form** manages form state, field registration, and submission.
-- **Zod** defines validation schemas and provides TypeScript types via `z.infer`.
-- All schemas live in `lib/<domain>/<FormName>Schema.ts`.
-- Validation is performed using `safeParse`, and issues are flattened into a simple error map.
-- Select fields that require an empty initial value must use `superRefine` to preserve literal unions under Next.js `isolatedModules`.
-- Form components follow the patterns established in `AccountForm` and `DogForm`.
-- Error handling merges client‑side and server‑side errors deterministically.
+### Schema Location
+Every form must define its validation schema in:
 
-This architecture applies to all new forms across customer, staff, and admin domains.
+```
+src/lib/<domain>/<feature>Schema.ts
+```
+
+Examples:
+- `src/lib/account/createAccountSchema.ts`
+- `src/lib/dog/registerDogSchema.ts`
+
+Schemas must use lowercase camelCase naming.
+
+### Validation Rules
+- All validation logic must live in the schema file.
+- Form components must not implement validation logic.
+- Validation messages must be defined exclusively in the schema.
+- Validation uses `safeParse` and is flattened into a `{ field: message }` map.
+- Types must be inferred from the schema using `z.infer`.
+
+### Form Component Responsibilities
+Form components must:
+- Render fields and labels
+- Call a validator (e.g., `validateAccountForm`) which wraps the schema
+- Display field‑level and form‑level errors
+- Accept `errors` and `isSubmitting` from the caller
+- Never define their own types or validation rules
+
+### Error Handling
+- Client‑side and server‑side errors are merged using `useFormErrors`.
+- Field‑level errors must support:
+  - `aria-invalid`
+  - `aria-describedby`
+  - `role="alert"`
+- Form‑level errors must be rendered via `<FieldError id="error-form" />`.
+
+### Vertical Slice Integration
+Each vertical slice must include:
+- A schema (`<feature>Schema.ts`)
+- A validator (`validate<Feature>Form.ts`)
+- A form component (`<Feature>Form.tsx`)
+- A wrapper component that adapts values → API command
+- A page that wires the wrapper to `useApiCommand`
+
+### Architectural Guarantees
+- All forms follow the same structure.
+- All validation is deterministic.
+- All error messages originate from a single source of truth.
+- Tests assert against schema‑defined messages.
 
 ---
 

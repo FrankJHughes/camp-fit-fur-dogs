@@ -185,28 +185,61 @@ frontend/
 
 - When scripting file operations on dynamic route folders (e.g., `[id]`), use literal path semantics (`-LiteralPath` in PowerShell) to avoid globbing issues.
 
-## Form Code Conventions
+## Form Naming & Style Conventions
 
-All new forms must follow the React Hook Form + Zod pattern.
+### File Naming
+Form‑related files must follow these naming conventions:
 
-### Schema Conventions
-- Define schemas in `lib/<domain>/<FormName>Schema.ts`.
-- Infer types using `z.infer<typeof Schema>`.
-- Do not hand‑write or duplicate form types.
-- Use `superRefine` for select fields with empty defaults to avoid type narrowing.
+- Schema files:
+  ```
+  <feature>Schema.ts
+  ```
+  Example: `createAccountSchema.ts`
 
-### Validation Conventions
-- Perform validation with `Schema.safeParse(values)`.
-- Convert Zod issues into a flat `{ field: message }` error map.
-- Use a dedicated `validate<FormName>Form` function for client‑side validation.
+- Validator files:
+  ```
+  validate<Feature>Form.ts
+  ```
+  Example: `validateAccountForm.ts`
 
-### Component Conventions
-- Use `useForm` from RHF for all form components.
-- Register fields using RHF’s `register` or `Controller` as appropriate.
-- Display errors using the merged error map (client + server).
-- Follow the structural patterns in `AccountForm` and `DogForm`.
+- Form components:
+  ```
+  <Feature>Form.tsx
+  ```
+  Example: `AccountForm.tsx`
 
-These conventions ensure consistency, testability, and type‑safety across all forms.
+- Wrapper components:
+  ```
+  <Feature>Form.tsx
+  ```
+  Example: `CreateAccountForm.tsx`
+
+- Test files:
+  ```
+  <Feature>Form.test.tsx
+  ```
+  Example: `AccountForm.test.tsx`
+
+### Import Style
+- Always import schemas from `src/lib/<domain>/<feature>Schema.ts`.
+- Always import inferred types from the schema file.
+- Never define duplicate types in components or API clients.
+
+### Component Style
+- Form components must be functional components.
+- Use RHF’s `useForm` with explicit generic types.
+- Use controlled or uncontrolled inputs consistently per RHF guidelines.
+- Use `<FormField>` and `<FieldError>` for all field rendering.
+
+### Error Style
+- Field‑level errors must use `role="alert"`.
+- Form‑level errors must use a dedicated `<FieldError>` with a stable ID.
+- Error IDs must be deterministic for `aria-describedby`.
+
+### Test File Style
+- Tests must use React Testing Library + userEvent.
+- Tests must assert against schema‑defined messages.
+- Tests must not duplicate validation logic.
 
 ---
 

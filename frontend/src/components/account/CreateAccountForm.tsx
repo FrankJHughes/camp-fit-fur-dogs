@@ -1,7 +1,8 @@
 'use client';
 
-import type { CreateAccountCommand } from '@/api/account/createAccount';
 import { AccountForm } from '@/components/account/AccountForm';
+import type { CreateAccountCommand } from '@/api/account/createAccount';
+import type { CreateAccountValues } from '@/lib/account/createAccountSchema';
 
 interface CreateAccountFormProps {
   command: {
@@ -12,11 +13,22 @@ interface CreateAccountFormProps {
 }
 
 export function CreateAccountForm({ command }: CreateAccountFormProps) {
+  const handleSubmit = (values: CreateAccountValues) => {
+    // Convert form values → API command shape
+    const cmd: CreateAccountCommand = {
+      email: values.email,
+      password: values.password,
+      confirmPassword: values.confirmPassword,
+    };
+
+    command.submit(cmd);
+  };
+
   return (
     <AccountForm
       title="Create Account"
       submitLabel="Create Account"
-      onSubmit={command.submit}
+      onSubmit={handleSubmit}
       errors={command.errors}
       isSubmitting={command.isSubmitting}
     />
