@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { FormField } from '@/lib/components/FormField';
 import { FieldError } from '@/lib/components/FieldError';
 import { useFormErrors } from '@/lib/hooks/useFormErrors';
-import {
-  validateDogForm,
-  type DogFormValues,
-} from '@/lib/dogs/validateDogForm';
+import { validateDogForm } from '@/lib/dogs/validateDogForm';
+import { DogFormValues } from '@/lib/dogs/DogFormSchema';
 
 export type { DogFormValues };
 
