@@ -49,6 +49,7 @@ jobs:
     if: needs.preview_context.outputs.should_destroy == 'true'
     steps:
       - uses: actions/checkout@v4
+
       - name: Remove render-preview label
         env:
           GH_TOKEN: ${{ github.token }}
@@ -108,17 +109,31 @@ jobs:
     env:
       VERCEL_PAT: ${{ secrets.VERCEL_PAT }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-
 
       - name: Remove stale Vercel deployments
         run: |
-          deployments=$(vercel list --yes --token "$VERCEL_PAT" \
+          deployments=$(npx vercel list --yes --token "$VERCEL_PAT" \
             --environment=preview \
-            --meta PR_NUMBER=212 | grep "^https" || true)
+            --meta PR_NUMBER=${{ github.event.pull_request.number }} | grep "^https" || true)
 
-          echo $deployments
+          echo "$deployments"
 
           if [ -z "$deployments" ]; then
             exit 0
@@ -130,7 +145,7 @@ jobs:
             deployments="[$deployments]"
           fi
 
-          vercel remove --yes --token "$VERCEL_PAT" $deployments
+          npx vercel remove --yes --token "$VERCEL_PAT" $deployments
 
   deploy_fresh_frontend:
     name: Deploy Fresh Frontend
@@ -143,46 +158,42 @@ jobs:
       vercel_preview_url: ${{ steps.deploy.outputs.preview_url }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Remove Folder .vercel
-        run: |
-          cd frontend
-          rm -rf .vercel
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          fetch-depth: 0   # ← REQUIRED for prebuilt deployments
 
-      - name: Install Vercel CLI
-        run: |
-          cd frontend
-          npm install --global vercel@latest
+      - name: Clean Vercel metadata
+        working-directory: frontend
+        run: rm -rf .vercel
+
+      - uses: ./.github/actions/setup-node-pnpm
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
 
       - name: Pull Vercel Environment Information
-        run: |
-          cd frontend
-          vercel pull --yes --token=${{ secrets.VERCEL_PAT }} \
-            --environment=preview
+        working-directory: frontend
+        run: npx vercel pull --yes --token=${{ secrets.VERCEL_PAT }} --environment=preview
+
       - name: Create File .env.local
+        working-directory: frontend
         run: |
-          cd frontend
           echo NEXT_PUBLIC_API_URL="${{ needs.preview_context.outputs.api_base_url }}" > .env.local
 
       - name: Build Project Artifacts
+        working-directory: frontend
         run: |
-          cd frontend
           cat .env.local
-          vercel build --token=${{ secrets.VERCEL_PAT }}
+          npx vercel build --token=${{ secrets.VERCEL_PAT }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
+        working-directory: frontend
         run: |
-          cd frontend
-          url=$(vercel deploy --token=${{ secrets.VERCEL_PAT }} \
+          url=$(npx vercel deploy --token=${{ secrets.VERCEL_PAT }} \
             --prebuilt \
             --target=preview \
-            --meta PR_NUMBER=${{github.event.pull_request.number}})
+            --meta PR_NUMBER=${{ github.event.pull_request.number }})
           echo "preview_url=$url" >> $GITHUB_OUTPUT
 
       - name: Write Frontend URL Artifact
@@ -269,6 +280,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh pr edit ${{ github.event.pull_request.number }} --add-label "render-preview"
+
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'

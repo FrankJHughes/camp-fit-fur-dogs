@@ -1,0 +1,23 @@
+name: "Setup Node + pnpm"
+description: "Unified Node 22 + pnpm install + pnpm store caching"
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install pnpm
+      run: npm install -g pnpm
+      shell: bash
+
+    - name: Cache pnpm store
+      uses: actions/cache@v4
+      with:
+        path: ~/.pnpm-store
+        key: pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          pnpm-store-

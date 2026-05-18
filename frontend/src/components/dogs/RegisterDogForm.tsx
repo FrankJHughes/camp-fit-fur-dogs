@@ -15,7 +15,7 @@ export function RegisterDogForm({ command }: RegisterDogFormProps) {
   return (
     <DogForm
       title="Register Dog"
-      submitLabel="Register"
+      submitLabel="Register Dog"
       onSubmit={command.submit}
       errors={command.errors}
       isSubmitting={command.isSubmitting}

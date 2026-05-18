@@ -185,6 +185,29 @@ frontend/
 
 - When scripting file operations on dynamic route folders (e.g., `[id]`), use literal path semantics (`-LiteralPath` in PowerShell) to avoid globbing issues.
 
+## Form Code Conventions
+
+All new forms must follow the React Hook Form + Zod pattern.
+
+### Schema Conventions
+- Define schemas in `lib/<domain>/<FormName>Schema.ts`.
+- Infer types using `z.infer<typeof Schema>`.
+- Do not hand‑write or duplicate form types.
+- Use `superRefine` for select fields with empty defaults to avoid type narrowing.
+
+### Validation Conventions
+- Perform validation with `Schema.safeParse(values)`.
+- Convert Zod issues into a flat `{ field: message }` error map.
+- Use a dedicated `validate<FormName>Form` function for client‑side validation.
+
+### Component Conventions
+- Use `useForm` from RHF for all form components.
+- Register fields using RHF’s `register` or `Controller` as appropriate.
+- Display errors using the merged error map (client + server).
+- Follow the structural patterns in `AccountForm` and `DogForm`.
+
+These conventions ensure consistency, testability, and type‑safety across all forms.
+
 ---
 
 # Testing Conventions

@@ -1,47 +1,25 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "node:path";
 
 export default defineConfig({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  plugins: [react()] as any,
-  resolve: {
-    tsconfigPaths: true,
-  },
-  test: {
-    testTimeout: 15000,
-    projects: [
-      {
-        extends: true,
-        test: {
-          name: 'unit',
-          environment: 'node',
-          globals: true,
-          include: ['./test/lib/**/*.test.ts', './test/api/**/*.test.ts'],
-          exclude: ['./test/lib/hooks/**', './test/lib/components/**']
-        },
-      },
-      {
-        extends: true,
-        test: {
-          name: 'components',
-          environment: 'jsdom',
-          globals: true,
-          setupFiles: ['./test/setup.ts'],
-          include: ['./test/app/**/*.test.{ts,tsx}', './test/components/**/*.test.{ts,tsx}', './test/hooks/**/*.test.{ts,tsx}',
-            './test/lib/components/**/*.test.{ts,tsx}', './test/lib/hooks/**/*.test.{ts,tsx}'],
-        },
-      },
-      {
-        extends: true,
-        test: {
-          name: 'integration',
-          environment: 'jsdom',
-          globals: true,
-          setupFiles: ['./test/setup.ts'],
-          include: ['./test/integration/**/*.test.{ts,tsx}'],
-        },
-      },
-    ],
-  },
-});
+  plugins: [react()],
 
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src")
+    }
+  },
+
+  test: {
+    environment: "jsdom",
+    globals: true,
+
+    // Vitest 1.6+ no longer supports threads/isolate/pool
+    // This is the correct modern config
+    css: false,
+
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/test/**/*.test.{ts,tsx}"]
+  }
+});

@@ -1,10 +1,19 @@
-import type { DogFormValues } from '../../types/dog';
+import { DogFormSchema, DogFormValues } from './DogFormSchema';
 
 export function validateDogForm(values: DogFormValues): Record<string, string> {
+  const result = DogFormSchema.safeParse(values);
+
+  if (result.success) return {};
+
+  const flat = result.error.flatten().fieldErrors;
+
   const errors: Record<string, string> = {};
-  if (!values.name.trim()) errors.name = "Please enter your dog's name";
-  if (!values.breed.trim()) errors.breed = 'Please enter a breed';
-  if (!values.dateOfBirth.trim()) errors.dateOfBirth = 'Please enter a date of birth';
-  if (!values.sex) errors.sex = 'Please select a sex';
+
+  for (const key in flat) {
+    const typedKey = key as keyof typeof flat;
+    const msg = flat[typedKey]?.[0];
+    if (msg) errors[key] = msg;
+  }
+
   return errors;
 }

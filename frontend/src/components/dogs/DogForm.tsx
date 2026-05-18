@@ -1,16 +1,15 @@
 'use client';
-import { useState } from 'react';
-import { FieldError } from '../../lib/components/FieldError';
-import { FormField } from '../../lib/components/FormField';
-import { validateDogForm } from '../../lib/dogs/validateDogForm';
-import { useFormErrors } from '@/lib/hooks/useFormErrors';
-import type { DogFormValues } from '../../types/dog';
 
-export type { DogFormValues };
+import { useState } from 'react';
+import { FormField } from '@/lib/components/FormField';
+import { FieldError } from '@/lib/components/FieldError';
+import { useFormErrors } from '@/lib/hooks/useFormErrors';
+import { validateDogForm } from '@/lib/dogs/validateDogForm';
+import { DogFormValues } from '@/lib/dogs/DogFormSchema';
 
 interface DogFormProps {
-  title: string;
-  submitLabel: string;
+  title?: string;
+  submitLabel?: string;
   initialValues?: DogFormValues;
   onSubmit: (data: DogFormValues) => void;
   errors?: Record<string, string>;
@@ -25,8 +24,8 @@ const emptyValues: DogFormValues = {
 };
 
 export function DogForm({
-  title,
-  submitLabel,
+  title = 'Register Dog',
+  submitLabel = 'Register Dog',
   initialValues = emptyValues,
   onSubmit,
   errors,
@@ -34,10 +33,7 @@ export function DogForm({
 }: DogFormProps) {
   const [values, setValues] = useState<DogFormValues>(initialValues);
 
-  // ⭐ NEW: unified error handling
   const { setClient, merge, clear } = useFormErrors();
-
-  // ⭐ NEW: merged errors (client + server)
   const displayErrors = merge(errors);
 
   const update =
@@ -51,16 +47,16 @@ export function DogForm({
     const clientErrors = validateDogForm(values);
 
     if (Object.keys(clientErrors).length > 0) {
-      setClient(clientErrors); // ⭐ replaces setValidationErrors
+      setClient(clientErrors);
       return;
     }
 
-    clear(); // ⭐ replaces setValidationErrors({})
+    clear();
     onSubmit(values);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} noValidate>
       <h1>{title}</h1>
 
       <FieldError id="error-form" message={displayErrors.form} />
@@ -72,6 +68,7 @@ export function DogForm({
             value={values.name}
             onChange={update('name')}
             {...fieldProps}
+            disabled={isSubmitting}
           />
         )}
       </FormField>
@@ -83,17 +80,23 @@ export function DogForm({
             value={values.breed}
             onChange={update('breed')}
             {...fieldProps}
+            disabled={isSubmitting}
           />
         )}
       </FormField>
 
-      <FormField label="Date of Birth" name="dateOfBirth" error={displayErrors.dateOfBirth}>
+      <FormField
+        label="Date of Birth"
+        name="dateOfBirth"
+        error={displayErrors.dateOfBirth}
+      >
         {(fieldProps) => (
           <input
-            type="text"
+            type="date"
             value={values.dateOfBirth}
             onChange={update('dateOfBirth')}
             {...fieldProps}
+            disabled={isSubmitting}
           />
         )}
       </FormField>
@@ -104,8 +107,8 @@ export function DogForm({
             value={values.sex}
             onChange={update('sex')}
             {...fieldProps}
+            disabled={isSubmitting}
           >
-            <option value="">Select</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
           </select>
