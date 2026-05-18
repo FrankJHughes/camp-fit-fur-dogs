@@ -4,23 +4,19 @@ import { useState } from 'react';
 import { FieldError } from '@/lib/components/FieldError';
 import { FormField } from '@/lib/components/FormField';
 import { useFormErrors } from '@/lib/hooks/useFormErrors';
-import {
-  validateAccountForm,
-  type AccountFormValues,
-} from '@/lib/account/validateAccountForm';
-
-export type { AccountFormValues };
+import { validateAccountForm } from '@/lib/account/validateAccountForm';
+import { CreateAccountValues } from '@/lib/account/createAccountSchema';
 
 interface AccountFormProps {
   title: string;
   submitLabel: string;
-  initialValues?: AccountFormValues;
-  onSubmit: (data: AccountFormValues) => void;
+  initialValues?: CreateAccountValues;
+  onSubmit: (data: CreateAccountValues) => void;
   errors?: Record<string, string>;
   isSubmitting?: boolean;
 }
 
-const emptyValues: AccountFormValues = {
+const emptyValues: CreateAccountValues = {
   email: '',
   password: '',
   confirmPassword: '',
@@ -34,19 +30,20 @@ export function AccountForm({
   errors,
   isSubmitting,
 }: AccountFormProps) {
-  const [values, setValues] = useState<AccountFormValues>(initialValues);
+  const [values, setValues] = useState<CreateAccountValues>(initialValues);
 
   const { setClient, merge, clear } = useFormErrors();
   const displayErrors = merge(errors);
 
   const update =
-    (field: keyof AccountFormValues) =>
+    (field: keyof CreateAccountValues) =>
       (e: React.ChangeEvent<HTMLInputElement>) =>
         setValues((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 1. Client-side validation via Zod
     const clientErrors = validateAccountForm(values);
 
     if (Object.keys(clientErrors).length > 0) {
@@ -54,7 +51,10 @@ export function AccountForm({
       return;
     }
 
+    // 2. Clear client errors before submitting
     clear();
+
+    // 3. Submit to parent (API command)
     onSubmit(values);
   };
 
@@ -62,6 +62,7 @@ export function AccountForm({
     <form onSubmit={handleSubmit} noValidate>
       <h1>{title}</h1>
 
+      {/* Form-level error (e.g., server error) */}
       <FieldError id="error-form" message={displayErrors.form} />
 
       <FormField label="Email" name="email" error={displayErrors.email}>
