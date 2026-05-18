@@ -201,6 +201,21 @@ The frontend mirrors backend aggregate grouping.
 - Slice subfolders appear only when an aggregate accumulates 10+ files  
 - `test/` mirrors `src/` exactly
 
+## Form Architecture
+
+All frontend forms use a unified architecture based on **React Hook Form (RHF)** for state management and **Zod** for schema validation. This ensures deterministic validation, consistent error handling, and strong type‑safety across the application.
+
+### Key Architectural Elements
+- **React Hook Form** manages form state, field registration, and submission.
+- **Zod** defines validation schemas and provides TypeScript types via `z.infer`.
+- All schemas live in `lib/<domain>/<FormName>Schema.ts`.
+- Validation is performed using `safeParse`, and issues are flattened into a simple error map.
+- Select fields that require an empty initial value must use `superRefine` to preserve literal unions under Next.js `isolatedModules`.
+- Form components follow the patterns established in `AccountForm` and `DogForm`.
+- Error handling merges client‑side and server‑side errors deterministically.
+
+This architecture applies to all new forms across customer, staff, and admin domains.
+
 ---
 
 # Hosting & Deployment Architecture
