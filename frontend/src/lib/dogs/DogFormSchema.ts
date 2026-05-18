@@ -10,8 +10,13 @@ export const DogFormSchema = z.object({
       z.literal('Female'),
       z.literal(''),
     ])
-    .refine((v) => v === 'Male' || v === 'Female', {
-      message: 'Please select a sex',
+    .superRefine((v, ctx) => {
+      if (v === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Please select a sex',
+        });
+      }
     }),
 });
 
