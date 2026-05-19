@@ -28,19 +28,19 @@ public class EmailTests
     [Fact]
     public void From_with_empty_string_throws()
     {
-        Assert.Throws<ArgumentException>(() => Email.From(""));
+        Assert.Throws<InvalidEmailException>(() => Email.From(""));
     }
 
     [Fact]
     public void From_with_whitespace_throws()
     {
-        Assert.Throws<ArgumentException>(() => Email.From("   "));
+        Assert.Throws<InvalidEmailException>(() => Email.From("   "));
     }
 
     [Fact]
     public void From_with_no_at_sign_throws()
     {
-        Assert.Throws<ArgumentException>(() => Email.From("not-an-email"));
+        Assert.Throws<InvalidEmailException>(() => Email.From("not-an-email"));
     }
 
     [Fact]

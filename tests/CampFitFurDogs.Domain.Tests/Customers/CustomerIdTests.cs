@@ -22,7 +22,7 @@ public class CustomerIdTests
     [Fact]
     public void From_with_empty_guid_throws()
     {
-        Assert.Throws<ArgumentException>(() => CustomerId.From(Guid.Empty));
+        Assert.Throws<InvalidCustomerIdException>(() => CustomerId.From(Guid.Empty));
     }
 
     [Fact]

@@ -9,12 +9,12 @@ public sealed class Email : ValueObject
     private Email(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Email cannot be empty");
+            throw new InvalidEmailException("Email cannot be empty");
 
         value = value.Trim().ToLowerInvariant();
 
-        if (!value.Contains("@"))
-            throw new ArgumentException("Invalid email format");
+        if (!value.Contains('@'))
+            throw new InvalidEmailException("Invalid email format");
 
         Value = value;
     }

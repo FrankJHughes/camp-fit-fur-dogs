@@ -21,12 +21,12 @@ public class PhoneNumberTests
     [Fact]
     public void From_with_empty_string_throws()
     {
-        Assert.Throws<ArgumentException>(() => PhoneNumber.From(""));
+        Assert.Throws<InvalidPhoneNumberException>(() => PhoneNumber.From(""));
     }
 
     [Fact]
     public void From_with_whitespace_throws()
     {
-        Assert.Throws<ArgumentException>(() => PhoneNumber.From("   "));
+        Assert.Throws<InvalidPhoneNumberException>(() => PhoneNumber.From("   "));
     }
 }

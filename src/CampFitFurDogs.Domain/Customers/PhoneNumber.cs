@@ -9,7 +9,7 @@ public sealed class PhoneNumber : ValueObject
     private PhoneNumber(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Phone number cannot be empty");
+            throw new InvalidPhoneNumberException("Phone number cannot be empty");
 
         Value = value.Trim();
     }

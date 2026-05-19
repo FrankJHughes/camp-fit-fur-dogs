@@ -14,13 +14,13 @@ public class PasswordHashTests
     [Fact]
     public void From_with_empty_string_throws()
     {
-        Assert.Throws<ArgumentException>(() => PasswordHash.From(""));
+        Assert.Throws<InvalidPasswordHashException>(() => PasswordHash.From(""));
     }
 
     [Fact]
     public void From_with_whitespace_throws()
     {
-        Assert.Throws<ArgumentException>(() => PasswordHash.From("   "));
+        Assert.Throws<InvalidPasswordHashException>(() => PasswordHash.From("   "));
     }
 
     [Fact]

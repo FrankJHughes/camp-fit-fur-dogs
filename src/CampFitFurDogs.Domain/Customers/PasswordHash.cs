@@ -9,7 +9,7 @@ public sealed class PasswordHash : ValueObject
     private PasswordHash(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Password hash cannot be empty");
+            throw new InvalidPasswordHashException("Password hash cannot be empty");
 
         Value = value;
     }

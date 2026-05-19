@@ -38,7 +38,7 @@ public class CustomerTests
     [Fact]
     public void Create_with_empty_first_name_throws()
     {
-        Assert.Throws<ArgumentException>(() =>
+        Assert.Throws<InvalidFirstNameException>(() =>
             Customer.Create("", "Hughes", ValidEmail, ValidPhone, ValidHash));
     }
 
@@ -52,7 +52,7 @@ public class CustomerTests
     [Fact]
     public void Create_with_empty_last_name_throws()
     {
-        Assert.Throws<ArgumentException>(() =>
+        Assert.Throws<InvalidLastNameException>(() =>
             Customer.Create("Frank", "", ValidEmail, ValidPhone, ValidHash));
     }
 }

@@ -44,9 +44,9 @@ public sealed class Customer : AggregateRoot<CustomerId>
         ArgumentNullException.ThrowIfNull(lastName);
 
         if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentException("First name cannot be empty.", nameof(firstName));
+            throw new InvalidFirstNameException("First name cannot be empty.");
         if (string.IsNullOrWhiteSpace(lastName))
-            throw new ArgumentException("Last name cannot be empty.", nameof(lastName));
+            throw new InvalidLastNameException("Last name cannot be empty.");
 
         return new Customer(
             CustomerId.New(),

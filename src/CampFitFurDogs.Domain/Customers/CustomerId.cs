@@ -16,7 +16,7 @@ public sealed class CustomerId : AggregateId
     public static CustomerId From(Guid value)
     {
         if (value == Guid.Empty)
-            throw new ArgumentException("CustomerId cannot be empty.", nameof(value));
+            throw new InvalidCustomerIdException("CustomerId cannot be empty.");
         return new CustomerId(value);
     }
 
