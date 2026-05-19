@@ -2,9 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Integration.Tests.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
@@ -13,12 +10,9 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
 {
     private readonly CampFitFurDogsApiFactory _factory;
     private readonly HttpClient _client;
-    private readonly PostgresFixture _db;
 
     public CreateCustomer_ValidationTests(PostgresFixture db)
     {
-        _db = db;
-
         _factory = new CampFitFurDogsApiFactory();
         _factory.UseContainer(db.Container);
 
@@ -49,8 +43,11 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
         problem!.Title.Should().Be("Validation Error");
+        problem.Status.Should().Be(400);
         problem.Errors.Should().ContainKey("Email");
+        problem.Errors["Email"].Should().NotBeEmpty();
     }
 
     [Fact]
@@ -70,8 +67,11 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
         problem!.Title.Should().Be("Validation Error");
+        problem.Status.Should().Be(400);
         problem.Errors.Should().ContainKey("Password");
+        problem.Errors["Password"].Should().NotBeEmpty();
     }
 
     [Fact]
@@ -93,9 +93,16 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
 
         problem!.Title.Should().Be("Validation Error");
+        problem.Status.Should().Be(400);
+
         problem.Errors.Should().ContainKey("FirstName");
         problem.Errors.Should().ContainKey("LastName");
         problem.Errors.Should().ContainKey("Email");
         problem.Errors.Should().ContainKey("Password");
+
+        problem.Errors["FirstName"].Should().NotBeEmpty();
+        problem.Errors["LastName"].Should().NotBeEmpty();
+        problem.Errors["Email"].Should().NotBeEmpty();
+        problem.Errors["Password"].Should().NotBeEmpty();
     }
 }

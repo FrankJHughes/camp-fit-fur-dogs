@@ -4,6 +4,8 @@ using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Infrastructure.Dogs;
+using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 
@@ -18,14 +20,13 @@ public class ListDogsByOwnerReaderTests : IClassFixture<PostgresFixture>
 
     private async Task<CustomerId> SeedCustomerAsync(AppDbContext ctx, string uniqueTag)
     {
-        var customer = Customer.Create(
-            "Frank",
-            "Hughes",
-            Email.From($"{uniqueTag}@example.com"),
-            PhoneNumber.From("555-9876"),
-            PasswordHash.From(
-                Convert.ToBase64String(
-                    System.Text.Encoding.UTF8.GetBytes("TestPass123!"))));
+        var customer = new CustomerBuilder()
+            .WithFirstName(CustomerFixtures.First.Value)
+            .WithLastName(CustomerFixtures.Last.Value)
+            .WithEmail($"{uniqueTag}@example.com")
+            .WithPhone(CustomerFixtures.Phone.Value)
+            .WithPassword(PasswordFixtures.Plain)
+            .Build();
 
         await new CustomerRepository(ctx).AddAsync(customer, CancellationToken.None);
         return customer.Id;
@@ -34,12 +35,13 @@ public class ListDogsByOwnerReaderTests : IClassFixture<PostgresFixture>
     private async Task<Dog> SeedDogAsync(
         AppDbContext ctx, CustomerId ownerId, string name, string breed)
     {
-        var dog = Dog.Create(
-            ownerId,
-            DogName.Create(name),
-            Breed.Create(breed),
-            new DateOnly(2022, 6, 15),
-            Sex.Female);
+        var dog = new DogBuilder()
+            .WithOwner(ownerId)
+            .WithName(name)
+            .WithBreed(breed)
+            .BornOn(new DateOnly(2022, 6, 15))
+            .WithSex(Sex.Female)
+            .Build();
 
         await new DogRepository(ctx).AddAsync(dog, CancellationToken.None);
         return dog;
@@ -50,6 +52,7 @@ public class ListDogsByOwnerReaderTests : IClassFixture<PostgresFixture>
     {
         await using var seedCtx = _fixture.CreateContext();
         var ownerId = await SeedCustomerAsync(seedCtx, $"list-multi-{Guid.NewGuid()}");
+
         await SeedDogAsync(seedCtx, ownerId, "Biscuit", "Golden Retriever");
         await SeedDogAsync(seedCtx, ownerId, "Maple", "Beagle");
         await seedCtx.SaveChangesAsync();
@@ -57,8 +60,7 @@ public class ListDogsByOwnerReaderTests : IClassFixture<PostgresFixture>
         await using var readCtx = _fixture.CreateContext();
         var reader = new ListDogsByOwnerReader(readCtx);
 
-        var result = await reader.ListDogsByOwnerAsync(
-            ownerId.Value, CancellationToken.None);
+        var result = await reader.ListDogsByOwnerAsync(ownerId.Value, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(2);
         result.Dogs.Should().Contain(d => d.Name == "Biscuit" && d.Breed == "Golden Retriever");
@@ -71,8 +73,7 @@ public class ListDogsByOwnerReaderTests : IClassFixture<PostgresFixture>
         await using var ctx = _fixture.CreateContext();
         var reader = new ListDogsByOwnerReader(ctx);
 
-        var result = await reader.ListDogsByOwnerAsync(
-            Guid.NewGuid(), CancellationToken.None);
+        var result = await reader.ListDogsByOwnerAsync(Guid.NewGuid(), CancellationToken.None);
 
         result.Dogs.Should().BeEmpty();
     }
@@ -81,20 +82,21 @@ public class ListDogsByOwnerReaderTests : IClassFixture<PostgresFixture>
     public async Task ListDogsByOwnerAsync_OnlyReturnsDogsBelongingToOwner()
     {
         await using var seedCtx = _fixture.CreateContext();
+
         var ownerA = await SeedCustomerAsync(seedCtx, $"list-a-{Guid.NewGuid()}");
         var ownerB = await SeedCustomerAsync(seedCtx, $"list-b-{Guid.NewGuid()}");
+
         await SeedDogAsync(seedCtx, ownerA, "Biscuit", "Golden Retriever");
         await SeedDogAsync(seedCtx, ownerB, "Rex", "German Shepherd");
+
         await seedCtx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
         var reader = new ListDogsByOwnerReader(readCtx);
 
-        var result = await reader.ListDogsByOwnerAsync(
-            ownerA.Value, CancellationToken.None);
+        var result = await reader.ListDogsByOwnerAsync(ownerA.Value, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(1);
         result.Dogs[0].Name.Should().Be("Biscuit");
     }
 }
-

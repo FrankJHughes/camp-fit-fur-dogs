@@ -12,12 +12,9 @@ public class CreateCustomer_PasswordHashTests : IClassFixture<PostgresFixture>, 
 {
     private readonly CampFitFurDogsApiFactory _factory;
     private readonly HttpClient _client;
-    private readonly PostgresFixture _db;
 
     public CreateCustomer_PasswordHashTests(PostgresFixture db)
     {
-        _db = db;
-
         _factory = new CampFitFurDogsApiFactory();
         _factory.UseContainer(db.Container);
 
@@ -39,7 +36,7 @@ public class CreateCustomer_PasswordHashTests : IClassFixture<PostgresFixture>, 
             FirstName = "Frank",
             LastName = "Hughes",
             Email = "hash-test@example.com",
-            Phone = "555-1234",
+            Phone = "916-555-1234",
             Password = "SuperSecure123!"
         };
 

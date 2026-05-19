@@ -1,11 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using CampFitFurDogs.Api;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Domain.Customers;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using CampFitFurDogs.Integration.Tests.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
@@ -30,7 +30,6 @@ public class CreateCustomer_SuccessTests : IClassFixture<PostgresFixture>, IDisp
     {
         _factory.Dispose();
         _client.Dispose();
-
         GC.SuppressFinalize(this);
     }
 
@@ -44,7 +43,10 @@ public class CreateCustomer_SuccessTests : IClassFixture<PostgresFixture>, IDisp
             FirstName = "Frank",
             LastName = "Hughes",
             Email = email,
-            Phone = " 555-1234 ", // test trimming
+
+            // FIXED: must be a valid phone number, still tests trimming
+            Phone = " 916-555-1234 ",
+
             Password = "SuperSecure123!"
         };
 
@@ -72,14 +74,14 @@ public class CreateCustomer_SuccessTests : IClassFixture<PostgresFixture>, IDisp
         customer.Should().NotBeNull();
 
         // Domain-level assertions
-        customer!.FirstName.Should().Be("Frank");
-        customer.LastName.Should().Be("Hughes");
+        customer!.FirstName.Value.Should().Be("Frank");
+        customer.LastName.Value.Should().Be("Hughes");
 
         // Email normalized
         customer.Email.Value.Should().Be(email.ToLowerInvariant());
 
-        // Phone trimmed
-        customer.Phone.Value.Should().Be("555-1234");
+        // Phone normalized (10 digits → +1XXXXXXXXXX)
+        customer.Phone.Value.Should().Be("+19165551234");
 
         // Password hashed (not plaintext)
         customer.PasswordHash.Value.Should().NotBe(request.Password);

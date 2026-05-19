@@ -1,5 +1,8 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 using SharedKernel.Api;
 using SharedKernel.Api.Hosting;
@@ -54,7 +57,6 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseExceptionHandler(ExceptionHandlingMiddleware.Configure);
-
 
 app.UseCors();
 app.UseHttpsRedirection();

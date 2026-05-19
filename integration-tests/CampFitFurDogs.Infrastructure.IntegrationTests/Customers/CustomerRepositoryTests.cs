@@ -16,8 +16,8 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
     public async Task Can_Create_And_Retrieve_Customer()
     {
         var customer = Customer.Create(
-            "Test",
-            "User",
+            FirstName.From("Test"),
+            LastName.From("User"),
             Email.From("test@example.com"),
             PhoneNumber.From("555-5555"),
             PasswordHash.Create("P@ssw0rd!")
@@ -30,6 +30,6 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
         var loaded = await customers.FindAsync(customer.Id);
 
         Assert.NotNull(loaded);
-        Assert.Equal("Test", loaded!.FirstName);
+        Assert.Equal(FirstName.From("Test"), loaded!.FirstName);
     }
 }

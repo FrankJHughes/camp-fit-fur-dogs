@@ -1,3 +1,4 @@
+using FluentAssertions;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 
@@ -6,7 +7,7 @@ namespace CampFitFurDogs.Domain.Tests.Dogs;
 public class DogTests
 {
     [Fact]
-    public void Create_SetsAllProperties()
+    public void Create_sets_all_properties()
     {
         var ownerId = CustomerId.New();
         var name = DogName.Create("Biscuit");
@@ -16,16 +17,16 @@ public class DogTests
 
         var dog = Dog.Create(ownerId, name, breed, dob, sex);
 
-        Assert.NotEqual(Guid.Empty, dog.Id.Value);
-        Assert.Equal(ownerId, dog.OwnerId);
-        Assert.Equal(name, dog.Name);
-        Assert.Equal(breed, dog.Breed);
-        Assert.Equal(dob, dog.DateOfBirth);
-        Assert.Equal(sex, dog.Sex);
+        dog.Id.Value.Should().NotBe(Guid.Empty);
+        dog.OwnerId.Should().Be(ownerId);
+        dog.Name.Should().Be(name);
+        dog.Breed.Should().Be(breed);
+        dog.DateOfBirth.Should().Be(dob);
+        dog.Sex.Should().Be(sex);
     }
 
     [Fact]
-    public void Create_TwoDogs_HaveDistinctIds()
+    public void Create_two_dogs_have_distinct_ids()
     {
         var ownerId = CustomerId.New();
         var name = DogName.Create("Biscuit");
@@ -35,11 +36,11 @@ public class DogTests
         var dog1 = Dog.Create(ownerId, name, breed, dob, Sex.Male);
         var dog2 = Dog.Create(ownerId, name, breed, dob, Sex.Male);
 
-        Assert.NotEqual(dog1.Id, dog2.Id);
+        dog1.Id.Should().NotBe(dog2.Id);
     }
 
     [Fact]
-    public void Update_SetsAllEditableProperties()
+    public void Update_sets_all_editable_properties()
     {
         var ownerId = CustomerId.New();
         var dog = Dog.Create(
@@ -55,14 +56,14 @@ public class DogTests
             new DateOnly(2021, 3, 10),
             Sex.Male);
 
-        Assert.Equal("Waffles", dog.Name.Value);
-        Assert.Equal("Labrador", dog.Breed.Value);
-        Assert.Equal(new DateOnly(2021, 3, 10), dog.DateOfBirth);
-        Assert.Equal(Sex.Male, dog.Sex);
+        dog.Name.Value.Should().Be("Waffles");
+        dog.Breed.Value.Should().Be("Labrador");
+        dog.DateOfBirth.Should().Be(new DateOnly(2021, 3, 10));
+        dog.Sex.Should().Be(Sex.Male);
     }
 
     [Fact]
-    public void Update_DoesNotChangeId()
+    public void Update_does_not_change_id()
     {
         var dog = Dog.Create(
             CustomerId.New(),
@@ -79,11 +80,11 @@ public class DogTests
             new DateOnly(2021, 3, 10),
             Sex.Female);
 
-        Assert.Equal(originalId, dog.Id);
+        dog.Id.Should().Be(originalId);
     }
 
     [Fact]
-    public void Update_DoesNotChangeOwnerId()
+    public void Update_does_not_change_owner_id()
     {
         var ownerId = CustomerId.New();
         var dog = Dog.Create(
@@ -99,7 +100,6 @@ public class DogTests
             new DateOnly(2021, 3, 10),
             Sex.Male);
 
-        Assert.Equal(ownerId, dog.OwnerId);
+        dog.OwnerId.Should().Be(ownerId);
     }
-
 }

@@ -4,6 +4,8 @@ using FluentAssertions;
 
 using CampFitFurDogs.Api;
 using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Customers;
 
@@ -17,20 +19,18 @@ public class CreateCustomerEndpointTests : ApiTestBase
         _client = Factory.CreateClient();
     }
 
+    public sealed record CreateCustomerResponse(Guid CustomerId);
+
+    // ───────────────────────────────────────────────────────────────
+    // AC‑1: Successful creation returns 201 + CustomerId
+    // ───────────────────────────────────────────────────────────────
+
     [Fact]
     public async Task CreateCustomer_ShouldReturn201AndCustomerId()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = $"frank-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = ApiRequestFixtures.Customer();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var body = await response.Content.ReadFromJsonAsync<CreateCustomerResponse>();
@@ -41,149 +41,101 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_ShouldReturn409_WhenEmailAlreadyExists()
     {
-        var uniqueEmail = $"duplicate-{Guid.NewGuid()}@example.com";
+        var email = EmailFixtures.Unique("duplicate").Value;
 
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = uniqueEmail,
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithEmail(email)
+            .BuildApiRequest();
 
-        // First creation — unique email guarantees 201
         var first = await _client.PostAsJsonAsync("/api/customers", request);
         first.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        // Second creation — same email guarantees 409
         var second = await _client.PostAsJsonAsync("/api/customers", request);
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
-    public sealed record CreateCustomerResponse(Guid CustomerId);
-
-    // ── AC-2: Validation returns 400 with helpful messages ──
+    // ───────────────────────────────────────────────────────────────
+    // AC‑2: Validation returns 400 with helpful messages
+    // ───────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task CreateCustomer_WithEmptyFirstName_Returns400()
     {
-        var request = new
-        {
-            FirstName = "",
-            LastName = "Hughes",
-            Email = $"val-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithFirstName("")
+            .BuildApiRequest();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_WithEmptyLastName_Returns400()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "",
-            Email = $"val-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithLastName("")
+            .BuildApiRequest();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_WithInvalidEmail_Returns400()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = "not-an-email",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithEmail("not-an-email")
+            .BuildApiRequest();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_WithEmptyPhone_Returns400()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = $"val-{Guid.NewGuid()}@example.com",
-            Phone = "",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithPhone("")
+            .BuildApiRequest();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_WithEmptyPassword_Returns400()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = $"val-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = ""
-        };
+        var request = new CustomerBuilder()
+            .WithPassword("")
+            .BuildApiRequest();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_ValidationError_ContainsHelpfulMessage()
     {
-        var request = new
-        {
-            FirstName = "",
-            LastName = "Hughes",
-            Email = $"val-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithFirstName("")
+            .BuildApiRequest();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
 
-        // EG-02: No blame — message should guide, not accuse
         body.Should().ContainEquivalentOf("error");
         body.Should().NotContainEquivalentOf("exception");
         body.Should().NotContainEquivalentOf("stack");
     }
 
-    // ── AC-4: Successful creation confirms next steps ──
+    // ───────────────────────────────────────────────────────────────
+    // AC‑4: Successful creation confirms next steps
+    // ───────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task CreateCustomer_SuccessResponse_ContainsCustomerId()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = $"ac4-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = ApiRequestFixtures.Customer();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -196,14 +148,7 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_SuccessResponse_HasLocationHeader()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = $"ac4-loc-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = ApiRequestFixtures.Customer();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -212,19 +157,14 @@ public class CreateCustomerEndpointTests : ApiTestBase
         response.Headers.Location!.ToString().Should().StartWith("/api/customers/");
     }
 
-    // ── AC-5: No internal system concepts exposed ──
+    // ───────────────────────────────────────────────────────────────
+    // AC‑5: No internal system concepts exposed
+    // ───────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task CreateCustomer_SuccessResponse_DoesNotExposeInternals()
     {
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = $"ac5-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = ApiRequestFixtures.Customer();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
@@ -238,14 +178,9 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_ErrorResponse_DoesNotExposeInternals()
     {
-        var request = new
-        {
-            FirstName = "",
-            LastName = "Hughes",
-            Email = $"ac5-err-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithFirstName("")
+            .BuildApiRequest();
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
@@ -259,18 +194,14 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_ConflictResponse_DoesNotExposeInternals()
     {
-        var uniqueEmail = $"ac5-dup-{Guid.NewGuid()}@example.com";
+        var email = EmailFixtures.Unique("ac5-dup").Value;
 
-        var request = new
-        {
-            FirstName = "Frank",
-            LastName = "Hughes",
-            Email = uniqueEmail,
-            Phone = "555-1234",
-            Password = "SuperSecure123!"
-        };
+        var request = new CustomerBuilder()
+            .WithEmail(email)
+            .BuildApiRequest();
 
         await _client.PostAsJsonAsync("/api/customers", request);
+
         var response = await _client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
 

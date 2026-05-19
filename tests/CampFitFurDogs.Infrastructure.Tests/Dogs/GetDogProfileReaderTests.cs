@@ -3,6 +3,8 @@ using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.Infrastructure.Dogs;
+using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 
@@ -19,23 +21,23 @@ public class GetDogProfileReaderTests : IClassFixture<PostgresFixture>
     {
         await using var ctx = _fixture.CreateContext();
 
-        var customer = Customer.Create(
-            "Frank",
-            "Hughes",
-            Email.From($"reader-{Guid.NewGuid()}@example.com"),
-            PhoneNumber.From("555-9876"),
-            PasswordHash.From(
-                Convert.ToBase64String(
-                    System.Text.Encoding.UTF8.GetBytes("TestPass123!"))));
+        var customer = new CustomerBuilder()
+            .WithFirstName(CustomerFixtures.First.Value)
+            .WithLastName(CustomerFixtures.Last.Value)
+            .WithEmail($"reader-{Guid.NewGuid()}@example.com")
+            .WithPhone(CustomerFixtures.Phone.Value)
+            .WithPassword(PasswordFixtures.Plain)
+            .Build();
 
         await new CustomerRepository(ctx).AddAsync(customer, CancellationToken.None);
 
-        var dog = Dog.Create(
-            customer.Id,
-            DogName.Create("Biscuit"),
-            Breed.Create("Golden Retriever"),
-            new DateOnly(2022, 6, 15),
-            Sex.Female);
+        var dog = new DogBuilder()
+            .WithOwner(customer.Id)
+            .WithName("Biscuit")
+            .WithBreed("Golden Retriever")
+            .BornOn(new DateOnly(2022, 6, 15))
+            .WithSex(Sex.Female)
+            .Build();
 
         await new DogRepository(ctx).AddAsync(dog, CancellationToken.None);
         await ctx.SaveChangesAsync();
@@ -52,7 +54,9 @@ public class GetDogProfileReaderTests : IClassFixture<PostgresFixture>
         var reader = new GetDogProfileReader(readCtx);
 
         var result = await reader.GetDogProfileAsync(
-            dog.Id.Value, ownerId.Value, CancellationToken.None);
+            dog.Id.Value,
+            ownerId.Value,
+            CancellationToken.None);
 
         result.Should().NotBeNull();
         result!.Id.Should().Be(dog.Id.Value);
@@ -70,7 +74,9 @@ public class GetDogProfileReaderTests : IClassFixture<PostgresFixture>
         var reader = new GetDogProfileReader(ctx);
 
         var result = await reader.GetDogProfileAsync(
-            Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            CancellationToken.None);
 
         result.Should().BeNull();
     }
@@ -85,7 +91,9 @@ public class GetDogProfileReaderTests : IClassFixture<PostgresFixture>
         var reader = new GetDogProfileReader(readCtx);
 
         var result = await reader.GetDogProfileAsync(
-            dog.Id.Value, wrongOwnerId, CancellationToken.None);
+            dog.Id.Value,
+            wrongOwnerId,
+            CancellationToken.None);
 
         result.Should().BeNull();
     }

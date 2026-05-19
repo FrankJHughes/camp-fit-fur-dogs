@@ -2,8 +2,11 @@ using FluentAssertions;
 using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Tests.Fakes;
+
+using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Fixtures;
+
 using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.Domain.Dogs;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.ListDogsByOwner;
 
@@ -22,19 +25,21 @@ public class ListDogsByOwnerHandlerTests
     {
         var ownerId = CustomerId.From(Guid.NewGuid());
 
-        var dog1 = Dog.Create(
-            ownerId,
-            DogName.Create("Biscuit"),
-            Breed.Create("Golden Retriever"),
-            new DateOnly(2022, 6, 15),
-            Sex.Female);
+        var dog1 = new DogBuilder()
+            .WithOwner(ownerId)
+            .WithName(DogFixtures.DefaultName)
+            .WithBreed(DogFixtures.DefaultBreed)
+            .BornOn(DogFixtures.Dob)
+            .WithSex(DogFixtures.Sex)
+            .Build();
 
-        var dog2 = Dog.Create(
-            ownerId,
-            DogName.Create("Maple"),
-            Breed.Create("Beagle"),
-            new DateOnly(2023, 3, 10),
-            Sex.Male);
+        var dog2 = new DogBuilder()
+            .WithOwner(ownerId)
+            .WithName("Maple")
+            .WithBreed("Beagle")
+            .BornOn(new DateOnly(2023, 3, 10))
+            .WithSex(Domain.Dogs.Sex.Male)
+            .Build();
 
         _reader.Add(dog1);
         _reader.Add(dog2);
@@ -44,8 +49,10 @@ public class ListDogsByOwnerHandlerTests
         var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(2);
-        result.Dogs.Should().Contain(d => d.Name == "Biscuit" && d.Breed == "Golden Retriever");
-        result.Dogs.Should().Contain(d => d.Name == "Maple" && d.Breed == "Beagle");
+        result.Dogs.Should().Contain(d =>
+            d.Name == DogFixtures.DefaultName && d.Breed == DogFixtures.DefaultBreed);
+        result.Dogs.Should().Contain(d =>
+            d.Name == "Maple" && d.Breed == "Beagle");
     }
 
     [Fact]
@@ -64,19 +71,21 @@ public class ListDogsByOwnerHandlerTests
         var ownerA = CustomerId.From(Guid.NewGuid());
         var ownerB = CustomerId.From(Guid.NewGuid());
 
-        var dogA = Dog.Create(
-            ownerA,
-            DogName.Create("Biscuit"),
-            Breed.Create("Golden Retriever"),
-            new DateOnly(2022, 6, 15),
-            Sex.Female);
+        var dogA = new DogBuilder()
+            .WithOwner(ownerA)
+            .WithName(DogFixtures.DefaultName)
+            .WithBreed(DogFixtures.DefaultBreed)
+            .BornOn(DogFixtures.Dob)
+            .WithSex(DogFixtures.Sex)
+            .Build();
 
-        var dogB = Dog.Create(
-            ownerB,
-            DogName.Create("Maple"),
-            Breed.Create("Beagle"),
-            new DateOnly(2023, 3, 10),
-            Sex.Male);
+        var dogB = new DogBuilder()
+            .WithOwner(ownerB)
+            .WithName("Maple")
+            .WithBreed("Beagle")
+            .BornOn(new DateOnly(2023, 3, 10))
+            .WithSex(Domain.Dogs.Sex.Male)
+            .Build();
 
         _reader.Add(dogA);
         _reader.Add(dogB);
@@ -86,6 +95,6 @@ public class ListDogsByOwnerHandlerTests
         var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(1);
-        result.Dogs[0].Name.Should().Be("Biscuit");
+        result.Dogs[0].Name.Should().Be(DogFixtures.DefaultName);
     }
 }

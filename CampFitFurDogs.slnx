@@ -21,6 +21,7 @@
     <Project Path="tests/SharedKernel.Tests.EmptyAssembly/SharedKernel.Tests.EmptyAssembly.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.Tests/SharedKernel.Infrastructure.Tests.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs.TestUtilities/CampFitFurDogs.TestUtilities.csproj" />
     <Project Path="tests/SharedKernel.Api.Tests/SharedKernel.Api.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Integration.Tests/CampFitFurDogs.Integration.Tests.csproj" />
   </Folder>

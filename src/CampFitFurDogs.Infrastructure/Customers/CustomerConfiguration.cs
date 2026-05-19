@@ -19,13 +19,21 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
                 value => CustomerId.From(value))
             .HasColumnName("id");
 
-        builder.Property(c => c.FirstName)
-            .HasColumnName("first_name")
-            .IsRequired();
+        // FirstName VO
+        builder.OwnsOne(c => c.FirstName, fn =>
+        {
+            fn.Property(f => f.Value)
+              .HasColumnName("first_name")
+              .IsRequired();
+        });
 
-        builder.Property(c => c.LastName)
-            .HasColumnName("last_name")
-            .IsRequired();
+        // LastName VO
+        builder.OwnsOne(c => c.LastName, ln =>
+        {
+            ln.Property(l => l.Value)
+              .HasColumnName("last_name")
+              .IsRequired();
+        });
 
         builder.OwnsOne(c => c.Email, email =>
         {
@@ -33,7 +41,6 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
                 .HasColumnName("email")
                 .IsRequired();
 
-            // PostgreSQL requires explicit owned-property indexing
             email.HasIndex(e => e.Value)
                  .IsUnique();
         });

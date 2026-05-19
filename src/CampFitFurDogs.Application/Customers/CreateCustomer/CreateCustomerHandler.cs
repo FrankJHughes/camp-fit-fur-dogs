@@ -19,6 +19,8 @@ public sealed class CreateCustomerHandler
 
     public async Task<Guid> HandleAsync(CreateCustomerCommand request, CancellationToken ct)
     {
+        var firstName = FirstName.From(request.FirstName);
+        var lastName = LastName.From(request.LastName);
         var email = Email.From(request.Email);
         if (await _repo.EmailExistsAsync(email, ct))
             throw new EmailAlreadyExistsException(email.Value);
@@ -27,8 +29,8 @@ public sealed class CreateCustomerHandler
         var passwordHash = PasswordHash.Create(request.Password);
 
         var customer = Customer.Create(
-            request.FirstName,
-            request.LastName,
+            firstName,
+            lastName,
             email,
             phone,
             passwordHash);

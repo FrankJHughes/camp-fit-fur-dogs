@@ -1,7 +1,9 @@
+using FluentAssertions;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
-using CampFitFurDogs.Domain.Dogs;
+
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
 
@@ -21,21 +23,21 @@ public class RegisterDogHandlerTests
     {
         var command = new RegisterDogCommand(
             OwnerId: Guid.NewGuid(),
-            Name: "Biscuit",
-            Breed: "Golden Retriever",
-            DateOfBirth: new DateOnly(2022, 6, 15),
-            Sex: "Female");
+            Name: DogFixtures.DefaultName,
+            Breed: DogFixtures.DefaultBreed,
+            DateOfBirth: DogFixtures.Dob,
+            Sex: DogFixtures.Sex.ToString());
 
         var dogId = await _handler.HandleAsync(command, CancellationToken.None);
 
-        Assert.NotEqual(Guid.Empty, dogId);
-        Assert.Single(_repo.Dogs);
+        dogId.Should().NotBe(Guid.Empty);
+        _repo.Dogs.Should().HaveCount(1);
 
         var dog = _repo.Dogs[0];
-        Assert.Equal("Biscuit", dog.Name.Value);
-        Assert.Equal("Golden Retriever", dog.Breed.Value);
-        Assert.Equal(new DateOnly(2022, 6, 15), dog.DateOfBirth);
-        Assert.Equal(Sex.Female, dog.Sex);
+        dog.Name.Value.Should().Be(DogFixtures.DefaultName);
+        dog.Breed.Value.Should().Be(DogFixtures.DefaultBreed);
+        dog.DateOfBirth.Should().Be(DogFixtures.Dob);
+        dog.Sex.Should().Be(DogFixtures.Sex);
     }
 
     [Fact]
@@ -43,15 +45,15 @@ public class RegisterDogHandlerTests
     {
         var command = new RegisterDogCommand(
             OwnerId: Guid.NewGuid(),
-            Name: "Biscuit",
-            Breed: "Poodle",
-            DateOfBirth: new DateOnly(2023, 1, 1),
+            Name: DogFixtures.DefaultName,
+            Breed: DogFixtures.DefaultBreed,
+            DateOfBirth: DogFixtures.Dob,
             Sex: "Unknown");
 
         await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.HandleAsync(command, CancellationToken.None));
 
-        Assert.Empty(_repo.Dogs);
+        _repo.Dogs.Should().BeEmpty();
     }
 
     [Fact]
@@ -59,15 +61,15 @@ public class RegisterDogHandlerTests
     {
         var command = new RegisterDogCommand(
             OwnerId: Guid.NewGuid(),
-            Name: "Biscuit",
-            Breed: "Golden Retriever",
-            DateOfBirth: new DateOnly(2022, 6, 15),
-            Sex: "Female");
+            Name: DogFixtures.DefaultName,
+            Breed: DogFixtures.DefaultBreed,
+            DateOfBirth: DogFixtures.Dob,
+            Sex: DogFixtures.Sex.ToString());
 
         await _handler.HandleAsync(command, CancellationToken.None);
 
-        Assert.True(_unitOfWork.Committed);
-        Assert.Equal(1, _unitOfWork.CommitCount);
+        _unitOfWork.Committed.Should().BeTrue();
+        _unitOfWork.CommitCount.Should().Be(1);
     }
 
     [Fact]
@@ -75,16 +77,15 @@ public class RegisterDogHandlerTests
     {
         var command = new RegisterDogCommand(
             OwnerId: Guid.NewGuid(),
-            Name: "Biscuit",
-            Breed: "Poodle",
-            DateOfBirth: new DateOnly(2023, 1, 1),
+            Name: DogFixtures.DefaultName,
+            Breed: DogFixtures.DefaultBreed,
+            DateOfBirth: DogFixtures.Dob,
             Sex: "Unknown");
 
         await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.HandleAsync(command, CancellationToken.None));
 
-        Assert.False(_unitOfWork.Committed);
-        Assert.Equal(0, _unitOfWork.CommitCount);
+        _unitOfWork.Committed.Should().BeFalse();
+        _unitOfWork.CommitCount.Should().Be(0);
     }
-
 }

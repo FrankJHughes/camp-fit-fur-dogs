@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Api.Tests;
 
@@ -16,7 +18,7 @@ public static class ApiTestHelpers
             FirstName = "Frank",
             LastName = "Hughes",
             Email = $"owner-{Guid.NewGuid()}@example.com",
-            Phone = "555-1234",
+            Phone = "916-555-1234",
             Password = "SuperSecure123!"
         };
 
@@ -28,27 +30,29 @@ public static class ApiTestHelpers
     }
 
     public static async Task<Guid> CreateAndSetOwnerAsync(
-        HttpClient client, TestCurrentUser testUserService)
+        HttpClient client,
+        TestCurrentUser testUser)
     {
         var ownerId = await CreateOwnerAsync(client);
-        testUserService.CurrentUserId = ownerId;
+        testUser.CurrentUserId = ownerId;
         return ownerId;
     }
 
     public static async Task<Guid> RegisterDogAsync(
-        HttpClient client, TestCurrentUser testUserService, Guid ownerId,
-        string name = "Biscuit", string breed = "Golden Retriever",
-        string dateOfBirth = "2022-06-15", string sex = "Female")
+        HttpClient client,
+        TestCurrentUser testUser,
+        Guid ownerId,
+        string name = "Biscuit",
+        string breed = "Golden Retriever")
     {
-        testUserService.CurrentUserId = ownerId;
+        // The API uses the CURRENT USER as the owner
+        testUser.CurrentUserId = ownerId;
 
-        var request = new
-        {
-            Name = name,
-            Breed = breed,
-            DateOfBirth = dateOfBirth,
-            Sex = sex
-        };
+        // Build ONLY the API request fields (no OwnerId)
+        var request = new DogBuilder()
+            .WithName(name)
+            .WithBreed(breed)
+            .BuildApiRequest();
 
         var response = await client.PostAsJsonAsync("/api/dogs", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);

@@ -4,24 +4,23 @@ namespace CampFitFurDogs.Domain.Customers;
 
 public sealed class Customer : AggregateRoot<CustomerId>
 {
-    // public CustomerId Id { get; }
-    public string FirstName { get; }
-    public string LastName { get; }
+    public FirstName FirstName { get; }
+    public LastName LastName { get; }
     public Email Email { get; }
     public PhoneNumber Phone { get; }
     public PasswordHash PasswordHash { get; }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618
     private Customer() : base(default!)
     {
-        // For EF Core
+        // EF Core
     }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning restore CS8618
 
     private Customer(
         CustomerId id,
-        string firstName,
-        string lastName,
+        FirstName firstName,
+        LastName lastName,
         Email email,
         PhoneNumber phone,
         PasswordHash passwordHash) : base(id)
@@ -34,19 +33,17 @@ public sealed class Customer : AggregateRoot<CustomerId>
     }
 
     public static Customer Create(
-        string firstName,
-        string lastName,
+        FirstName firstName,
+        LastName lastName,
         Email email,
         PhoneNumber phone,
         PasswordHash passwordHash)
     {
         ArgumentNullException.ThrowIfNull(firstName);
         ArgumentNullException.ThrowIfNull(lastName);
-
-        if (string.IsNullOrWhiteSpace(firstName))
-            throw new InvalidFirstNameException("First name cannot be empty.");
-        if (string.IsNullOrWhiteSpace(lastName))
-            throw new InvalidLastNameException("Last name cannot be empty.");
+        ArgumentNullException.ThrowIfNull(email);
+        ArgumentNullException.ThrowIfNull(phone);
+        ArgumentNullException.ThrowIfNull(passwordHash);
 
         return new Customer(
             CustomerId.New(),

@@ -1,50 +1,67 @@
+using FluentAssertions;
 using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Domain.Tests.Customers;
 
 public class PasswordHashTests
 {
+    // A known-valid BCrypt hash for testing
+    private const string ValidBcryptHash =
+        "$2a$11$C6UzMDM.H6dfI/f/IKcEeO5Y1oCbcnZ6FQcmGeX01d9K/Y3W2FPe";
+
     [Fact]
-    public void From_with_valid_hash_succeeds()
+    public void From_with_valid_bcrypt_hash_succeeds()
     {
-        var hash = PasswordHash.From("abc123hash");
-        Assert.Equal("abc123hash", hash.Value);
+        var hash = PasswordHash.From(ValidBcryptHash);
+        hash.Value.Should().Be(ValidBcryptHash);
     }
 
     [Fact]
     public void From_with_empty_string_throws()
     {
-        Assert.Throws<InvalidPasswordHashException>(() => PasswordHash.From(""));
+        Action act = () => PasswordHash.From("");
+        act.Should().Throw<InvalidPasswordHashException>()
+           .WithMessage("*empty*");
     }
 
     [Fact]
     public void From_with_whitespace_throws()
     {
-        Assert.Throws<InvalidPasswordHashException>(() => PasswordHash.From("   "));
+        Action act = () => PasswordHash.From("   ");
+        act.Should().Throw<InvalidPasswordHashException>()
+           .WithMessage("*empty*");
+    }
+
+    [Fact]
+    public void From_with_non_bcrypt_string_throws()
+    {
+        Action act = () => PasswordHash.From("abc123hash");
+        act.Should().Throw<InvalidPasswordHashException>()
+           .WithMessage("*bcrypt*");
     }
 
     [Fact]
     public void Create_with_valid_password_returns_PasswordHash()
     {
         var hash = PasswordHash.Create("ValidP@ss1");
-        Assert.NotNull(hash);
-        Assert.False(string.IsNullOrWhiteSpace(hash.Value));
+
+        hash.Should().NotBeNull();
+        hash.Value.Should().NotBeNullOrWhiteSpace();
+        hash.Value.Should().MatchRegex(@"^\$2[aby]\$");
     }
 
     [Fact]
     public void Verify_correct_password_returns_true()
     {
         var hash = PasswordHash.Create("ValidP@ss1");
-
-        Assert.True(hash.Verify("ValidP@ss1"));
+        hash.Verify("ValidP@ss1").Should().BeTrue();
     }
 
     [Fact]
     public void Create_produces_irreversible_hash()
     {
         var hash = PasswordHash.Create("ValidP@ss1");
-
-        Assert.NotEqual("ValidP@ss1", hash.Value);
+        hash.Value.Should().NotBe("ValidP@ss1");
     }
 
     [Fact]
@@ -53,26 +70,30 @@ public class PasswordHashTests
         var hash1 = PasswordHash.Create("ValidP@ss1");
         var hash2 = PasswordHash.Create("ValidP@ss1");
 
-        Assert.NotEqual(hash1.Value, hash2.Value);
+        hash1.Value.Should().NotBe(hash2.Value);
     }
 
     [Fact]
     public void Verify_wrong_password_returns_false()
     {
         var hash = PasswordHash.Create("ValidP@ss1");
-
-        Assert.False(hash.Verify("WrongPassword"));
+        hash.Verify("WrongPassword").Should().BeFalse();
     }
 
     [Fact]
     public void Create_with_empty_password_throws()
     {
-        Assert.Throws<ArgumentException>(() => PasswordHash.Create(""));
+        Action act = () => PasswordHash.Create("");
+        act.Should().Throw<InvalidPasswordHashException>()
+           .WithMessage("*empty*");
     }
 
     [Fact]
     public void Create_with_null_password_throws()
     {
-        Assert.Throws<ArgumentException>(() => PasswordHash.Create(null!));
+        Action act = () => PasswordHash.Create(null!);
+
+        act.Should().Throw<InvalidPasswordHashException>()
+           .WithMessage("*empty*");
     }
 }

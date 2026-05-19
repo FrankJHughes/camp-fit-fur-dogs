@@ -12,12 +12,9 @@ public class CreateCustomer_PersistenceTests : IClassFixture<PostgresFixture>, I
 {
     private readonly CampFitFurDogsApiFactory _factory;
     private readonly HttpClient _client;
-    private readonly PostgresFixture _db;
 
     public CreateCustomer_PersistenceTests(PostgresFixture db)
     {
-        _db = db;
-
         _factory = new CampFitFurDogsApiFactory();
         _factory.UseContainer(db.Container);
 
@@ -38,26 +35,44 @@ public class CreateCustomer_PersistenceTests : IClassFixture<PostgresFixture>, I
         {
             FirstName = "Frank",
             LastName = "Hughes",
-            Email = "persist-test@example.com",
-            Phone = "555-1234",
+            Email = $"persist-test-{Guid.NewGuid()}@example.com",
+            Phone = "916-555-1234",
             Password = "SuperSecure123!"
         };
 
+        //
+        // 1. Send request
+        //
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
+        //
+        // 2. Extract ID from Location header
+        //
         var id = response.Headers.Location!.ToString().Split('/').Last();
+        var customerId = CustomerId.From(Guid.Parse(id));
 
+        //
+        // 3. Load persisted entity
+        //
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var customerId = CustomerId.From(Guid.Parse(id));
         var customer = await db.Set<Customer>().FindAsync(customerId);
 
+        //
+        // 4. Assertions
+        //
         customer.Should().NotBeNull();
-        customer!.Email.Value.Should().Be("persist-test@example.com");
-        customer.FirstName.Should().Be("Frank");
-        customer.LastName.Should().Be("Hughes");
+
+        customer!.Id.Value.Should().Be(customerId.Value);
+        customer.Email.Value.Should().Be(request.Email.ToLowerInvariant());
+        customer.FirstName.Value.Should().Be("Frank");
+        customer.LastName.Value.Should().Be("Hughes");
+        customer.Phone.Value.Should().Be(PhoneNumber.From("916-555-1234").Value);
+
+        // Password should be hashed (bcrypt)
+        customer.PasswordHash.Value.Should().NotBe(request.Password);
+        customer.PasswordHash.Value.Should().MatchRegex(@"^\$2[aby]\$");
     }
 }

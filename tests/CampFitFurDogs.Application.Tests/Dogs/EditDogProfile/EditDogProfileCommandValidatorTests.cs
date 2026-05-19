@@ -2,55 +2,60 @@ using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Dogs.EditDogProfile;
 using FluentAssertions;
 
+using CampFitFurDogs.TestUtilities.Fixtures;
+using CampFitFurDogs.TestUtilities.Builders;
+
 namespace CampFitFurDogs.Application.Tests.Dogs.EditDogProfile;
 
 public class EditDogProfileCommandValidatorTests
 {
+    private readonly EditDogProfileCommandValidator _validator = new();
+
     [Fact]
     public void Should_fail_when_name_is_empty()
     {
-        var validator = new EditDogProfileCommandValidator();
         var command = new EditDogProfileCommand(
             DogId: Guid.NewGuid(),
             OwnerId: Guid.NewGuid(),
             Name: "",
-            Breed: "Labrador",
-            DateOfBirth: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
-            Sex: "Male");
+            Breed: DogFixtures.DefaultBreed,
+            DateOfBirth: DogFixtures.Dob,
+            Sex: DogFixtures.Sex.ToString());
 
-        var result = validator.Validate(command);
+        var result = _validator.Validate(command);
+
         result.IsValid.Should().BeFalse();
     }
 
     [Fact]
     public void Should_fail_when_breed_is_empty()
     {
-        var validator = new EditDogProfileCommandValidator();
         var command = new EditDogProfileCommand(
             DogId: Guid.NewGuid(),
             OwnerId: Guid.NewGuid(),
-            Name: "Biscuit",
+            Name: DogFixtures.DefaultName,
             Breed: "",
-            DateOfBirth: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
-            Sex: "Male");
+            DateOfBirth: DogFixtures.Dob,
+            Sex: DogFixtures.Sex.ToString());
 
-        var result = validator.Validate(command);
+        var result = _validator.Validate(command);
+
         result.IsValid.Should().BeFalse();
     }
 
     [Fact]
     public void Should_fail_when_dogId_is_empty()
     {
-        var validator = new EditDogProfileCommandValidator();
         var command = new EditDogProfileCommand(
             DogId: Guid.Empty,
             OwnerId: Guid.NewGuid(),
-            Name: "Biscuit",
-            Breed: "Labrador",
-            DateOfBirth: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
-            Sex: "Male");
+            Name: DogFixtures.DefaultName,
+            Breed: DogFixtures.DefaultBreed,
+            DateOfBirth: DogFixtures.Dob,
+            Sex: DogFixtures.Sex.ToString());
 
-        var result = validator.Validate(command);
+        var result = _validator.Validate(command);
+
         result.IsValid.Should().BeFalse();
     }
 }

@@ -17,7 +17,7 @@ namespace CampFitFurDogs.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -27,16 +27,6 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("first_name");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("last_name");
 
                     b.HasKey("Id");
 
@@ -92,6 +82,42 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
+                    b.OwnsOne("CampFitFurDogs.Domain.Customers.FirstName", "FirstName", b1 =>
+                        {
+                            b1.Property<Guid>("CustomerId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("first_name");
+
+                            b1.HasKey("CustomerId");
+
+                            b1.ToTable("customers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CustomerId");
+                        });
+
+                    b.OwnsOne("CampFitFurDogs.Domain.Customers.LastName", "LastName", b1 =>
+                        {
+                            b1.Property<Guid>("CustomerId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("last_name");
+
+                            b1.HasKey("CustomerId");
+
+                            b1.ToTable("customers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CustomerId");
+                        });
+
                     b.OwnsOne("CampFitFurDogs.Domain.Customers.PasswordHash", "PasswordHash", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
@@ -129,6 +155,12 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                         });
 
                     b.Navigation("Email")
+                        .IsRequired();
+
+                    b.Navigation("FirstName")
+                        .IsRequired();
+
+                    b.Navigation("LastName")
                         .IsRequired();
 
                     b.Navigation("PasswordHash")

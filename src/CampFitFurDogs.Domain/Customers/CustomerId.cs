@@ -4,20 +4,17 @@ namespace CampFitFurDogs.Domain.Customers;
 
 public sealed class CustomerId : AggregateId
 {
-    // public Guid Value { get; }
-
     private CustomerId(Guid value) : base(value)
     {
         if (value == Guid.Empty)
-            throw new ArgumentException("CustomerId cannot be empty");
+            throw new InvalidCustomerIdException("CustomerId cannot be empty.");
     }
 
     public static CustomerId New() => new(Guid.NewGuid());
-    public static CustomerId From(Guid value)
-    {
-        if (value == Guid.Empty)
-            throw new InvalidCustomerIdException("CustomerId cannot be empty.");
-        return new CustomerId(value);
-    }
-
+    public static CustomerId From(Guid value) => new(value);
 }
+
+// public sealed class InvalidCustomerIdException : DomainException
+// {
+//     public InvalidCustomerIdException(string message) : base(message) { }
+// }
