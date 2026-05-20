@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import { listDogsByCurrentUser } from '@/api/dogs/listDogsByCurrentUser';
 import { toQueryState } from '@/lib/api/queryResult';
-import type { ListDogsByCurrentUserResponse } from '@/api/dogs/listDogsByCurrentUser';
+import type { ListDogsByCurrentUserResponse } from '@/lib/dogs/dogModel';
 import { ListDogsByCurrentUserCard } from '@/components/dogs/ListDogsByCurrentUserCard';
 import { ActionsCard } from '@/lib/components/ActionsCard';
 import { Action } from '@/lib/action';

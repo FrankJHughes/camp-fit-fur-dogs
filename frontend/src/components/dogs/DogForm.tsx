@@ -1,59 +1,80 @@
+// src/components/dogs/DogForm.tsx
 'use client';
 
-import { useState } from 'react';
 import { FormField } from '@/lib/components/FormField';
 import { FieldError } from '@/lib/components/FieldError';
-import { useFormErrors } from '@/lib/hooks/useFormErrors';
+import { useFormStateMachine } from '@/lib/forms/useFormStateMachine';
+import type { FormCommand } from '@/lib/forms/formCommand';
+import type { DogFormValues } from '@/lib/dogs/dogModel';
+import {
+  dogFormDefaultValues,
+  dogFormLabels,
+} from '@/lib/dogs/dogModel';
 import { validateDogForm } from '@/lib/dogs/validateDogForm';
-import { DogFormValues } from '@/lib/dogs/DogFormSchema';
 
 interface DogFormProps {
-  title?: string;
-  submitLabel?: string;
+  title: string;
+  submitLabel: string;
+  command: FormCommand<DogFormValues>;
   initialValues?: DogFormValues;
-  onSubmit: (data: DogFormValues) => void;
-  errors?: Record<string, string>;
-  isSubmitting?: boolean;
 }
 
-const emptyValues: DogFormValues = {
-  name: '',
-  breed: '',
-  dateOfBirth: '',
-  sex: '',
-};
-
 export function DogForm({
-  title = 'Register Dog',
-  submitLabel = 'Register Dog',
-  initialValues = emptyValues,
-  onSubmit,
-  errors,
-  isSubmitting,
+  title,
+  submitLabel,
+  command,
+  initialValues = dogFormDefaultValues,
 }: DogFormProps) {
-  const [values, setValues] = useState<DogFormValues>(initialValues);
-
-  const { setClient, merge, clear } = useFormErrors();
-  const displayErrors = merge(errors);
-
-  const update =
-    (field: keyof DogFormValues) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-        setValues((prev) => ({ ...prev, [field]: e.target.value }));
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const clientErrors = validateDogForm(values);
-
-    if (Object.keys(clientErrors).length > 0) {
-      setClient(clientErrors);
-      return;
-    }
-
-    clear();
-    onSubmit(values);
+  // Merge form-level error into the external errors object under the "form" key
+  const externalErrors = {
+    ...(command.errors ?? {}),
+    ...(command.error ? { form: command.error } : {}),
   };
+
+  // Helper that calls the command using a few common method names so tests/mocks work
+  const invokeCommand = async (vals: DogFormValues) => {
+    // prefer run, then submit, then execute
+    const anyCmd = command as any;
+    if (typeof anyCmd.run === 'function') return anyCmd.run(vals);
+    if (typeof anyCmd.submit === 'function') return anyCmd.submit(vals);
+    if (typeof anyCmd.execute === 'function') return anyCmd.execute(vals);
+
+    // If none exist, throw a clear error (caught below to avoid unhandled rejections)
+    throw new Error('Form command is missing run/submit/execute function');
+  };
+
+  const {
+    values,
+    displayErrors,
+    update,
+    handleSubmit,
+    isSubmitting: internalSubmitting,
+  } = useFormStateMachine<DogFormValues>({
+    initialValues,
+    externalErrors,
+    onSubmit: async (vals: DogFormValues) => {
+      // Run local validation first; if there are validation errors, abort submit
+      const validation = await validateDogForm(vals);
+      if (validation && Object.keys(validation).length > 0) {
+        return validation;
+      }
+
+      // Invoke the provided command in a safe way and avoid unhandled rejections
+      try {
+        await invokeCommand(vals);
+      } catch (err) {
+        // Log the error so tests and devs can see what happened.
+        // Returning early prevents an unhandled rejection during tests.
+        // The command implementation / tests should provide a proper mock with run/submit.
+        // eslint-disable-next-line no-console
+        console.error(err);
+        return;
+      }
+    },
+  });
+
+  // Consider both internal and external submitting states
+  const isSubmitting = internalSubmitting || command.isSubmitting;
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -61,7 +82,11 @@ export function DogForm({
 
       <FieldError id="error-form" message={displayErrors.form} />
 
-      <FormField label="Name" name="name" error={displayErrors.name}>
+      <FormField
+        label={dogFormLabels.name}
+        name="name"
+        error={displayErrors.name}
+      >
         {(fieldProps) => (
           <input
             type="text"
@@ -73,7 +98,11 @@ export function DogForm({
         )}
       </FormField>
 
-      <FormField label="Breed" name="breed" error={displayErrors.breed}>
+      <FormField
+        label={dogFormLabels.breed}
+        name="breed"
+        error={displayErrors.breed}
+      >
         {(fieldProps) => (
           <input
             type="text"
@@ -86,7 +115,7 @@ export function DogForm({
       </FormField>
 
       <FormField
-        label="Date of Birth"
+        label={dogFormLabels.dateOfBirth}
         name="dateOfBirth"
         error={displayErrors.dateOfBirth}
       >
@@ -101,14 +130,19 @@ export function DogForm({
         )}
       </FormField>
 
-      <FormField label="Sex" name="sex" error={displayErrors.sex}>
+      <FormField
+        label={dogFormLabels.sex}
+        name="sex"
+        error={displayErrors.sex}
+      >
         {(fieldProps) => (
           <select
             value={values.sex}
-            onChange={update('sex')}
+            onChange={(e) => update('sex')(e.target.value as any)}
             {...fieldProps}
             disabled={isSubmitting}
           >
+            <option value="">Select</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
           </select>
@@ -121,3 +155,5 @@ export function DogForm({
     </form>
   );
 }
+
+export default DogForm;

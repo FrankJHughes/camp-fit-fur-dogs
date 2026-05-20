@@ -1,34 +1,21 @@
 'use client';
-import type { EditDogProfileCommand } from '@/api/dogs/editDogProfile';
+
 import { DogForm } from '@/components/dogs/DogForm';
-import { DogFormValues } from '@/lib/dogs/DogFormSchema';
+import type { DogFormValues } from '@/lib/dogs/dogModel';
+import type { FormCommand } from '@/lib/forms/formCommand';
 
 interface EditDogProfileFormProps {
-  initialData: EditDogProfileCommand;
-  onSubmit: (data: EditDogProfileCommand) => void;
-  errors?: Record<string, string>;
-  isSubmitting?: boolean;
+  command: FormCommand<DogFormValues>;
+  initialValues: DogFormValues;
 }
 
-export function EditDogProfileForm({ initialData, onSubmit, errors, isSubmitting }: EditDogProfileFormProps) {
-  const normalizedInitialValues: DogFormValues = {
-    name: initialData.name,
-    breed: initialData.breed,
-    dateOfBirth: initialData.dateOfBirth,
-    sex:
-      initialData.sex === 'Male' || initialData.sex === 'Female'
-        ? initialData.sex
-        : '',
-  };
-
+export function EditDogProfileForm({ command, initialValues }: EditDogProfileFormProps) {
   return (
     <DogForm
       title="Edit Dog Profile"
-      submitLabel="Save"
-      initialValues={normalizedInitialValues}
-      onSubmit={onSubmit}
-      errors={errors}
-      isSubmitting={isSubmitting}
+      submitLabel="Save Changes"
+      command={command}
+      initialValues={initialValues}
     />
   );
 }

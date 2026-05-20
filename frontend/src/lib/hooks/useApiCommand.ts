@@ -1,27 +1,40 @@
+'use client';
+
 import { useState } from 'react';
 import { createApiClient } from '@/lib/api/client';
-import { toCommandResult } from '@/lib/api/commandResult';
+import { toCommandResult } from '@/lib/api/toCommandResult';
+import type { FormCommand } from '@/lib/forms/formCommand';
 
-export function useApiCommand<T>(endpoint: string, onSuccess: () => void) {
+const client = createApiClient();
+
+export function useApiCommand<T>(url: string, onSuccess?: () => void): FormCommand<T> {
   const [errors, setErrors] = useState<Record<string, string> | undefined>();
+  const [error, setError] = useState<string | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submit = async (data: T) => {
-    setIsSubmitting(true);
-    setErrors(undefined);
+  return {
+    errors,
+    error,
+    isSubmitting,
+    run: async (values: T) => {
+      setIsSubmitting(true);
+      setErrors(undefined);
+      setError(undefined);
 
-    const client = createApiClient();
-    const apiResult = await client.post(endpoint, data);
-    const command = toCommandResult(apiResult);
+      try {
+        const res = await client.post(url, values);
+        const cmd = toCommandResult(res);
 
-    if (command.success) {
-      setIsSubmitting(false);   // ⭐ FIX
-      onSuccess();
-    } else {
-      setErrors(command.errors);
-      setIsSubmitting(false);   // already correct
-    }
+        if (cmd.success) {
+          onSuccess?.();
+          return;
+        }
+
+        if (cmd.errors) setErrors(cmd.errors);
+        else if (cmd.error) setError(cmd.error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
   };
-
-  return { submit, errors, isSubmitting };
 }

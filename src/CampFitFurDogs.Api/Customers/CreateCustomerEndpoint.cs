@@ -11,10 +11,17 @@ public class CreateCustomerEndpoint : IEndpoint
     public void Map(IEndpointRouteBuilder app)
     {
         app.MapPost("/api/customers", async (
-            CreateCustomerCommand cmd,
+            CreateCustomerRequest request,
             ICommandDispatcher dispatcher) =>
         {
-            var id = await dispatcher.DispatchAsync(cmd, CancellationToken.None);
+            var command = new CreateCustomerCommand(
+                request.FirstName,
+                request.LastName,
+                request.Email, request.Phone,
+                request.Password
+            );
+
+            var id = await dispatcher.DispatchAsync(command, CancellationToken.None);
             return Results.Created($"/api/customers/{id}", new { CustomerId = id });
         });
     }

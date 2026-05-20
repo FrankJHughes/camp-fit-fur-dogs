@@ -1,24 +1,30 @@
-import type { GetDogProfileQuery } from '@/api/dogs/getDogProfile';
+import type { DogProfile } from '@/lib/dogs/dogModel';
 
 interface DogProfileCardProps {
-  profile: GetDogProfileQuery;
+  profile: DogProfile;
 }
 
 export function DogProfileCard({ profile }: DogProfileCardProps) {
-  const formattedDob = new Date(profile.dateOfBirth + 'T00:00:00').toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const formattedDob = new Date(profile.dateOfBirth + 'T00:00:00').toLocaleDateString(
+    'en-US',
+    {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }
+  );
 
   return (
     <div>
       <h2>{profile.name}</h2>
+
       <dl>
         <dt>Breed</dt>
         <dd>{profile.breed}</dd>
+
         <dt>Date of Birth</dt>
         <dd>{formattedDob}</dd>
+
         <dt>Sex</dt>
         <dd>{profile.sex}</dd>
       </dl>

@@ -1,18 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import {
-  useApiCommandMock,
-  setUseApiCommandReturn,
-  resetUseApiCommandMock,
-} from '@/test/helpers/mockUseApiCommand';
-
 describe('EditDogProfileForm (UI)', () => {
-  beforeEach(() => {
-    resetUseApiCommandMock();
-  });
-
   async function loadForm() {
     const mod = await import('@/components/dogs/EditDogProfileForm');
     return mod.EditDogProfileForm || mod.default;
@@ -26,20 +16,18 @@ describe('EditDogProfileForm (UI)', () => {
   };
 
   it('renders all fields with initial values', async () => {
-    setUseApiCommandReturn({
+    const command = {
+      run: vi.fn(),
       errors: {},
       isSubmitting: false,
-      handleSubmit: vi.fn(),
-    });
+    };
 
     const EditDogProfileForm = await loadForm();
 
     render(
       <EditDogProfileForm
-        initialData={initialData}
-        onSubmit={vi.fn()}
-        errors={{}}
-        isSubmitting={false}
+        initialValues={initialData}
+        command={command}
       />
     );
 
@@ -51,22 +39,19 @@ describe('EditDogProfileForm (UI)', () => {
 
   it('submits edited values', async () => {
     const user = userEvent.setup();
-    const handleSubmit = vi.fn();
-
-    setUseApiCommandReturn({
+    const run = vi.fn();
+    const command = {
+      run,
       errors: {},
       isSubmitting: false,
-      handleSubmit,
-    });
+    };
 
     const EditDogProfileForm = await loadForm();
 
     render(
       <EditDogProfileForm
-        initialData={initialData}
-        onSubmit={handleSubmit}
-        errors={{}}
-        isSubmitting={false}
+        initialValues={initialData}
+        command={command}
       />
     );
 
@@ -83,7 +68,7 @@ describe('EditDogProfileForm (UI)', () => {
 
     await user.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(handleSubmit).toHaveBeenCalledWith({
+    expect(run).toHaveBeenCalledWith({
       name: 'Buddy',
       breed: 'Husky',
       dateOfBirth: '2019-05-10',
@@ -92,26 +77,21 @@ describe('EditDogProfileForm (UI)', () => {
   });
 
   it('renders field-level errors', async () => {
-    setUseApiCommandReturn({
+    const command = {
+      run: vi.fn(),
       errors: {
         name: 'Name is required',
         breed: 'Breed is required',
       },
       isSubmitting: false,
-      handleSubmit: vi.fn(),
-    });
+    };
 
     const EditDogProfileForm = await loadForm();
 
     render(
       <EditDogProfileForm
-        initialData={initialData}
-        onSubmit={vi.fn()}
-        errors={{
-          name: 'Name is required',
-          breed: 'Breed is required',
-        }}
-        isSubmitting={false}
+        initialValues={initialData}
+        command={command}
       />
     );
 
@@ -120,20 +100,18 @@ describe('EditDogProfileForm (UI)', () => {
   });
 
   it('disables submit button while submitting', async () => {
-    setUseApiCommandReturn({
+    const command = {
+      run: vi.fn(),
       errors: {},
       isSubmitting: true,
-      handleSubmit: vi.fn(),
-    });
+    };
 
     const EditDogProfileForm = await loadForm();
 
     render(
       <EditDogProfileForm
-        initialData={initialData}
-        onSubmit={vi.fn()}
-        errors={{}}
-        isSubmitting={true}
+        initialValues={initialData}
+        command={command}
       />
     );
 

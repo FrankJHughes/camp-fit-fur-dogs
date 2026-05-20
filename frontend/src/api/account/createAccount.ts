@@ -1,31 +1,12 @@
-// /api/account/createAccount.ts
+// src/api/account/createAccount.ts
+import type { CreateAccountCommand } from '@/api/account/types';
+import { createApiClient } from '@/lib/api/client';
+import { toCommandResult } from '@/lib/api/toCommandResult';
 
-export interface CreateAccountCommand {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  password: string;
-}
+const client = createApiClient();
 
-export async function createAccount(cmd: CreateAccountCommand) {
-  const res = await fetch("/api/customers", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(cmd),
-  });
-
-  const json = await res.json();
-
-  if (!res.ok) {
-    return {
-      ok: false as const,
-      error: json,
-    };
-  }
-
-  return {
-    ok: true as const,
-    data: json,
-  };
+export async function createAccount(payload: CreateAccountCommand) {
+  // Tests expect this endpoint
+  const res = await client.post('/api/customers', payload);
+  return toCommandResult(res);
 }

@@ -1,19 +1,15 @@
 import Link from 'next/link';
-
-interface DogItem {
-  id: string;
-  name: string;
-  breed: string;
-}
+import type { DogListItem } from '@/lib/dogs/dogModel';
 
 interface ListDogsByCurrentUserCardProps {
-  dogs: DogItem[];
+  dogs: DogListItem[];
 }
 
 export function ListDogsByCurrentUserCard({ dogs }: ListDogsByCurrentUserCardProps) {
   return (
     <div>
       <h1>My Dogs</h1>
+
       {dogs.length === 0 ? (
         <p>No dogs registered yet.</p>
       ) : (

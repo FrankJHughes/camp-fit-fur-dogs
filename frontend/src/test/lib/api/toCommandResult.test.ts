@@ -1,4 +1,4 @@
-import { toCommandResult } from '@/lib/api/commandResult';
+import { toCommandResult } from '@/lib/api/toCommandResult';
 import type { ApiResult } from '@/lib/api/client';
 
 describe('toCommandResult', () => {

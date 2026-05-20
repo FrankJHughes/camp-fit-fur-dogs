@@ -1,17 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { CreateAccountForm } from '@/components/account/CreateAccountForm';
-import type { CreateAccountCommand } from '@/api/account/createAccount';
-import { useApiCommand } from '@/lib/hooks/useApiCommand';
+import { useCreateAccount } from '@/lib/account/useCreateAccount';
 
 export default function CreateAccountPage() {
-  const router = useRouter();
-
-  const command = useApiCommand<CreateAccountCommand>(
-    '/api/customers',
-    () => router.push('/create-account/success')
-  );
+  const { command } = useCreateAccount();
 
   return <CreateAccountForm command={command} />;
 }

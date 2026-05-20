@@ -11,15 +11,17 @@ describe('DogForm (UI)', () => {
   const defaultProps = {
     title: 'Register Dog',
     submitLabel: 'Register Dog',
-    onSubmit: vi.fn(),
+    command: {
+      run: vi.fn(),
+      errors: {},
+      isSubmitting: false,
+    },
     initialValues: {
       name: '',
       breed: '',
       dateOfBirth: '',
       sex: 'unknown',
     },
-    errors: {},
-    isSubmitting: false,
   };
 
   it('renders all fields', async () => {
@@ -35,20 +37,23 @@ describe('DogForm (UI)', () => {
   it('calls onSubmit with form values', async () => {
     const DogForm = await loadForm();
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const run = vi.fn();
 
-    render(<DogForm {...defaultProps} onSubmit={onSubmit} />);
+    render(
+      <DogForm
+        {...defaultProps}
+        command={{ ...defaultProps.command, run }}
+      />
+    );
 
     await user.type(screen.getByLabelText(/name/i), 'Rex');
     await user.type(screen.getByLabelText(/breed/i), 'Labrador');
     await user.type(screen.getByLabelText(/date of birth/i), '2020-01-01');
     await user.selectOptions(screen.getByLabelText(/sex/i), 'Male');
 
-    await user.click(
-      screen.getByRole('button', { name: /register dog/i }),
-    );
+    await user.click(screen.getByRole('button', { name: /register dog/i }));
 
-    expect(onSubmit).toHaveBeenCalledWith({
+    expect(run).toHaveBeenCalledWith({
       name: 'Rex',
       breed: 'Labrador',
       dateOfBirth: '2020-01-01',
