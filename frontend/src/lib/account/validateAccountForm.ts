@@ -1,12 +1,10 @@
-// src/lib/account/validateAccountForm.ts
-
 import { CreateAccountSchema, type CreateAccountValues } from './createAccountSchema';
 
 /**
  * Validates Create Account form values using the Zod schema.
  *
  * Returns a flat error map:
- *   { email: "message", password: "message", confirmPassword: "message" }
+ *   { firstName: "message", lastName: "message", email: "message", ... }
  *
  * If validation passes, returns an empty object.
  */

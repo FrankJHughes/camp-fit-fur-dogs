@@ -17,7 +17,10 @@ interface AccountFormProps {
 }
 
 const emptyValues: CreateAccountValues = {
+  firstName: '',
+  lastName: '',
   email: '',
+  phone: '',
   password: '',
   confirmPassword: '',
 };
@@ -65,12 +68,60 @@ export function AccountForm({
       {/* Form-level error (e.g., server error) */}
       <FieldError id="error-form" message={displayErrors.form} />
 
+      <FormField
+        label="First Name"
+        name="firstName"
+        error={displayErrors.firstName}
+      >
+        {(fieldProps) => (
+          <input
+            type="text"
+            autoComplete="given-name"
+            value={values.firstName}
+            onChange={update('firstName')}
+            {...fieldProps}
+            disabled={isSubmitting}
+          />
+        )}
+      </FormField>
+
+      <FormField
+        label="Last Name"
+        name="lastName"
+        error={displayErrors.lastName}
+      >
+        {(fieldProps) => (
+          <input
+            type="text"
+            autoComplete="family-name"
+            value={values.lastName}
+            onChange={update('lastName')}
+            {...fieldProps}
+            disabled={isSubmitting}
+          />
+        )}
+      </FormField>
+
       <FormField label="Email" name="email" error={displayErrors.email}>
         {(fieldProps) => (
           <input
             type="email"
+            autoComplete="email"
             value={values.email}
             onChange={update('email')}
+            {...fieldProps}
+            disabled={isSubmitting}
+          />
+        )}
+      </FormField>
+
+      <FormField label="Phone" name="phone" error={displayErrors.phone}>
+        {(fieldProps) => (
+          <input
+            type="tel"
+            autoComplete="tel"
+            value={values.phone}
+            onChange={update('phone')}
             {...fieldProps}
             disabled={isSubmitting}
           />
@@ -85,6 +136,7 @@ export function AccountForm({
         {(fieldProps) => (
           <input
             type="password"
+            autoComplete="new-password"
             value={values.password}
             onChange={update('password')}
             {...fieldProps}
@@ -101,6 +153,7 @@ export function AccountForm({
         {(fieldProps) => (
           <input
             type="password"
+            autoComplete="new-password"
             value={values.confirmPassword}
             onChange={update('confirmPassword')}
             {...fieldProps}

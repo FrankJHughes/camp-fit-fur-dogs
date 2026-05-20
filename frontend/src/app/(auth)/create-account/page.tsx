@@ -9,7 +9,7 @@ export default function CreateAccountPage() {
   const router = useRouter();
 
   const command = useApiCommand<CreateAccountCommand>(
-    '/account/create',
+    '/api/customers',
     () => router.push('/create-account/success')
   );
 

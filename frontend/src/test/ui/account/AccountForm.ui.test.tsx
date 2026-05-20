@@ -24,7 +24,10 @@ describe('AccountForm (UI)', () => {
     const AccountForm = await loadForm();
     render(<AccountForm {...defaultProps} />);
 
+    expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/phone/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
   });
@@ -45,7 +48,10 @@ describe('AccountForm (UI)', () => {
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
     expect(defaultProps.onSubmit).toHaveBeenCalledWith({
+      firstName: 'Frank',
+      lastName: 'Hughes',
       email: 'frank@example.com',
+      phone: '916-555-1234', // updated to match helper + schema
       password: 'Password123!',
       confirmPassword: 'Password123!',
     });
@@ -57,9 +63,10 @@ describe('AccountForm (UI)', () => {
 
     render(<AccountForm {...defaultProps} />);
 
+    // Trigger validation with bad email
     await user.type(screen.getByLabelText(/email/i), 'not-an-email');
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(await screen.findByText(/invalid email/i)).toBeInTheDocument();
+    expect(await screen.findByText(/invalid email address/i)).toBeInTheDocument();
   });
 });

@@ -19,7 +19,13 @@ describe('CreateAccountForm wrapper', () => {
     );
 
     // Fill out the inner AccountForm
+    await user.type(screen.getByLabelText(/first name/i), 'Frank');
+    await user.type(screen.getByLabelText(/last name/i), 'Hughes');
     await user.type(screen.getByLabelText(/email/i), 'frank@example.com');
+
+    // Updated: must be 10 digits
+    await user.type(screen.getByLabelText(/phone/i), '9165551234');
+
     await user.type(screen.getByLabelText(/^password$/i), 'Password123!');
     await user.type(
       screen.getByLabelText(/confirm password/i),
@@ -29,9 +35,11 @@ describe('CreateAccountForm wrapper', () => {
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
     expect(submit).toHaveBeenCalledWith({
+      firstName: 'Frank',
+      lastName: 'Hughes',
       email: 'frank@example.com',
+      phone: '9165551234', // Updated expected value
       password: 'Password123!',
-      confirmPassword: 'Password123!',
     });
   });
 

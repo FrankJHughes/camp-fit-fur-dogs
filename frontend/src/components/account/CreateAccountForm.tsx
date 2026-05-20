@@ -14,11 +14,16 @@ interface CreateAccountFormProps {
 
 export function CreateAccountForm({ command }: CreateAccountFormProps) {
   const handleSubmit = (values: CreateAccountValues) => {
+    // Strip frontend-only field
+    const { confirmPassword, ...rest } = values;
+
     // Convert form values → API command shape
     const cmd: CreateAccountCommand = {
-      email: values.email,
-      password: values.password,
-      confirmPassword: values.confirmPassword,
+      firstName: rest.firstName,
+      lastName: rest.lastName,
+      email: rest.email,
+      phone: rest.phone,
+      password: rest.password,
     };
 
     command.submit(cmd);

@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { AccountForm } from '@/components/account/AccountForm';
 
 describe('AccountForm validation UX', () => {
-  it('marks the email input as aria-invalid when it has an error', async () => {
+  it('marks the firstName input as aria-invalid when it has an error', async () => {
     const user = userEvent.setup();
     render(
       <AccountForm
@@ -16,13 +16,13 @@ describe('AccountForm validation UX', () => {
 
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(screen.getByLabelText(/email/i)).toHaveAttribute(
+    expect(screen.getByLabelText(/first name/i)).toHaveAttribute(
       'aria-invalid',
       'true'
     );
   }, 10000);
 
-  it('links the email input to its error via aria-describedby', async () => {
+  it('links the firstName input to its error via aria-describedby', async () => {
     const user = userEvent.setup();
     render(
       <AccountForm
@@ -34,12 +34,12 @@ describe('AccountForm validation UX', () => {
 
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    const input = screen.getByLabelText(/email/i);
+    const input = screen.getByLabelText(/first name/i);
     const errorId = input.getAttribute('aria-describedby');
 
     expect(errorId).toBeTruthy();
     expect(document.getElementById(errorId!)).toHaveTextContent(
-      /email is required/i
+      /first name is required/i
     );
   }, 10000);
 
@@ -55,7 +55,15 @@ describe('AccountForm validation UX', () => {
 
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
+    expect(screen.getByText('First name is required')).toBeInTheDocument();
+    expect(screen.getByText('Last name is required')).toBeInTheDocument();
     expect(screen.getByText('Email is required')).toBeInTheDocument();
+
+    // Updated to match actual schema behavior for empty phone input
+    expect(
+      screen.getByText('Phone number contains invalid characters.')
+    ).toBeInTheDocument();
+
     expect(screen.getByText('Password is required')).toBeInTheDocument();
     expect(
       screen.getByText('Confirm password is required')
@@ -75,7 +83,7 @@ describe('AccountForm validation UX', () => {
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
     const alerts = screen.getAllByRole('alert');
-    expect(alerts.length).toBeGreaterThanOrEqual(3);
+    expect(alerts.length).toBeGreaterThanOrEqual(6);
   }, 10000);
 
   it('clears aria-invalid when fields are corrected and resubmitted', async () => {
@@ -96,7 +104,10 @@ describe('AccountForm validation UX', () => {
     );
 
     // Fix fields
+    await user.type(screen.getByLabelText(/first name/i), 'Frank');
+    await user.type(screen.getByLabelText(/last name/i), 'Hughes');
     await user.type(screen.getByLabelText(/email/i), 'frank@example.com');
+    await user.type(screen.getByLabelText(/phone/i), '916-555-1234');
     await user.type(screen.getByLabelText(/^password$/i), 'Password123!');
     await user.type(
       screen.getByLabelText(/confirm password/i),

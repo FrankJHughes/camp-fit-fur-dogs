@@ -40,11 +40,13 @@ describe('CreateAccountPage (UI)', () => {
     });
 
     expect(apiClientMock.post).toHaveBeenCalledWith(
-      '/account/create',
+      '/api/customers',
       {
+        firstName: 'Frank',
+        lastName: 'Hughes',
         email: 'frank@example.com',
+        phone: '916-555-1234', // updated to match helper + schema
         password: 'Password123!',
-        confirmPassword: 'Password123!',
       }
     );
   });
