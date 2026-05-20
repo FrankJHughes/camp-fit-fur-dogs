@@ -19,7 +19,7 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
             FirstName.From("Test"),
             LastName.From("User"),
             Email.From("test@example.com"),
-            PhoneNumber.From("555-5555"),
+            PhoneNumber.From("916-555-5555"),
             PasswordHash.Create("P@ssw0rd!")
         );
 
