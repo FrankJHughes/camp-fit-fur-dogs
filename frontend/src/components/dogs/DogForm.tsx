@@ -25,7 +25,6 @@ export function DogForm({
   command,
   initialValues = dogFormDefaultValues,
 }: DogFormProps) {
-  // Merge form-level error into the external errors object under the "form" key
   const externalErrors = {
     ...(command.errors ?? {}),
     ...(command.error ? { form: command.error } : {}),
@@ -41,32 +40,24 @@ export function DogForm({
     initialValues,
     externalErrors,
     onSubmit: async (vals: DogFormValues) => {
-      // Run local validation first; if there are validation errors, abort submit
       const validation = await validateDogForm(vals);
       if (validation && Object.keys(validation).length > 0) {
         return validation;
       }
 
-      // Invoke the provided command using the canonical run method.
-      // The command implementation is expected to set its own errors/error state.
       try {
         await command.run(vals);
 
-        // If the command produced field errors, return them so the state machine
-        // can display them immediately.
         if (command.errors && Object.keys(command.errors).length > 0) {
           return command.errors;
         }
 
-        // If the command produced a form-level error, return it under "form"
         if (command.error) {
           return { form: command.error };
         }
 
-        // No errors -> success (return void)
         return;
       } catch (err) {
-        // Log the error for debugging and return a generic form-level error
         // eslint-disable-next-line no-console
         console.error(err);
         return { form: 'A network error occurred. Please try again.' };
@@ -74,7 +65,6 @@ export function DogForm({
     },
   });
 
-  // Consider both internal and external submitting states
   const isSubmitting = internalSubmitting || command.isSubmitting;
 
   return (
@@ -88,16 +78,20 @@ export function DogForm({
         name="name"
         error={displayErrors.name}
       >
-        {(fieldProps) => (
-          <input
-            id="field-name"
-            type="text"
-            value={values.name}
-            onChange={update('name')}
-            {...fieldProps}
-            disabled={isSubmitting}
-          />
-        )}
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-name';
+          return (
+            <input
+              id={id}
+              type="text"
+              value={values.name}
+              onChange={update('name')}
+              {...rest}
+              disabled={isSubmitting}
+            />
+          );
+        }}
       </FormField>
 
       <FormField
@@ -105,16 +99,20 @@ export function DogForm({
         name="breed"
         error={displayErrors.breed}
       >
-        {(fieldProps) => (
-          <input
-            id="field-breed"
-            type="text"
-            value={values.breed}
-            onChange={update('breed')}
-            {...fieldProps}
-            disabled={isSubmitting}
-          />
-        )}
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-breed';
+          return (
+            <input
+              id={id}
+              type="text"
+              value={values.breed}
+              onChange={update('breed')}
+              {...rest}
+              disabled={isSubmitting}
+            />
+          );
+        }}
       </FormField>
 
       <FormField
@@ -122,16 +120,20 @@ export function DogForm({
         name="dateOfBirth"
         error={displayErrors.dateOfBirth}
       >
-        {(fieldProps) => (
-          <input
-            id="field-dateOfBirth"
-            type="date"
-            value={values.dateOfBirth}
-            onChange={update('dateOfBirth')}
-            {...fieldProps}
-            disabled={isSubmitting}
-          />
-        )}
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-dateOfBirth';
+          return (
+            <input
+              id={id}
+              type="date"
+              value={values.dateOfBirth}
+              onChange={update('dateOfBirth')}
+              {...rest}
+              disabled={isSubmitting}
+            />
+          );
+        }}
       </FormField>
 
       <FormField
@@ -139,19 +141,23 @@ export function DogForm({
         name="sex"
         error={displayErrors.sex}
       >
-        {(fieldProps) => (
-          <select
-            id="field-sex"
-            value={values.sex}
-            onChange={(e) => update('sex')(e.target.value as any)}
-            {...fieldProps}
-            disabled={isSubmitting}
-          >
-            <option value="">Select</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        )}
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-sex';
+          return (
+            <select
+              id={id}
+              value={values.sex}
+              onChange={(e) => update('sex')(e.target.value as any)}
+              {...rest}
+              disabled={isSubmitting}
+            >
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          );
+        }}
       </FormField>
 
       <button type="submit" disabled={isSubmitting}>
