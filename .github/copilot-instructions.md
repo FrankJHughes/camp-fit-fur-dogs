@@ -4,7 +4,7 @@ This file provides top‑level guidance for how Copilot should behave in this re
 All detailed conventions live in the `docs/conventions` folder.
 All governance documents live in `docs/governance`.
 
-Copilot must always follow the repository’s **conventions**, **governance**, and **guardrails**.
+Copilot must always follow the repository’s **[conventions](ca://s?q=Show_repository_conventions)**, **[governance](ca://s?q=Show_governance_rules)**, and **[guardrails](ca://s?q=Show_guardrail_tests)**.
 
 ---
 
@@ -15,12 +15,12 @@ This file defines how Copilot interprets and applies those rules, how it generat
 
 Copilot’s behavior must always align with:
 
-- the architectural boundaries
-- the workflow and deployment model
-- the code and documentation conventions
-- the script‑first and patch‑first rules
-- the guardrail tests that enforce repository expectations
-- the governance rules that define process, responsibilities, and enforcement
+- the **[architectural boundaries](ca://s?q=Explain_architecture_boundaries)**
+- the **[workflow and deployment model](ca://s?q=Explain_workflow_and_deployment_model)**
+- the **[code and documentation conventions](ca://s?q=Explain_code_and_docs_conventions)**
+- the **[script‑first and patch‑first rules](ca://s?q=Explain_script_first_and_patch_first_rules)**
+- the **[guardrail tests](ca://s?q=List_guardrail_tests)** that enforce repository expectations
+- the **[governance rules](ca://s?q=Explain_governance_rules)** that define process, responsibilities, and enforcement
 
 ---
 
@@ -59,11 +59,12 @@ Copilot must respect governance rules but must not duplicate or reinterpret them
 - Copilot must not invent new patterns or workflows that contradict the conventions.
 - When conventions appear to conflict, Copilot must ask for clarification rather than guessing.
 - When generating files, Copilot must follow the rules defined in the conventions, including:
-  - script‑first rules
-  - quoting and fencing rules
-  - workflow rules
-  - architectural boundaries
-  - test‑driven development expectations
+  - **[script‑first rules](ca://s?q=Explain_script_first_rules)**
+  - **[quoting and fencing rules](ca://s?q=Explain_fencing_rules)**
+  - **[workflow rules](ca://s?q=Explain_workflow_rules)**
+  - **[architectural boundaries](ca://s?q=Explain_architecture_boundaries)**
+  - **[TDD expectations](ca://s?q=Explain_TDD_expectations)**
+
 - Guardrail tests exist to ensure Copilot aligns with established rules.
 - Copilot must not modify governance files unless explicitly instructed.
 
@@ -97,7 +98,7 @@ Copilot must not propose alternative hosting platforms or deployment models unle
 
 Copilot must:
 
-- Regenerate **entire files** when applying patches (Universal Patch Rule)
+- Regenerate **entire files** when applying patches (**[Universal Patch Rule](ca://s?q=Explain_Universal_Patch_Rule)**)
 - Use script‑first generation for any file creation or updates
 - Respect quoting, fencing, and here‑string safety rules
 - Avoid partial edits, inline diffs, or search‑and‑replace instructions
@@ -112,30 +113,31 @@ These rules prevent corruption, drift, and ambiguity.
 | Number | Sprint | Lesson | Mitigation |
 |--------|--------|--------|------------|
 | 1 | 3 | Accidental direct push to main | Added branch protection rule and local pre‑push hook |
-| 2 | 3 | `git update-index --chmod` fails on hooks directory | Removed from docs and moved hooks into tracked hooks directory with `core.hooksPath` |
-| 3 | 3 | Changelog used PR numbers instead of issue numbers | Added standing rule to always use issue numbers |
-| 4 | 3 | `gh pr create` body bypasses PR template | Added standing rule to embed merge checklist manually |
-| 5 | 4 | CRLF line endings broke pre‑push hook shebang on Windows | Added `.gitattributes` LF enforcement and `.editorconfig` |
-| 6 | 4 | PowerShell double‑quoted here‑strings corrupted backticks | Added standing rule to use single‑quoted here‑strings for PR bodies |
-| 7 | 4 | Makefile targets only covered backend | Scoped all targets by stack and established naming conventions |
-| 8 | 5 | Version drift across csproj files caused dependency conflicts | Introduced Central Package Management with transitive pinning |
-| 9 | 5 | Guardrail tests mixed reflection and DI‑dependent tests | Split into `Architecture.Tests` and `Api.Tests/Guardrails` with routing rules |
-| 10 | 6 | Documentation duplicated across multiple files | Established canonical ownership map and single navigation hub |
-| 11 | 7 | Quote characters inside here‑strings caused corruption | Added quote‑safety rules and fencing conventions |
-| 12 | 8 | Manual copy‑paste of generated file content caused corruption | Added script‑first file generation rule |
-| 13 | 9 | DI tests required a separate assembly due to speculative debugging | Added debugging discipline rule requiring deliberate reasoning |
-| 14 | 10 | Partial file edits caused corruption and drift | Added Universal Patch Rule requiring full file regeneration |
-| 15 | 6 | PowerShell treats `[id]` in Next.js route folders as wildcard | Use `-LiteralPath` for all file operations involving bracketed paths |
-| 16 | 6 | PR body used custom format instead of repo template | Always follow `.github/PULL_REQUEST_TEMPLATE.md` exactly |
-| 17 | 6 | Missing changelog entry for user‑facing change | Add entry under `[Unreleased]` before opening PR |
-| 18 | 11 | Cross‑aggregate frontend files placed under `components/shared/` | Never create `shared/` under aggregate layers; use `lib/components/` |
-| 19 | 11 | Test directories under `test/lib/` matched wrong Vitest project | Update `vitest.config.ts` include/exclude patterns |
-| 20 | 11 | PowerShell `.Replace()` matched all headings | Use `.IndexOf()` + `.Insert()` for single‑occurrence insertions |
-| 21 | 11 | `gh pr create --body` bypasses PR template | Always load and follow the PR template before drafting body |
-| 22 | 12 | Renaming a Render service broke PR Preview GitHub linkage | Never rename a Git‑backed Render service with PR Previews enabled; recreate the service if renaming is required |
-| 23 | 12 | Enabling PR Previews after service creation prevented GitHub notifications | Enable PR Previews during initial service creation or recreate the service |
-| 24 | 12 | Workflow scraped GitHub Checks for preview URLs, but Render PR Previews do not create checks | Use deterministic preview URL patterns instead of scraping GitHub metadata |
-| 25 | 12 | Legacy image‑backed preview logic conflicted with Git‑backed PR Previews | Remove all image‑backed preview logic when switching to Git‑backed PR Previews |
-| 26 | 12 | Manual Render API calls conflicted with native PR Preview behavior | Never manually create preview instances for Git‑backed services |
-| 27 | 12 | Preview URL detection failed because reopened PRs do not receive new comments | Compute preview URLs deterministically instead of relying on PR comments |
-| 28 | 12 | Misunderstanding of Render environment variable injection | Document that Render only reads variables available in the Render build environment and injected via `previewValue` |
+| 2 | 3 | `git update-index --chmod` fails on hooks directory | Moved hooks into tracked directory with `core.hooksPath` |
+| 3 | 3 | Changelog used PR numbers instead of issue numbers | Always use issue numbers |
+| 4 | 3 | `gh pr create` body bypasses PR template | Embed merge checklist manually |
+| 5 | 4 | CRLF line endings broke pre‑push hook | Added `.gitattributes` LF enforcement |
+| 6 | 4 | Double‑quoted here‑strings corrupted backticks | Use single‑quoted here‑strings |
+| 7 | 4 | Makefile targets only covered backend | Added stack‑scoped naming conventions |
+| 8 | 5 | Version drift across csproj files | Introduced Central Package Management |
+| 9 | 5 | Guardrail tests mixed reflection + DI | Split into Architecture.Tests + Api.Tests/Guardrails |
+| 10 | 6 | Documentation duplicated | Added canonical ownership map |
+| 11 | 7 | Quote characters inside here‑strings caused corruption | Added quote‑safety rules |
+| 12 | 8 | Manual copy‑paste corrupted generated files | Added script‑first rule |
+| 13 | 9 | DI tests required separate assembly | Added debugging discipline rule |
+| 14 | 10 | Partial file edits caused drift | Added Universal Patch Rule |
+| 15 | 6 | PowerShell treated `[id]` as wildcard | Use `-LiteralPath` |
+| 16 | 6 | PR body bypassed template | Always follow PR template |
+| 17 | 6 | Missing changelog entry | Add under `[Unreleased]` |
+| 18 | 11 | Shared frontend files placed under `components/shared/` | Use `lib/components/` instead |
+| 19 | 11 | Vitest config matched wrong test dirs | Updated include/exclude patterns |
+| 20 | 11 | `.Replace()` matched all headings | Use `.IndexOf()` + `.Insert()` |
+| 21 | 11 | `gh pr create --body` bypassed template | Load template manually |
+| 22 | 12 | Renaming Render service broke previews | Never rename Git‑backed preview services |
+| 23 | 12 | Enabling previews after creation broke linkage | Enable previews at creation time |
+| 24 | 12 | Workflow scraped GitHub Checks for URLs | Use deterministic preview URL patterns |
+| 25 | 12 | Legacy image‑backed preview logic conflicted | Remove all image‑backed preview logic |
+| 26 | 12 | Manual Render API calls conflicted | Never manually create preview instances |
+| 27 | 12 | Preview URL detection failed on reopened PRs | Compute URLs deterministically |
+| 28 | 12 | Misunderstanding of Render env var injection | Document Render’s environment variable rules |
+

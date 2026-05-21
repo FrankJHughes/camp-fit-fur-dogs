@@ -1,39 +1,45 @@
-> **Note:**  
-> This testing workflow is built on the architecture defined in **ADR‑0031 — Form Architecture Using React Hook Form + Zod**.  
-> All form tests must assert against schema‑defined validation messages and rely on the `useFormErrors` merging pattern.
-
 ## Form Validation Architecture
 
-All form validation must be implemented using **Zod schemas** defined in the domain layer.  
-Form components must not contain validation logic.
+All form validation is implemented using **Zod schemas** defined in the frontend `src/lib/<domain>/` directory.  
+Form components must not contain validation logic — validation is performed by the schema and the form state machine.
 
 ### Rules
 
-- Every form has a schema file located at:
+- Every form has a schema file located at:  
   `src/lib/<domain>/<feature>Schema.ts`  
-  Example: `src/lib/account/createAccountSchema.ts`
+  Example:  
+  `````ts
+  src/lib/account/createAccountSchema.ts
+  `````
 
-- All form types are inferred from the schema:
-  ```ts
+- All form types are inferred from the schema:  
+  `````ts
   export type CreateAccountValues = z.infer<typeof CreateAccountSchema>;
-  ```
+  `````
 
-- Validation is performed via:
-  ```ts
-  CreateAccountSchema.safeParse(values)
-  ```
+- Validation is performed via:  
+  `````ts
+  const result = CreateAccountSchema.safeParse(values);
+  `````  
   and converted into a flat `{ field: message }` error map.
 
-- Form components call a dedicated validator:
-  `validateXForm(values)`, which wraps the schema.
+- Form components **never** call the schema directly.  
+  They call a dedicated validator function:  
+  `````ts
+  validateXForm(values)
+  `````  
+  which wraps the schema and returns `{ field: message }` maps.
 
 - Validation messages must be defined **only** in the schema.  
   Components must not define or duplicate validation messages.
 
-- Client‑side and server‑side errors are merged using:
-  `useFormErrors().merge(errors)`
+- Client‑side and server‑side errors are merged by the **form state machine**, not manually.  
+  The state machine produces a unified `displayErrors` object containing:  
+  - field‑level errors  
+  - form‑level errors  
+  - merged backend errors (`command.errors`, `command.error`)
 
-- Tests assert against schema‑defined messages, ensuring a single source of truth.
+- Tests must assert against **schema‑defined messages**, ensuring a single source of truth.
 
 ### Benefits
 
@@ -41,4 +47,5 @@ Form components must not contain validation logic.
 - Zero duplication of form types  
 - Predictable error handling  
 - Strong testability  
-- Consistent architecture across all vertical slices
+- Consistent architecture across all vertical slices  
+- Unified error model via the form state machine  

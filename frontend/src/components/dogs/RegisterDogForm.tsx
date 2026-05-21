@@ -1,24 +1,22 @@
 'use client';
 
-import type { RegisterDogCommand } from '@/api/dogs/registerDog';
+import React from 'react';
 import { DogForm } from '@/components/dogs/DogForm';
+import type { DogFormValues } from '@/lib/dogs/dogModel';
+import type { FormCommand } from '@/lib/forms/formCommand';
 
 interface RegisterDogFormProps {
-  command: {
-    submit: (data: RegisterDogCommand) => void;
-    errors?: Record<string, string>;
-    isSubmitting?: boolean;
-  };
+  command: FormCommand<DogFormValues>;
 }
 
-export function RegisterDogForm({ command }: RegisterDogFormProps) {
+function RegisterDogForm({ command }: RegisterDogFormProps) {
   return (
     <DogForm
       title="Register Dog"
       submitLabel="Register Dog"
-      onSubmit={command.submit}
-      errors={command.errors}
-      isSubmitting={command.isSubmitting}
+      command={command}
     />
   );
 }
+
+export default React.memo(RegisterDogForm);

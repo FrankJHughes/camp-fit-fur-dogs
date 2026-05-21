@@ -17,7 +17,7 @@ Documentation exists to:
 - Preserve architectural and workflow intent  
 - Prevent drift between code and conventions  
 
-Documentation is part of the product and must always reflect **current behavior**, not historical behavior.
+Documentation must always reflect **current behavior**, not historical behavior.
 
 ---
 
@@ -32,17 +32,15 @@ The repository uses four canonical convention documents. These are the single so
 
 Other documents (ADRs, guides, READMEs) may reference these conventions but must not redefine them.
 
-**Location**
+## Location
 
-Canonical files live under:
-
-```
+`````text
 docs/conventions/
   architecture.md
   workflow.md
   code.md
   docs.md   ← this file
-```
+`````
 
 ---
 
@@ -134,7 +132,7 @@ Documentation must be compatible with script‑first automation and safe for pro
 ## Fencing and Quoting
 
 - Avoid nested triple‑backtick fences  
-- When inner fenced blocks are required, wrap the entire document with **four backticks**  
+- When inner fenced blocks are required, wrap the entire document with **four or more backticks**  
 - PowerShell here‑strings for PR bodies must be **single‑quoted**  
 - Avoid literal double‑quote characters inside here‑strings  
 - Avoid the sequences `@'` and `'@` inside here‑strings  

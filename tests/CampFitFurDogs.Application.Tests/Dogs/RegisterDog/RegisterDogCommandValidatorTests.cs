@@ -3,24 +3,26 @@ using FluentValidation;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 
+using CampFitFurDogs.TestUtilities.Fixtures;
+
 namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
 
 public class RegisterDogCommandValidatorTests
 {
+    private readonly RegisterDogCommandValidator _validator = new();
+
     [Fact]
     public void Should_fail_when_name_is_empty()
     {
-        var validator = new RegisterDogCommandValidator();
-
         var command = new RegisterDogCommand(
             OwnerId: Guid.NewGuid(),
             Name: "",
-            Breed: "Labrador",
-            DateOfBirth: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
-            Sex: "Male"
+            Breed: DogFixtures.DefaultBreed,
+            DateOfBirth: DogFixtures.Dob,
+            Sex: DogFixtures.Sex.ToString()
         );
 
-        var result = validator.Validate(command);
+        var result = _validator.Validate(command);
 
         result.IsValid.Should().BeFalse();
     }

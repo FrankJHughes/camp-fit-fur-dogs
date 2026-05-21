@@ -1,17 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { RegisterDogForm } from '@/components/dogs/RegisterDogForm';
-import type { RegisterDogCommand } from '@/api/dogs/registerDog';
-import { useApiCommand } from '@/lib/hooks/useApiCommand';
+import React from 'react';
+import RegisterDogForm from '@/components/dogs/RegisterDogForm';
+import { useRegisterDog } from '@/lib/dogs/useRegisterDog';
 
 export default function RegisterDogPage() {
-  const router = useRouter();
-
-  const command = useApiCommand<RegisterDogCommand>(
-    '/dogs/register',
-    () => router.push('/dogs/register/success')
-  );
+  const { command } = useRegisterDog();
 
   return <RegisterDogForm command={command} />;
 }

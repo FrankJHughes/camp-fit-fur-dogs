@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <VSTestUseDotNet>true</VSTestUseDotNet>
+    <ShadowCopyReferences>false</ShadowCopyReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Api\CampFitFurDogs.Api.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

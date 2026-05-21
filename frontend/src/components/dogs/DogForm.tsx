@@ -1,59 +1,71 @@
+// src/components/dogs/DogForm.tsx
 'use client';
 
-import { useState } from 'react';
 import { FormField } from '@/lib/components/FormField';
 import { FieldError } from '@/lib/components/FieldError';
-import { useFormErrors } from '@/lib/hooks/useFormErrors';
+import { useFormStateMachine } from '@/lib/forms/useFormStateMachine';
+import type { FormCommand } from '@/lib/forms/formCommand';
+import type { DogFormValues } from '@/lib/dogs/dogModel';
+import {
+  dogFormDefaultValues,
+  dogFormLabels,
+} from '@/lib/dogs/dogModel';
 import { validateDogForm } from '@/lib/dogs/validateDogForm';
-import { DogFormValues } from '@/lib/dogs/DogFormSchema';
 
 interface DogFormProps {
-  title?: string;
-  submitLabel?: string;
+  title: string;
+  submitLabel: string;
+  command: FormCommand<DogFormValues>;
   initialValues?: DogFormValues;
-  onSubmit: (data: DogFormValues) => void;
-  errors?: Record<string, string>;
-  isSubmitting?: boolean;
 }
 
-const emptyValues: DogFormValues = {
-  name: '',
-  breed: '',
-  dateOfBirth: '',
-  sex: '',
-};
-
 export function DogForm({
-  title = 'Register Dog',
-  submitLabel = 'Register Dog',
-  initialValues = emptyValues,
-  onSubmit,
-  errors,
-  isSubmitting,
+  title,
+  submitLabel,
+  command,
+  initialValues = dogFormDefaultValues,
 }: DogFormProps) {
-  const [values, setValues] = useState<DogFormValues>(initialValues);
-
-  const { setClient, merge, clear } = useFormErrors();
-  const displayErrors = merge(errors);
-
-  const update =
-    (field: keyof DogFormValues) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-        setValues((prev) => ({ ...prev, [field]: e.target.value }));
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const clientErrors = validateDogForm(values);
-
-    if (Object.keys(clientErrors).length > 0) {
-      setClient(clientErrors);
-      return;
-    }
-
-    clear();
-    onSubmit(values);
+  const externalErrors = {
+    ...(command.errors ?? {}),
+    ...(command.error ? { form: command.error } : {}),
   };
+
+  const {
+    values,
+    displayErrors,
+    update,
+    handleSubmit,
+    isSubmitting: internalSubmitting,
+  } = useFormStateMachine<DogFormValues>({
+    initialValues,
+    externalErrors,
+    onSubmit: async (vals: DogFormValues) => {
+      const validation = await validateDogForm(vals);
+      if (validation && Object.keys(validation).length > 0) {
+        return validation;
+      }
+
+      try {
+        await command.run(vals);
+
+        if (command.errors && Object.keys(command.errors).length > 0) {
+          return command.errors;
+        }
+
+        if (command.error) {
+          return { form: command.error };
+        }
+
+        return;
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        return { form: 'A network error occurred. Please try again.' };
+      }
+    },
+  });
+
+  const isSubmitting = internalSubmitting || command.isSubmitting;
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -61,58 +73,91 @@ export function DogForm({
 
       <FieldError id="error-form" message={displayErrors.form} />
 
-      <FormField label="Name" name="name" error={displayErrors.name}>
-        {(fieldProps) => (
-          <input
-            type="text"
-            value={values.name}
-            onChange={update('name')}
-            {...fieldProps}
-            disabled={isSubmitting}
-          />
-        )}
-      </FormField>
-
-      <FormField label="Breed" name="breed" error={displayErrors.breed}>
-        {(fieldProps) => (
-          <input
-            type="text"
-            value={values.breed}
-            onChange={update('breed')}
-            {...fieldProps}
-            disabled={isSubmitting}
-          />
-        )}
+      <FormField
+        label={dogFormLabels.name}
+        name="name"
+        error={displayErrors.name}
+      >
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-name';
+          return (
+            <input
+              id={id}
+              type="text"
+              value={values.name}
+              onChange={update('name')}
+              {...rest}
+              disabled={isSubmitting}
+            />
+          );
+        }}
       </FormField>
 
       <FormField
-        label="Date of Birth"
+        label={dogFormLabels.breed}
+        name="breed"
+        error={displayErrors.breed}
+      >
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-breed';
+          return (
+            <input
+              id={id}
+              type="text"
+              value={values.breed}
+              onChange={update('breed')}
+              {...rest}
+              disabled={isSubmitting}
+            />
+          );
+        }}
+      </FormField>
+
+      <FormField
+        label={dogFormLabels.dateOfBirth}
         name="dateOfBirth"
         error={displayErrors.dateOfBirth}
       >
-        {(fieldProps) => (
-          <input
-            type="date"
-            value={values.dateOfBirth}
-            onChange={update('dateOfBirth')}
-            {...fieldProps}
-            disabled={isSubmitting}
-          />
-        )}
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-dateOfBirth';
+          return (
+            <input
+              id={id}
+              type="date"
+              value={values.dateOfBirth}
+              onChange={update('dateOfBirth')}
+              {...rest}
+              disabled={isSubmitting}
+            />
+          );
+        }}
       </FormField>
 
-      <FormField label="Sex" name="sex" error={displayErrors.sex}>
-        {(fieldProps) => (
-          <select
-            value={values.sex}
-            onChange={update('sex')}
-            {...fieldProps}
-            disabled={isSubmitting}
-          >
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        )}
+      <FormField
+        label={dogFormLabels.sex}
+        name="sex"
+        error={displayErrors.sex}
+      >
+        {(fieldProps) => {
+          const { id: fpId, ...rest } = fieldProps;
+          const id = fpId ?? 'field-sex';
+          return (
+            <select
+              id={id}
+              value={values.sex}
+              onChange={(e) => update('sex')(e.target.value as any)}
+              {...rest}
+              disabled={isSubmitting}
+            >
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          );
+        }}
       </FormField>
 
       <button type="submit" disabled={isSubmitting}>
@@ -121,3 +166,5 @@ export function DogForm({
     </form>
   );
 }
+
+export default DogForm;

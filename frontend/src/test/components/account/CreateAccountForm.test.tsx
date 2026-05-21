@@ -4,14 +4,14 @@ import { describe, it, expect, vi } from 'vitest';
 import { CreateAccountForm } from '@/components/account/CreateAccountForm';
 
 describe('CreateAccountForm wrapper', () => {
-  it('adapts CreateAccountValues into CreateAccountCommand and calls command.submit', async () => {
+  it('adapts CreateAccountValues into CreateAccountCommand and calls command.run', async () => {
     const user = userEvent.setup();
 
-    const submit = vi.fn();
+    const run = vi.fn();
     render(
       <CreateAccountForm
         command={{
-          submit,
+          run,
           errors: {},
           isSubmitting: false,
         }}
@@ -19,7 +19,13 @@ describe('CreateAccountForm wrapper', () => {
     );
 
     // Fill out the inner AccountForm
+    await user.type(screen.getByLabelText(/first name/i), 'Frank');
+    await user.type(screen.getByLabelText(/last name/i), 'Hughes');
     await user.type(screen.getByLabelText(/email/i), 'frank@example.com');
+
+    // Updated: must be 10 digits
+    await user.type(screen.getByLabelText(/phone/i), '9165551234');
+
     await user.type(screen.getByLabelText(/^password$/i), 'Password123!');
     await user.type(
       screen.getByLabelText(/confirm password/i),
@@ -28,10 +34,12 @@ describe('CreateAccountForm wrapper', () => {
 
     await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(submit).toHaveBeenCalledWith({
+    expect(run).toHaveBeenCalledWith({
+      firstName: 'Frank',
+      lastName: 'Hughes',
       email: 'frank@example.com',
+      phone: '9165551234', // Updated expected value
       password: 'Password123!',
-      confirmPassword: 'Password123!',
     });
   });
 
@@ -39,7 +47,7 @@ describe('CreateAccountForm wrapper', () => {
     render(
       <CreateAccountForm
         command={{
-          submit: vi.fn(),
+          run: vi.fn(),
           errors: { form: 'Server exploded' },
           isSubmitting: false,
         }}
@@ -53,7 +61,7 @@ describe('CreateAccountForm wrapper', () => {
     render(
       <CreateAccountForm
         command={{
-          submit: vi.fn(),
+          run: vi.fn(),
           errors: {},
           isSubmitting: true,
         }}

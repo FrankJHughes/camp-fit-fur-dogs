@@ -15,6 +15,7 @@ public class ListDogsByOwnerQueryValidatorTests
         var validator = new ListDogsByOwnerQueryValidator(currentUser);
 
         var query = new ListDogsByOwnerQuery(userId);
+
         var result = await validator.ValidateAsync(query);
 
         result.IsValid.Should().BeTrue();
@@ -27,6 +28,7 @@ public class ListDogsByOwnerQueryValidatorTests
         var validator = new ListDogsByOwnerQueryValidator(currentUser);
 
         var query = new ListDogsByOwnerQuery(Guid.NewGuid());
+
         var result = await validator.ValidateAsync(query);
 
         result.IsValid.Should().BeFalse();
@@ -39,6 +41,7 @@ public class ListDogsByOwnerQueryValidatorTests
         var validator = new ListDogsByOwnerQueryValidator(currentUser);
 
         var query = new ListDogsByOwnerQuery(Guid.Empty);
+
         var result = await validator.ValidateAsync(query);
 
         result.IsValid.Should().BeFalse();

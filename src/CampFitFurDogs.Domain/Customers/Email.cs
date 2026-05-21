@@ -1,20 +1,23 @@
+using System.Text.RegularExpressions;
 using SharedKernel.Domain;
 
 namespace CampFitFurDogs.Domain.Customers;
 
-public sealed class Email : ValueObject
+public sealed partial class Email : ValueObject
 {
+    private static readonly Regex EmailRegex = MyRegex();
+
     public string Value { get; }
 
     private Email(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Email cannot be empty");
+            throw new InvalidEmailException("Email cannot be empty.");
 
         value = value.Trim().ToLowerInvariant();
 
-        if (!value.Contains("@"))
-            throw new ArgumentException("Invalid email format");
+        if (!EmailRegex.IsMatch(value))
+            throw new InvalidEmailException($"Invalid email format: '{value}'.");
 
         Value = value;
     }
@@ -27,4 +30,11 @@ public sealed class Email : ValueObject
     }
 
     public override string ToString() => Value;
+    [GeneratedRegex(@"^(?!\.)[A-Za-z0-9._%+-]+@(?!-)([A-Za-z0-9-]+\.)+[A-Za-z]{2,63}$", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+    private static partial Regex MyRegex();
 }
+
+// public sealed class InvalidEmailException : DomainException
+// {
+//     public InvalidEmailException(string message) : base(message) { }
+// }

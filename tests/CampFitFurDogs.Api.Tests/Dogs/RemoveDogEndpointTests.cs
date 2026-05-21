@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
 using CampFitFurDogs.Api.Tests.Fixtures;
 
@@ -9,18 +10,20 @@ namespace CampFitFurDogs.Api.Tests.Dogs;
 public class RemoveDogEndpointTests : ApiTestBase
 {
     private readonly HttpClient _client;
-    private readonly TestCurrentUser _testUserService;
+    private readonly TestCurrentUser _testUser;
 
     public RemoveDogEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture)
     {
         _client = Factory.CreateClient();
-        _testUserService = Factory.TestUser;
+        _testUser = Factory.TestUser;
     }
+
+    private sealed record RegisterDogResponse(Guid dogId);
 
     private async Task<Guid> RegisterDogAsync()
     {
-        await CreateAndSetOwnerAsync(_client, _testUserService);
+        await CreateAndSetOwnerAsync(_client, _testUser);
 
         var request = new
         {
@@ -34,7 +37,7 @@ public class RemoveDogEndpointTests : ApiTestBase
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
-        return body!.DogId;
+        return body!.dogId;
     }
 
     [Fact]
@@ -50,7 +53,7 @@ public class RemoveDogEndpointTests : ApiTestBase
     [Fact]
     public async Task RemoveDog_WhenDogNotFound_DoesNotReturn204()
     {
-        await CreateAndSetOwnerAsync(_client, _testUserService);
+        await CreateAndSetOwnerAsync(_client, _testUser);
 
         var response = await _client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
 
@@ -60,14 +63,14 @@ public class RemoveDogEndpointTests : ApiTestBase
     [Fact]
     public async Task RemoveDog_ErrorResponse_DoesNotExposeInternals()
     {
-        await CreateAndSetOwnerAsync(_client, _testUserService);
+        await CreateAndSetOwnerAsync(_client, _testUser);
 
         var response = await _client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
         var body = await response.Content.ReadAsStringAsync();
 
-        body.Should().NotContainEquivalentOf("stackTrace");
-        body.Should().NotContainEquivalentOf("innerException");
-        body.Should().NotContainEquivalentOf("ArgumentException");
-        body.Should().NotContainEquivalentOf("NullReferenceException");
+        body.Should().NotContain("stackTrace");
+        body.Should().NotContain("innerException");
+        body.Should().NotContain("ArgumentException");
+        body.Should().NotContain("NullReferenceException");
     }
 }

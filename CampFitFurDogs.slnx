@@ -1,8 +1,4 @@
 <Solution>
-  <Folder Name="/integration-tests/">
-    <Project Path="integration-tests/CampFitFurDogs.Api.IntegrationTests/CampFitFurDogs.Api.IntegrationTests.csproj" />
-    <Project Path="integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests/CampFitFurDogs.Infrastructure.IntegrationTests.csproj" />
-  </Folder>
   <Folder Name="/src/">
     <Project Path="src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj" />
     <Project Path="src/CampFitFurDogs.Application/CampFitFurDogs.Application.csproj" />
@@ -25,6 +21,12 @@
     <Project Path="tests/SharedKernel.Tests.EmptyAssembly/SharedKernel.Tests.EmptyAssembly.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.Tests/SharedKernel.Infrastructure.Tests.csproj" />
     <Project Path="tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs.TestUtilities/CampFitFurDogs.TestUtilities.csproj" />
     <Project Path="tests/SharedKernel.Api.Tests/SharedKernel.Api.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs.Integration.Tests/CampFitFurDogs.Integration.Tests.csproj" />
+  </Folder>
+  <Folder Name="/integration-tests/">
+    <Project Path="integration-tests/CampFitFurDogs.Api.IntegrationTests/CampFitFurDogs.Api.IntegrationTests.csproj" />
+    <Project Path="integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests/CampFitFurDogs.Infrastructure.IntegrationTests.csproj" />
   </Folder>
 </Solution>

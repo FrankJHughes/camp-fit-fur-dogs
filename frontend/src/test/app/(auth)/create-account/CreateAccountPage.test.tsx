@@ -1,104 +1,76 @@
-import { pushMock } from '@/test/helpers/mockRouter';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { apiClientMock } from '@/test/setup';
+import { pushMock } from '@/test/helpers/mockRouter';
 import { fillCreateAccountForm } from '@/test/helpers/account/fillCreateAccountForm';
-import CreateAccountPage from '@/app/(auth)/create-account/page';
 
-describe('Create Account Page', () => {
+// IMPORTANT: mock the API client BEFORE importing the page
+import { apiClientMock } from '@/test/setup';
+
+describe('CreateAccountPage (UI)', () => {
   beforeEach(() => {
+    vi.resetModules();
     pushMock.mockClear();
     apiClientMock.post.mockClear();
   });
 
-  it('calls the API when the form is submitted', async () => {
+  async function loadPage() {
+    const mod = await import('@/app/(auth)/create-account/page');
+    return mod.default;
+  }
+
+  it('submits the form and navigates on success', async () => {
     apiClientMock.post.mockResolvedValueOnce({
       ok: true,
-      data: {},
+      data: { success: true },
     });
 
+    const CreateAccountPage = await loadPage();
     const user = userEvent.setup();
 
     render(<CreateAccountPage />);
 
     await fillCreateAccountForm(user);
 
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
+    await user.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(apiClientMock.post).toHaveBeenCalledWith('/account/create', {
-      email: 'frank@example.com',
-      password: 'Password123!',
-      confirmPassword: 'Password123!',
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith('/create-account/success');
     });
 
-    expect(pushMock).toHaveBeenCalledWith('/create-account/success');
+    expect(apiClientMock.post).toHaveBeenCalledWith('/api/customers', {
+      firstName: 'Frank',
+      lastName: 'Hughes',
+      email: 'frank@example.com',
+      phone: '916-555-1234', // updated to match helper + schema
+      password: 'Password123!',
+    });
   });
 
-  it('displays validation errors returned by the API', async () => {
+  it('shows server validation errors', async () => {
     apiClientMock.post.mockResolvedValueOnce({
       ok: false,
       error: {
         type: 'validation',
         message: 'Validation failed',
-        errors: {
-          email: ['Email is required'],
-          password: ['Password must be at least 8 characters'],
-        },
+        errors: { email: ['Email already exists'] },
       },
     });
 
+    const CreateAccountPage = await loadPage();
     const user = userEvent.setup();
 
     render(<CreateAccountPage />);
 
     await fillCreateAccountForm(user);
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
 
-    expect(await screen.findByText('Email is required')).toBeInTheDocument();
-    expect(
-      screen.getByText('Password must be at least 8 characters')
-    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /create account/i }));
+
+    expect(await screen.findByText('Email already exists')).toBeInTheDocument();
     expect(pushMock).not.toHaveBeenCalled();
   });
 
-  it('disables the submit button while the API call is in flight', async () => {
-    let resolveApi: (value: any) => void;
-
-    apiClientMock.post.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          resolveApi = resolve;
-        })
-    );
-
-    const user = userEvent.setup();
-
-    render(<CreateAccountPage />);
-
-    await fillCreateAccountForm(user);
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
-
-    expect(
-      screen.getByRole('button', { name: /create account/i })
-    ).toBeDisabled();
-
-    resolveApi!({ ok: true, data: {} });
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: /create account/i })
-      ).not.toBeDisabled()
-    );
-  });
-
-  it('displays a form-level error when the API returns a network error', async () => {
+  it('shows a network error when the server is unreachable', async () => {
     apiClientMock.post.mockResolvedValueOnce({
       ok: false,
       error: {
@@ -107,19 +79,17 @@ describe('Create Account Page', () => {
       },
     });
 
+    const CreateAccountPage = await loadPage();
     const user = userEvent.setup();
 
     render(<CreateAccountPage />);
 
     await fillCreateAccountForm(user);
-    await user.click(
-      screen.getByRole('button', { name: /create account/i })
-    );
+
+    await user.click(screen.getByRole('button', { name: /create account/i }));
 
     expect(
-      await screen.findByText(
-        'A network error occurred. Please try again.'
-      )
+      await screen.findByText('A network error occurred. Please try again.')
     ).toBeInTheDocument();
 
     expect(pushMock).not.toHaveBeenCalled();

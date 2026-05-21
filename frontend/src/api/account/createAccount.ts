@@ -1,34 +1,19 @@
-// /api/account/createAccount.ts
+// src/api/account/createAccount.ts
+import type { CreateAccountCommand } from '@/api/account/types';
+import { createApiClient } from '@/lib/api/client';
+import { toCommandResult } from '@/lib/api/toCommandResult';
+import type { CommandResult } from '@/lib/api/commandResult';
 
-import { z } from 'zod';
+const client = createApiClient();
 
-// This mirrors the Zod schema in AccountForm
-export const CreateAccountCommandSchema = z.object({
-  email: z.string(),
-  password: z.string(),
-  confirmPassword: z.string(),
-});
-
-export type CreateAccountCommand = z.infer<typeof CreateAccountCommandSchema>;
-
-export async function createAccount(cmd: CreateAccountCommand) {
-  const res = await fetch('/owners/create-account', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(cmd),
-  });
-
-  const json = await res.json();
-
-  if (!res.ok) {
-    return {
-      ok: false as const,
-      error: json,
-    };
+export async function createAccount(payload: CreateAccountCommand): Promise<CommandResult> {
+  try {
+    // Tests expect this endpoint
+    const res = await client.post('/api/customers', payload);
+    return toCommandResult(res);
+  } catch (err: any) {
+    // eslint-disable-next-line no-console
+    console.error('createAccount error', err);
+    return { success: false, error: err?.message ?? 'Network error' };
   }
-
-  return {
-    ok: true as const,
-    data: json,
-  };
 }

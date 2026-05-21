@@ -11,30 +11,18 @@ public class CreateCustomerEndpoint : IEndpoint
     public void Map(IEndpointRouteBuilder app)
     {
         app.MapPost("/api/customers", async (
-            CreateCustomerCommand cmd,
+            CreateCustomerRequest request,
             ICommandDispatcher dispatcher) =>
         {
-            try
-            {
-                var id = await dispatcher.DispatchAsync(cmd, CancellationToken.None);
-                return Results.Created($"/api/customers/{id}", new { CustomerId = id });
-            }
-            catch (EmailAlreadyExistsException)
-            {
-                return Results.Conflict(new { Error = "An account with this email already exists. You can sign in or use a different email." });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return Results.BadRequest(new { Error = FormatValidationMessage(ex.ParamName) });
-            }
-            catch (ArgumentException ex)
-            {
-                return Results.BadRequest(new { Error = ex.Message.Split(" (Parameter")[0] });
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(new { Error = ex.Message });
-            }
+            var command = new CreateCustomerCommand(
+                request.FirstName,
+                request.LastName,
+                request.Email, request.Phone,
+                request.Password
+            );
+
+            var id = await dispatcher.DispatchAsync(command, CancellationToken.None);
+            return Results.Created($"/api/customers/{id}", new { CustomerId = id });
         });
     }
 

@@ -5,19 +5,24 @@ import { FieldError } from '@/lib/components/FieldError';
 import { FormField } from '@/lib/components/FormField';
 import { useFormErrors } from '@/lib/hooks/useFormErrors';
 import { validateAccountForm } from '@/lib/account/validateAccountForm';
-import { CreateAccountValues } from '@/lib/account/createAccountSchema';
+import type { CreateAccountValues } from '@/lib/account/createAccountSchema';
 
 interface AccountFormProps {
   title: string;
   submitLabel: string;
   initialValues?: CreateAccountValues;
-  onSubmit: (data: CreateAccountValues) => void;
+  onSubmit: (
+    data: CreateAccountValues
+  ) => Promise<Record<string, string> | void> | Record<string, string> | void;
   errors?: Record<string, string>;
   isSubmitting?: boolean;
 }
 
 const emptyValues: CreateAccountValues = {
+  firstName: '',
+  lastName: '',
   email: '',
+  phone: '',
   password: '',
   confirmPassword: '',
 };
@@ -37,10 +42,10 @@ export function AccountForm({
 
   const update =
     (field: keyof CreateAccountValues) =>
-      (e: React.ChangeEvent<HTMLInputElement>) =>
-        setValues((prev) => ({ ...prev, [field]: e.target.value }));
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setValues((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // 1. Client-side validation via Zod
@@ -54,8 +59,23 @@ export function AccountForm({
     // 2. Clear client errors before submitting
     clear();
 
-    // 3. Submit to parent (API command)
-    onSubmit(values);
+    // 3. Submit to parent (API command) and handle returned server errors
+    try {
+      const result = await onSubmit(values);
+
+      if (result && Object.keys(result).length > 0) {
+        // If the parent returned field/form errors, surface them as client errors
+        setClient(result);
+        return;
+      }
+
+      // Success: nothing to do here; parent command / hook handles navigation and success state
+    } catch (err: any) {
+      // If the onSubmit threw, surface a generic form-level error
+      // eslint-disable-next-line no-console
+      console.error('AccountForm submit error', err);
+      setClient({ form: err?.message ?? 'An unexpected error occurred' });
+    }
   };
 
   return (
@@ -65,12 +85,60 @@ export function AccountForm({
       {/* Form-level error (e.g., server error) */}
       <FieldError id="error-form" message={displayErrors.form} />
 
+      <FormField
+        label="First Name"
+        name="firstName"
+        error={displayErrors.firstName}
+      >
+        {(fieldProps) => (
+          <input
+            type="text"
+            autoComplete="given-name"
+            value={values.firstName}
+            onChange={update('firstName')}
+            {...fieldProps}
+            disabled={isSubmitting}
+          />
+        )}
+      </FormField>
+
+      <FormField
+        label="Last Name"
+        name="lastName"
+        error={displayErrors.lastName}
+      >
+        {(fieldProps) => (
+          <input
+            type="text"
+            autoComplete="family-name"
+            value={values.lastName}
+            onChange={update('lastName')}
+            {...fieldProps}
+            disabled={isSubmitting}
+          />
+        )}
+      </FormField>
+
       <FormField label="Email" name="email" error={displayErrors.email}>
         {(fieldProps) => (
           <input
             type="email"
+            autoComplete="email"
             value={values.email}
             onChange={update('email')}
+            {...fieldProps}
+            disabled={isSubmitting}
+          />
+        )}
+      </FormField>
+
+      <FormField label="Phone" name="phone" error={displayErrors.phone}>
+        {(fieldProps) => (
+          <input
+            type="tel"
+            autoComplete="tel"
+            value={values.phone}
+            onChange={update('phone')}
             {...fieldProps}
             disabled={isSubmitting}
           />
@@ -85,6 +153,7 @@ export function AccountForm({
         {(fieldProps) => (
           <input
             type="password"
+            autoComplete="new-password"
             value={values.password}
             onChange={update('password')}
             {...fieldProps}
@@ -101,6 +170,7 @@ export function AccountForm({
         {(fieldProps) => (
           <input
             type="password"
+            autoComplete="new-password"
             value={values.confirmPassword}
             onChange={update('confirmPassword')}
             {...fieldProps}

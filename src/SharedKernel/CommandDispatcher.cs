@@ -17,19 +17,20 @@ public sealed class CommandDispatcher : ICommandDispatcher
     public async Task<TResponse> DispatchAsync<TResponse>(ICommand<TResponse> command, CancellationToken ct)
     {
         // 1. Run validators (if any)
-        var validatorType = typeof(IValidator<>).MakeGenericType(command.GetType());
-        var validators = _provider.GetServices(validatorType).Cast<object>();
+        var commandType = command.GetType();
+        var validatorType = typeof(IValidator<>).MakeGenericType(commandType);
 
-        var context = new ValidationContext<object>(command);
+        var validators = _provider.GetServices(validatorType).Cast<IValidator>().ToList();
 
         foreach (var validator in validators)
         {
-            var result = await ((IValidator)validator).ValidateAsync(context, ct);
+            var contextType = typeof(ValidationContext<>).MakeGenericType(commandType);
+            var context = (IValidationContext)Activator.CreateInstance(contextType, command)!;
+
+            var result = await validator.ValidateAsync(context, ct);
 
             if (!result.IsValid)
-            {
                 throw new ValidationException(result.Errors);
-            }
         }
 
         // 2. Resolve handler

@@ -34,7 +34,8 @@ Ensures:
 - Correct dependency graph  
 - Targeted test execution  
 - Full test coverage on `main` and nightly runs  
-- Deterministic execution of backend, frontend, and SharedKernel tests
+- Deterministic execution of backend, frontend, and SharedKernel tests  
+- Integration tests run as part of the backend job (current behavior)
 
 ---
 
@@ -100,7 +101,10 @@ Projects:
 - `tests/CampFitFurDogs.Api.Tests`  
 - `tests/CampFitFurDogs.Application.Tests`  
 - `tests/CampFitFurDogs.Domain.Tests`  
-- `tests/CampFitFurDogs.Infrastructure.Tests`
+- `tests/CampFitFurDogs.Infrastructure.Tests`  
+- **Integration tests (added here; no separate job yet)**
+
+This reflects the current CI structure: integration tests run inside the backend job rather than in a dedicated job.
 
 ---
 
@@ -130,7 +134,8 @@ Steps:
 - Explicit job ordering  
 - Fail‑fast behavior  
 - Nightly full runs  
-- Script‑first logic (no complex inline shell)
+- Script‑first logic (no complex inline shell)  
+- Integration tests colocated with backend tests until a dedicated job is introduced
 
 ---
 
@@ -140,11 +145,11 @@ The CI pipeline uses a **path‑based, dependency‑aware test selection model**
 
 ## Dependency Model
 
-- Backend changes impact the frontend.  
-- Frontend changes do **not** impact the backend.  
-- SharedKernel changes impact both backend and frontend.  
-- Infrastructure changes impact all integration tests.  
-- Governance changes (stories, catalog, scripts) require governance checks only.
+- Backend changes impact the frontend  
+- Frontend changes do **not** impact the backend  
+- SharedKernel changes impact both backend and frontend  
+- Infrastructure changes impact all integration tests  
+- Governance changes (stories, catalog, scripts) require governance checks only
 
 ## Path Mapping
 
@@ -196,10 +201,10 @@ Also destroys stale preview resources.
 
 ## Concurrency
 
-```yaml
+`````yaml
 group: preview-pr-<number>
 cancel-in-progress: true
-```
+`````
 
 ---
 
@@ -308,7 +313,7 @@ These must remain stable and script‑first compatible.
 
 # Preview Pipeline Flow
 
-```text
+`````text
 PR opened / updated
   |
   v
@@ -325,19 +330,20 @@ deploy_fresh_api      (if should_deploy)
   |
   v
 API integration tests
-```
+`````
 
 ---
 
 # General Workflow Conventions
 
-### Composite actions first  
-### No complex inline shell  
-### Pin third‑party actions  
-### Explicit permissions  
-### Explicit timeouts  
-### Deterministic artifacts  
-### Reproducibility via scripts and documented env vars  
+- Composite actions first  
+- No complex inline shell  
+- Pin third‑party actions  
+- Explicit permissions  
+- Explicit timeouts  
+- Deterministic artifacts  
+- Reproducibility via scripts and documented env vars  
+- Integration tests remain inside the backend job until a dedicated job is introduced
 
 ---
 

@@ -1,10 +1,15 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
+using SharedKernel.Api;
 using SharedKernel.Api.Hosting;
 using SharedKernel.DependencyInjection;
-using SharedKernel.Api;
+using SharedKernel.Domain;
 
+using CampFitFurDogs.Api.Errors;
 using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
@@ -51,38 +56,17 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.MapEndpoints();
+app.UseExceptionHandler(ExceptionHandlingMiddleware.Configure);
+
 app.UseCors();
-
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        var exception = context.Features
-            .Get<IExceptionHandlerFeature>()?.Error;
-        if (exception is ValidationException validationException)
-        {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            context.Response.ContentType = "application/json";
-
-            var errors = validationException.Errors
-                .Select(e => new { e.PropertyName, e.ErrorMessage });
-
-            await context.Response.WriteAsJsonAsync(new { Errors = errors });
-            return;
-        }
-
-        // fallback for other exceptions
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-    });
-});
+app.UseHttpsRedirection();
+app.MapEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
 
 app.MapGet("/api/health", () => Results.Ok(new { Status = "Healthy" }))
    .WithName("HealthCheck");

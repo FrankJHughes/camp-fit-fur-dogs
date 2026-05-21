@@ -1,3 +1,4 @@
+using FluentAssertions;
 using CampFitFurDogs.Domain.Dogs;
 
 namespace CampFitFurDogs.Domain.Tests.Dogs;
@@ -5,24 +6,30 @@ namespace CampFitFurDogs.Domain.Tests.Dogs;
 public class BreedTests
 {
     [Fact]
-    public void Create_TrimmedValue()
+    public void Create_trims_value()
     {
         var breed = Breed.Create("  Golden Retriever  ");
-        Assert.Equal("Golden Retriever", breed.Value);
+        breed.Value.Should().Be("Golden Retriever");
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Create_EmptyOrWhitespace_Throws(string? value)
+    public void Create_with_empty_or_whitespace_throws(string? value)
     {
-        Assert.Throws<ArgumentException>(() => Breed.Create(value!));
+        Action act = () => Breed.Create(value!);
+        act.Should().Throw<ArgumentException>()
+           .WithMessage("*required*");
     }
 
     [Fact]
-    public void EqualBreeds_AreEqual()
+    public void Equal_breeds_are_equal()
     {
-        Assert.Equal(Breed.Create("Poodle"), Breed.Create("Poodle"));
+        var a = Breed.Create("Poodle");
+        var b = Breed.Create("Poodle");
+
+        a.Should().Be(b);
+        a.GetHashCode().Should().Be(b.GetHashCode());
     }
 }
