@@ -146,7 +146,7 @@ Code must be safe to run in ephemeral preview environments (Neon + Render).
 
 ## Structure
 
-```
+`````text
 frontend/
   src/
     api/<aggregate>/...
@@ -158,7 +158,7 @@ frontend/
     lib/components/...
     app/...
   test/...
-```
+`````
 
 ## Layer Responsibilities
 
@@ -185,61 +185,111 @@ frontend/
 
 - When scripting file operations on dynamic route folders (e.g., `[id]`), use literal path semantics (`-LiteralPath` in PowerShell) to avoid globbing issues.
 
-## Form Naming & Style Conventions
+---
 
-### File Naming
-Form‑related files must follow these naming conventions:
+# Frontend Form Conventions (Updated)
 
-- Schema files:
-  ```
-  <feature>Schema.ts
-  ```
-  Example: `createAccountSchema.ts`
+The frontend now uses a unified form architecture built on:
 
-- Validator files:
-  ```
-  validate<Feature>Form.ts
-  ```
-  Example: `validateAccountForm.ts`
+- **FormCommand** — canonical submit interface  
+- **useFormStateMachine** — deterministic validation + error merging  
+- **FormField** — accessibility‑correct field rendering  
+- **Zod** — schema‑driven validation  
 
-- Form components:
-  ```
-  <Feature>Form.tsx
-  ```
-  Example: `AccountForm.tsx`
+This replaces all legacy `submit()` patterns.
 
-- Wrapper components:
-  ```
-  <Feature>Form.tsx
-  ```
-  Example: `CreateAccountForm.tsx`
+## FormCommand Contract
 
-- Test files:
-  ```
-  <Feature>Form.test.tsx
-  ```
-  Example: `AccountForm.test.tsx`
+`````ts
+export interface FormCommand<T> {
+  run: (values: T) => Promise<void>;
+  errors?: Record<string, string>;
+  error?: string;
+  isSubmitting: boolean;
+}
+`````
 
-### Import Style
-- Always import schemas from `src/lib/<domain>/<feature>Schema.ts`.
-- Always import inferred types from the schema file.
-- Never define duplicate types in components or API clients.
+### Rules
 
-### Component Style
-- Form components must be functional components.
-- Use RHF’s `useForm` with explicit generic types.
-- Use controlled or uncontrolled inputs consistently per RHF guidelines.
-- Use `<FormField>` and `<FieldError>` for all field rendering.
+- `run` is the only allowed submit API.  
+- `errors` maps backend field errors.  
+- `error` maps backend form‑level errors.  
+- `isSubmitting` disables UI and prevents double submits.  
+- Commands must not reshape backend responses.
 
-### Error Style
-- Field‑level errors must use `role="alert"`.
-- Form‑level errors must use a dedicated `<FieldError>` with a stable ID.
-- Error IDs must be deterministic for `aria-describedby`.
+---
 
-### Test File Style
-- Tests must use React Testing Library + userEvent.
-- Tests must assert against schema‑defined messages.
-- Tests must not duplicate validation logic.
+## Form State Machine
+
+All forms must use `useFormStateMachine`.
+
+Responsibilities:
+
+- Run client‑side validation.  
+- Merge backend errors into `displayErrors`.  
+- Track submission state.  
+- Provide `update`, `handleSubmit`, and `values`.  
+- Ensure deterministic behavior across slices.
+
+Forms must not manage their own error or submission state.
+
+---
+
+## Field Rendering
+
+All fields must use `FormField`:
+
+`````tsx
+<FormField label="Name" name="name" error={displayErrors.name}>
+  {(fieldProps) => (
+    <input
+      {...fieldProps}
+      value={values.name}
+      onChange={update('name')}
+      disabled={isSubmitting}
+    />
+  )}
+</FormField>
+`````
+
+### Rules
+
+- Always spread `fieldProps`.  
+- Never override `id` without checking for duplicates.  
+- All fields must support `aria-invalid`, `aria-describedby`, and `role="alert"`.
+
+---
+
+## Validation
+
+- All validation schemas live in `src/lib/<domain>/<feature>Schema.ts`.  
+- Validation must use Zod.  
+- Validation messages must originate from the schema.  
+- Validation must return `{ field: message }` maps.  
+- Forms must not implement validation logic.
+
+---
+
+## Backend Contract Alignment
+
+Backend error envelopes:
+
+`````json
+{ "errors": { "field": "message" } }
+{ "error": "form-level message" }
+`````
+
+Backend success envelope for create-account:
+
+`````json
+{ "customerId": "guid" }
+`````
+
+### Rules
+
+- Frontend must not expect additional fields.  
+- Frontend must normalize phone numbers to digits‑only.  
+- Frontend must treat success as “account created” and handle navigation accordingly.
 
 ---
 

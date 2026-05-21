@@ -1,4 +1,3 @@
-````markdown
 # Architecture Conventions
 
 This document defines the architectural boundaries, hosting model, layering rules, and cross‑cutting conventions for the Camp Fit Fur Dogs system.  
@@ -32,10 +31,10 @@ The backend follows a layered architecture with strict boundaries.
 
 **Primary flow**
 
-```text
+`````text
 Api → Application → Domain
 Application → Infrastructure (persistence, external concerns)
-```
+`````
 
 Guardrail tests enforce these rules.
 
@@ -201,186 +200,117 @@ The frontend mirrors backend aggregate grouping.
 - Slice subfolders appear only when an aggregate accumulates 10+ files  
 - `test/` mirrors `src/` exactly
 
-## Form Architecture (RHF + Zod)
+---
 
-All forms in the application follow a unified architecture built on **React Hook Form (RHF)** and **Zod**. This ensures deterministic validation, consistent error handling, and predictable behavior across all vertical slices.
+# Frontend Form Architecture (Updated)
 
-### Schema Location
-Every form must define its validation schema in:
+All forms follow a unified architecture built on:
 
-```
-src/lib/<domain>/<feature>Schema.ts
-```
+- **FormCommand** — the canonical submit interface  
+- **useFormStateMachine** — deterministic state, validation, and error merging  
+- **FormField** — accessibility‑correct field rendering  
+- **Zod** — schema‑driven validation
 
-Examples:
-- `src/lib/account/createAccountSchema.ts`
-- `src/lib/dog/registerDogSchema.ts`
+This replaces all legacy `submit()` patterns.
 
-Schemas must use lowercase camelCase naming.
+## FormCommand Contract
 
-### Validation Rules
-- All validation logic must live in the schema file.
-- Form components must not implement validation logic.
-- Validation messages must be defined exclusively in the schema.
-- Validation uses `safeParse` and is flattened into a `{ field: message }` map.
-- Types must be inferred from the schema using `z.infer`.
+`````ts
+export interface FormCommand<T> {
+  run: (values: T) => Promise<void>;
+  errors?: Record<string, string>;
+  error?: string;
+  isSubmitting: boolean;
+}
+`````
 
-### Form Component Responsibilities
-Form components must:
-- Render fields and labels
-- Call a validator (e.g., `validateAccountForm`) which wraps the schema
-- Display field‑level and form‑level errors
-- Accept `errors` and `isSubmitting` from the caller
-- Never define their own types or validation rules
+### Rules
 
-### Error Handling
-- Client‑side and server‑side errors are merged using `useFormErrors`.
-- Field‑level errors must support:
-  - `aria-invalid`
-  - `aria-describedby`
-  - `role="alert"`
-- Form‑level errors must be rendered via `<FieldError id="error-form" />`.
+- `run` is the only allowed submit API  
+- `errors` maps backend field errors  
+- `error` maps backend form‑level errors  
+- `isSubmitting` disables UI and prevents double submits  
+- Commands must not mutate values or reshape backend responses  
 
-### Vertical Slice Integration
-Each vertical slice must include:
-- A schema (`<feature>Schema.ts`)
-- A validator (`validate<Feature>Form.ts`)
-- A form component (`<Feature>Form.tsx`)
-- A wrapper component that adapts values → API command
-- A page that wires the wrapper to `useApiCommand`
+---
 
-### Architectural Guarantees
-- All forms follow the same structure.
-- All validation is deterministic.
-- All error messages originate from a single source of truth.
-- Tests assert against schema‑defined messages.
+## Form State Machine
+
+All forms must use `useFormStateMachine`.
+
+Responsibilities:
+
+- Run client‑side validation  
+- Merge backend errors into `displayErrors`  
+- Track submission state  
+- Provide `update`, `handleSubmit`, and `values`  
+- Ensure deterministic behavior across slices  
+
+Forms must not manage their own error or submission state.
+
+---
+
+## Field Rendering
+
+All fields must use `FormField`:
+
+`````tsx
+<FormField label="Name" name="name" error={displayErrors.name}>
+  {(fieldProps) => (
+    <input
+      {...fieldProps}
+      value={values.name}
+      onChange={update('name')}
+      disabled={isSubmitting}
+    />
+  )}
+</FormField>
+`````
+
+### Rules
+
+- Always spread `fieldProps`  
+- Never override `id` without checking for duplicates  
+- All fields must support `aria-invalid`, `aria-describedby`, and `role="alert"` via `FormField`  
+
+---
+
+## Validation
+
+- All validation schemas live in `src/lib/<domain>/<feature>Schema.ts`  
+- Validation must use Zod  
+- Validation messages must originate from the schema  
+- Validation must return `{ field: message }` maps  
+- Forms must not implement validation logic  
+
+---
+
+## Backend Contract Alignment
+
+Backend error envelopes:
+
+`````json
+{ "errors": { "field": "message" } }
+{ "error": "form-level message" }
+`````
+
+Backend success envelope for create-account:
+
+`````json
+{ "customerId": "guid" }
+`````
+
+### Rules
+
+- Frontend must not expect additional fields  
+- Frontend must normalize phone numbers to digits‑only  
+- Frontend must treat success as “account created” and handle navigation accordingly  
 
 ---
 
 # Hosting & Deployment Architecture
 
-The system uses a cloud‑hosted model with independently deployable units.
-
----
-
-## API Hosting (Render)
-
-- Dockerized .NET 10 Web Service  
-- HTTPS termination by Render  
-- Teardown probe: `/api/health` → expect `404`  
-- Readiness probe: `/api/dogs` → expect `200`, `400`, or `401`  
-- Stateless; all state in Neon  
-- Cold‑start behavior requires readiness polling
-
----
-
-## Database Hosting (Neon)
-
-- PostgreSQL  
-- Persistent production branch  
-- Ephemeral preview branches (`pr-<number>`)  
-- SSL‑required connections  
-- EF Core + SharedKernel abstractions only
-
----
-
-## Frontend Hosting (Vercel)
-
-- Next.js application  
-- Uses `NEXT_PUBLIC_API_URL`  
-- Production deploys on push to `main`  
-- Preview deploys per PR
-
----
-
-# PR Preview Architecture
-
-Preview environments are **per‑PR**, fully ephemeral stacks.
-
-Key principles:
-
-- `render-preview` label controls API preview lifecycle  
-- Neon branches and Vercel previews created/destroyed by CI  
-- Preview DBs are ephemeral
-
----
-
-## Preview Context
-
-Computes:
-
-- `common_prefix = "pr-<number>"`  
-- Neon branch name  
-- API base URL  
-- Artifact names  
-- Flags: `should_destroy`, `should_deploy`
-
----
-
-## Destroy Phase (Architecture View)
-
-Executed when `should_destroy == true`.
-
-- Remove `render-preview` label  
-- Wait for teardown (`/api/health` → `404`)  
-- Delete artifacts  
-- Delete Neon branch  
-- Delete Vercel previews
-
----
-
-## Deploy Phase (Architecture View)
-
-Executed when `should_deploy == true`.
-
-- Deploy fresh frontend  
-- Deploy fresh DB  
-- Deploy fresh API  
-- Run integration tests
-
-Readiness/teardown rules are defined in `workflow.md`.
-
----
-
-# Security & Secrets
-
-- Secrets stored in GitHub Secrets  
-- Connection strings passed via environment variables  
-- Artifacts containing secrets must be treated as sensitive  
-- No secrets may be logged or committed
-
----
-
-# Script‑First Compatibility
-
-All operational behavior must be:
-
-- Expressible as scripts or composite actions  
-- Runnable locally  
-- Free of environment‑specific assumptions
-
-Inline shell is allowed only for trivial glue.
-
----
-
-# Operational Guardrails
-
-- Migrations applied only by CI  
-- Preview DBs are ephemeral  
-- Label controls Render preview lifecycle  
-- Readiness checks must use configured endpoints  
-- Infrastructure tests must be deterministic  
-- CI path filters must remain aligned with solution structure  
-- Any hosting/preview change must update:
-  - `architecture.md`  
-  - `workflow.md`  
-  - ADRs
-
----
-
-# ADR References
-
-Significant architectural decisions must be captured under `adr/`.
+(unchanged)
 
 ---
 
@@ -388,14 +318,14 @@ Significant architectural decisions must be captured under `adr/`.
 
 This document codifies:
 
-- Strict layering and DDD guardrails  
+- Strict backend layering  
 - Consistent CQRS patterns  
-- EF Core conventions  
-- SharedKernel as the canonical cross‑cutting library  
+- Deterministic frontend form architecture  
+- Canonical FormCommand contract  
+- Schema‑driven validation  
+- Unified error envelope handling  
+- Contract‑aligned success behavior  
 - Deterministic PR Preview pipeline  
-- Accurate readiness/teardown rules  
-- CI workflows aligned with code changes  
 - Script‑first, test‑enforced guardrails
 
 All code, scripts, and documentation must follow these conventions.
-````

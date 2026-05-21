@@ -1,14 +1,15 @@
 # Folder Structure & Slice Anatomy
 
-This guide describes the high-level folder structure of the Camp Fit Fur Dogs solution and the anatomy of a vertical slice. It ensures contributors understand where code belongs, why it belongs there, and how the layers interact.
+This guide describes the high‑level folder structure of the Camp Fit Fur Dogs solution and the anatomy of a vertical slice.  
+It ensures contributors understand where code belongs, why it belongs there, and how the layers interact.
 
 ---
 
-## 1. Top-Level Solution Structure
+# 1. Top‑Level Solution Structure
 
 The solution follows a clean, layered architecture with vertical slices cutting through the layers.
 
-```
+`````text
 src/
   CampFitFurDogs.Api/
   CampFitFurDogs.Application/
@@ -22,25 +23,25 @@ tests/
     CampFitFurDogs.Architecture.Tests/
   CampFitFurDogs.Domain.Tests/
   CampFitFurDogs.Infrastructure.Tests/
-```
+`````
 
 Each project has a clear responsibility:
 
-- **Api** — HTTP endpoints, request/response mapping, routing.
-- **Application** — use cases, handlers, validators, dispatchers, domain event dispatch.
-- **Domain** — entities, value objects, domain events, invariants.
-- **Infrastructure** — persistence, external systems, repository implementations.
-- **SharedKernel** — cross-cutting domain primitives and abstractions.
+- **Api** — HTTP endpoints, request/response mapping, routing  
+- **Application** — use cases, handlers, validators, dispatchers, domain event dispatch  
+- **Domain** — entities, value objects, domain events, invariants  
+- **Infrastructure** — persistence, external systems, repository implementations  
+- **SharedKernel** — cross‑cutting primitives and abstractions  
 
 ---
 
-## 2. Vertical Slice Anatomy
+# 2. Vertical Slice Anatomy
 
 A vertical slice spans all layers but keeps each layer pure.
 
 Example slice: **Dogs**
 
-```
+`````text
 src/
   CampFitFurDogs.Application/
     Abstractions/
@@ -74,174 +75,177 @@ src/
     Dogs/
       RegisterDogEndpoint.cs
       GetDogProfileEndpoint.cs
-```
+`````
 
 Each slice contains:
 
-- **Abstractions** — commands, queries, results, reader interfaces.
-- **Application** — handlers, validators.
-- **Domain** — entities, value objects, domain events.
-- **Infrastructure** — repositories (commands), readers (queries), persistence.
-- **Api** — endpoints.
+- **Abstractions** — commands, queries, results, reader interfaces  
+- **Application** — handlers, validators  
+- **Domain** — entities, value objects, domain events  
+- **Infrastructure** — repositories (commands), readers (queries), persistence  
+- **Api** — endpoints  
 
 ---
 
-## 3. Layer Responsibilities
+# 3. Layer Responsibilities
 
-### 3.1 Api Layer
+## 3.1 Api Layer
 
-- Defines HTTP endpoints.
-- Maps HTTP requests to commands/queries.
-- Calls dispatchers.
-- Maps results to HTTP responses.
-- Contains no business logic.
+- Defines HTTP endpoints  
+- Maps HTTP requests to commands/queries  
+- Calls dispatchers  
+- Maps results to HTTP responses  
+- Contains no business logic  
 
-### 3.2 Application Layer
+## 3.2 Application Layer
 
-- Implements use cases.
-- Contains handlers, validators, dispatchers.
-- Dispatches domain events.
-- Contains no HTTP or persistence logic.
-- Calls `IUnitOfWork.CommitAsync` to persist changes (command handlers only).
+- Implements use cases  
+- Contains handlers, validators, dispatchers  
+- Dispatches domain events  
+- Contains no HTTP or persistence logic  
+- Command handlers call `IUnitOfWork.CommitAsync()`  
 
-### 3.3 Domain Layer
+## 3.3 Domain Layer
 
-- Contains entities, value objects, domain events.
-- Enforces invariants.
-- Contains no infrastructure or application logic.
+- Contains entities, value objects, domain events  
+- Enforces invariants  
+- Contains no infrastructure or application logic  
 
-### 3.4 Infrastructure Layer
+## 3.4 Infrastructure Layer
 
-- Implements repositories.
-- Integrates with external systems.
-- Contains EF Core, file I/O, messaging, etc.
-- Contains no domain logic.
+- Implements repositories  
+- Implements readers  
+- Integrates with external systems  
+- Contains EF Core, file I/O, messaging  
+- Contains no domain logic  
 
-### 3.5 SharedKernel
+## 3.5 SharedKernel
 
-- Contains cross-cutting domain primitives.
-- Contains no application or infrastructure concerns.
+- Contains cross‑cutting primitives  
+- Contains no application or infrastructure concerns  
 
 ---
 
-## 4. Folder Naming Conventions
+# 4. Folder Naming Conventions
 
-### 4.1 Application Slice Structure
+## 4.1 Application Slice Structure
 
-```
+`````text
 Application/<Feature>/
   <UseCase>/
     <UseCase>Handler.cs
     <UseCase>Validator.cs
-```
+`````
 
-### 4.2 Abstractions Structure
+## 4.2 Abstractions Structure
 
-```
+`````text
 Application/Abstractions/<Feature>/
   <UseCase>Command.cs
   <UseCase>Result.cs
-  I<UseCase>Reader.cs          # query slices only
-```
+  I<UseCase>Reader.cs      # query slices only
+`````
 
-### 4.3 Domain Structure
+## 4.3 Domain Structure
 
-```
+`````text
 Domain/<Feature>/
   <Entity>.cs
   <ValueObject>.cs
   <DomainEvent>.cs
-```
+`````
 
-### 4.4 Infrastructure Structure
+## 4.4 Infrastructure Structure
 
-```
+`````text
 Infrastructure/<Feature>/
   <Entity>Repository.cs
   <Entity>Configuration.cs
-  <UseCase>Reader.cs          # query slices only
-```
+  <UseCase>Reader.cs       # query slices only
+`````
 
-### 4.5 Api Structure
+## 4.5 Api Structure
 
-```
+`````text
 Api/<Feature>/
   <UseCase>Endpoint.cs
   <UseCase>Request.cs
   <UseCase>Response.cs
-```
+`````
 
 ---
 
-## 5. Purity Rules by Layer
+# 5. Purity Rules by Layer
 
-### Api
-- No domain logic.
-- No repository access.
-- No handler instantiation.
+## Api
+- No domain logic  
+- No repository access  
+- No handler instantiation  
 
-### Application
-- No HTTP.
-- No EF Core.
-- No Infrastructure references.
+## Application
+- No HTTP  
+- No EF Core  
+- No Infrastructure references  
 
-### Domain
-- No Application references.
-- No Infrastructure references.
-- No API references.
+## Domain
+- No Application references  
+- No Infrastructure references  
+- No Api references  
 
-### Infrastructure
-- No domain logic.
-- No API references.
+## Infrastructure
+- No domain logic  
+- No Api references  
 
-### SharedKernel
-- No dependencies on any other layer.
+## SharedKernel
+- No dependencies on any other layer  
 
 ---
 
-## 6. Contributor Guidelines
+# 6. Contributor Guidelines
 
 When adding a new feature:
 
-1. Add commands/queries/results and reader interfaces (query slices) to **Abstractions**.
-2. Add handlers/validators to **Application**.
-3. Add domain entities/events to **Domain**.
-4. Add repositories (command slices), readers (query slices), and entity configurations to **Infrastructure**.
-5. Inject `IUnitOfWork` in command handlers and call `CommitAsync` after repository operations.
-6. Add endpoints to **Api** — each endpoint class implements `IEndpoint`.
-7. Add tests to the corresponding test project. Pure-reflection guardrails go in Architecture.Tests; DI-dependent guardrails go in Api.Tests/Guardrails/.
-8. Follow naming conventions strictly.
-9. Do not bypass the dispatcher pipeline.
-10. Do not place code in SharedKernel unless it is truly cross-cutting.
+1. Add commands/queries/results and reader interfaces (query slices) to **Abstractions**  
+2. Add handlers/validators to **Application**  
+3. Add domain entities/events to **Domain**  
+4. Add repositories (command slices), readers (query slices), and configurations to **Infrastructure**  
+5. Inject `IUnitOfWork` in command handlers and call `CommitAsync()`  
+6. Add endpoints to **Api** — each implements `IEndpoint`  
+7. Add tests to the corresponding test project  
+8. Guardrails:  
+   - Reflection guardrails → `Architecture.Tests`  
+   - DI guardrails → `Api.Tests/Guardrails`  
+9. Follow naming conventions strictly  
+10. Do not bypass the dispatcher pipeline  
+11. Do not place code in SharedKernel unless it is truly cross‑cutting  
 
-If you’re unsure where something belongs, default to the **most restrictive** layer (Domain > Application > Infrastructure > Api).
-
+If unsure where something belongs, default to the **most restrictive** layer:  
+**Domain → Application → Infrastructure → Api**
 
 ---
 
-## 7. Frontend Folder Structure
+# 7. Frontend Folder Structure
 
-The frontend lives in `frontend/` and follows a **layer + aggregate** convention
-that mirrors the backend's aggregate grouping without fighting Next.js conventions.
+The frontend lives in `frontend/` and follows a **layer + aggregate** convention that mirrors backend aggregate grouping without fighting Next.js routing.
 
-### 7.1 Directory Layout
+## 7.1 Directory Layout
 
-```
+`````text
 frontend/src/
-├── api/dogs/                  ← Server-call functions grouped by aggregate
+├── api/dogs/
 │   ├── getDogProfile.ts
 │   ├── registerDog.ts
 │   └── editDogProfile.ts
-├── components/dogs/           ← Presentational React components grouped by aggregate
+├── components/dogs/
 │   ├── DogProfileCard.tsx
 │   ├── DogProfileActionsCard.tsx
 │   ├── EditDogProfileForm.tsx
 │   └── RegisterDogForm.tsx
-├── lib/dogs/                  ← Pure logic / action functions grouped by aggregate
+├── lib/dogs/
 │   └── dogProfileActions.ts
-├── lib/api/                   ← Shared infrastructure (API client, auth helpers)
+├── lib/api/
 │   └── client.ts
-└── app/                       ← Next.js routing layer — UNTOUCHED by this convention
+└── app/
     ├── page.tsx
     └── dogs/
         ├── [id]/
@@ -253,39 +257,40 @@ frontend/src/
             └── success/
                 └── page.tsx
 
-frontend/test/                 ← Mirrors src/ structure
+frontend/test/
 ├── api/dogs/
 ├── components/dogs/
 ├── lib/dogs/
 └── app/dogs/
-```
+`````
 
-### 7.2 Convention Rules
+## 7.2 Convention Rules
 
 | Rule | Detail |
 |------|--------|
-| **Structure** | `layer/aggregate/filename` — slice identity is encoded in the filename, not a subfolder |
-| **Slice subfolders** | Introduced only when an aggregate accumulates **10+ files** in a single layer |
-| **`app/` layer** | Left untouched — Next.js owns routing; the file-system convention already reads like slices |
-| **`test/` mirror** | Test directory mirrors `src/` exactly (`test/api/dogs/`, `test/components/dogs/`, etc.) |
-| **Shared infra** | Cross-aggregate utilities live in `lib/api/` (e.g., `client.ts`) — no aggregate subfolder |
+| **Structure** | `layer/aggregate/filename` — slice identity is encoded in the filename |
+| **Slice subfolders** | Only when an aggregate accumulates **10+ files** in a layer |
+| **`app/` layer** | Next.js owns routing — untouched by slice conventions |
+| **`test/` mirror** | Test directory mirrors `src/` exactly |
+| **Shared infra** | Cross‑aggregate utilities live in `lib/api/` |
 
-### 7.3 Frontend Naming Conventions
+## 7.3 Frontend Naming Conventions
 
-| Layer | File pattern | Example |
-|-------|-------------|---------|
-| `api/` | `camelCaseVerb.ts` | `getDogProfile.ts`, `registerDog.ts` |
-| `components/` | `PascalCase.tsx` | `DogProfileCard.tsx`, `RegisterDogForm.tsx` |
+| Layer | Pattern | Example |
+|-------|---------|---------|
+| `api/` | `camelCaseVerb.ts` | `getDogProfile.ts` |
+| `components/` | `PascalCase.tsx` | `RegisterDogForm.tsx` |
 | `lib/` | `camelCase.ts` | `dogProfileActions.ts` |
-| `app/` | `page.tsx` (Next.js convention) | `app/dogs/[id]/page.tsx` |
+| `app/` | Next.js conventions | `app/dogs/[id]/page.tsx` |
 
-### 7.4 Frontend Contributor Steps
+## 7.4 Frontend Contributor Steps
 
 When adding a new frontend feature:
 
-1. Add server-call function(s) to `api/<aggregate>/`.
-2. Add pure logic / action functions to `lib/<aggregate>/` (if needed).
-3. Add presentational component(s) to `components/<aggregate>/`.
-4. Wire the page in `app/` — compose components, call server functions.
-5. Add tests mirroring `src/` structure in `test/`.
-6. Follow naming conventions strictly.
+1. Add server‑call functions to `api/<aggregate>/`  
+2. Add pure logic to `lib/<aggregate>/` (if needed)  
+3. Add presentational components to `components/<aggregate>/`  
+4. Wire the page in `app/`  
+5. Add tests mirroring `src/` structure  
+6. Follow naming conventions strictly  
+
