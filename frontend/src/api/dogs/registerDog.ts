@@ -1,7 +1,7 @@
 import { createApiClient } from '@/lib/api/client';
 import { toCommandResult } from '@/lib/api/toCommandResult';
 import type { CommandResult } from '@/lib/api/commandResult';
-import type RegisterDogCommand from '@/lib/dogs/dogModel';
+import type { RegisterDogCommand } from '@/lib/dogs/dogModel';
 
 const client = createApiClient();
 

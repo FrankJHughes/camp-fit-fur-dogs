@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { registerDog } from '@/api/dogs/registerDog';
-import type RegisterDogCommand from '@/lib/dogs/dogModel';
+import type { RegisterDogCommand } from '@/lib/dogs/dogModel';
 import { useFormCommand } from '@/lib/forms/useFormCommand';
 
 export function useRegisterDog() {
