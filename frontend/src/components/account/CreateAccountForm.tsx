@@ -1,6 +1,6 @@
-// src/components/account/CreateAccountForm.tsx
 'use client';
 
+import React from 'react';
 import { AccountForm } from '@/components/account/AccountForm';
 import type { CreateAccountValues } from '@/lib/account/createAccountSchema';
 import type { FormCommand } from '@/lib/forms/formCommand';
@@ -20,16 +20,16 @@ export function CreateAccountForm({ command }: CreateAccountFormProps) {
       password: values.password,
     };
 
-    const anyCmd = command as any;
-
-    if (typeof anyCmd.run === 'function') {
-      await anyCmd.run(payload);
-    } else if (typeof anyCmd.submit === 'function') {
-      await anyCmd.submit(payload);
-    } else if (typeof anyCmd.execute === 'function') {
-      await anyCmd.execute(payload);
-    } else {
-      throw new Error('Form command is missing run/submit/execute function');
+    try {
+      await command.run(payload as any);
+      // command.run is expected to set command.errors/command.error when appropriate
+      // and useFormCommand / useApiCommand will call onSuccess when appropriate.
+    } catch (err) {
+      // Log and surface a generic form-level error via the command state machine if needed.
+      // eslint-disable-next-line no-console
+      console.error(err);
+      // Returning here lets the parent form state machine show a generic error if desired.
+      return;
     }
   };
 
@@ -50,4 +50,4 @@ export function CreateAccountForm({ command }: CreateAccountFormProps) {
   );
 }
 
-export default CreateAccountForm;
+export default React.memo(CreateAccountForm);

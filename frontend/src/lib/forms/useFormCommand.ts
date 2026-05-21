@@ -1,3 +1,4 @@
+// src/lib/forms/useFormCommand.ts
 'use client';
 
 import { useState } from 'react';
@@ -5,7 +6,7 @@ import type { CommandResult } from '@/lib/api/commandResult';
 import type { FormCommand } from './formCommand';
 
 export function useFormCommand<T>(options: {
-  submit: (values: T) => Promise<CommandResult>;
+  run: (values: T) => Promise<CommandResult>;
   onSuccess?: () => void;
 }): FormCommand<T> {
   const [errors, setErrors] = useState<Record<string, string> | undefined>();
@@ -22,7 +23,7 @@ export function useFormCommand<T>(options: {
       setError(undefined);
 
       try {
-        const result = await options.submit(values);
+        const result = await options.run(values);
 
         if (result.success) {
           options.onSuccess?.();

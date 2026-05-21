@@ -5,13 +5,15 @@ import { FieldError } from '@/lib/components/FieldError';
 import { FormField } from '@/lib/components/FormField';
 import { useFormErrors } from '@/lib/hooks/useFormErrors';
 import { validateAccountForm } from '@/lib/account/validateAccountForm';
-import { CreateAccountValues } from '@/lib/account/createAccountSchema';
+import type { CreateAccountValues } from '@/lib/account/createAccountSchema';
 
 interface AccountFormProps {
   title: string;
   submitLabel: string;
   initialValues?: CreateAccountValues;
-  onSubmit: (data: CreateAccountValues) => void;
+  onSubmit: (
+    data: CreateAccountValues
+  ) => Promise<Record<string, string> | void> | Record<string, string> | void;
   errors?: Record<string, string>;
   isSubmitting?: boolean;
 }
@@ -40,10 +42,10 @@ export function AccountForm({
 
   const update =
     (field: keyof CreateAccountValues) =>
-      (e: React.ChangeEvent<HTMLInputElement>) =>
-        setValues((prev) => ({ ...prev, [field]: e.target.value }));
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setValues((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // 1. Client-side validation via Zod
@@ -57,8 +59,23 @@ export function AccountForm({
     // 2. Clear client errors before submitting
     clear();
 
-    // 3. Submit to parent (API command)
-    onSubmit(values);
+    // 3. Submit to parent (API command) and handle returned server errors
+    try {
+      const result = await onSubmit(values);
+
+      if (result && Object.keys(result).length > 0) {
+        // If the parent returned field/form errors, surface them as client errors
+        setClient(result);
+        return;
+      }
+
+      // Success: nothing to do here; parent command / hook handles navigation and success state
+    } catch (err: any) {
+      // If the onSubmit threw, surface a generic form-level error
+      // eslint-disable-next-line no-console
+      console.error('AccountForm submit error', err);
+      setClient({ form: err?.message ?? 'An unexpected error occurred' });
+    }
   };
 
   return (

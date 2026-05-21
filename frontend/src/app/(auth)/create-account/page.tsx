@@ -1,6 +1,7 @@
 'use client';
 
-import { CreateAccountForm } from '@/components/account/CreateAccountForm';
+import React from 'react';
+import CreateAccountForm from '@/components/account/CreateAccountForm';
 import { useCreateAccount } from '@/lib/account/useCreateAccount';
 
 export default function CreateAccountPage() {

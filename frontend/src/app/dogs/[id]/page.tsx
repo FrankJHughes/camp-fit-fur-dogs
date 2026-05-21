@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 import { toQueryState } from '@/lib/api/queryResult';
@@ -12,26 +13,33 @@ import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import type { Action } from '@/lib/action';
 
 export default function GetDogProfilePage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id?: string }>();
+  const dogId = params?.id;
   const router = useRouter();
 
-  const state = useApiQuery(
-    () => getDogProfile(id).then(toQueryState),
-    [id]
-  );
+  // Guard early for missing id (keeps hooks stable)
+  if (!dogId) {
+    return <p>Invalid dog id</p>;
+  }
 
+  // Hooks must be called unconditionally and in the same order on every render
+  const state = useApiQuery(() => getDogProfile(dogId).then(toQueryState), [dogId]);
+
+  // Provide a stable name argument (empty string until we have data)
   const removeDog = useRemoveDog(
-    id,
+    dogId,
     state.status === 'success' ? state.data.name : '',
-    router.push,
+    (path: string) => router.push(path)
   );
 
+  // Keep early returns consistent so hook order never changes
   if (state.status === 'loading') return <p>Loading…</p>;
   if (state.status === 'not-found') return <DogNotFound />;
   if (state.status === 'error') return <p>{state.error}</p>;
 
+  // Use a plain const for actions (no hooks) to avoid any hook-order surprises
   const actions: Action[] = [
-    { label: 'Edit', onClick: () => router.push(`/dogs/${id}/edit`) },
+    { label: 'Edit', onClick: () => router.push(`/dogs/${dogId}/edit`) },
     { label: 'Remove', onClick: removeDog.open },
   ];
 
@@ -39,8 +47,12 @@ export default function GetDogProfilePage() {
     <>
       <DogProfileCard profile={state.data} />
       <ActionsCard actions={actions} />
-      <ConfirmDialog {...removeDog.dialogProps} />
-      {removeDog.error && <p role="alert">{removeDog.error}</p>}
+      {removeDog.dialogProps && <ConfirmDialog {...removeDog.dialogProps} />}
+      {removeDog.error && (
+        <p role="alert" aria-live="polite">
+          {removeDog.error}
+        </p>
+      )}
     </>
   );
 }

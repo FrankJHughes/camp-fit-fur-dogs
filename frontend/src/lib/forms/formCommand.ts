@@ -1,6 +1,6 @@
-export interface FormCommand<T> {
-  run: (values: T) => Promise<void>;
-  errors?: Record<string, string>;
-  error?: string;
-  isSubmitting: boolean;
-}
+export type FormCommand<T> = {
+  run: (payload: T) => Promise<void> | void;
+  errors?: Record<string, string> | undefined;
+  error?: string | undefined;
+  isSubmitting?: boolean;
+};

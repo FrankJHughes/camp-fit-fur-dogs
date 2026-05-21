@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
-import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
+import EditDogProfileForm from '@/components/dogs/EditDogProfileForm';
 
 const initialData = {
   name: 'Buddy',
@@ -18,9 +18,8 @@ describe('EditDogProfileForm', () => {
       isSubmitting: false,
     };
 
-    render(
-      <EditDogProfileForm initialValues={initialData} command={command} />,
-    );
+    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/breed/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/date of birth/i)).toBeInTheDocument();
@@ -35,16 +34,15 @@ describe('EditDogProfileForm', () => {
       isSubmitting: false,
     };
 
-    render(
-      <EditDogProfileForm initialValues={initialData} command={command} />,
-    );
+    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+
     expect(screen.getByLabelText(/name/i)).toHaveValue('Buddy');
     expect(screen.getByLabelText(/breed/i)).toHaveValue('Golden Retriever');
     expect(screen.getByLabelText(/date of birth/i)).toHaveValue('2023-06-15');
     expect(screen.getByLabelText(/sex/i)).toHaveValue('Male');
   });
 
-  it('calls onSubmit with updated form data', async () => {
+  it('calls run with updated form data when saving', async () => {
     const run = vi.fn();
     const command = {
       run,
@@ -52,12 +50,14 @@ describe('EditDogProfileForm', () => {
       isSubmitting: false,
     };
     const user = userEvent.setup();
-    render(
-      <EditDogProfileForm initialValues={initialData} command={command} />,
-    );
 
+    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+
+    // Update the name field
     await user.clear(screen.getByLabelText(/name/i));
     await user.type(screen.getByLabelText(/name/i), 'Max');
+
+    // Submit the form
     await user.click(screen.getByRole('button', { name: /save/i }));
 
     expect(run).toHaveBeenCalledWith({
@@ -66,7 +66,7 @@ describe('EditDogProfileForm', () => {
       dateOfBirth: '2023-06-15',
       sex: 'Male',
     });
-  }, 10000);
+  });
 
   it('renders validation errors passed via errors prop', () => {
     const command = {
@@ -75,9 +75,8 @@ describe('EditDogProfileForm', () => {
       isSubmitting: false,
     };
 
-    render(
-      <EditDogProfileForm initialValues={initialData} command={command} />,
-    );
+    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+
     expect(screen.getByText('Name is already taken')).toBeInTheDocument();
   });
 
@@ -88,9 +87,8 @@ describe('EditDogProfileForm', () => {
       isSubmitting: true,
     };
 
-    render(
-      <EditDogProfileForm initialValues={initialData} command={command} />,
-    );
+    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+
     expect(screen.getByRole('button', { name: /save/i })).toBeDisabled();
   });
 });

@@ -31,18 +31,6 @@ export function DogForm({
     ...(command.error ? { form: command.error } : {}),
   };
 
-  // Helper that calls the command using a few common method names so tests/mocks work
-  const invokeCommand = async (vals: DogFormValues) => {
-    // prefer run, then submit, then execute
-    const anyCmd = command as any;
-    if (typeof anyCmd.run === 'function') return anyCmd.run(vals);
-    if (typeof anyCmd.submit === 'function') return anyCmd.submit(vals);
-    if (typeof anyCmd.execute === 'function') return anyCmd.execute(vals);
-
-    // If none exist, throw a clear error (caught below to avoid unhandled rejections)
-    throw new Error('Form command is missing run/submit/execute function');
-  };
-
   const {
     values,
     displayErrors,
@@ -59,16 +47,29 @@ export function DogForm({
         return validation;
       }
 
-      // Invoke the provided command in a safe way and avoid unhandled rejections
+      // Invoke the provided command using the canonical run method.
+      // The command implementation is expected to set its own errors/error state.
       try {
-        await invokeCommand(vals);
+        await command.run(vals);
+
+        // If the command produced field errors, return them so the state machine
+        // can display them immediately.
+        if (command.errors && Object.keys(command.errors).length > 0) {
+          return command.errors;
+        }
+
+        // If the command produced a form-level error, return it under "form"
+        if (command.error) {
+          return { form: command.error };
+        }
+
+        // No errors -> success (return void)
+        return;
       } catch (err) {
-        // Log the error so tests and devs can see what happened.
-        // Returning early prevents an unhandled rejection during tests.
-        // The command implementation / tests should provide a proper mock with run/submit.
+        // Log the error for debugging and return a generic form-level error
         // eslint-disable-next-line no-console
         console.error(err);
-        return;
+        return { form: 'A network error occurred. Please try again.' };
       }
     },
   });
@@ -89,6 +90,7 @@ export function DogForm({
       >
         {(fieldProps) => (
           <input
+            id="field-name"
             type="text"
             value={values.name}
             onChange={update('name')}
@@ -105,6 +107,7 @@ export function DogForm({
       >
         {(fieldProps) => (
           <input
+            id="field-breed"
             type="text"
             value={values.breed}
             onChange={update('breed')}
@@ -121,6 +124,7 @@ export function DogForm({
       >
         {(fieldProps) => (
           <input
+            id="field-dateOfBirth"
             type="date"
             value={values.dateOfBirth}
             onChange={update('dateOfBirth')}
@@ -137,6 +141,7 @@ export function DogForm({
       >
         {(fieldProps) => (
           <select
+            id="field-sex"
             value={values.sex}
             onChange={(e) => update('sex')(e.target.value as any)}
             {...fieldProps}

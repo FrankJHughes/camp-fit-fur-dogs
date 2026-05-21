@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { DogForm } from '@/components/dogs/DogForm';
 import type { DogFormValues } from '@/lib/dogs/dogModel';
 import type { FormCommand } from '@/lib/forms/formCommand';
@@ -8,7 +9,7 @@ interface RegisterDogFormProps {
   command: FormCommand<DogFormValues>;
 }
 
-export function RegisterDogForm({ command }: RegisterDogFormProps) {
+function RegisterDogForm({ command }: RegisterDogFormProps) {
   return (
     <DogForm
       title="Register Dog"
@@ -17,3 +18,5 @@ export function RegisterDogForm({ command }: RegisterDogFormProps) {
     />
   );
 }
+
+export default React.memo(RegisterDogForm);

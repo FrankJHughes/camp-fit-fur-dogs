@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RegisterDogForm } from '@/components/dogs/RegisterDogForm';
-import type { RegisterDogCommand } from '@/api/dogs/registerDog';
+import { describe, it, expect, vi } from 'vitest';
+import RegisterDogForm from '@/components/dogs/RegisterDogForm';
 
 function setup(overrides: Partial<{
-  submit: (data: RegisterDogCommand) => void;
+  run: (data: any) => void;
   errors: Record<string, string>;
   isSubmitting: boolean;
 }> = {}) {
-  const submit = vi.fn();
+  const run = vi.fn();
   const command = {
-    submit,
+    run,
     errors: {},
     isSubmitting: false,
     ...overrides,
@@ -18,7 +18,7 @@ function setup(overrides: Partial<{
 
   render(<RegisterDogForm command={command} />);
 
-  return { user: userEvent.setup(), submit, command };
+  return { user: userEvent.setup(), run, command };
 }
 
 describe('RegisterDogForm', () => {
@@ -32,8 +32,8 @@ describe('RegisterDogForm', () => {
     expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument();
   });
 
-  it('calls submit with form data when all fields are filled', async () => {
-    const { user, submit } = setup();
+  it('calls run with form data when all fields are filled', async () => {
+    const { user, run } = setup();
 
     await user.type(screen.getByLabelText(/name/i), 'Buddy');
     await user.type(screen.getByLabelText(/breed/i), 'Golden Retriever');
@@ -42,7 +42,7 @@ describe('RegisterDogForm', () => {
 
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(submit).toHaveBeenCalledWith({
+    expect(run).toHaveBeenCalledWith({
       name: 'Buddy',
       breed: 'Golden Retriever',
       dateOfBirth: '2023-06-15',
@@ -58,20 +58,20 @@ describe('RegisterDogForm', () => {
     expect(screen.getByText('Name is already taken')).toBeInTheDocument();
   });
 
-  it('does not call submit when validation fails', async () => {
-    const { user, submit } = setup();
+  it('does not call run when validation fails', async () => {
+    const { user, run } = setup();
 
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(submit).not.toHaveBeenCalled();
+    expect(run).not.toHaveBeenCalled();
   });
 
-  it('calls submit after correcting validation errors', async () => {
-    const { user, submit } = setup();
+  it('calls run after correcting validation errors', async () => {
+    const { user, run } = setup();
 
     // First submit → validation fails
     await user.click(screen.getByRole('button', { name: /register/i }));
-    expect(submit).not.toHaveBeenCalled();
+    expect(run).not.toHaveBeenCalled();
 
     // Fix fields
     await user.type(screen.getByLabelText(/name/i), 'Buddy');
@@ -81,7 +81,7 @@ describe('RegisterDogForm', () => {
 
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(submit).toHaveBeenCalledWith({
+    expect(run).toHaveBeenCalledWith({
       name: 'Buddy',
       breed: 'Golden Retriever',
       dateOfBirth: '2023-06-15',

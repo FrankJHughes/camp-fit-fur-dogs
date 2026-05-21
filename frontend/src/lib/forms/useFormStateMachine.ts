@@ -1,83 +1,105 @@
-// src/lib/forms/useFormStateMachine.ts
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type FormState<T> = {
   values: T;
-  errors: Record<string, string> | undefined;
+  errors: Record<string, string>;
   isSubmitting: boolean;
 };
 
+type OnSubmitResult = Record<string, string> | void | Promise<Record<string, string> | void>;
+
 export function useFormStateMachine<T extends Record<string, any>>(opts: {
   initialValues: T;
-  externalErrors?: Record<string, string>;
-  onSubmit?: (values: T) => Promise<Record<string, string> | void> | Record<string, string> | void;
+  externalErrors?: Record<string, string> | undefined;
+  onSubmit?: (values: T) => OnSubmitResult;
 }) {
+  const { initialValues, externalErrors, onSubmit } = opts;
+
   const [state, setState] = useState<FormState<T>>({
-    values: opts.initialValues,
-    errors: opts.externalErrors,
+    values: initialValues,
+    errors: externalErrors ?? {},
     isSubmitting: false,
   });
 
-  const previousExternalErrors = useRef<Record<string, string> | undefined>(
-    opts.externalErrors
+  const valuesRef = useRef<T>(initialValues);
+  valuesRef.current = state.values;
+
+  const previousExternalErrors = useRef<string | undefined>(
+    externalErrors ? JSON.stringify(externalErrors) : undefined
   );
 
+  const mountedRef = useRef(true);
   useEffect(() => {
-    const current = opts.externalErrors;
-    const previous = previousExternalErrors.current;
-    const same =
-      JSON.stringify(previous ?? {}) === JSON.stringify(current ?? {});
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
-    if (same) return;
+  useEffect(() => {
+    const currentSerialized = externalErrors ? JSON.stringify(externalErrors) : undefined;
+    if (currentSerialized === previousExternalErrors.current) {
+      return;
+    }
+    previousExternalErrors.current = currentSerialized;
+    setState((prev) => ({ ...prev, errors: externalErrors ?? prev.errors }));
+  }, [externalErrors]);
 
-    previousExternalErrors.current = current;
-    setState((prev) => ({ ...prev, errors: current }));
-  }, [opts.externalErrors]);
+  useEffect(() => {
+    const prev = state.values;
+    const changed =
+      Object.keys(initialValues).length !== Object.keys(prev).length ||
+      Object.keys(initialValues).some((k) => initialValues[k] !== prev[k]);
 
-  // Flexible update handler: accepts either an event (e.target.value) or a raw value
+    if (changed) {
+      setState((prev) => ({ ...prev, values: initialValues }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
+
   const update = useCallback(
-    (field: keyof T) => (eOrValue: any) => {
-      const value =
-        eOrValue && typeof eOrValue === 'object' && 'target' in eOrValue
-          ? (eOrValue.target as HTMLInputElement).value
-          : eOrValue;
+    (field: keyof T) =>
+      (eOrValue: any) => {
+        const value =
+          eOrValue && typeof eOrValue === 'object' && 'target' in eOrValue
+            ? (eOrValue.target as HTMLInputElement).value
+            : eOrValue;
 
-      setState((prev) => ({
-        ...prev,
-        values: { ...prev.values, [field]: value },
-      }));
-    },
+        setState((prev) => {
+          const nextValues = { ...prev.values, [field]: value };
+          valuesRef.current = nextValues;
+          return { ...prev, values: nextValues };
+        });
+      },
     []
   );
 
   const handleSubmit = useCallback(
     async (e?: React.FormEvent) => {
       e?.preventDefault();
-      if (!opts.onSubmit) return;
+      if (!onSubmit) return;
+
       setState((prev) => ({ ...prev, isSubmitting: true }));
 
       try {
-        const result = await opts.onSubmit(state.values);
+        const result = await onSubmit(valuesRef.current);
 
         if (result && Object.keys(result).length > 0) {
-          setState((prev) => ({
-            ...prev,
-            errors: result,
-            isSubmitting: false,
-          }));
+          if (mountedRef.current) {
+            setState((prev) => ({ ...prev, errors: result }));
+          }
           return;
         }
 
-        setState((prev) => ({
-          ...prev,
-          errors: undefined,
-          isSubmitting: false,
-        }));
+        if (mountedRef.current) {
+          setState((prev) => ({ ...prev, errors: {} }));
+        }
       } finally {
-        setState((prev) => ({ ...prev, isSubmitting: false }));
+        if (mountedRef.current) {
+          setState((prev) => ({ ...prev, isSubmitting: false }));
+        }
       }
     },
-    [opts.onSubmit, state.values]
+    [onSubmit]
   );
 
   return {
@@ -87,5 +109,5 @@ export function useFormStateMachine<T extends Record<string, any>>(opts: {
     update,
     handleSubmit,
     isSubmitting: state.isSubmitting,
-  };
+  } as const;
 }

@@ -1,3 +1,4 @@
+// src/app/dogs/[id]/edit/page.tsx
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -5,13 +6,11 @@ import { getDogProfile } from '@/api/dogs/getDogProfile';
 import { toQueryState } from '@/lib/api/queryResult';
 import { DogNotFound } from '@/components/dogs/DogNotFound';
 import { editDogProfile } from '@/api/dogs/editDogProfile';
-import { EditDogProfileForm } from '@/components/dogs/EditDogProfileForm';
+import EditDogProfileForm from '@/components/dogs/EditDogProfileForm';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import { useFormCommand } from '@/lib/forms/useFormCommand';
-import {
-  type DogFormValues,
-  mapDogFormValuesToEditCommand,
-} from '@/lib/dogs/dogModel';
+import type { DogFormValues, EditDogProfileCommand } from '@/lib/dogs/dogModel';
+import { mapDogFormValuesToEditCommand } from '@/lib/dogs/dogModel';
 
 export default function EditDogProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -23,9 +22,9 @@ export default function EditDogProfilePage() {
   );
 
   const command = useFormCommand<DogFormValues>({
-    submit: async (values) => {
-      const cmd = mapDogFormValuesToEditCommand(values);
-      return await editDogProfile(id, cmd);
+    run: (values: DogFormValues) => {
+      const cmd: EditDogProfileCommand = mapDogFormValuesToEditCommand(values);
+      return editDogProfile(id, cmd);
     },
     onSuccess: () => router.push(`/dogs/${id}`),
   });
