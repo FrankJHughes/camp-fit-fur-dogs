@@ -1,17 +1,25 @@
 using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
-public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddEnvironmentVariables() // REQUIRED for GitHub Actions
+            .Build();
 
-        // Use Npgsql provider so the model snapshot matches runtime
-        optionsBuilder.UseNpgsql(
-            "Host=localhost;Port=5432;Database=does_not_matter;Username=does_not_matter;Password=does_not_matter");
+        var connectionString = config.GetConnectionString("DefaultConnection");
 
-        return new AppDbContext(optionsBuilder.Options);
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseNpgsql(connectionString)
+            .Options;
+
+        return new AppDbContext(options);
     }
 }
