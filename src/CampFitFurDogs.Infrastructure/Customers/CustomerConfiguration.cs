@@ -49,14 +49,22 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
         {
             phone.Property(p => p.Value)
                 .HasColumnName("phone")
-                .IsRequired();
+                .IsRequired(false);
         });
 
         builder.OwnsOne(c => c.PasswordHash, pw =>
         {
             pw.Property(p => p.Value)
                 .HasColumnName("password_hash")
-                .IsRequired();
+                .IsRequired(false);
+        });
+
+        builder.OwnsOne(c => c.ExternalAuthProviderId, id =>
+        {
+            id.Property(p => p.Value)
+                .HasColumnName("external_auth_provider_id")
+                .HasMaxLength(200)
+                .IsRequired(false);
         });
     }
 }

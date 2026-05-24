@@ -1,0 +1,11 @@
+using SharedKernel.Domain;
+
+namespace CampFitFurDogs.Domain.Errors;
+
+public class ExternalAuthProviderException : DomainException
+{
+    public ExternalAuthProviderException(string message)
+        : base(message)
+    {
+    }
+}

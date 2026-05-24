@@ -1,3 +1,4 @@
+using CampFitFurDogs.Domain.Customers.Exceptions;
 using SharedKernel.Domain;
 
 namespace CampFitFurDogs.Domain.Customers;
@@ -10,11 +11,13 @@ public sealed class CustomerId : AggregateId
             throw new InvalidCustomerIdException("CustomerId cannot be empty.");
     }
 
+    /// <summary>
+    /// Creates a new unique CustomerId.
+    /// </summary>
     public static CustomerId New() => new(Guid.NewGuid());
+
+    /// <summary>
+    /// Wraps an existing Guid into a CustomerId, enforcing domain invariants.
+    /// </summary>
     public static CustomerId From(Guid value) => new(value);
 }
-
-// public sealed class InvalidCustomerIdException : DomainException
-// {
-//     public InvalidCustomerIdException(string message) : base(message) { }
-// }

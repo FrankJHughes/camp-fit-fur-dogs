@@ -9,6 +9,31 @@ public static class ErrorCodeToProblemDetails
     {
         return code switch
         {
+            // ───────────────────────────────────────────────
+            // 502 Bad Gateway — External Auth Provider Failure
+            // ───────────────────────────────────────────────
+            ErrorCode.ExternalAuthProviderFailure => new ProblemDetails
+            {
+                Title = "External Auth Provider Failure",
+                Detail = ex.Message,
+                Status = StatusCodes.Status502BadGateway,
+                Type = "https://httpstatuses.com/502"
+            },
+
+            // ───────────────────────────────────────────────
+            // 500 Internal Server Error — Server Misconfiguration
+            // ───────────────────────────────────────────────
+            ErrorCode.BadConfiguration => new ProblemDetails
+            {
+                Title = "Bad Configuration",
+                Detail = ex.Message,
+                Status = StatusCodes.Status500InternalServerError,
+                Type = "https://httpstatuses.com/500"
+            },
+
+            // ───────────────────────────────────────────────
+            // 409 Conflict — Duplicate Resource
+            // ───────────────────────────────────────────────
             ErrorCode.DuplicateEmail => new ProblemDetails
             {
                 Title = "Duplicate Email",
@@ -17,8 +42,14 @@ public static class ErrorCodeToProblemDetails
                 Type = "https://httpstatuses.com/409"
             },
 
+            // ───────────────────────────────────────────────
+            // 400 Bad Request — Request-level validation
+            // ───────────────────────────────────────────────
             ErrorCode.ValidationFailed => CreateValidationProblemDetails((ValidationException)ex),
 
+            // ───────────────────────────────────────────────
+            // 400 Bad Request — Domain invariant violations
+            // ───────────────────────────────────────────────
             ErrorCode.DomainError => new ProblemDetails
             {
                 Title = "Domain Error",
@@ -27,6 +58,20 @@ public static class ErrorCodeToProblemDetails
                 Type = "https://httpstatuses.com/400"
             },
 
+            // ───────────────────────────────────────────────
+            // 400 Bad Request — Generic bad request
+            // ───────────────────────────────────────────────
+            ErrorCode.BadRequest => new ProblemDetails
+            {
+                Title = "Bad Request",
+                Detail = ex.Message,
+                Status = StatusCodes.Status400BadRequest,
+                Type = "https://httpstatuses.com/400"
+            },
+
+            // ───────────────────────────────────────────────
+            // 500 Internal Server Error — Fallback
+            // ───────────────────────────────────────────────
             _ => new ProblemDetails
             {
                 Title = "Internal Server Error",
@@ -47,7 +92,7 @@ public static class ErrorCodeToProblemDetails
 
         return new ValidationProblemDetails(errors)
         {
-            Title = "Validation Error", // includes "Error"
+            Title = "Validation Error",
             Detail = "A validation error occurred. Please check the fields and try again.",
             Status = StatusCodes.Status400BadRequest,
             Type = "https://httpstatuses.com/400"

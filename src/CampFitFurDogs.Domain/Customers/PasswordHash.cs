@@ -1,3 +1,4 @@
+using CampFitFurDogs.Domain.Customers.Exceptions;
 using SharedKernel.Domain;
 
 namespace CampFitFurDogs.Domain.Customers;
@@ -11,6 +12,7 @@ public sealed class PasswordHash : ValueObject
         if (string.IsNullOrWhiteSpace(value))
             throw new InvalidPasswordHashException("Password hash cannot be empty.");
 
+        // Domain invariant: must be a valid BCrypt hash prefix
         if (!value.StartsWith("$2a$") &&
             !value.StartsWith("$2b$") &&
             !value.StartsWith("$2y$"))
@@ -21,8 +23,15 @@ public sealed class PasswordHash : ValueObject
         Value = value;
     }
 
+    /// <summary>
+    /// Wraps an existing BCrypt hash into a PasswordHash value object.
+    /// </summary>
     public static PasswordHash From(string hash) => new(hash);
 
+    /// <summary>
+    /// Creates a new BCrypt hash from a plaintext password.
+    /// This is the ONLY place plaintext passwords are allowed.
+    /// </summary>
     public static PasswordHash Create(string plaintext)
     {
         if (string.IsNullOrWhiteSpace(plaintext))
@@ -32,6 +41,9 @@ public sealed class PasswordHash : ValueObject
         return new PasswordHash(hashed);
     }
 
+    /// <summary>
+    /// Verifies a plaintext password against the stored BCrypt hash.
+    /// </summary>
     public bool Verify(string plaintext) =>
         BCrypt.Net.BCrypt.Verify(plaintext, Value);
 
@@ -42,8 +54,3 @@ public sealed class PasswordHash : ValueObject
 
     public override string ToString() => Value;
 }
-
-// public sealed class InvalidPasswordHashException : DomainException
-// {
-//     public InvalidPasswordHashException(string message) : base(message) { }
-// }

@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampFitFurDogs.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260519150154_ModifyCustomersTableFirstNameLastNameColumns")]
-    partial class ModifyCustomersTableFirstNameLastNameColumns
+    [Migration("20260523200901_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -127,7 +127,6 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
-                                .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("password_hash");
 
@@ -145,9 +144,26 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
-                                .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("phone");
+
+                            b1.HasKey("CustomerId");
+
+                            b1.ToTable("customers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CustomerId");
+                        });
+
+                    b.OwnsOne("ExternalAuthProviderId", "ExternalAuthProviderId", b1 =>
+                        {
+                            b1.Property<Guid>("CustomerId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("external_auth_provider_id");
 
                             b1.HasKey("CustomerId");
 
@@ -160,17 +176,17 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                     b.Navigation("Email")
                         .IsRequired();
 
+                    b.Navigation("ExternalAuthProviderId");
+
                     b.Navigation("FirstName")
                         .IsRequired();
 
                     b.Navigation("LastName")
                         .IsRequired();
 
-                    b.Navigation("PasswordHash")
-                        .IsRequired();
+                    b.Navigation("PasswordHash");
 
-                    b.Navigation("Phone")
-                        .IsRequired();
+                    b.Navigation("Phone");
                 });
 
             modelBuilder.Entity("CampFitFurDogs.Domain.Dogs.Dog", b =>

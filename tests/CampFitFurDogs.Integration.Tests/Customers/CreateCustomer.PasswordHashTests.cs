@@ -54,7 +54,7 @@ public class CreateCustomer_PasswordHashTests : IClassFixture<PostgresFixture>, 
 
         customer.Should().NotBeNull();
 
-        customer!.PasswordHash.Value.Should().NotBe("SuperSecure123!");
+        customer!.PasswordHash!.Value.Should().NotBe("SuperSecure123!");
         customer.PasswordHash.Value.Should().MatchRegex(@"^\$2[aby]\$");
     }
 }

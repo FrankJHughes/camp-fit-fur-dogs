@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 
-using SharedKernel.DependencyInjection;
-
 namespace CampFitFurDogs.Application;
 
 public static class ServiceCollectionExtensions

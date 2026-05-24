@@ -1,43 +1,60 @@
 using FluentValidation;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
+using CampFitFurDogs.Domain.Customers;
 
 public sealed class CreateCustomerCommandValidator
     : AbstractValidator<CreateCustomerCommand>
 {
     public CreateCustomerCommandValidator()
     {
-        // First Name
-        RuleFor(x => x.FirstName)
-            .NotEmpty()
-            .MaximumLength(100)
-            .Matches(@"^[A-Za-z' -]+$")
-            .WithMessage("First name contains invalid characters.");
+        // ─────────────────────────────────────────────────────────────
+        // Identity Source Rules (Semantic Validation)
+        // ─────────────────────────────────────────────────────────────
 
-        // Last Name
-        RuleFor(x => x.LastName)
-            .NotEmpty()
-            .MaximumLength(100)
-            .Matches(@"^[A-Za-z' -]+$")
-            .WithMessage("Last name contains invalid characters.");
+        // Must have AT LEAST ONE identity source
+        RuleFor(x => x)
+            .Must(cmd =>
+                !(string.IsNullOrWhiteSpace(cmd.Password) &&
+                  string.IsNullOrWhiteSpace(cmd.ExternalAuthProviderId)))
+            .WithMessage("Customer must have either a password or an external provider ID.");
 
-        // Email
-        RuleFor(x => x.Email)
-            .NotEmpty()
-            .EmailAddress()
-            .Matches(@"^(?!\.)[A-Za-z0-9._%+-]+@(?!-)([A-Za-z0-9-]+\.)+[A-Za-z]{2,63}$")
-            .WithMessage("Email format is invalid.");
+        // Must NOT have BOTH identity sources
+        RuleFor(x => x)
+            .Must(cmd =>
+                !(!string.IsNullOrWhiteSpace(cmd.Password) &&
+                  !string.IsNullOrWhiteSpace(cmd.ExternalAuthProviderId)))
+            .WithMessage("Customer cannot have both a password hash and an external provider ID.");
 
-        // Phone
-        RuleFor(x => x.Phone)
-            .NotEmpty()
-            .Matches(@"^[0-9+\-\s().]+$")
-            .WithMessage("Phone number contains invalid characters.");
+        // ─────────────────────────────────────────────────────────────
+        // Password Hash (Semantic Validation)
+        // ─────────────────────────────────────────────────────────────
 
-        // Password
-        RuleFor(x => x.Password)
-            .NotEmpty()
-            .MinimumLength(8)
-            .Matches(@"[A-Za-z]").WithMessage("Password must contain at least one letter.")
-            .Matches(@"[0-9]").WithMessage("Password must contain at least one number.");
+        When(x => x.Password is not null, () =>
+        {
+            RuleFor(x => x.Password!)
+                .Must(hash =>
+                    hash.StartsWith("$2a$") ||
+                    hash.StartsWith("$2b$") ||
+                    hash.StartsWith("$2y$"))
+                .WithMessage("Password must already be hashed using BCrypt.");
+        });
+
+        // ─────────────────────────────────────────────────────────────
+        // External Provider ID (Semantic Validation)
+        // ─────────────────────────────────────────────────────────────
+
+        When(x => x.ExternalAuthProviderId is not null, () =>
+        {
+            RuleFor(x => x.ExternalAuthProviderId!)
+                .Must(id => id.Contains('|'))
+                .WithMessage("External provider ID must be in the format 'provider|id'.");
+        });
+
+        // ─────────────────────────────────────────────────────────────
+        // NOTE:
+        // We do NOT validate FirstName, LastName, Email, Phone here.
+        // Those are syntactic rules handled by the REQUEST VALIDATOR.
+        // The DOMAIN enforces invariants via Value Objects.
+        // ─────────────────────────────────────────────────────────────
     }
 }

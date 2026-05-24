@@ -6,6 +6,8 @@ using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 using CampFitFurDogs.Infrastructure.Data;
 using SharedKernel.DependencyInjection;
+using CampFitFurDogs.Application.Abstractions.Identity.External;
+using CampFitFurDogs.Infrastructure.Identity.Auth0;
 
 
 namespace CampFitFurDogs.Infrastructure;
@@ -25,6 +27,8 @@ public static class ServiceCollectionExtensions
         services.AddSharedKernelEfCore<AppDbContext>(
             [typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly]
         );
+
+        services.AddScoped<IExternalIdentityResolver, Auth0IdentityResolver>();
 
         return services;
     }

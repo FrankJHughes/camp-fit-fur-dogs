@@ -92,14 +92,20 @@ public class CreateCustomerEndpointTests : ApiTestBase
     }
 
     [Fact]
-    public async Task CreateCustomer_WithEmptyPhone_Returns400()
+    public async Task CreateCustomer_WithEmptyPhone_Succeeds_WhenPhoneIsOptional()
     {
-        var request = new CustomerBuilder()
-            .WithPhone("")
-            .BuildApiRequest();
+        var request = new
+        {
+            FirstName = "Frank",
+            LastName = "Hughes",
+            Email = "frank@example.com",
+            Phone = "",
+            Password = "SuperSecure123!"
+        };
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Fact]

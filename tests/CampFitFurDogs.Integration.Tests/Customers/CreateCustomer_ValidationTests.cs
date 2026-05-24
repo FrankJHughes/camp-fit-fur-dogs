@@ -26,6 +26,9 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
         GC.SuppressFinalize(this);
     }
 
+    // ------------------------------------------------------------
+    // 1. Invalid email
+    // ------------------------------------------------------------
     [Fact]
     public async Task CreateCustomer_Fails_WhenEmailIsInvalid()
     {
@@ -50,6 +53,9 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
         problem.Errors["Email"].Should().NotBeEmpty();
     }
 
+    // ------------------------------------------------------------
+    // 2. Password too short (only validated when provided)
+    // ------------------------------------------------------------
     [Fact]
     public async Task CreateCustomer_Fails_WhenPasswordIsTooShort()
     {
@@ -58,8 +64,8 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
             FirstName = "Frank",
             LastName = "Hughes",
             Email = "frank@example.com",
-            Phone = "555-1234",
-            Password = "123"
+            Phone = "555-555-1234",
+            Password = "123" // too short
         };
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
@@ -74,6 +80,9 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
         problem.Errors["Password"].Should().NotBeEmpty();
     }
 
+    // ------------------------------------------------------------
+    // 3. Required fields missing (Password is NOT required)
+    // ------------------------------------------------------------
     [Fact]
     public async Task CreateCustomer_Fails_WhenRequiredFieldsAreMissing()
     {
@@ -83,7 +92,7 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
             LastName = "",
             Email = "",
             Phone = "",
-            Password = ""
+            Password = "" // optional, so no error expected
         };
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);
@@ -98,11 +107,12 @@ public class CreateCustomer_ValidationTests : IClassFixture<PostgresFixture>, ID
         problem.Errors.Should().ContainKey("FirstName");
         problem.Errors.Should().ContainKey("LastName");
         problem.Errors.Should().ContainKey("Email");
-        problem.Errors.Should().ContainKey("Password");
+
+        // Password is OPTIONAL → should NOT appear in validation errors
+        problem.Errors.Should().NotContainKey("Password");
 
         problem.Errors["FirstName"].Should().NotBeEmpty();
         problem.Errors["LastName"].Should().NotBeEmpty();
         problem.Errors["Email"].Should().NotBeEmpty();
-        problem.Errors["Password"].Should().NotBeEmpty();
     }
 }

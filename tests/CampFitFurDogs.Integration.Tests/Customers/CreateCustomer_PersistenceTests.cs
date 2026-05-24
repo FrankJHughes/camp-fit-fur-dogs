@@ -69,10 +69,10 @@ public class CreateCustomer_PersistenceTests : IClassFixture<PostgresFixture>, I
         customer.Email.Value.Should().Be(request.Email.ToLowerInvariant());
         customer.FirstName.Value.Should().Be("Frank");
         customer.LastName.Value.Should().Be("Hughes");
-        customer.Phone.Value.Should().Be(PhoneNumber.From("916-555-1234").Value);
+        customer.Phone!.Value.Should().Be(PhoneNumber.From("916-555-1234").Value);
 
         // Password should be hashed (bcrypt)
-        customer.PasswordHash.Value.Should().NotBe(request.Password);
+        customer.PasswordHash!.Value.Should().NotBe(request.Password);
         customer.PasswordHash.Value.Should().MatchRegex(@"^\$2[aby]\$");
     }
 }
