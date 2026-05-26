@@ -5,7 +5,7 @@
 namespace CampFitFurDogs.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ModifyCustomersTableFirstNameLastNameColumns : Migration
+    public partial class UseHasConversionInsteadOfOwnsOneForNullableColumns : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

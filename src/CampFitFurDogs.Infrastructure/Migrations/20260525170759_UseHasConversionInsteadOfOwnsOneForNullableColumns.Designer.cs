@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampFitFurDogs.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260411032255_AddDogsTable")]
-    partial class AddDogsTable
+    [Migration("20260525170759_UseHasConversionInsteadOfOwnsOneForNullableColumns")]
+    partial class UseHasConversionInsteadOfOwnsOneForNullableColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -31,15 +31,18 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("first_name");
+                    b.Property<string>("ExternalAuthProviderId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("external_auth_provider_id");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
+                    b.Property<string>("PasswordHash")
                         .HasColumnType("text")
-                        .HasColumnName("last_name");
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("text")
+                        .HasColumnName("phone");
 
                     b.HasKey("Id");
 
@@ -95,7 +98,7 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
-                    b.OwnsOne("CampFitFurDogs.Domain.Customers.PasswordHash", "PasswordHash", b1 =>
+                    b.OwnsOne("CampFitFurDogs.Domain.Customers.FirstName", "FirstName", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uuid");
@@ -103,7 +106,7 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("password_hash");
+                                .HasColumnName("first_name");
 
                             b1.HasKey("CustomerId");
 
@@ -113,7 +116,7 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
-                    b.OwnsOne("CampFitFurDogs.Domain.Customers.PhoneNumber", "Phone", b1 =>
+                    b.OwnsOne("CampFitFurDogs.Domain.Customers.LastName", "LastName", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uuid");
@@ -121,7 +124,7 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("phone");
+                                .HasColumnName("last_name");
 
                             b1.HasKey("CustomerId");
 
@@ -134,10 +137,10 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                     b.Navigation("Email")
                         .IsRequired();
 
-                    b.Navigation("PasswordHash")
+                    b.Navigation("FirstName")
                         .IsRequired();
 
-                    b.Navigation("Phone")
+                    b.Navigation("LastName")
                         .IsRequired();
                 });
 

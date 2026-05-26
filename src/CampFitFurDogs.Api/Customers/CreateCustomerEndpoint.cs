@@ -1,36 +1,46 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
-using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
-using CampFitFurDogs.Domain.Customers;
 using SharedKernel.Abstractions;
 using SharedKernel.Api;
+using CampFitFurDogs.Api.Validation;
+using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
+using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Api.Customers;
 
-public class CreateCustomerEndpoint : IEndpoint
+public sealed class CreateCustomerEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
         app.MapPost("/api/customers", async (
             CreateCustomerRequest request,
-            ICommandDispatcher dispatcher) =>
+            IValidator<CreateCustomerRequest> validator,
+            ICommandDispatcher dispatcher,
+            CancellationToken ct) =>
         {
-            var command = new CreateCustomerCommand(
-                request.FirstName,
-                request.LastName,
-                request.Email, request.Phone,
-                request.Password
-            );
+            // Syntactic validation (request-level)
+            await request.Validate(validator, ct);
 
-            var id = await dispatcher.DispatchAsync(command, CancellationToken.None);
+            // Hash password only if provided (local identity)
+            string? passwordHash = null;
+
+            if (!string.IsNullOrWhiteSpace(request.Password))
+            {
+                passwordHash = PasswordHash.Create(request.Password).Value;
+            }
+
+            // Build command (semantic validation happens in command validator)
+            var command = new CreateCustomerCommand(
+                FirstName: request.FirstName,
+                LastName: request.LastName,
+                Email: request.Email,
+                Phone: request.Phone,
+                Password: passwordHash,
+                ExternalAuthProviderId: null);
+
+            var id = await dispatcher.DispatchAsync(command, ct);
+
             return Results.Created($"/api/customers/{id}", new { CustomerId = id });
         });
     }
-
-    private static string FormatValidationMessage(string? paramName) =>
-        paramName switch
-        {
-            "firstName" => "A first name is needed to create your account.",
-            "lastName" => "A last name is needed to create your account.",
-            _ => "Please check the information you provided and try again."
-        };
 }

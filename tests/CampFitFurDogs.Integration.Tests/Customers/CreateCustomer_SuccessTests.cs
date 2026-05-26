@@ -81,10 +81,10 @@ public class CreateCustomer_SuccessTests : IClassFixture<PostgresFixture>, IDisp
         customer.Email.Value.Should().Be(email.ToLowerInvariant());
 
         // Phone normalized (10 digits → +1XXXXXXXXXX)
-        customer.Phone.Value.Should().Be("+19165551234");
+        customer.Phone!.Value.Should().Be("+19165551234");
 
         // Password hashed (not plaintext)
-        customer.PasswordHash.Value.Should().NotBe(request.Password);
+        customer.PasswordHash!.Value.Should().NotBe(request.Password);
         customer.PasswordHash.Verify(request.Password).Should().BeTrue();
     }
 

@@ -20,10 +20,10 @@ public class CampFitFurDogsApiFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        //
-        // Force a fresh DI container per test class
-        //
-        builder.UseSetting(WebHostDefaults.ApplicationKey, Guid.NewGuid().ToString());
+        // //
+        // // Force a fresh DI container per test class
+        // //
+        // builder.UseSetting(WebHostDefaults.ApplicationKey, Guid.NewGuid().ToString());
 
         builder.ConfigureServices(services =>
         {

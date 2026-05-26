@@ -19,7 +19,7 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
                 value => CustomerId.From(value))
             .HasColumnName("id");
 
-        // FirstName VO
+        // FirstName VO (required)
         builder.OwnsOne(c => c.FirstName, fn =>
         {
             fn.Property(f => f.Value)
@@ -27,7 +27,7 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
               .IsRequired();
         });
 
-        // LastName VO
+        // LastName VO (required)
         builder.OwnsOne(c => c.LastName, ln =>
         {
             ln.Property(l => l.Value)
@@ -35,6 +35,7 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
               .IsRequired();
         });
 
+        // Email VO (required)
         builder.OwnsOne(c => c.Email, email =>
         {
             email.Property(e => e.Value)
@@ -45,18 +46,30 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
                  .IsUnique();
         });
 
-        builder.OwnsOne(c => c.Phone, phone =>
-        {
-            phone.Property(p => p.Value)
-                .HasColumnName("phone")
-                .IsRequired();
-        });
+        //
+        // OPTIONAL VALUE OBJECTS — mapped via nullable scalar + converter
+        //
 
-        builder.OwnsOne(c => c.PasswordHash, pw =>
-        {
-            pw.Property(p => p.Value)
-                .HasColumnName("password_hash")
-                .IsRequired();
-        });
+        builder.Property(c => c.Phone)
+            .HasConversion(
+                v => v == null ? null : v.Value,
+                v => v == null ? null : PhoneNumber.From(v))
+            .HasColumnName("phone")
+            .IsRequired(false);
+
+        builder.Property(c => c.PasswordHash)
+            .HasConversion(
+                v => v == null ? null : v.Value,
+                v => v == null ? null : PasswordHash.From(v))
+            .HasColumnName("password_hash")
+            .IsRequired(false);
+
+        builder.Property(c => c.ExternalAuthProviderId)
+            .HasConversion(
+                v => v == null ? null : v.Value,
+                v => v == null ? null : ExternalAuthProviderId.From(v))
+            .HasColumnName("external_auth_provider_id")
+            .HasMaxLength(200)
+            .IsRequired(false);
     }
 }

@@ -1,4 +1,4 @@
-﻿# Visual Studio
+# Visual Studio
 .vs/
 *.user
 *.suo
@@ -53,3 +53,4 @@ tests/SharedKernel.Tests/SharedKernel.Tests.csproj.lscache
 tests/SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers/SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers.csproj.lscache
 tests/SharedKernel.Tests.DependencyInjection.Fakes/SharedKernel.Tests.DependencyInjection.Fakes.csproj.lscache
 tests/SharedKernel.Tests.EmptyAssembly/SharedKernel.Tests.EmptyAssembly.csproj.lscache
+src/CampFitFurDogs.Api/appsettings.Development.json

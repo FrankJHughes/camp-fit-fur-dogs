@@ -1,3 +1,4 @@
+using CampFitFurDogs.Domain.Customers.Exceptions;
 using SharedKernel.Domain;
 
 namespace CampFitFurDogs.Domain.Customers;
@@ -7,8 +8,9 @@ public sealed class Customer : AggregateRoot<CustomerId>
     public FirstName FirstName { get; }
     public LastName LastName { get; }
     public Email Email { get; }
-    public PhoneNumber Phone { get; }
-    public PasswordHash PasswordHash { get; }
+    public PhoneNumber? Phone { get; }
+    public PasswordHash? PasswordHash { get; }
+    public ExternalAuthProviderId? ExternalAuthProviderId { get; private set; }
 
 #pragma warning disable CS8618
     private Customer() : base(default!)
@@ -22,28 +24,46 @@ public sealed class Customer : AggregateRoot<CustomerId>
         FirstName firstName,
         LastName lastName,
         Email email,
-        PhoneNumber phone,
-        PasswordHash passwordHash) : base(id)
+        PhoneNumber? phone,
+        PasswordHash? passwordHash,
+        ExternalAuthProviderId? externalAuthProviderId) : base(id)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         Phone = phone;
         PasswordHash = passwordHash;
+        ExternalAuthProviderId = externalAuthProviderId;
     }
 
+    /// <summary>
+    /// Creates a new Customer aggregate enforcing domain invariants:
+    /// - Exactly one identity source must be provided (local OR external)
+    /// - Local identity requires a valid PasswordHash
+    /// - External identity requires a valid ExternalAuthProviderId
+    /// </summary>
     public static Customer Create(
         FirstName firstName,
         LastName lastName,
         Email email,
-        PhoneNumber phone,
-        PasswordHash passwordHash)
+        PhoneNumber? phone = null,
+        PasswordHash? passwordHash = null,
+        ExternalAuthProviderId? externalId = null)
     {
         ArgumentNullException.ThrowIfNull(firstName);
         ArgumentNullException.ThrowIfNull(lastName);
         ArgumentNullException.ThrowIfNull(email);
-        ArgumentNullException.ThrowIfNull(phone);
-        ArgumentNullException.ThrowIfNull(passwordHash);
+
+        var hasLocal = passwordHash is not null;
+        var hasExternal = externalId is not null;
+
+        if (hasLocal && hasExternal)
+            throw new ConflictingIdentitySourcesException(
+                "Customer cannot have both a password hash and an external provider identity.");
+
+        if (!hasLocal && !hasExternal)
+            throw new MissingIdentitySourceException(
+                "Customer must have either a password hash or an external provider identity.");
 
         return new Customer(
             CustomerId.New(),
@@ -51,6 +71,7 @@ public sealed class Customer : AggregateRoot<CustomerId>
             lastName,
             email,
             phone,
-            passwordHash);
+            passwordHash,
+            externalId);
     }
 }

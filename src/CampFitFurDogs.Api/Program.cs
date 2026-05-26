@@ -14,6 +14,11 @@ using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
 
+AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
+{
+    Console.WriteLine("STARTUP EXCEPTION: " + e.Exception.GetType().Name + " - " + e.Exception.Message);
+};
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Hosting-provider overrides (pluggable) ───────────────────────
@@ -41,8 +46,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSharedKernel([
     typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
+    typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
-    typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+    typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly // request dto validators
 ]);
 
 builder.Services.AddApplication();

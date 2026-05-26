@@ -1,6 +1,6 @@
 using SharedKernel.Domain;
 
-namespace CampFitFurDogs.Domain.Customers;
+namespace CampFitFurDogs.Domain.Customers.Exceptions;
 
 public sealed class EmailAlreadyExistsException : DomainException
 {

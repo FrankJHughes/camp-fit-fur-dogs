@@ -22,7 +22,7 @@ public class PostgresFixture : IAsyncLifetime
     {
         await _container.StartAsync();
         await using var ctx = CreateContext();
-        await ctx.Database.EnsureCreatedAsync();
+        await ctx.Database.MigrateAsync();
     }
 
     public async Task DisposeAsync()
