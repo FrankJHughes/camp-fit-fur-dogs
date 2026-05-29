@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using SharedKernel.Api;
 using CampFitFurDogs.Application.Abstractions.Identity.External;
+using CampFitFurDogs.Application.Abstractions.Audit;
 using CampFitFurDogs.Domain.Errors;
 
 namespace CampFitFurDogs.Api.Authentication;
@@ -16,8 +17,10 @@ public class AuthCallbackEndpoint : IEndpoint
     {
         app.MapGet("/api/auth/callback", async (
             HttpContext http,
+            IHostEnvironment env,
             [FromServices] IExternalIdentityResolver externalUserMapper,
-            [FromServices] HttpClient httpClient) =>
+            [FromServices] HttpClient httpClient,
+            [FromServices] IAuditLogger auditLogger) =>
         {
             var config = http.RequestServices.GetRequiredService<IConfiguration>();
             var domain = config["Auth0:Domain"];
@@ -104,13 +107,17 @@ public class AuthCallbackEndpoint : IEndpoint
                 auth0Email,
                 CancellationToken.None);
 
+            // ⭐ Required by US‑110: audit the login event
+            await auditLogger.LoginSucceeded(customerId, auth0UserId);
+
+            // Issue session cookie
             http.Response.Cookies.Append(
                 "cfd.session",
                 customerId.ToString(),
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false, // set to true in production
+                    Secure = env.IsProduction(),
                     SameSite = SameSiteMode.Lax,
                     Path = "/"
                 });

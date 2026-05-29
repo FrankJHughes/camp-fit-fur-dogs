@@ -8,7 +8,8 @@ using CampFitFurDogs.Infrastructure.Data;
 using SharedKernel.DependencyInjection;
 using CampFitFurDogs.Application.Abstractions.Identity.External;
 using CampFitFurDogs.Infrastructure.Identity.Auth0;
-
+using CampFitFurDogs.Application.Abstractions.Audit;
+using CampFitFurDogs.Infrastructure.Audit;
 
 namespace CampFitFurDogs.Infrastructure;
 
@@ -28,9 +29,12 @@ public static class ServiceCollectionExtensions
             [typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly]
         );
 
+        // External identity resolver
         services.AddScoped<IExternalIdentityResolver, Auth0IdentityResolver>();
+
+        // ⭐ NEW: Audit logging (required for US‑110)
+        services.AddSingleton<IAuditLogger, AuditLogger>();
 
         return services;
     }
 }
-

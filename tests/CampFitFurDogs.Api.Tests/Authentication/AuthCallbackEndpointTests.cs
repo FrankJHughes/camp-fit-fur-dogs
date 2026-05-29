@@ -2,10 +2,12 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using CampFitFurDogs.Application.Abstractions.Identity.External;
+using CampFitFurDogs.Application.Abstractions.Audit;
 using CampFitFurDogs.Api.Tests.Fakes;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
@@ -92,6 +94,70 @@ public class AuthCallbackEndpointTests
         Assert.Equal(First, resolver.LastFirstName);
         Assert.Equal(Last, resolver.LastLastName);
         Assert.Equal(Email, resolver.LastEmail);
+    }
+
+    // ------------------------------------------------------------
+    // AUDIT LOGGING
+    // ------------------------------------------------------------
+    [Fact]
+    public async Task Successful_callback_logs_audit_event()
+    {
+        var externalId = "auth0|abc123";
+        var mappedCustomerId = Guid.NewGuid();
+
+        var tokenResponseJson = JsonSerializer.Serialize(new { access_token = "fake_access_token" });
+
+        var userInfoJson = JsonSerializer.Serialize(new
+        {
+            sub = externalId,
+            given_name = First,
+            family_name = Last,
+            email = Email
+        });
+
+        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        {
+            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(tokenResponseJson)
+            },
+            ["https://dev-fake.auth0.com/userinfo"] = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(userInfoJson)
+            }
+        });
+
+        var resolver = new FakeExternalIdentityResolver(mappedCustomerId);
+        var audit = new FakeAuditLogger();
+
+        var client = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((context, cfg) =>
+            {
+                cfg.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Auth0:Domain"] = "dev-fake.auth0.com",
+                    ["Auth0:ClientId"] = "client",
+                    ["Auth0:ClientSecret"] = "secret",
+                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
+                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
+                });
+            });
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IExternalIdentityResolver>(resolver);
+                services.AddSingleton<IAuditLogger>(audit);
+                services.AddSingleton(new HttpClient(fakeHttp));
+            });
+        })
+        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+        await client.GetAsync("/api/auth/callback?code=abc123");
+
+        Assert.True(audit.WasCalled);
+        Assert.Equal(mappedCustomerId, audit.LastCustomerId);
+        Assert.Equal(externalId, audit.LastExternalId);
     }
 
     // ------------------------------------------------------------
@@ -316,4 +382,72 @@ public class AuthCallbackEndpointTests
         var json = await response.Content.ReadAsStringAsync();
         Assert.Contains("Missing Auth0 user identifier", json);
     }
+
+    [Fact]
+    public async Task Cookie_is_secure_in_production()
+    {
+        var externalId = "auth0|abc123";
+        var mappedCustomerId = Guid.NewGuid();
+
+        var tokenResponseJson = JsonSerializer.Serialize(new { access_token = "fake_access_token" });
+
+        var userInfoJson = JsonSerializer.Serialize(new
+        {
+            sub = externalId,
+            given_name = First,
+            family_name = Last,
+            email = Email
+        });
+
+        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        {
+            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(tokenResponseJson)
+            },
+            ["https://dev-fake.auth0.com/userinfo"] = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(userInfoJson)
+            }
+        });
+
+        var resolver = new FakeExternalIdentityResolver(mappedCustomerId);
+
+        var client = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseEnvironment("Production"); // ⭐ Force production environment
+
+            builder.ConfigureAppConfiguration((context, cfg) =>
+            {
+                cfg.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Auth0:Domain"] = "dev-fake.auth0.com",
+                    ["Auth0:ClientId"] = "client",
+                    ["Auth0:ClientSecret"] = "secret",
+                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
+                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
+                });
+            });
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IExternalIdentityResolver>(resolver);
+                services.AddSingleton<IAuditLogger>(new FakeAuditLogger());
+                services.AddSingleton(new HttpClient(fakeHttp));
+            });
+        })
+        .CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false,
+            BaseAddress = new Uri("https://localhost") // ⭐ Force HTTPS
+        });
+
+        var response = await client.GetAsync("/api/auth/callback?code=abc123");
+
+        Assert.True(response.Headers.TryGetValues("Set-Cookie", out var cookies));
+        var cookie = cookies.First();
+
+        Assert.Contains("secure", cookie.ToLowerInvariant());
+    }
+
 }
