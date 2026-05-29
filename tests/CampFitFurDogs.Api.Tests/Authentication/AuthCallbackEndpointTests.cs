@@ -1,13 +1,16 @@
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
-using CampFitFurDogs.Application.Abstractions.Identity.External;
 using CampFitFurDogs.Application.Abstractions.Audit;
+using CampFitFurDogs.Application.Abstractions.Identity.External;
 using CampFitFurDogs.Api.Tests.Fakes;
+using CampFitFurDogs.Infrastructure.Identity;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
+using CampFitFurDogs.Application.Abstractions.Authentication.Auth0;
+using CampFitFurDogs.Infrastructure.Identity.Auth0;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
@@ -44,13 +47,13 @@ public class AuthCallbackEndpointTests
             email = Email
         });
 
-        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        var fakeHttp = new FakeHttpMessageHandler(new()
         {
-            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/oauth/token"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(tokenResponseJson)
             },
-            ["https://dev-fake.auth0.com/userinfo"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/userinfo"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(userInfoJson)
             }
@@ -60,7 +63,7 @@ public class AuthCallbackEndpointTests
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -74,11 +77,13 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
                 services.AddSingleton<IExternalIdentityResolver>(resolver);
-                services.AddSingleton(new HttpClient(fakeHttp));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
@@ -87,6 +92,7 @@ public class AuthCallbackEndpointTests
 
         Assert.True(response.Headers.TryGetValues("Set-Cookie", out var cookies));
         var cookie = cookies.First();
+
         Assert.Contains("cfd.session=", cookie);
         Assert.Contains(mappedCustomerId.ToString(), cookie);
 
@@ -115,13 +121,13 @@ public class AuthCallbackEndpointTests
             email = Email
         });
 
-        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        var fakeHttp = new FakeHttpMessageHandler(new()
         {
-            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/oauth/token"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(tokenResponseJson)
             },
-            ["https://dev-fake.auth0.com/userinfo"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/userinfo"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(userInfoJson)
             }
@@ -132,7 +138,7 @@ public class AuthCallbackEndpointTests
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -146,12 +152,14 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
                 services.AddSingleton<IExternalIdentityResolver>(resolver);
                 services.AddSingleton<IAuditLogger>(audit);
-                services.AddSingleton(new HttpClient(fakeHttp));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        .CreateClient(new() { AllowAutoRedirect = false });
 
         await client.GetAsync("/api/auth/callback?code=abc123");
 
@@ -166,9 +174,11 @@ public class AuthCallbackEndpointTests
     [Fact]
     public async Task Missing_authorization_code_returns_bad_request_problem_details()
     {
+        var fakeHttp = new FakeHttpMessageHandler(new());
+
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -182,11 +192,14 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton(new HttpClient(new FakeHttpMessageHandler([])));
-                services.AddSingleton<IExternalIdentityResolver>(new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
+                services.AddSingleton<IExternalIdentityResolver>(
+                    new FakeExternalIdentityResolver(Guid.NewGuid()));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback");
 
@@ -202,9 +215,11 @@ public class AuthCallbackEndpointTests
     [Fact]
     public async Task Incomplete_configuration_returns_internal_server_error()
     {
+        var fakeHttp = new FakeHttpMessageHandler(new());
+
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -218,11 +233,14 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton(new HttpClient(new FakeHttpMessageHandler([])));
-                services.AddSingleton<IExternalIdentityResolver>(new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
+                services.AddSingleton<IExternalIdentityResolver>(
+                    new FakeExternalIdentityResolver(Guid.NewGuid()));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
@@ -240,9 +258,9 @@ public class AuthCallbackEndpointTests
     {
         var tokenResponseJson = JsonSerializer.Serialize(new { access_token = "" });
 
-        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        var fakeHttp = new FakeHttpMessageHandler(new()
         {
-            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/oauth/token"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(tokenResponseJson)
             }
@@ -250,7 +268,7 @@ public class AuthCallbackEndpointTests
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -264,11 +282,14 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton(new HttpClient(fakeHttp));
-                services.AddSingleton<IExternalIdentityResolver>(new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
+                services.AddSingleton<IExternalIdentityResolver>(
+                    new FakeExternalIdentityResolver(Guid.NewGuid()));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
@@ -286,18 +307,18 @@ public class AuthCallbackEndpointTests
     {
         var tokenResponseJson = JsonSerializer.Serialize(new { access_token = "fake_access_token" });
 
-        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        var fakeHttp = new FakeHttpMessageHandler(new()
         {
-            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/oauth/token"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(tokenResponseJson)
             },
-            ["https://dev-fake.auth0.com/userinfo"] = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            ["https://dev-fake.auth0.com/userinfo"] = new(HttpStatusCode.InternalServerError)
         });
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -311,11 +332,14 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton(new HttpClient(fakeHttp));
-                services.AddSingleton<IExternalIdentityResolver>(new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
+                services.AddSingleton<IExternalIdentityResolver>(
+                    new FakeExternalIdentityResolver(Guid.NewGuid()));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
@@ -341,13 +365,13 @@ public class AuthCallbackEndpointTests
             email = Email
         });
 
-        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        var fakeHttp = new FakeHttpMessageHandler(new()
         {
-            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/oauth/token"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(tokenResponseJson)
             },
-            ["https://dev-fake.auth0.com/userinfo"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/userinfo"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(userInfoJson)
             }
@@ -355,7 +379,7 @@ public class AuthCallbackEndpointTests
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -369,11 +393,14 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton(new HttpClient(fakeHttp));
-                services.AddSingleton<IExternalIdentityResolver>(new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
+                services.AddSingleton<IExternalIdentityResolver>(
+                    new FakeExternalIdentityResolver(Guid.NewGuid()));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
@@ -383,6 +410,9 @@ public class AuthCallbackEndpointTests
         Assert.Contains("Missing Auth0 user identifier", json);
     }
 
+    // ------------------------------------------------------------
+    // COOKIE SECURITY IN PRODUCTION
+    // ------------------------------------------------------------
     [Fact]
     public async Task Cookie_is_secure_in_production()
     {
@@ -399,13 +429,13 @@ public class AuthCallbackEndpointTests
             email = Email
         });
 
-        var fakeHttp = new FakeHttpMessageHandler(new Dictionary<string, HttpResponseMessage>
+        var fakeHttp = new FakeHttpMessageHandler(new()
         {
-            ["https://dev-fake.auth0.com/oauth/token"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/oauth/token"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(tokenResponseJson)
             },
-            ["https://dev-fake.auth0.com/userinfo"] = new HttpResponseMessage(HttpStatusCode.OK)
+            ["https://dev-fake.auth0.com/userinfo"] = new(HttpStatusCode.OK)
             {
                 Content = new StringContent(userInfoJson)
             }
@@ -415,9 +445,9 @@ public class AuthCallbackEndpointTests
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
-            builder.UseEnvironment("Production"); // ⭐ Force production environment
+            builder.UseEnvironment("Production");
 
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -431,15 +461,17 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureServices(services =>
             {
+                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                        .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
+
                 services.AddSingleton<IExternalIdentityResolver>(resolver);
                 services.AddSingleton<IAuditLogger>(new FakeAuditLogger());
-                services.AddSingleton(new HttpClient(fakeHttp));
             });
         })
-        .CreateClient(new WebApplicationFactoryClientOptions
+        .CreateClient(new()
         {
             AllowAutoRedirect = false,
-            BaseAddress = new Uri("https://localhost") // ⭐ Force HTTPS
+            BaseAddress = new Uri("https://localhost")
         });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
@@ -449,5 +481,4 @@ public class AuthCallbackEndpointTests
 
         Assert.Contains("secure", cookie.ToLowerInvariant());
     }
-
 }
