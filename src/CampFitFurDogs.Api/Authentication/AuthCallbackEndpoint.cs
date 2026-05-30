@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 using SharedKernel.Api;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Errors;

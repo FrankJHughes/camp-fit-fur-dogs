@@ -3,16 +3,17 @@ using SharedKernel;
 using SharedKernel.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
-using CampFitFurDogs.Application.Abstractions.Identity.External;
 using CampFitFurDogs.Infrastructure.Tests.Fakes;
-using CampFitFurDogs.Infrastructure.Identity.Auth0;
 using CampFitFurDogs.Domain.Customers.Exceptions;
+using CampFitFurDogs.Infrastructure.Identity.Oidc;
+using CampFitFurDogs.Application.Abstractions.Authentication;
+using CampFitFurDogs.Application.Abstractions.Identity;
 
 namespace CampFitFurDogs.Application.Tests.Identity;
 
-public class Auth0IdentityResolverTests
+public class IdentityResolverTests
 {
-    private static IExternalIdentityResolver BuildResolver(
+    private static IIdentityResolver BuildResolver(
         FakeFindCustomerByExternalIdReader? reader = null,
         FakeCreateCustomerHandler? handler = null,
         ICommandDispatcher? dispatcher = null)
@@ -31,17 +32,18 @@ public class Auth0IdentityResolverTests
             services.AddSingleton<ICommandDispatcher>(dispatcher);
         }
 
-        services.AddSingleton<IExternalIdentityResolver, Auth0IdentityResolver>();
+        services.AddSingleton<IIdentityResolver, OidcIdentityResolver>();
 
-        return services.BuildServiceProvider().GetRequiredService<IExternalIdentityResolver>();
+        return services.BuildServiceProvider().GetRequiredService<IIdentityResolver>();
     }
 
-    private static Task<Guid> Call(IExternalIdentityResolver resolver, string externalId)
+    private static Task<Guid> Call(IIdentityResolver resolver, string externalId)
         => resolver.ResolveAsync(
-            externalId,
-            "Frank",
-            "Smith",
-            "frank@example.com",
+            new AuthUser(
+                externalId,
+                "Frank",
+                "Smith",
+                "frank@example.com"),
             CancellationToken.None);
 
     // ------------------------------------------------------------
@@ -162,10 +164,11 @@ public class Auth0IdentityResolverTests
 
         await Assert.ThrowsAsync<MissingIdentitySourceException>(() =>
             resolver.ResolveAsync(
-                externalId!,
-                "Frank",
-                "Smith",
-                "frank@example.com",
+                new AuthUser(
+                    externalId!,
+                    "Frank",
+                    "Smith",
+                    "frank@example.com"),
                 CancellationToken.None));
     }
 }

@@ -24,9 +24,9 @@ public class AuthLoginEndpointTests
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client123",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback"
+                    ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
+                    ["Authentication:Oidc:ClientId"] = "client123",
+                    ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
                 });
             });
         })
@@ -63,9 +63,9 @@ public class AuthLoginEndpointTests
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Auth0:Domain"] = "",
-                    ["Auth0:ClientId"] = "",
-                    ["Auth0:CallbackUrl"] = ""
+                    ["Authentication:Oidc:Authority"] = "",
+                    ["Authentication:Oidc:ClientId"] = "",
+                    ["Authentication:Oidc:CallbackUrl"] = ""
                 });
             });
         })
@@ -93,9 +93,9 @@ public class AuthLoginEndpointTests
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Auth0:Domain"] = "",
-                    ["Auth0:ClientId"] = "client123",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback"
+                    ["Authentication:Oidc:Authority"] = "",
+                    ["Authentication:Oidc:ClientId"] = "client123",
+                    ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
                 });
             });
         })
@@ -118,9 +118,9 @@ public class AuthLoginEndpointTests
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback"
+                    ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
+                    ["Authentication:Oidc:ClientId"] = "",
+                    ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
                 });
             });
         })
@@ -143,9 +143,9 @@ public class AuthLoginEndpointTests
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client123",
-                    ["Auth0:CallbackUrl"] = ""
+                    ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
+                    ["Authentication:Oidc:ClientId"] = "client123",
+                    ["Authentication:Oidc:CallbackUrl"] = ""
                 });
             });
         })

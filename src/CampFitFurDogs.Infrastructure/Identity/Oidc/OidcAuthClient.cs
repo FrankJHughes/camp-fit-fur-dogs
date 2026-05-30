@@ -1,37 +1,34 @@
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using CampFitFurDogs.Application.Abstractions.Authentication.Auth0;
+using CampFitFurDogs.Application.Abstractions.Authentication;
+using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
 using CampFitFurDogs.Domain.Errors;
+using Microsoft.Extensions.Options;
 
-namespace CampFitFurDogs.Infrastructure.Identity.Auth0;
+namespace CampFitFurDogs.Infrastructure.Identity.Oidc;
 
-public class Auth0Client : IAuth0Client
+public sealed class OidcAuthClient : IAuthClient
 {
     private readonly HttpClient _http;
+    private readonly OidcOptions _options;
 
-    public Auth0Client(HttpClient http)
+    public OidcAuthClient(HttpClient http, IOptions<OidcOptions> options)
     {
         _http = http;
+        _options = options.Value;
     }
 
-    public async Task<string> ExchangeCodeForTokenAsync(
-        string code,
-        string clientId,
-        string clientSecret,
-        string callbackUrl,
-        string domain,
-        CancellationToken ct)
+    public async Task<AuthToken> ExchangeAsync(string authorizationCode, CancellationToken ct)
     {
-        var tokenEndpoint = $"https://{domain}/oauth/token";
+        var tokenEndpoint = $"https://{_options.Authority}/oauth/token";
 
         var request = new Dictionary<string, string>
         {
             ["grant_type"] = "authorization_code",
-            ["client_id"] = clientId,
-            ["client_secret"] = clientSecret,
-            ["code"] = code,
-            ["redirect_uri"] = callbackUrl
+            ["client_id"] = _options.ClientId,
+            ["client_secret"] = _options.ClientSecret,
+            ["code"] = authorizationCode,
+            ["redirect_uri"] = _options.CallbackUrl
         };
 
         var response = await _http.PostAsync(
@@ -49,18 +46,15 @@ public class Auth0Client : IAuth0Client
         if (string.IsNullOrWhiteSpace(token))
             throw new ExternalAuthProviderException("Missing access token.");
 
-        return token;
+        return new AuthToken(token);
     }
 
-    public async Task<Auth0UserInfo> GetUserInfoAsync(
-        string accessToken,
-        string domain,
-        CancellationToken ct)
+    public async Task<AuthUser> GetUserAsync(AuthToken token, CancellationToken ct)
     {
-        var endpoint = $"https://{domain}/userinfo";
+        var endpoint = $"https://{_options.Authority}/userinfo";
 
         using var req = new HttpRequestMessage(HttpMethod.Get, endpoint);
-        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
         var response = await _http.SendAsync(req, ct);
         if (!response.IsSuccessStatusCode)
@@ -83,6 +77,6 @@ public class Auth0Client : IAuth0Client
         if (string.IsNullOrWhiteSpace(email))
             throw new ExternalAuthProviderException("Missing Auth0 email.");
 
-        return new Auth0UserInfo(sub, first, last, email);
+        return new AuthUser(sub, first, last, email);
     }
 }

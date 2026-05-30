@@ -1,16 +1,15 @@
 using System.Net;
-using System.Net.Http;
 using System.Text.Json;
-using CampFitFurDogs.Application.Abstractions.Audit;
-using CampFitFurDogs.Application.Abstractions.Identity.External;
-using CampFitFurDogs.Api.Tests.Fakes;
-using CampFitFurDogs.Infrastructure.Identity;
+using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Application.Abstractions.Authentication.Auth0;
-using CampFitFurDogs.Infrastructure.Identity.Auth0;
+using CampFitFurDogs.Application.Abstractions.Audit;
+using CampFitFurDogs.Application.Abstractions.Authentication;
+using CampFitFurDogs.Application.Abstractions.Identity;
+using CampFitFurDogs.Infrastructure.Identity.Oidc;
+using CampFitFurDogs.TestUtilities.Fakes;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
@@ -27,6 +26,15 @@ public class AuthCallbackEndpointTests
     private static readonly string First = "Frank";
     private static readonly string Last = "Smith";
     private static readonly string Email = "frank@example.com";
+
+    private static Dictionary<string, string?> ValidOidcConfig => new()
+    {
+        ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
+        ["Authentication:Oidc:ClientId"] = "client",
+        ["Authentication:Oidc:ClientSecret"] = "secret",
+        ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
+        ["Authentication:Oidc:PostLoginRedirectUrl"] = "http://localhost:3000/"
+    };
 
     // ------------------------------------------------------------
     // SUCCESS PATH
@@ -59,52 +67,42 @@ public class AuthCallbackEndpointTests
             }
         });
 
-        var resolver = new FakeExternalIdentityResolver(mappedCustomerId);
+        var resolver = new FakeIdentityResolver { Result = mappedCustomerId };
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client",
-                    ["Auth0:ClientSecret"] = "secret",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
-                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
-                });
+                cfg.AddInMemoryCollection(ValidOidcConfig);
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(resolver);
+                services.AddSingleton<IIdentityResolver>(resolver);
             });
         })
         .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
-        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-        Assert.Equal("http://localhost:3000/", response.Headers.Location!.ToString());
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().Should().Be("http://localhost:3000/");
 
-        Assert.True(response.Headers.TryGetValues("Set-Cookie", out var cookies));
-        var cookie = cookies.First();
+        response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeTrue();
+        var cookie = cookies!.First();
 
-        Assert.Contains("cfd.session=", cookie);
-        Assert.Contains(mappedCustomerId.ToString(), cookie);
+        cookie.Should().Contain("cfd.session=");
+        cookie.Should().Contain(mappedCustomerId.ToString());
 
-        Assert.Equal(externalId, resolver.LastExternalId);
-        Assert.Equal(First, resolver.LastFirstName);
-        Assert.Equal(Last, resolver.LastLastName);
-        Assert.Equal(Email, resolver.LastEmail);
+        resolver.LastExternalId.Should().Be(externalId);
+        resolver.LastFirstName.Should().Be(First);
+        resolver.LastLastName.Should().Be(Last);
+        resolver.LastEmail.Should().Be(Email);
     }
 
-    // ------------------------------------------------------------
-    // AUDIT LOGGING
-    // ------------------------------------------------------------
     [Fact]
     public async Task Successful_callback_logs_audit_event()
     {
@@ -133,29 +131,22 @@ public class AuthCallbackEndpointTests
             }
         });
 
-        var resolver = new FakeExternalIdentityResolver(mappedCustomerId);
+        var resolver = new FakeIdentityResolver { Result = mappedCustomerId };
         var audit = new FakeAuditLogger();
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client",
-                    ["Auth0:ClientSecret"] = "secret",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
-                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
-                });
+                cfg.AddInMemoryCollection(ValidOidcConfig);
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(resolver);
+                services.AddSingleton<IIdentityResolver>(resolver);
                 services.AddSingleton<IAuditLogger>(audit);
             });
         })
@@ -163,9 +154,9 @@ public class AuthCallbackEndpointTests
 
         await client.GetAsync("/api/auth/callback?code=abc123");
 
-        Assert.True(audit.WasCalled);
-        Assert.Equal(mappedCustomerId, audit.LastCustomerId);
-        Assert.Equal(externalId, audit.LastExternalId);
+        // Updated assertions to match TestUtilities FakeAuditLogger
+        audit.CapturedCustomerId.Should().Be(mappedCustomerId);
+        audit.CapturedExternalId.Should().Be(externalId);
     }
 
     // ------------------------------------------------------------
@@ -180,33 +171,26 @@ public class AuthCallbackEndpointTests
         {
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client",
-                    ["Auth0:ClientSecret"] = "secret",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
-                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
-                });
+                cfg.AddInMemoryCollection(ValidOidcConfig);
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(
-                    new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddSingleton<IIdentityResolver>(
+                    new FakeIdentityResolver { Result = Guid.NewGuid() });
             });
         })
         .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback");
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Missing authorization code", json);
+        json.Should().Contain("Missing authorization code");
     }
 
     // ------------------------------------------------------------
@@ -223,31 +207,31 @@ public class AuthCallbackEndpointTests
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Auth0:Domain"] = "",
-                    ["Auth0:ClientId"] = "",
-                    ["Auth0:ClientSecret"] = "",
-                    ["Auth0:CallbackUrl"] = "",
-                    ["Auth0:PostLoginRedirectUrl"] = ""
+                    ["Authentication:Oidc:Authority"] = "",
+                    ["Authentication:Oidc:ClientId"] = "",
+                    ["Authentication:Oidc:ClientSecret"] = "",
+                    ["Authentication:Oidc:CallbackUrl"] = "",
+                    ["Authentication:Oidc:PostLoginRedirectUrl"] = ""
                 });
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(
-                    new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddSingleton<IIdentityResolver>(
+                    new FakeIdentityResolver { Result = Guid.NewGuid() });
             });
         })
         .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is incomplete", json);
+        json.Should().Contain("Bad Configuration");
     }
 
     // ------------------------------------------------------------
@@ -270,33 +254,26 @@ public class AuthCallbackEndpointTests
         {
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client",
-                    ["Auth0:ClientSecret"] = "secret",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
-                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
-                });
+                cfg.AddInMemoryCollection(ValidOidcConfig);
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(
-                    new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddSingleton<IIdentityResolver>(
+                    new FakeIdentityResolver { Result = Guid.NewGuid() });
             });
         })
         .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
-        Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Missing access token", json);
+        json.Should().Contain("Missing access token");
     }
 
     // ------------------------------------------------------------
@@ -320,33 +297,26 @@ public class AuthCallbackEndpointTests
         {
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client",
-                    ["Auth0:ClientSecret"] = "secret",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
-                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
-                });
+                cfg.AddInMemoryCollection(ValidOidcConfig);
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(
-                    new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddSingleton<IIdentityResolver>(
+                    new FakeIdentityResolver { Result = Guid.NewGuid() });
             });
         })
         .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
-        Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Failed to retrieve user profile", json);
+        json.Should().Contain("Failed to retrieve user profile");
     }
 
     // ------------------------------------------------------------
@@ -381,33 +351,26 @@ public class AuthCallbackEndpointTests
         {
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client",
-                    ["Auth0:ClientSecret"] = "secret",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
-                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
-                });
+                cfg.AddInMemoryCollection(ValidOidcConfig);
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(
-                    new FakeExternalIdentityResolver(Guid.NewGuid()));
+                services.AddSingleton<IIdentityResolver>(
+                    new FakeIdentityResolver { Result = Guid.NewGuid() });
             });
         })
         .CreateClient(new() { AllowAutoRedirect = false });
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
-        Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Missing Auth0 user identifier", json);
+        json.Should().Contain("Missing Auth0 user identifier");
     }
 
     // ------------------------------------------------------------
@@ -441,7 +404,7 @@ public class AuthCallbackEndpointTests
             }
         });
 
-        var resolver = new FakeExternalIdentityResolver(mappedCustomerId);
+        var resolver = new FakeIdentityResolver { Result = mappedCustomerId };
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
@@ -449,22 +412,15 @@ public class AuthCallbackEndpointTests
 
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Auth0:Domain"] = "dev-fake.auth0.com",
-                    ["Auth0:ClientId"] = "client",
-                    ["Auth0:ClientSecret"] = "secret",
-                    ["Auth0:CallbackUrl"] = "http://localhost/api/auth/callback",
-                    ["Auth0:PostLoginRedirectUrl"] = "http://localhost:3000/"
-                });
+                cfg.AddInMemoryCollection(ValidOidcConfig);
             });
 
             builder.ConfigureServices(services =>
             {
-                services.AddHttpClient<IAuth0Client, Auth0Client>()
+                services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() => fakeHttp);
 
-                services.AddSingleton<IExternalIdentityResolver>(resolver);
+                services.AddSingleton<IIdentityResolver>(resolver);
                 services.AddSingleton<IAuditLogger>(new FakeAuditLogger());
             });
         })
@@ -476,9 +432,9 @@ public class AuthCallbackEndpointTests
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
-        Assert.True(response.Headers.TryGetValues("Set-Cookie", out var cookies));
-        var cookie = cookies.First();
+        response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeTrue();
+        var cookie = cookies!.First();
 
-        Assert.Contains("secure", cookie.ToLowerInvariant());
+        cookie.ToLowerInvariant().Should().Contain("secure");
     }
 }

@@ -1,16 +1,17 @@
 using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
 using SharedKernel.Abstractions;
-using CampFitFurDogs.Application.Abstractions.Identity.External;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
+using CampFitFurDogs.Application.Abstractions.Identity;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 
-namespace CampFitFurDogs.Infrastructure.Identity.Auth0;
+namespace CampFitFurDogs.Infrastructure.Identity.Oidc;
 
-public sealed class Auth0IdentityResolver : IExternalIdentityResolver
+public sealed class OidcIdentityResolver : IIdentityResolver
 {
     private readonly IFindCustomerByExternalIdReader _reader;
     private readonly ICommandDispatcher _dispatcher;
 
-    public Auth0IdentityResolver(
+    public OidcIdentityResolver(
         IFindCustomerByExternalIdReader reader,
         ICommandDispatcher dispatcher)
     {
@@ -19,10 +20,7 @@ public sealed class Auth0IdentityResolver : IExternalIdentityResolver
     }
 
     public async Task<Guid> ResolveAsync(
-        string externalUserId,
-        string firstName,
-        string lastName,
-        string email,
+        AuthUser profile,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -31,16 +29,16 @@ public sealed class Auth0IdentityResolver : IExternalIdentityResolver
         // Command validator will validate identity-source semantics
         // Request validator will validate syntactic rules
 
-        var existing = await _reader.FindByExternalIdAsync(externalUserId, cancellationToken);
+        var existing = await _reader.FindByExternalIdAsync(profile.ExternalId, cancellationToken);
         if (existing is not null)
             return existing.Id;
 
         // Create a new customer via application command
         var command = new CreateCustomerCommand(
-            ExternalAuthProviderId: externalUserId,
-            FirstName: firstName,
-            LastName: lastName,
-            Email: email);
+            ExternalAuthProviderId: profile.ExternalId,
+            FirstName: profile.GivenName,
+            LastName: profile.FamilyName,
+            Email: profile.Email);
 
         var newId = await _dispatcher.DispatchAsync(command, cancellationToken);
         return newId;

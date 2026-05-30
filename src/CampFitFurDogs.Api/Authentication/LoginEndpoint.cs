@@ -14,13 +14,13 @@ public class LoginEndpoint : IEndpoint
         {
             // Auth0 configuration (from appsettings or environment)
             var domain = http.RequestServices
-                .GetRequiredService<IConfiguration>()["Auth0:Domain"];
+                .GetRequiredService<IConfiguration>()["Authentication:Oidc:Authority"];
 
             var clientId = http.RequestServices
-                .GetRequiredService<IConfiguration>()["Auth0:ClientId"];
+                .GetRequiredService<IConfiguration>()["Authentication:Oidc:ClientId"];
 
             var callback = http.RequestServices
-                .GetRequiredService<IConfiguration>()["Auth0:CallbackUrl"];
+                .GetRequiredService<IConfiguration>()["Authentication:Oidc:CallbackUrl"];
 
             if (string.IsNullOrWhiteSpace(domain) ||
                 string.IsNullOrWhiteSpace(clientId) ||

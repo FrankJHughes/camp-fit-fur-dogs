@@ -1,4 +1,4 @@
-namespace CampFitFurDogs.Api.Tests.Fakes;
+namespace CampFitFurDogs.TestUtilities.Fakes;
 
 public class FakeHttpMessageHandler : HttpMessageHandler
 {

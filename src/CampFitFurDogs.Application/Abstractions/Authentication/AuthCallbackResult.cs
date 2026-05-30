@@ -1,7 +1,14 @@
 namespace CampFitFurDogs.Application.Abstractions.Authentication;
 
-// ------------------------------------------------------------
-// Value Objects
-// ------------------------------------------------------------
+public sealed record AuthCallbackResult(
+    Guid CustomerId,
+    string SessionCookie,
+    string RedirectUrl
+)
+{
+    public static AuthCallbackResult CreateSuccess(Guid customerId)
+        => new(customerId, $"cfd.session={customerId}", "");
 
-public record AuthCallbackResult(Guid CustomerId, string RedirectUrl);
+    public AuthCallbackResult WithRedirect(string redirectUrl)
+        => this with { RedirectUrl = redirectUrl };
+}

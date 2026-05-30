@@ -6,7 +6,7 @@ These values must be provided in environment variables for all environments (loc
 ## Required Keys
 
 ```yaml
-Auth0:
+Oidc:
   Domain: "<tenant>.auth0.com"
   ClientId: "<client-id>"
   ClientSecret: "<client-secret>"

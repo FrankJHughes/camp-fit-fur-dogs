@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace CampFitFurDogs.Api.Tests.Fakes;
+namespace CampFitFurDogs.TestUtilities.Fakes;
 
 public class RouteBuilderStub : IEndpointRouteBuilder
 {
