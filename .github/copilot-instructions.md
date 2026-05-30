@@ -1,10 +1,20 @@
 # Copilot Instructions
 
-This file provides top‑level guidance for how Copilot should behave in this repository.
-All detailed conventions live in the `docs/conventions` folder.
+This file provides top‑level guidance for how Copilot must behave in this repository.
+All detailed conventions live in `docs/conventions`.
 All governance documents live in `docs/governance`.
 
-Copilot must always follow the repository’s **[conventions](ca://s?q=Show_repository_conventions)**, **[governance](ca://s?q=Show_governance_rules)**, and **[guardrails](ca://s?q=Show_guardrail_tests)**.
+Copilot must always follow the repository’s
+**[conventions](ca://s?q=Show_repository_conventions)**,
+**[governance](ca://s?q=Show_governance_rules)**, and
+**[guardrails](ca://s?q=Show_guardrail_tests)**.
+
+Copilot must also respect the governance enforcement system:
+
+- **[Governance Enforcement Checklist](ca://s?q=Open_governance_enforcement_checklist)**
+- **[Governance Enforcement Matrix](ca://s?q=Open_governance_enforcement_matrix)**
+
+These documents define *how governance is enforced* across roles, CI, scripts, and SharedKernel.
 
 ---
 
@@ -21,6 +31,7 @@ Copilot’s behavior must always align with:
 - the **[script‑first and patch‑first rules](ca://s?q=Explain_script_first_and_patch_first_rules)**
 - the **[guardrail tests](ca://s?q=List_guardrail_tests)** that enforce repository expectations
 - the **[governance rules](ca://s?q=Explain_governance_rules)** that define process, responsibilities, and enforcement
+- the governance enforcement system (checklist + matrix)
 
 ---
 
@@ -43,13 +54,34 @@ Copilot must treat them as canonical.
 Governance defines **process**, **responsibilities**, **boundaries**, and **enforcement**.
 Governance overrides conventions when they conflict.
 
-Governance lives in:
+All governance documents live in:
 
-- `docs/governance/product/`
-- `docs/governance/technical/`
-- `docs/governance/enforcement/`
+```
+docs/governance/product/
+docs/governance/technical/
+docs/governance/enforcement/
+```
 
-Copilot must respect governance rules but must not duplicate or reinterpret them.
+## Product Governance
+- `docs/governance/product/story-governance.md`
+- `docs/governance/product/changelog-governance.md`
+- `docs/governance/product/repo-hygiene.md`
+- `docs/governance/product/multi-product-governance.md`
+- `docs/governance/product/contributor-governance.md`
+
+## Technical Governance
+- `docs/governance/technical/api-governance.md`
+- `docs/governance/technical/architecture-governance.md`
+- `docs/governance/technical/ci-governance.md`
+- `docs/governance/technical/security-governance.md`
+- `docs/governance/technical/operations-governance.md`
+
+## Enforcement Governance
+- `docs/governance/enforcement/governance-enforcement-checklist.md`
+- `docs/governance/enforcement/governance-enforcement-matrix.md`
+- `docs/governance/enforcement/governance-process.md`
+
+Copilot must respect governance rules but must not reinterpret or rewrite them unless explicitly instructed.
 
 ---
 
@@ -65,8 +97,11 @@ Copilot must respect governance rules but must not duplicate or reinterpret them
   - **[architectural boundaries](ca://s?q=Explain_architecture_boundaries)**
   - **[TDD expectations](ca://s?q=Explain_TDD_expectations)**
 
+Additional requirements:
+
 - Guardrail tests exist to ensure Copilot aligns with established rules.
 - Copilot must not modify governance files unless explicitly instructed.
+- Copilot must respect the **Governance Enforcement Checklist** and **Governance Enforcement Matrix** when generating or validating content.
 
 ---
 
@@ -140,4 +175,12 @@ These rules prevent corruption, drift, and ambiguity.
 | 26 | 12 | Manual Render API calls conflicted | Never manually create preview instances |
 | 27 | 12 | Preview URL detection failed on reopened PRs | Compute URLs deterministically |
 | 28 | 12 | Misunderstanding of Render env var injection | Document Render’s environment variable rules |
+| 29 | 13 | Preview callback URLs drifted between Auth0 and Render | Add script‑first generator for callback URL matrix |
+| 30 | 13 | Missing Auth0 secrets caused silent 500s in preview | Add CI guardrail to fail preview deploy if secrets missing |
+| 31 | 13 | Cookie flags differed between local and preview | Document cookie flag matrix + add guardrail tests |
+| 32 | 13 | Form validation tests drifted from schema messages | Require tests to import messages from schema/validator |
+| 33 | 13 | Preview teardown failed on reopened PRs | Always destroy previews before provisioning |
+| 34 | 13 | Neon branch not ready before migrations | Add Neon readiness probe before migrations |
+| 35 | 13 | Vitest config drifted from folder structure | Add guardrail asserting test dirs match Vitest globs |
+| 36 | 13 | Authentication tests reused stale cookies | Add shared helper to clear cookies between tests |
 

@@ -26,6 +26,8 @@ Operations must follow these principles:
 - **Reversibility** — every deployment must be reversible  
 - **Zero Surprises** — customers should never experience unexpected downtime  
 - **Separation of Concerns** — hosting, deployment, and configuration are isolated  
+- **Fail Fast** — misconfigured environments must prevent startup  
+- **Determinism** — operational behavior must not depend on hidden state  
 
 Operations is governed by process, not improvisation.
 
@@ -49,6 +51,9 @@ Governance rules:
 - Hosting must support rollback  
 - Hosting must expose logs for debugging  
 - Hosting must not expose internal ports or services  
+- Hosting providers must be **hardened** and must **abort startup** if configuration cannot be applied  
+- Hosting provider selection must follow **first‑active‑wins** semantics  
+- Hosting provider infrastructure must be implemented in **SharedKernel**  
 
 Frontend and API hosting must be independent but coordinated.
 
@@ -65,6 +70,9 @@ Deployments must:
 - Never include secrets in source control  
 - Never require manual intervention  
 - Produce clear logs on success or failure  
+- Fail fast if required configuration is missing  
+- Validate hosting provider configuration before application startup  
+- Validate DI auto‑registration and EF Core configuration scanning at startup  
 
 Pull requests must generate preview deployments when supported by the platform.
 
@@ -80,7 +88,8 @@ Configuration must:
 - Never be stored in `.env` files committed to source  
 - Never be stored in frontend bundles  
 - Never be logged  
-- Be documented in a single configuration reference file (future)  
+- Be validated at startup  
+- Fail fast if required configuration is missing or invalid  
 
 Configuration categories:
 
@@ -89,6 +98,8 @@ Configuration categories:
 - Frontend environment variables  
 - Feature flags  
 - Hosting platform settings  
+- OIDC authentication settings  
+- Render PR preview artifact settings  
 
 Configuration drift is prohibited.
 
@@ -111,6 +122,9 @@ Backups:
 - Must be restorable  
 - Must not require manual export/import workflows  
 
+Database configuration must be validated at startup.  
+Missing or invalid connection strings must prevent the API from starting.
+
 ---
 
 # 6. Monitoring & Observability Governance
@@ -130,6 +144,15 @@ Health checks:
 
 Monitoring must not expose sensitive data.
 
+Operational logs must include:
+
+- Hosting provider selection  
+- Hosting provider configuration success/failure  
+- Authentication flow errors  
+- Startup failures  
+- DI auto‑registration validation failures  
+- EF Core configuration scanning failures  
+
 ---
 
 # 7. Reliability Governance
@@ -141,34 +164,88 @@ Reliability expectations:
 - Downtime must be minimized  
 - Rollbacks must be fast  
 - Hosted environments must remain within free‑tier limits  
+- Hosting provider failures must be surfaced immediately  
+- Misconfigured preview environments must fail fast rather than run partially configured  
 
 Operational risks must be documented and mitigated.
 
 ---
 
-# 8. Incident Response Governance
+# 8. Hosting Provider Hardening Governance
+
+Hosting providers must:
+
+- Validate all required environment variables  
+- Validate all required external configuration sources  
+- Fail fast if configuration cannot be applied  
+- Never silently skip required configuration  
+- Never allow the API to start in an insecure or incomplete state  
+- Use SharedKernel hosting provider infrastructure  
+
+## 8.1 Render Hosting Provider Requirements
+
+Render PR preview environments must provide:
+
+- `IS_PULL_REQUEST`  
+- `RENDER_GIT_REPO_SLUG`  
+- `RENDER_SERVICE_NAME`  
+- `GITHUB_PAT`  
+
+Render must also provide GitHub Actions artifacts:
+
+- `pr-XXX-db/db-conn.txt`  
+- `pr-XXX-frontend/frontend-url.txt`  
+
+If any required artifact or variable is missing:
+
+- Startup must abort  
+- A clear, actionable error must be thrown  
+- No partial configuration is allowed  
+
+Render hosting provider behavior must be fully deterministic and testable.
+
+---
+
+# 9. PR Preview Environment Governance
+
+PR preview environments must:
+
+- Use Neon branch provisioning  
+- Apply EF Core migrations deterministically  
+- Run infrastructure integration tests  
+- Deploy API to Render  
+- Deploy frontend to Vercel  
+- Validate readiness via health probes  
+- Fail fast on misconfiguration  
+- Publish deterministic artifacts (`db-conn.txt`, `frontend-url.txt`)  
+
+Preview environments must be fully reproducible.
+
+---
+
+# 10. Incident Response Governance
 
 When an incident occurs:
 
-## 8.1 Immediate Actions
+## 10.1 Immediate Actions
 - Stop the bleeding  
 - Disable affected features if necessary  
 - Revoke compromised tokens  
 - Block deployments if needed  
 
-## 8.2 Diagnosis
+## 10.2 Diagnosis
 - Identify root cause  
 - Identify affected users  
 - Identify affected systems  
 - Determine severity  
 
-## 8.3 Remediation
+## 10.3 Remediation
 - Patch the issue  
 - Add tests to prevent regression  
 - Update documentation  
 - Update changelog  
 
-## 8.4 Communication
+## 10.4 Communication
 - Notify stakeholders  
 - Document the incident  
 - Record follow‑up actions  
@@ -177,7 +254,7 @@ Incidents must be treated as top‑priority work.
 
 ---
 
-# 9. Operational Boundaries
+# 11. Operational Boundaries
 
 Operations must not:
 
@@ -187,6 +264,9 @@ Operations must not:
 - Deploy from local machines  
 - Use untracked scripts  
 - Introduce undocumented infrastructure changes  
+- Allow hosting providers to run without validation  
+- Allow the API to start with missing or invalid configuration  
+- Bypass SharedKernel startup validation  
 
 All operational changes must be:
 
@@ -197,13 +277,16 @@ All operational changes must be:
 
 ---
 
-# 10. Governance Enforcement
+# 12. Governance Enforcement
 
 - CI enforces deployment safety  
 - Reviewers enforce operational rules  
 - Product Owner enforces EG/LG alignment  
 - Scripts enforce deterministic behavior  
 - Hosting platforms enforce environment isolation  
+- SharedKernel enforces startup validation  
+- DI auto‑registration enforces service correctness  
 
 No PR may merge if it violates operational governance.
 
+Operations governance is non-negotiable.

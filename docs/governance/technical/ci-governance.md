@@ -35,13 +35,14 @@ Every file in the repository belongs to exactly one CI zone.
 ## Backend Zone
 Paths:
 
-- `src/CampFitFurDogs.*/**`
+- `src/CampFitFurDogs.*/**`  
 - `tests/CampFitFurDogs.*/**`
 
 Triggers:
 
 - Backend tests  
-- SharedKernel tests (because backend depends on SharedKernel)
+- SharedKernel tests (because backend depends on SharedKernel)  
+- Integration tests (colocated inside backend job)
 
 ## Frontend Zone
 Paths:
@@ -52,36 +53,47 @@ Triggers:
 
 - Frontend tests only
 
-## SharedKernel Zone (Frank)
+## SharedKernel Zone
 Paths:
 
-- `src/SharedKernel/**`
+- `src/SharedKernel/**`  
 - `tests/SharedKernel.*/**`
 
 Triggers:
 
 - SharedKernel tests  
-- Backend tests (because backend depends on SharedKernel)
+- Backend tests (because backend depends on SharedKernel)  
+- Frontend tests (because SharedKernel affects endpoint discovery and DI)
+
+SharedKernel tests validate:
+
+- Auto‑registration engine  
+- `[AutoRegister]` attribute behavior  
+- EF Core configuration scanning  
+- Endpoint discovery infrastructure  
+- Guardrail enforcement
 
 ## Infra Zone
 Paths:
 
-- `.github/**`
-- `Makefile`
-- `docker-compose*`
+- `.github/**`  
+- `Makefile`  
+- `docker-compose*`  
 - `*.sln`
 
 Triggers:
 
-- **All** test suites (infra changes affect the entire system)
+- **All** test suites (infra changes affect the entire system)  
+- CI workflow logic validation  
+- Dependency graph validation  
 
 ## Docs-Only Zone
 Paths:
 
-- `*.md`
-- `docs/**`
-- `product/**`
-- `LICENSE`
+- `*.md`  
+- `docs/**`  
+- `product/**`  
+- `LICENSE`  
 - `.editorconfig`
 
 Triggers:
@@ -149,9 +161,9 @@ Each suite must be:
 
 Suites:
 
-- **Backend** — domain, application, infrastructure, endpoint tests  
+- **Backend** — domain, application, infrastructure, endpoint tests, integration tests  
 - **Frontend** — Vitest + React Testing Library  
-- **SharedKernel** — primitives, dispatchers, validators, guardrails  
+- **SharedKernel** — primitives, dispatchers, validators, guardrails, DI auto‑registration, EF Core scanning  
 
 SharedKernel failures block backend merges.
 
@@ -229,4 +241,3 @@ CI failures are governance failures.
 - Scripts enforce metadata correctness  
 
 No PR may merge if CI governance is violated.
-

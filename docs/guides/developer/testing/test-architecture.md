@@ -35,6 +35,7 @@ Each project tests only its corresponding layer, except `Architecture.Tests` whi
 - Endpoint tests (full request → response flow)
 - Request/response mapping tests
 - **DI-dependent guardrails** — tests that need the real DI container via `GuardrailTestBase` (see §3.1)
+- Authentication callback tests (see **Authentication Testing**)
 
 ### 2.2 Application.Tests
 
@@ -106,7 +107,7 @@ Examples:
 - DTOs must not reference domain entities.
 - Endpoints must not bypass the dispatcher pipeline.
 - SharedKernel must have no upstream dependencies.
-- Query handlers must not depend on repository interfaces (ADR-0021).
+- Query handlers must not depend on repository interfaces (ADR‑0021).
 
 ### 3.3 When to Use Which
 
@@ -136,7 +137,8 @@ Guardrail tests should:
 - Test business logic in isolation.
 - Mock repositories or external services.
 - Avoid testing validation (that belongs to validator tests).
-- Inject `FakeUnitOfWork` alongside fake repositories. Assert `Committed` is `true` and verify `CommitCount` for commit behavior.
+- Inject `FakeUnitOfWork` alongside fake repositories.  
+  Assert `Committed` is `true` and verify `CommitCount` for commit behavior.
 
 **Query handler tests** should:
 
@@ -173,15 +175,15 @@ API tests should:
 
 Tests may use:
 
-- Builders
-- Factory methods
-- Test doubles (fake repositories for commands, fake readers for queries)
-- In-memory repositories (for Infrastructure tests)
+- Builders  
+- Factory methods  
+- Test doubles (fake repositories for commands, fake readers for queries)  
+- In-memory repositories (for Infrastructure tests)  
 
 Avoid:
 
-- Sharing mutable state across tests
-- Overusing mocks (especially in guardrails)
+- Sharing mutable state across tests  
+- Overusing mocks (especially in guardrails)  
 
 ---
 
@@ -223,3 +225,14 @@ Tests are not just for correctness — they are **architectural enforcement tool
 - The system remains maintainable as it grows.
 
 Guardrails turn architecture into something the system *defends*, not something developers must remember.
+
+---
+
+## Related Documentation
+
+- **[Authentication Testing](../authentication-testing.md)**  
+- **[Integration Testing](../integration-testing.md)**  
+- **[Frontend Testing](../frontend-testing.md)**  
+- **[Purity Rules](../purity-rules.md)**  
+- **[Dispatcher Pipeline](../dispatcher-pipeline.md)**  
+- **[Abstractions Contract](../abstractions-contract.md)**

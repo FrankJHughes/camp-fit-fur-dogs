@@ -72,10 +72,10 @@ Application/Dogs/RegisterDog/RegisterDogCommand.cs
 ### 3.2 API Depends Only on Abstractions  
 Endpoints must reference:
 
-- Commands
-- Queries
-- Result DTOs
-- Dispatchers
+- Commands  
+- Queries  
+- Result DTOs  
+- Dispatchers  
 
 They must **not** reference:
 
@@ -116,7 +116,7 @@ The Abstractions folder:
 - Allows Application internals to evolve without breaking API or Infrastructure  
 - Supports clean layering and purity rules  
 - Enables guardrail tests to enforce architectural boundaries  
-- Houses reader interfaces so query handlers depend on stable contracts, not Infrastructure (ADR-0021)
+- Houses reader interfaces so query handlers depend on stable contracts, not Infrastructure (**ADR‑0021**)  
 
 This is the backbone of the vertical slice architecture.
 
@@ -126,13 +126,13 @@ This is the backbone of the vertical slice architecture.
 
 When adding a new feature:
 
-1. **Define commands/queries** in `Abstractions/<Feature>/`.
-2. **Define result types** (DTOs) in the same folder.
-3. **Define reader interfaces** in the same folder (query slices only — e.g., `IGetDogProfileReader`).
-4. **Implement handlers** in `Application/<Feature>/Handlers/`.
-5. **Implement validators** in `Application/<Feature>/Validators/`.
-6. **Implement readers** in `Infrastructure/<Feature>/` (query slices only).
-7. **Use only Abstractions** from API and Infrastructure.
-8. **Do not reference internal handler types** from outside Application.
+1. **Define commands/queries** in `Abstractions/<Feature>/`.  
+2. **Define result types** (DTOs) in the same folder.  
+3. **Define reader interfaces** in the same folder (query slices only — e.g., `IGetDogProfileReader`).  
+4. **Implement handlers** in `Application/<Feature>/Handlers/`.  
+5. **Implement validators** in `Application/<Feature>/Validators/`.  
+6. **Implement readers** in `Infrastructure/<Feature>/` (query slices only).  
+7. **Use only Abstractions** from API and Infrastructure.  
+8. **Do not reference internal handler types** from outside Application.  
 
 If a type is referenced across layers, it probably belongs in Abstractions.

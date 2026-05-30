@@ -35,20 +35,20 @@ If the aggregate already exists, skip to the command or query slice.
 
 ### RED — write the entity test first
 
-`````text
+```
 tests/CampFitFurDogs.Domain.Tests/<Feature>/<Entity>Tests.cs
-`````
+```
 
 Test creation, invariants, and domain event emission.
 
 ### GREEN — add production code
 
-`````text
+```
 src/CampFitFurDogs.Domain/<Feature>/
     <Entity>.cs
     <ValueObject>.cs
     <Entity><Action>DomainEvent.cs
-`````
+```
 
 ### Rules
 
@@ -65,9 +65,9 @@ A command slice **mutates state**.
 
 Runtime flow:
 
-`````text
+```
 Page → API Client → Endpoint → CommandDispatcher → Validator → CommandHandler → Repository → Database
-`````
+```
 
 **TDD order: Application → Infrastructure → API → Frontend**
 
@@ -77,9 +77,9 @@ Page → API Client → Endpoint → CommandDispatcher → Validator → Command
 
 ### RED — handler test
 
-`````text
+```
 tests/CampFitFurDogs.Application.Tests/<Feature>/<UseCase>/<UseCase>CommandHandlerTests.cs
-`````
+```
 
 Mock the repository. Assert:
 
@@ -89,20 +89,20 @@ Mock the repository. Assert:
 
 ### GREEN — abstractions + handler
 
-`````text
+```
 src/CampFitFurDogs.Application/Abstractions/<Feature>/
     <UseCase>Command.cs
     <UseCase>Result.cs
     I<Entity>Repository.cs   # only if first slice for this aggregate
-`````
+```
 
 Then:
 
-`````text
+```
 src/CampFitFurDogs.Application/<Feature>/<UseCase>/
     <UseCase>CommandHandler.cs
     <UseCase>CommandValidator.cs
-`````
+```
 
 ### Rules
 
@@ -117,19 +117,19 @@ src/CampFitFurDogs.Application/<Feature>/<UseCase>/
 
 ### RED — repository integration test
 
-`````text
+```
 tests/CampFitFurDogs.Infrastructure.Tests/<Feature>/<Entity>RepositoryTests.cs
-`````
+```
 
 Uses `PostgresFixture` (Testcontainers).
 
 ### GREEN — repository + configuration
 
-`````text
+```
 src/CampFitFurDogs.Infrastructure/<Feature>/
     <Entity>Repository.cs
     <Entity>Configuration.cs
-`````
+```
 
 ### Rules
 
@@ -143,17 +143,17 @@ src/CampFitFurDogs.Infrastructure/<Feature>/
 
 ### RED — endpoint integration test
 
-`````text
+```
 tests/CampFitFurDogs.Api.Tests/<Feature>/<UseCase>EndpointTests.cs
-`````
+```
 
 ### GREEN — endpoint + request DTO
 
-`````text
+```
 src/CampFitFurDogs.Api/<Feature>/
     <UseCase>Endpoint.cs
     <UseCase>Request.cs
-`````
+```
 
 ### Rules
 
@@ -175,27 +175,27 @@ Frontend uses the **new FormCommand architecture**:
 
 ### 4a. Component (RED → GREEN)
 
-`````text
+```
 frontend/test/components/<UseCase>Form.test.tsx
-`````
+```
 
 Then:
 
-`````text
+```
 frontend/src/components/<UseCase>Form.tsx
-`````
+```
 
 ### 4b. API Client (RED → GREEN)
 
-`````text
+```
 frontend/test/api/<useCase>.test.ts
-`````
+```
 
 Then:
 
-`````text
+```
 frontend/src/api/<useCase>.ts
-`````
+```
 
 ### Rules
 
@@ -206,15 +206,15 @@ frontend/src/api/<useCase>.ts
 
 ### 4c. Page (RED → GREEN)
 
-`````text
+```
 frontend/test/app/<feature>/<route>/page.test.tsx
-`````
+```
 
 Then:
 
-`````text
+```
 frontend/src/app/<feature>/<route>/page.tsx
-`````
+```
 
 ### Rules
 
@@ -245,9 +245,9 @@ A query slice **reads state** without mutation.
 
 Runtime flow:
 
-`````text
+```
 Page → API Client → Endpoint → QueryDispatcher → Validator → QueryHandler → Reader → Database
-`````
+```
 
 **TDD order: Application → Infrastructure → API → Frontend**
 
@@ -257,26 +257,26 @@ Page → API Client → Endpoint → QueryDispatcher → Validator → QueryHand
 
 ### RED — handler test
 
-`````text
+```
 tests/CampFitFurDogs.Application.Tests/<Feature>/<UseCase>/<UseCase>HandlerTests.cs
-`````
+```
 
 ### GREEN — abstractions + handler
 
-`````text
+```
 src/CampFitFurDogs.Application/Abstractions/<Feature>/
     <UseCase>Query.cs
     <UseCase>Response.cs
     I<UseCase>Reader.cs
-`````
+```
 
 Then:
 
-`````text
+```
 src/CampFitFurDogs.Application/<Feature>/<UseCase>/
     <UseCase>Handler.cs
     <UseCase>QueryValidator.cs
-`````
+```
 
 ### Rules
 
@@ -290,16 +290,16 @@ src/CampFitFurDogs.Application/<Feature>/<UseCase>/
 
 ### RED — reader integration test
 
-`````text
+```
 tests/CampFitFurDogs.Infrastructure.Tests/<Feature>/<UseCase>ReaderTests.cs
-`````
+```
 
 ### GREEN — reader implementation
 
-`````text
+```
 src/CampFitFurDogs.Infrastructure/<Feature>/
     <UseCase>Reader.cs
-`````
+```
 
 ### Rules
 
@@ -319,27 +319,27 @@ Same pattern as command slices.
 
 ### 4a. Component (RED → GREEN)
 
-`````text
+```
 frontend/test/components/<Entity><UseCase>Card.test.tsx
-`````
+```
 
 Then:
 
-`````text
+```
 frontend/src/components/<Entity><UseCase>Card.tsx
-`````
+```
 
 ### 4b. API Client (RED → GREEN)
 
-`````text
+```
 frontend/test/api/<useCase>.test.ts
-`````
+```
 
 Then:
 
-`````text
+```
 frontend/src/api/<useCase>.ts
-`````
+```
 
 ### Rules
 
@@ -349,15 +349,15 @@ frontend/src/api/<useCase>.ts
 
 ### 4c. Page (RED → GREEN)
 
-`````text
+```
 frontend/test/app/<feature>/[id]/page.test.tsx
-`````
+```
 
 Then:
 
-`````text
+```
 frontend/src/app/<feature>/[id]/page.tsx
-`````
+```
 
 ### Rules
 
@@ -402,4 +402,3 @@ frontend/src/app/<feature>/[id]/page.tsx
 - [ ] Guardrails pass  
 - [ ] CHANGELOG updated  
 - [ ] PR opened with merge checklist
-

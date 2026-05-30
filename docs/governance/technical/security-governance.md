@@ -41,6 +41,8 @@ Security responsibilities include:
 - API endpoint security  
 - Frontend session and token handling  
 - Operational security for deployments  
+- OIDC configuration and identity mapping  
+- Session cookie issuance and lifecycle management  
 
 ## Frank (SharedKernel)
 Security responsibilities include:
@@ -49,7 +51,11 @@ Security responsibilities include:
 - Password hashing infrastructure  
 - Validation pipeline  
 - Guardrails for endpoint discovery  
-- Enforcement of architectural boundaries  
+- Guardrails for dispatching and error shaping  
+- DI auto‑registration enforcement  
+- EF Core configuration scanning  
+- Hosting provider selection and hardening infrastructure  
+- Startup validation for configuration safety  
 
 SharedKernel must never depend on product-specific security logic.
 
@@ -60,9 +66,12 @@ SharedKernel must never depend on product-specific security logic.
 Authentication must:
 
 - Use secure password hashing (US‑049)  
-- Use validated identity flows  
+- Use validated identity flows (OIDC for US‑110)  
 - Never store plaintext credentials  
 - Never bypass validation pipelines  
+- Fail fast on misconfiguration (e.g., missing OIDC keys)  
+- Resolve identity via `ICurrentUserService`  
+- Issue session cookies via `ISessionService`  
 
 Authorization must:
 
@@ -88,7 +97,7 @@ Secrets must:
 - Never appear in the repository  
 - Never appear in commit messages  
 - Never appear in logs  
-- Never be stored in `.env` files committed to source control  
+- Never be stored in committed `.env` files  
 
 Secrets must be stored in:
 
@@ -97,6 +106,8 @@ Secrets must be stored in:
 - Secure secret stores (future infrastructure)  
 
 Scripts must not print secrets under any circumstances.
+
+PR Preview artifacts (`db-conn.txt`, `frontend-url.txt`) must be treated as sensitive.
 
 ---
 
@@ -136,6 +147,13 @@ CI must enforce:
 - No use of deprecated or insecure packages  
 - No floating versions in production code  
 
+DI governance:
+
+- Slice services must use `[AutoRegister]`  
+- Manual DI registration of slice services is prohibited  
+- Scrutor/suffix scanning is prohibited  
+- DI auto‑registration violations must fail startup  
+
 ---
 
 # 7. Hosting & Deployment Security
@@ -153,8 +171,41 @@ Deployment must:
 - Never include development secrets  
 - Never run in privileged container mode  
 - Never expose internal endpoints publicly  
+- Validate hosting provider configuration before startup  
+- Validate DI auto‑registration and EF Core scanning before startup  
 
 Infrastructure changes must trigger all test suites.
+
+## 7.1 Hosting Provider Hardening
+
+Hosting providers must:
+
+- Fail fast if configuration cannot be applied  
+- Validate all required environment variables  
+- Validate all required external configuration sources  
+- Never silently skip required configuration  
+- Never allow the API to start in an insecure or incomplete state  
+- Use SharedKernel hosting provider infrastructure  
+
+## 7.2 Render Hosting Provider Requirements
+
+Render PR preview environments must:
+
+- Provide required environment variables:  
+  - `IS_PULL_REQUEST`  
+  - `RENDER_GIT_REPO_SLUG`  
+  - `RENDER_SERVICE_NAME`  
+  - `GITHUB_PAT`  
+
+- Provide required GitHub artifacts:  
+  - `pr-XXX-db/db-conn.txt`  
+  - `pr-XXX-frontend/frontend-url.txt`  
+
+If any required artifact or variable is missing:
+
+- Startup must abort  
+- A clear, actionable error must be thrown  
+- No partial configuration is allowed  
 
 ---
 
@@ -168,6 +219,9 @@ API endpoints must:
 - Use consistent error handling  
 - Avoid leaking stack traces  
 - Avoid returning internal identifiers  
+- Use dispatchers (never invoke handlers directly)  
+- Use SharedKernel error shaping  
+- Use SharedKernel validation pipeline  
 
 Endpoints must not:
 
@@ -202,7 +256,52 @@ Frontend must not:
 
 ---
 
-# 10. CI Security Governance
+# 10. Session & Cookie Security Governance
+
+Session cookies must:
+
+- Use secure, HTTP-only cookies  
+- Never store tokens in localStorage  
+- Use `Secure` flag in Production  
+- Use strict SameSite rules  
+- Contain only opaque identifiers (never PII)  
+- Be signed and validated by the server  
+
+Session cookies must not:
+
+- Contain JWTs  
+- Contain raw Auth0 tokens  
+- Contain user profile data  
+
+Session creation must be audited via `IAuditLogger`.
+
+---
+
+# 11. Audit Logging Governance
+
+Audit logs must record:
+
+- Successful logins  
+- Failed logins  
+- Security-relevant actions  
+- Identity resolution events (non-PII)  
+
+Audit logs must:
+
+- Never contain secrets  
+- Never contain tokens  
+- Never contain PII beyond external ID  
+
+Audit logs must be:
+
+- Structured  
+- Machine-readable  
+- Immutable  
+- Queryable  
+
+---
+
+# 12. CI Security Governance
 
 CI must:
 
@@ -220,7 +319,7 @@ Security scanning must run:
 
 ---
 
-# 11. Incident Response Governance
+# 13. Incident Response Governance
 
 If a security issue is discovered:
 
@@ -248,12 +347,14 @@ Incidents must be treated as top-priority work.
 
 ---
 
-# 12. Governance Enforcement
+# 14. Governance Enforcement
 
 - Reviewers enforce security rules  
 - CI enforces scanning and safe workflows  
 - Product Owner enforces EG/LG alignment  
 - Scripts enforce safe defaults  
+- SharedKernel enforces startup validation  
+- DI auto‑registration enforces service correctness  
 
 No PR may merge if:
 
@@ -263,4 +364,3 @@ No PR may merge if:
 - It violates hosting or deployment rules  
 
 Security governance is non-negotiable.
-

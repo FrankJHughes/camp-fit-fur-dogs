@@ -15,6 +15,9 @@ They complement the architectural guides by showing how tests map to the systemâ
 - **[Integration Testing](../integration-testing.md)**  
   How to write integration tests using the test host, fake services, and the dispatcher.
 
+- **[Authentication Testing](../authentication-testing.md)**  
+  How to test the OIDC login flow, callback behavior, session cookie issuance, and identity mapping.
+
 - **[Frontend Testing](../frontend-testing.md)**  
   How to test React components, forms, and UI flows.
 
@@ -32,6 +35,7 @@ These guides help developers:
 - Use the test host and fakes correctly  
 - Understand how validation boundaries affect test placement  
 - Maintain consistent testing patterns across vertical slices  
+- Test authentication flows and session behavior safely and deterministically  
 
 ---
 
@@ -39,4 +43,5 @@ These guides help developers:
 
 - [Validation Boundaries](ca://s?q=Show_validation_boundaries_doc)  
 - [Dispatcher Pipeline](ca://s?q=Show_dispatcher_pipeline_guide)  
-- [API Endpoint Purity](ca://s?q=Show_API_endpoint_purity_guide)
+- [API Endpoint Purity](ca://s?q=Show_API_endpoint_purity_guide)  
+- [Authentication Operations](ca://s?q=Show_authentication_operations_doc)

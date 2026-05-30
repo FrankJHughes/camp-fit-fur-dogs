@@ -3,34 +3,44 @@
 The callback endpoint completes the **OIDC authorization code flow**.  
 It exchanges the authorization code for tokens, loads or creates the Owner, and issues the session cookie.
 
-## HTTP Request
+---
+
+# HTTP Request
 
 ```http
 GET /api/auth/callback?code=XYZ
 ```
 
-## Behavior
+---
 
-1. Validates that `code` is present
-2. Exchanges the code for tokens using Auth0
+# Behavior
+
+1. Validates that `code` is present  
+2. Exchanges the code for tokens using Auth0  
 3. Calls `/userinfo` to retrieve:
    - `sub`
    - `email`
    - `given_name`
    - `family_name`
-4. Loads or creates the Owner record
-5. Issues a secure session cookie
-6. Redirects to the frontend dashboard
+4. Loads or creates the Owner record  
+5. Issues a secure session cookie  
+6. Redirects to the frontend dashboard  
 
-## Session Cookie
+---
 
-- HttpOnly  
-- Secure  
-- SameSite=Lax  
-- Max‑Age configured  
-- Contains opaque session token  
+# Session Cookie
 
-## Error Handling
+- **HttpOnly**  
+- **Secure**  
+- **SameSite=Lax**  
+- **Max‑Age** configured  
+- Contains an **opaque session token**  
+
+The cookie is written by the callback pipeline after identity resolution and session creation.
+
+---
+
+# Error Handling
 
 | Condition | Error Code | HTTP Status |
 |----------|------------|-------------|
@@ -40,8 +50,12 @@ GET /api/auth/callback?code=XYZ
 | Missing configuration | `BadConfiguration` | 500 |
 | Unexpected failure | `Unexpected` | 500 |
 
-See also:  
-- [Login Endpoint](ca://s?q=Show_login_endpoint_doc)  
-- [Authentication Overview](ca://s?q=Show_authentication_overview)  
-- [Authentication Configuration](ca://s?q=Show_authentication_configuration_doc)
+These errors are surfaced through the global exception → ProblemDetails mapping.
 
+---
+
+# See Also
+
+- **[Login Endpoint](ca://s?q=Show_login_endpoint_doc)**  
+- **[Authentication Overview](ca://s?q=Show_authentication_overview)**  
+- **[Authentication Configuration](ca://s?q=Show_authentication_configuration_doc)**  

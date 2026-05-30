@@ -30,9 +30,13 @@ A standalone product providing:
 - CQRS abstractions  
 - Dispatchers  
 - Validation pipeline  
-- EF Core base classes  
+- DI auto‑registration engine  
+- `[AutoRegister]` attribute  
+- EF Core configuration scanning  
 - Endpoint discovery infrastructure  
+- Hosting provider infrastructure  
 - Architecture guardrails  
+- Error boundary helpers  
 
 Frank is not a folder — it is a **product** with its own:
 
@@ -41,6 +45,8 @@ Frank is not a folder — it is a **product** with its own:
 - Backlog  
 - Versioning  
 - Release cycle  
+
+SharedKernel must remain product‑agnostic and must not depend on Camp Fit Fur Dogs.
 
 ---
 
@@ -58,6 +64,8 @@ Prohibited:
 - Frontend → Backend internals  
 - Backend → Frontend  
 - Any product → Another product’s domain model  
+- SharedKernel → product-specific abstractions  
+- Manual DI registration of SharedKernel services in Camp Fit Fur Dogs  
 
 Allowed:
 
@@ -82,6 +90,7 @@ Rules:
 - A SharedKernel change must never appear in the Camp Fit Fur Dogs changelog  
 - A Camp Fit Fur Dogs change must never appear in the SharedKernel changelog  
 - Version numbers are independent  
+- SharedKernel breaking changes require a major version bump  
 
 Cross-product drift is prohibited.
 
@@ -106,6 +115,7 @@ Frank milestones:
 - EF Core Integration  
 - Endpoint Discovery  
 - Architecture Guardrails  
+- Hosting Provider Infrastructure  
 
 Rules:
 
@@ -148,6 +158,7 @@ SharedKernel changes must trigger:
 
 - SharedKernel tests  
 - Backend tests (because backend depends on SharedKernel)  
+- Frontend tests (because SharedKernel affects endpoint discovery and DI)  
 
 Camp Fit Fur Dogs changes must not trigger SharedKernel tests.
 
@@ -174,6 +185,9 @@ Rules:
 - A SharedKernel release must not require a Camp Fit Fur Dogs release  
 - A Camp Fit Fur Dogs release must not require a SharedKernel release  
 - Breaking changes in SharedKernel require a major version bump  
+- SharedKernel releases must maintain DI compatibility  
+- SharedKernel releases must maintain EF Core configuration compatibility  
+- SharedKernel releases must maintain hosting provider compatibility  
 
 ---
 
@@ -187,7 +201,10 @@ Documentation must:
 - Avoid duplicating SharedKernel documentation in product docs  
 
 SharedKernel documentation lives with SharedKernel.  
-Camp Fit Fur Dogs documentation lives under `docs/`.
+Camp Fit Fur Dogs documentation lives under `docs/`.  
+Canonical conventions live under `docs/conventions/`.
+
+Guides must not mix product boundaries.
 
 ---
 
@@ -198,6 +215,7 @@ Camp Fit Fur Dogs documentation lives under `docs/`.
 - Scripts enforce metadata correctness  
 - Product Owner enforces milestone separation  
 - Architecture tests enforce layer boundaries  
+- SharedKernel guardrails enforce DI and hosting provider correctness  
 
 No PR may merge if:
 
@@ -205,4 +223,5 @@ No PR may merge if:
 - A dependency direction is reversed  
 - A changelog entry is placed in the wrong product  
 - A story mixes concerns from multiple products  
-
+- SharedKernel is polluted with product-specific logic  
+- Camp Fit Fur Dogs bypasses SharedKernel DI or hosting provider infrastructure
