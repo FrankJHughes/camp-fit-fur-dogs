@@ -6,22 +6,15 @@ using SharedKernel.Api.Hosting;
 
 namespace CampFitFurDogs.Api.Hosting;
 
-/// <summary>
-/// Hosting provider for Render (https://render.com).
-/// Detects a Render PR-preview environment and overrides configuration
-/// by downloading values from GitHub Actions artifacts:
-/// - Database connection string (db-conn.txt) from pr-XXX-db
-/// - Frontend base URL (frontend-url.txt) from pr-XXX-ui
-/// </summary>
 public sealed class RenderHostingProvider : IHostingProvider
 {
-    // ── Environment variable names set by Render ──────────────────────
+    public static Func<string, HttpClient>? HttpClientFactoryOverride { get; set; }
+
     private const string Env_IsPullRequest = "IS_PULL_REQUEST";
     private const string Env_GitRepoSlug = "RENDER_GIT_REPO_SLUG";
     private const string Env_RenderServiceName = "RENDER_SERVICE_NAME";
     private const string Env_GithubPat = "GITHUB_PAT";
 
-    // ── Artifact / config constants ──────────────────────────────────
     private const string DbConnFileName = "db-conn.txt";
     private const string FrontendUrlFileName = "frontend-url.txt";
 
@@ -50,44 +43,40 @@ public sealed class RenderHostingProvider : IHostingProvider
 
         if (!TryGetPrNumber(serviceName, out var prNumber))
         {
-            Log("Could not extract PR number from RENDER_SERVICE_NAME.");
-            return;
+            // 🔥 Harden: if Render says it's active but we can't parse PR, fail fast
+            throw new InvalidOperationException(
+                $"Render hosting provider is active, but could not extract PR number from '{Env_RenderServiceName}' value '{serviceName}'.");
         }
 
-        // NEW: separate artifact names
         var dbArtifactName = $"pr-{prNumber}-db";
         var frontendArtifactName = $"pr-{prNumber}-frontend";
 
-        // Fetch DB connection string
+        // DB connection string is REQUIRED
         var dbConn = await DownloadSingleArtifactFileAsync(
             githubPat, repoSlug, dbArtifactName, DbConnFileName);
 
-        if (dbConn is not null)
+        if (string.IsNullOrWhiteSpace(dbConn))
         {
-            builder.Configuration[ConfigKey_DbConn] = dbConn;
-            Log("DB connection string overridden from GitHub artifact.");
-        }
-        else
-        {
-            Log("DB connection override skipped — db-conn.txt not found or empty.");
+            throw new InvalidOperationException(
+                $"Render hosting provider could not load required database connection string from GitHub artifact '{dbArtifactName}/{DbConnFileName}'.");
         }
 
-        // Fetch frontend base URL
+        builder.Configuration[ConfigKey_DbConn] = dbConn;
+        Log("DB connection string overridden from GitHub artifact.");
+
+        // Frontend base URL is REQUIRED
         var frontendUrl = await DownloadSingleArtifactFileAsync(
             githubPat, repoSlug, frontendArtifactName, FrontendUrlFileName);
 
-        if (frontendUrl is not null)
+        if (string.IsNullOrWhiteSpace(frontendUrl))
         {
-            builder.Configuration[ConfigKey_FrontendBaseUrl] = frontendUrl;
-            Log($"Frontend base URL overridden from GitHub artifact{":" + frontendUrl}.");
+            throw new InvalidOperationException(
+                $"Render hosting provider could not load required frontend base URL from GitHub artifact '{frontendArtifactName}/{FrontendUrlFileName}'.");
         }
-        else
-        {
-            Log("Frontend base URL override skipped — frontend-url.txt not found or empty.");
-        }
-    }
 
-    // ── PR-number extraction ─────────────────────────────────────────
+        builder.Configuration[ConfigKey_FrontendBaseUrl] = frontendUrl;
+        Log($"Frontend base URL overridden from GitHub artifact: {frontendUrl}.");
+    }
 
     private static bool TryGetPrNumber(string renderServiceName, out string? prNumber)
     {
@@ -102,8 +91,6 @@ public sealed class RenderHostingProvider : IHostingProvider
         return true;
     }
 
-    // ── GitHub artifact download (single file per artifact) ──────────
-
     private static async Task<string?> DownloadSingleArtifactFileAsync(
         string githubToken,
         string repoSlug,
@@ -113,8 +100,8 @@ public sealed class RenderHostingProvider : IHostingProvider
         using var http = CreateGitHubClient(githubToken);
 
         var artifactsUrl =
-            $"https://api.github.com/repos/{repoSlug}/actions/artifacts"
-          + $"?per_page=100&name={artifactName}";
+            $"https://api.github.com/repos/{repoSlug}/actions/artifacts" +
+            $"?per_page=100&name={artifactName}";
 
         var json = await http.GetStringAsync(artifactsUrl);
 
@@ -131,7 +118,6 @@ public sealed class RenderHostingProvider : IHostingProvider
             return null;
         }
 
-        // Select newest artifact
         var latest = artifacts.Aggregate((newest, candidate) =>
             candidate.CreatedAt > newest.CreatedAt ? candidate : newest);
 
@@ -140,7 +126,10 @@ public sealed class RenderHostingProvider : IHostingProvider
 
         var entry = zip.GetEntry(fileName);
         if (entry is null)
+        {
+            Log($"Artifact '{artifactName}' does not contain file '{fileName}'.");
             return null;
+        }
 
         using var reader = new StreamReader(entry.Open());
         var value = reader.ReadToEnd().Trim();
@@ -149,6 +138,9 @@ public sealed class RenderHostingProvider : IHostingProvider
 
     private static HttpClient CreateGitHubClient(string token)
     {
+        if (HttpClientFactoryOverride is not null)
+            return HttpClientFactoryOverride(token);
+
         var http = new HttpClient();
         http.DefaultRequestHeaders.UserAgent.ParseAdd("CampFitFurDogs-Preview");
         http.DefaultRequestHeaders.Accept.ParseAdd(
@@ -159,20 +151,16 @@ public sealed class RenderHostingProvider : IHostingProvider
         return http;
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────
-
     private static bool HasEnvVar(string name)
         => !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(name));
 
     private static string GetRequiredEnvVar(string name)
         => Environment.GetEnvironmentVariable(name)
            ?? throw new InvalidOperationException(
-                  $"Required environment variable '{name}' is not set.");
+               $"Required environment variable '{name}' is not set.");
 
     private static void Log(string message)
         => Console.WriteLine($"[Hosting:Render] {message}");
-
-    // ── DTOs ─────────────────────────────────────────────────────────
 
     private sealed class ArtifactsResponse
     {

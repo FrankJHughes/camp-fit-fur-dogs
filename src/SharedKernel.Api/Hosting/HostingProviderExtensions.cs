@@ -2,27 +2,8 @@ using Microsoft.AspNetCore.Builder;
 
 namespace SharedKernel.Api.Hosting;
 
-/// <summary>
-/// Wires <see cref="IHostingProvider"/> implementations into the ASP.NET Core
-/// startup pipeline.  Consuming projects call
-/// <c>builder.UseHostingProviders(…)</c> in <c>Program.cs</c>, passing
-/// concrete provider instances in priority order.
-/// </summary>
-/// <remarks>
-/// Providers run <em>before</em> the DI container is built, so they cannot
-/// be resolved from the service provider.  Pass concrete instances in
-/// priority order instead.  First-active-wins: the first provider whose
-/// <see cref="IHostingProvider.IsActive"/> returns <c>true</c> applies its
-/// overrides and the rest are skipped.
-/// </remarks>
 public static class HostingProviderExtensions
 {
-    /// <summary>
-    /// Evaluates each <see cref="IHostingProvider"/> in registration order.
-    /// The first whose <see cref="IHostingProvider.IsActive"/> returns
-    /// <c>true</c> applies its overrides; the rest are skipped.
-    /// At most one provider runs per application start.
-    /// </summary>
     public static async Task UseHostingProviders(
         this WebApplicationBuilder builder,
         params IHostingProvider[] providers)
@@ -45,6 +26,11 @@ public static class HostingProviderExtensions
             catch (Exception ex)
             {
                 Log($"{provider.ProviderName} — override failed: {ex.Message}");
+
+                // 🔥 HARDENING: Fail fast when an active provider cannot configure itself
+                throw new InvalidOperationException(
+                    $"Hosting provider '{provider.ProviderName}' failed to configure the application. " +
+                    $"Startup aborted to protect production integrity.", ex);
             }
 
             return; // first-active-wins
