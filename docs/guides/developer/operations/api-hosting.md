@@ -6,7 +6,7 @@ This guide documents how the Camp Fit Fur Dogs API is hosted, deployed, tested, 
 
 ---
 
-## Overview
+# Overview
 
 - **API platform:** Render (Dockerized .NET 10 Web Service)  
 - **Database platform:** Neon (PostgreSQL)  
@@ -20,18 +20,20 @@ This guide explains the full lifecycle, local workflows, troubleshooting, and op
 
 ---
 
-## Render Hosting Model
+# Render Hosting Model
 
-### Main Branch Deployments
+## Main Branch Deployments
 
 - Render is configured for **Git-backed automatic deploys** on push to `main`.  
 - No GitHub Actions workflow triggers deployment.  
 - Render builds the Dockerfile at:  
-  `src/CampFitFurDogs.Api/Dockerfile`
+  ```
+  src/CampFitFurDogs.Api/Dockerfile
+  ```
 
-### PR Preview Deployments (Manual Mode)
+## PR Preview Deployments (Manual Mode)
 
-Render PR Previews are configured in **Manual** mode:
+Render PR Previews run in **Manual** mode:
 
 - **Label added** → Render creates a preview instance  
 - **Label removed** → Render destroys the preview instance  
@@ -39,7 +41,7 @@ Render PR Previews are configured in **Manual** mode:
 
 This label-driven model gives CI full control over preview lifecycle.
 
-### Preview URL Format
+## Preview URL Format
 
 ```
 https://campfitfurdogsapi-pr-<number>.onrender.com
@@ -47,30 +49,32 @@ https://campfitfurdogsapi-pr-<number>.onrender.com
 
 ---
 
-## Neon Database Hosting
+# Neon Database Hosting
 
-### Production
+## Production
 
 - Persistent Neon branch  
 - Connection string stored in Render environment variables  
-- SSL required
+- SSL required  
 
-### PR Preview Branches
+## PR Preview Branches
 
 - CI creates a fresh Neon branch named:  
-  `pr-<number>`
+  ```
+  pr-<number>
+  ```
 - Branch expires automatically after 14 days  
 - Branch is deleted when the PR closes  
 - EF Core migrations are applied in CI before the API preview is deployed  
-- Connection string is converted from PostgreSQL URI → Npgsql format using the repo’s composite action
+- Connection string is converted from PostgreSQL URI → Npgsql format using the repo’s composite action  
 
 ---
 
-## CI Preview Lifecycle (Canonical Sequence)
+# CI Preview Lifecycle (Canonical Sequence)
 
-The GitHub Actions workflow orchestrates the entire preview lifecycle:
+The GitHub Actions workflow orchestrates the entire preview lifecycle.
 
-### 1. Destroy stale preview
+## 1. Destroy stale preview
 
 - Remove `render-preview` label  
 - Wait for old preview to be destroyed  
@@ -81,16 +85,16 @@ The GitHub Actions workflow orchestrates the entire preview lifecycle:
   - Timeout: **300 seconds**  
   - Poll: **5 seconds**
 
-### 2. Provision fresh Neon branch
+## 2. Provision fresh Neon branch
 
 - Create branch `pr-<number>`  
 - Set expiration (14 days)  
 - Convert Neon URI → Npgsql connection string  
 - Apply EF Core migrations  
 - Run Infrastructure Integration Tests  
-- Upload `db-conn.txt` artifact
+- Upload `db-conn.txt` artifact  
 
-### 3. Deploy fresh API preview
+## 3. Deploy fresh API preview
 
 - Add `render-preview` label  
 - Render builds and deploys automatically  
@@ -100,12 +104,12 @@ The GitHub Actions workflow orchestrates the entire preview lifecycle:
   - **3 consecutive** successes  
   - Timeout: **300 seconds**
 
-### 4. Run API Integration Tests
+## 4. Run API Integration Tests
 
 - Tests run against the live preview URL  
-- Validate routing, middleware, auth, and end‑to‑end flows
+- Validate routing, middleware, auth, and end‑to‑end flows  
 
-### 5. Cleanup
+## 5. Cleanup
 
 - On PR close:  
   - Neon branch deleted  
@@ -113,31 +117,31 @@ The GitHub Actions workflow orchestrates the entire preview lifecycle:
 
 ---
 
-## Environment Variables and Secrets
+# Environment Variables and Secrets
 
-### Where secrets live
+## Where secrets live
 
 - **GitHub Secrets** — Neon API key, workflow secrets  
-- **Render Environment** — production and preview runtime variables
+- **Render Environment** — production and preview runtime variables  
 
-### Important variables
+## Important variables
 
 - `ConnectionStrings__DefaultConnection`  
 - `ASPNETCORE_ENVIRONMENT`  
 - `Frontend__BaseUrl`  
-- `PREVIEW_DB_CONNECTION_STRING` (used in docs and Render preview config)
+- `PREVIEW_DB_CONNECTION_STRING`  
 
-### Security rules
+## Security rules
 
 - Never print secrets in logs  
 - Treat artifacts containing connection strings as sensitive  
-- Do not commit `.env` files or local secrets
+- Do not commit `.env` files or local secrets  
 
 ---
 
-## Local Development
+# Local Development
 
-### Running API against a local PostgreSQL instance
+## Running API against a local PostgreSQL instance
 
 ```powershell
 docker run --rm `
@@ -152,61 +156,61 @@ $env:ConnectionStrings__DefaultConnection = "Host=localhost;Port=5432;Database=c
 dotnet run --project src/CampFitFurDogs.Api
 ```
 
-### Running API against a Neon preview branch
+## Running API against a Neon preview branch
 
 - Download `db-conn.txt` from CI  
 - Set `ConnectionStrings__DefaultConnection` to its contents  
-- Run migrations and tests locally
+- Run migrations and tests locally  
 
 ---
 
-## Troubleshooting Guide
+# Troubleshooting Guide
 
-### Preview never tears down
+## Preview never tears down
 
 **Symptom:** CI times out waiting for `/health` → `404`  
 **Fix:**  
 - Ensure label was removed  
 - Check Render dashboard  
-- Manually delete preview instance if stuck
+- Manually delete preview instance if stuck  
 
-### Migrations fail
+## Migrations fail
 
 **Symptom:** EF Core migration errors  
 **Fix:**  
 - Inspect `db-conn.txt`  
 - Reproduce locally using the same connection string  
-- Fix migration and re-run CI
+- Fix migration and re-run CI  
 
-### API never becomes ready
+## API never becomes ready
 
 **Symptom:** `/api/dogs` never stabilizes  
 **Fix:**  
 - Check Render logs (build + runtime)  
 - Verify DB connection string  
-- Confirm migrations succeeded
+- Confirm migrations succeeded  
 
-### CI-only failures
+## CI-only failures
 
 **Fix:**  
 - Reproduce locally using `db-conn.txt`  
 - Match CI environment variables  
-- Run failing test suite locally
+- Run failing test suite locally  
 
 ---
 
-## Operational Checklist for PR Authors
+# Operational Checklist for PR Authors
 
 1. Open PR  
 2. Ensure migrations compile  
 3. Add `render-preview` label to deploy preview  
 4. Remove + re-add label to rebuild preview  
 5. Use `db-conn.txt` to debug DB issues  
-6. Preview is destroyed automatically when PR closes
+6. Preview is destroyed automatically when PR closes  
 
 ---
 
-## Reproducing CI Failures Locally
+# Reproducing CI Failures Locally
 
 ```powershell
 $cs = Get-Content .\db-conn.txt -Raw
@@ -222,20 +226,20 @@ dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests `
 
 ---
 
-## FAQ
+# FAQ
 
-**Why does CI use `/api/dogs` for readiness?**  
+**Why does CI use `/api/dogs` for readiness**  
 It exercises routing, middleware, and auth — a stronger signal than `/health`.
 
-**Why does teardown expect `404`?**  
+**Why does teardown expect `404`**  
 Render returns `404` once the preview instance is fully destroyed.
 
-**How long does a preview take to warm up?**  
+**How long does a preview take to warm up**  
 Up to 300 seconds due to cold starts and route propagation.
 
 ---
 
-## References
+# References
 
 - Render dashboard  
 - Neon dashboard  
@@ -243,10 +247,4 @@ Up to 300 seconds due to cold starts and route propagation.
 - Composite actions:  
   - `postgres-uri-to-npgsql-connection-string`  
   - `wait-for-endpoint`
-
----
-
-## Change History
-
-- **2026‑05‑05** — Initial version created
 

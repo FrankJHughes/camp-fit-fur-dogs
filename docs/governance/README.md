@@ -3,57 +3,56 @@
 This directory contains the complete governance system for the repository.  
 Governance defines **process**, **responsibilities**, **boundaries**, and **enforcement** across all products.
 
-Governance is the highest‑level rule system.  
-Conventions define *how* work is done; governance defines *how decisions are made and upheld*.
+Governance is the **highest‑level rule system**.  
+Conventions define *how work is implemented*; governance defines *how decisions are made, constrained, and upheld*.
+
+Governance is intentionally **stable, minimal, and slow‑changing**.  
+Conventions and guides evolve more frequently.
 
 ---
 
 # Governance Documents
 
-## Story Governance
-Rules for story creation, lifecycle, acceptance, EG/LG integration, and Covey prioritization.
+Governance documents are organized into three categories:
 
-- [story-governance.md](story-governance.md)
+```
+docs/governance/product/
+docs/governance/technical/
+docs/governance/enforcement/
+```
 
-## Changelog Governance
-Rules for user‑facing change documentation, release grouping, and multi‑product changelog separation.
+Below is the canonical index.
 
-- [changelog-governance.md](changelog-governance.md)
+---
 
-## Repository Hygiene Governance
-Rules preventing drift across stories, catalog, changelog, CI, documentation, and product boundaries.
+## 🟦 Product Governance  
+Rules that govern product‑level processes, story lifecycle, changelog behavior, contributor expectations, and cross‑product boundaries.
 
-- [repo-hygiene.md](repo-hygiene.md)
+- [story-governance.md](product/story-governance.md)  
+- [changelog-governance.md](product/changelog-governance.md)  
+- [repo-hygiene.md](product/repo-hygiene.md)  
+- [multi-product-governance.md](product/multi-product-governance.md)  
+- [contributor-governance.md](product/contributor-governance.md)  
 
-## Multi‑Product Governance
-Rules defining boundaries between Camp Fit Fur Dogs and Frank (SharedKernel), including dependency direction, milestones, and release independence.
+---
 
-- [multi-product-governance.md](multi-product-governance.md)
+## 🟩 Technical Governance  
+Rules that govern architecture, API behavior, CI behavior, security, and operational constraints.
 
-## CI Governance
-Rules for path‑based test skipping, required checks, nightly safety nets, and deterministic workflows.
+- [api-governance.md](technical/api-governance.md)  
+- [architecture-governance.md](technical/architecture-governance.md)  
+- [ci-governance.md](technical/ci-governance.md)  
+- [security-governance.md](technical/security-governance.md)  
+- [operations-governance.md](technical/operations-governance.md)  
 
-- [ci-governance.md](ci-governance.md)
+---
 
-## Security Governance
-Rules for authentication, authorization, secrets, hosting security, dependency scanning, and incident response.
+## 🟥 Enforcement Governance  
+Rules that define **how governance is enforced**, who enforces it, and how governance evolves.
 
-- [security-governance.md](security-governance.md)
-
-## Contributor Governance
-Rules for contributor responsibilities, PR requirements, story/catalog alignment, changelog expectations, and product boundary enforcement.
-
-- [contributor-governance.md](contributor-governance.md)
-
-## Operations Governance
-Rules for hosting, deployment, configuration, monitoring, reliability, and operational safety.
-
-- [operations-governance.md](operations-governance.md)
-
-## Governance Process
-Rules for how governance itself is created, changed, approved, enforced, and retired.
-
-- [governance-process.md](governance-process.md)
+- [governance-enforcement-checklist.md](enforcement/governance-enforcement-checklist.md)  
+- [governance-enforcement-matrix.md](enforcement/governance-enforcement-matrix.md)  
+- [governance-process.md](enforcement/governance-process.md)  
 
 ---
 
@@ -65,13 +64,15 @@ Governance defines:
 - Responsibilities  
 - Enforcement  
 - Boundaries  
+- Stability guarantees  
+- Cross‑product rules  
 
 Conventions define:
 
-- Architecture rules  
-- Workflow rules  
-- Code rules  
-- Documentation rules  
+- Architecture implementation rules  
+- Workflow implementation rules  
+- Code implementation rules  
+- Documentation implementation rules  
 
 Conventions live in:
 
@@ -80,7 +81,8 @@ Conventions live in:
 - `docs/conventions/code.md`  
 - `docs/conventions/docs.md`
 
-Governance overrides conventions when they conflict.
+**Governance overrides conventions** when they conflict.  
+Conventions must remain aligned with governance.
 
 ---
 
@@ -88,10 +90,10 @@ Governance overrides conventions when they conflict.
 
 - **Product Owner** — story governance, milestone governance, EG/LG alignment  
 - **Reviewers** — hygiene, CI, contributor governance, product boundaries  
-- **CI** — structural enforcement, metadata validation  
-- **Scripts** — deterministic file generation and drift prevention  
+- **CI** — structural enforcement, metadata validation, drift detection  
+- **Scripts** — deterministic file generation and governance enforcement  
 
-Governance changes require Product Owner approval.
+Governance changes require **Product Owner approval**.
 
 ---
 
@@ -101,9 +103,29 @@ Governance must be updated via:
 
 1. A PR modifying the relevant governance file  
 2. Clear rationale and consequences  
-3. Full review  
+3. Full reviewer discussion  
 4. Product Owner approval  
-5. Updates to conventions or scripts if needed  
+5. Updates to conventions, guides, or scripts if required  
 
-Governance must remain stable, intentional, and minimal.
+Governance must remain:
 
+- Stable  
+- Intentional  
+- Minimal  
+- Enforceable  
+- Aligned with product boundaries  
+
+---
+
+# Summary
+
+The Governance Hub defines the **rules that govern the rules**.  
+It ensures:
+
+- Stable decision‑making  
+- Clear responsibilities  
+- Cross‑product boundaries  
+- Deterministic CI and operational behavior  
+- Alignment between stories, code, CI, and documentation  
+
+Governance is the backbone of the repository’s long‑term maintainability.

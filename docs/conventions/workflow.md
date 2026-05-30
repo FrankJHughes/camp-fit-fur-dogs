@@ -5,7 +5,7 @@ These conventions reflect the actual behavior of `ci.yaml` and `preview.yaml`.
 
 ## Related Documents
 
-- `architecture.md` — hosting, layering, preview architecture  
+- `architecture.md` — layering, hosting, preview architecture, DI architecture  
 - `code.md` — preview‑safe rules, script‑first patterns  
 - `docs.md` — documentation structure  
 - `adr/` — decision history for CI/CD and automation
@@ -35,7 +35,8 @@ Ensures:
 - Targeted test execution  
 - Full test coverage on `main` and nightly runs  
 - Deterministic execution of backend, frontend, and SharedKernel tests  
-- Integration tests run as part of the backend job (current behavior)
+- Integration tests run as part of the backend job (current behavior)  
+- SharedKernel auto‑registration and EF Core configuration scanning are validated in CI  
 
 ---
 
@@ -85,6 +86,13 @@ Projects:
 - `tests/SharedKernel.Api.Tests`  
 - `tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests`
 
+Validates:
+
+- Auto‑registration engine  
+- `[AutoRegister]` attribute behavior  
+- EF Core configuration scanning  
+- Endpoint discovery infrastructure  
+
 ---
 
 ### `backend`
@@ -104,7 +112,13 @@ Projects:
 - `tests/CampFitFurDogs.Infrastructure.Tests`  
 - **Integration tests (added here; no separate job yet)**
 
-This reflects the current CI structure: integration tests run inside the backend job rather than in a dedicated job.
+Integration tests rely on:
+
+- SharedKernel auto‑registration  
+- Repository auto‑registration  
+- Handler auto‑registration  
+- Reader auto‑registration  
+- EF Core configuration scanning  
 
 ---
 
@@ -135,7 +149,8 @@ Steps:
 - Fail‑fast behavior  
 - Nightly full runs  
 - Script‑first logic (no complex inline shell)  
-- Integration tests colocated with backend tests until a dedicated job is introduced
+- Integration tests colocated with backend tests until a dedicated job is introduced  
+- SharedKernel tests validate DI auto‑registration and EF Core scanning  
 
 ---
 
@@ -147,9 +162,9 @@ The CI pipeline uses a **path‑based, dependency‑aware test selection model**
 
 - Backend changes impact the frontend  
 - Frontend changes do **not** impact the backend  
-- SharedKernel changes impact both backend and frontend  
+- SharedKernel changes impact backend and frontend  
 - Infrastructure changes impact all integration tests  
-- Governance changes (stories, catalog, scripts) require governance checks only
+- Governance changes (stories, catalog, scripts) require governance checks only  
 
 ## Path Mapping
 
@@ -201,10 +216,10 @@ Also destroys stale preview resources.
 
 ## Concurrency
 
-`````yaml
+```
 group: preview-pr-<number>
 cancel-in-progress: true
-`````
+```
 
 ---
 
@@ -313,7 +328,7 @@ These must remain stable and script‑first compatible.
 
 # Preview Pipeline Flow
 
-`````text
+```
 PR opened / updated
   |
   v
@@ -330,7 +345,7 @@ deploy_fresh_api      (if should_deploy)
   |
   v
 API integration tests
-`````
+```
 
 ---
 
@@ -343,7 +358,8 @@ API integration tests
 - Explicit timeouts  
 - Deterministic artifacts  
 - Reproducibility via scripts and documented env vars  
-- Integration tests remain inside the backend job until a dedicated job is introduced
+- Integration tests remain inside the backend job until a dedicated job is introduced  
+- SharedKernel tests validate DI auto‑registration and EF Core scanning  
 
 ---
 

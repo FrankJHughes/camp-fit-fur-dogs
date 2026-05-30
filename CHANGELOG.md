@@ -5,15 +5,15 @@ All notable changes to this project will be documented in this file.
 ## [Sprint 8] - Unreleased
 
 ### Added
-- New Create Account page with full client-side validation, password strength feedback, and accessible inline error messages.
+- New Create Account page with full client‑side validation, password‑strength feedback, and accessible inline error messages.
 - New end‑to‑end account creation flow using the updated CreateCustomer API contract.
-- New UI success flow guiding owners after account creation.
+- New success flow guiding owners after account creation.
 - New duplicate‑email handling with friendly, blame‑free messaging.
+- New hardened validation for owner name, email, phone number, and password to ensure consistent behavior across frontend and backend.
 
 ### Changed
-- Updated frontend form architecture to use FormCommand + state machine for deterministic validation and error handling.
-- Updated account API client to match the hardened CreateCustomer backend contract.
-- Updated domain validation for customer name, email, phone number, and password to ensure consistent behavior across frontend and backend.
+- Updated account creation UI to use the new FormCommand state machine for deterministic validation and error handling.
+- Updated account creation API client to match the finalized CreateCustomer backend contract.
 
 ### Fixed
 - Improved error messaging to avoid exposing internal system details.

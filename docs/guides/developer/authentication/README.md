@@ -4,9 +4,14 @@ This section documents the backend authentication architecture for CampFitFurDog
 Authentication is implemented using **OIDC (OpenID Connect)** with an external identity provider (Auth0).  
 All authentication logic is backend‑driven, session‑based, and aligned with the system’s purity rules.
 
+---
+
 ## Contents
 
-- [Authentication Overview](overview.md)  
+- [Authentication Configuration](authentication-configuration.md)  
+  Required configuration keys for local, preview, and production environments.
+
+- [Authentication Overview](authentication-overview.md)  
   High‑level explanation of the OIDC flow and system principles.
 
 - [Login Endpoint](login-endpoint.md)  
@@ -15,8 +20,10 @@ All authentication logic is backend‑driven, session‑based, and aligned with 
 - [Callback Endpoint](callback-endpoint.md)  
   Details for `/api/auth/callback`, which completes the OIDC flow and issues the session cookie.
 
-- [Authentication Configuration](configuration.md)  
-  Required configuration keys for local, preview, and production environments.
+- [Session Management](session-management.md)  
+  How session cookies are created, stored, and validated.
+
+---
 
 ## Summary
 
@@ -27,6 +34,9 @@ All authentication logic is backend‑driven, session‑based, and aligned with 
   - Userinfo retrieval  
   - Owner creation or lookup  
   - Session cookie issuance  
+- Session management persists and validates the authenticated Owner identity.
+
+---
 
 ## Related Stories
 

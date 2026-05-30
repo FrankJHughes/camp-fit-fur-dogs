@@ -2,6 +2,7 @@ using FluentValidation;
 using SharedKernel.Domain;
 using CampFitFurDogs.Domain.Errors;
 using CampFitFurDogs.Domain.Customers.Exceptions;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 
 namespace CampFitFurDogs.Api.Errors;
 
@@ -12,8 +13,10 @@ public static class ExceptionToErrorCode
         {
             // ───────────────────────────────────────────────
             // External Auth Provider Failures (502)
+            // Includes AuthCallbackException
             // ───────────────────────────────────────────────
             ExternalAuthProviderException => ErrorCode.ExternalAuthProviderFailure,
+            AuthCallbackException => ErrorCode.ExternalAuthProviderFailure,
 
             // ───────────────────────────────────────────────
             // Server Misconfiguration (500)

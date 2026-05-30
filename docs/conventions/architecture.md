@@ -1,331 +1,370 @@
 # Architecture Conventions
 
-This document defines the architectural boundaries, hosting model, layering rules, and cross‑cutting conventions for the Camp Fit Fur Dogs system.  
-It is the canonical source of truth for architectural decisions and must be followed by all code, documentation, and automation.
+This document defines the architectural layering, implementation patterns, hosting model, and cross‑cutting conventions for the Camp Fit Fur Dogs system.  
+It describes **how the architecture is implemented**, not governance, policy, or security posture.
 
-## Related Documents
-
-- `workflow.md` — CI/CD and preview lifecycle behavior  
-- `Code.md` — implementation‑level rules, preview‑safe behavior, script‑first patterns  
-- `Docs.md` — documentation structure and authoring rules  
-- `adr/` — Architecture Decision Records (canonical decision history)
+For architectural *rules*, see `architecture-governance.md`.  
+For security posture, see `security-governance.md`.  
+For operational rules, see `operations-governance.md`.
 
 ---
 
-# DDD Layered Architecture
+# 1. Layered Architecture (Implementation)
 
-The backend follows a layered architecture with strict boundaries.
+The backend follows a strict layered architecture enforced by guardrail tests.
 
-- **Api** depends on **Application** and **Infrastructure**  
-- **Application** depends on **Domain**  
-- **Infrastructure** depends on **Application** and **Domain**  
-- All layers may depend on **SharedKernel**
-
-**Rules**
-
-- Domain must not depend on Application, Infrastructure, or Api  
-- Application must not depend on Infrastructure or Api  
-- Infrastructure must not depend on Api  
-- Api must not contain business logic  
-- SharedKernel is the only allowed cross‑layer dependency
-
-**Primary flow**
-
-`````text
+```
 Api → Application → Domain
-Application → Infrastructure (persistence, external concerns)
-`````
+Application → Infrastructure
+All layers → SharedKernel
+```
 
-Guardrail tests enforce these rules.
+## 1.1 Allowed Dependencies
+
+- **Api** → Application, Domain (primitives only), SharedKernel  
+- **Application** → Domain, SharedKernel  
+- **Infrastructure** → Application, Domain, SharedKernel  
+- **Domain** → SharedKernel only  
+- **SharedKernel** → no product dependencies  
+
+## 1.2 Implementation Conventions
+
+- Api contains **no business logic**  
+- Application contains **use‑case orchestration only**  
+- Domain contains **business rules**  
+- Infrastructure contains **persistence and external integrations**  
+- SharedKernel contains **cross‑cutting primitives, abstractions, and DI infrastructure**  
+
+Guardrail tests enforce these boundaries.
 
 ---
 
-# CQRS Pipelines
+# 2. Dependency Injection Architecture (Implementation)
 
-Commands and queries follow consistent pipeline behavior.
+Dependency injection is implemented through **SharedKernel’s auto‑registration engine**.
 
-**Commands**
+## 2.1 Auto‑Registration via `[AutoRegister]`
+
+Interfaces intended for DI must be decorated with:
+
+````  
+[AutoRegister(ServiceLifetime.Scoped)]
+public interface IMyService { }
+````
+
+SharedKernel:
+
+- Scans assemblies for attributed interfaces  
+- Discovers implementing classes  
+- Validates min/max implementation counts  
+- Registers services with the correct lifetime  
+- Optionally registers concrete types  
+- Registers validators from all assemblies  
+- Applies EF Core configurations  
+
+Slices do **not** perform their own DI scanning.
+
+## 2.2 Explicit Registration
+
+Application and Infrastructure register only:
+
+- Pipeline steps  
+- DbContext  
+- HttpClient integrations  
+- Cross‑cutting services (e.g., audit logging)  
+
+Slice‑specific services (repositories, readers, handlers) are **never** registered manually.
+
+## 2.3 Program.cs
+
+Program.cs must contain only:
+
+````  
+builder.Services.AddSharedKernel([...]);
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(configuration);
+````
+
+No slice‑specific DI is allowed here.
+
+---
+
+# 3. CQRS Implementation Conventions
+
+Commands and queries follow a consistent pipeline.
+
+## 3.1 Commands
 
 - Implement `ICommand<TResponse>`  
 - Handled by `ICommandHandler<TCommand, TResponse>`  
-- Dispatched via `ICommandDispatcher`
+- Handlers are auto‑registered via `[AutoRegister]`  
+- Dispatched via `ICommandDispatcher`  
+- Must not return domain entities  
+- Must not perform queries  
 
-**Queries**
+## 3.2 Queries
 
 - Implement `IQuery<TResponse>`  
 - Handled by `IQueryHandler<TQuery, TResponse>`  
-- Dispatched via `IQueryDispatcher`
+- Handlers are auto‑registered via `[AutoRegister]`  
+- Dispatched via `IQueryDispatcher`  
+- Must not mutate state  
 
-**Dispatcher behavior**
+## 3.3 Dispatcher Behavior
 
-- Resolve validators  
-- Run validation  
-- Throw on validation failure  
-- Invoke handler  
-- Ensure consistent pipeline behavior
+The dispatcher:
 
-Direct handler invocation is not allowed.
+- Resolves validators  
+- Runs validation  
+- Throws on validation failure  
+- Invokes handler  
+- Ensures consistent pipeline behavior  
+
+Handlers must **never** be invoked directly.
 
 ---
 
-# Domain Model
+# 4. Domain Events Architecture (Implementation)
+
+Domain events follow a strict pipeline:
+
+- Raised inside aggregates  
+- Collected by Application  
+- Dispatched via `IDomainEventDispatcher`  
+- Handled by `IDomainEventHandler<T>`  
+- Handlers are auto‑registered via `[AutoRegister]`  
+
+Domain events must not cross the Api boundary.
+
+---
+
+# 5. Domain Model Conventions
 
 The domain model uses:
 
-- Value Objects — immutable, equality by components  
-- Entities — identity and equality by Id  
-- Aggregate Roots — consistency boundaries, raise domain events  
-- Aggregate Ids — value objects wrapping a Guid
+- **Value Objects** — immutable, equality by components  
+- **Entities** — identity by Id  
+- **Aggregate Roots** — consistency boundaries  
+- **AggregateId** — value object wrapping a Guid  
+- **Domain Events** — raised inside aggregates  
 
-**Rules**
+## 5.1 Domain Rules
 
-- Domain code must not depend on Application, Infrastructure, or Api  
-- Business rules live in aggregates, value objects, and domain services  
-- Domain events are raised inside aggregates and dispatched after persistence  
-- Domain types must not cross the Api boundary
+- Domain must not depend on Application, Infrastructure, or Api  
+- Business rules live inside aggregates, value objects, and domain services  
+- Domain events must not cross the Api boundary  
+- Domain types must not be returned from endpoints  
 
 ---
 
-# Repositories & Unit of Work
+# 6. Repository & Persistence Conventions
 
-Repositories provide persistence operations for aggregates:
+Repositories provide persistence for aggregates:
 
-- Get by Id  
-- Add  
-- Update  
-- Delete  
+- `GetByIdAsync`  
+- `AddAsync`  
+- `Update`  
+- `Delete`  
 
 `IUnitOfWork` coordinates saving changes.
 
-**Infrastructure responsibilities**
+## 6.1 Infrastructure Responsibilities
+
+Infrastructure must:
 
 - Implement repositories using EF Core  
 - Implement Unit of Work using `DbContext`  
-- Ensure `CommitAsync` is called after successful command handling
+- Ensure `CommitAsync` is called after successful command handling  
+- Never expose EF Core types to Application or Api  
 
-Domain does not know about repositories or unit of work.
+Domain must not reference repositories.
 
 ---
 
-# EF Core Conventions
+# 7. EF Core Mapping Conventions
 
 Infrastructure provides base configurations for aggregates.
 
-- Aggregate root configuration maps the aggregate to a table  
-- Id is configured as the key and is not value‑generated  
-- Domain events are ignored and never persisted  
-- Derived configurations map properties, relationships, and indexes
+- Aggregate root maps to a table  
+- Id is the key and is **not** value‑generated  
+- Domain events are ignored  
+- Value objects are mapped as owned types  
+- Navigation properties must be explicit  
+- Migrations run only in CI/CD  
 
-Migrations are applied only by CI; tests must not apply migrations.
+Tests must not apply migrations.
 
 ---
 
-# SharedKernel Architecture
+# 8. SharedKernel Architecture
 
 SharedKernel contains cross‑cutting building blocks:
 
-- CQRS abstractions and dispatchers  
+- CQRS abstractions  
 - Validation pipeline integration  
-- DI conventions and auto‑registration helpers  
+- **DI auto‑registration engine**  
 - Domain primitives (`ValueObject`, `Entity`, `AggregateRoot`, `AggregateId`)  
 - Domain event abstractions and dispatcher  
-- EF Core base classes for aggregate configuration and unit of work  
+- EF Core base classes  
 - Endpoint discovery infrastructure  
-- `SharedKernelOptions`  
-- Architecture guardrails
+- Hosting provider infrastructure  
+- Authentication/session abstractions  
+- HttpClient test seam  
+- Audit logging abstractions  
 
-**Rules**
+## 8.1 Conventions
 
-- Product layers must not reimplement these building blocks  
-- SharedKernel is the only allowed cross‑layer dependency
-
----
-
-# SharedKernel Enforcement & Guardrail Tests
-
-Guardrail tests enforce architecture boundaries:
-
-- `tests/SharedKernel.Tests`  
-- `tests/SharedKernel.Api.Tests`  
-- `tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests`  
-- `tests/CampFitFurDogs.Domain.Tests`  
-- `tests/CampFitFurDogs.Application.Tests`
-
-Any architectural change requires an ADR and updates to this document.
+- Product layers must not reimplement SharedKernel primitives  
+- SharedKernel is the only allowed cross‑layer dependency  
+- SharedKernel must remain product‑agnostic  
 
 ---
 
-# Endpoint Discovery
+# 9. Hosting Provider Architecture (Implementation)
 
-Api endpoints implement `IEndpoint` and define a `Map` method.
+Hosting providers run **before DI is built** and configure the hosting environment.
 
-**Behavior**
+## 9.1 Conventions
+
+- Providers implement `IHostingProvider`  
+- Providers expose `IsActive()` and `ConfigureAsync()`  
+- Providers must be deterministic  
+- Providers must validate required configuration  
+- Providers must throw on misconfiguration  
+- Providers must not silently skip configuration  
+- Providers must not depend on product‑specific logic  
+
+## 9.2 Provider Selection
+
+- Providers are evaluated in order  
+- The **first active provider wins**  
+- All others are skipped  
+
+## 9.3 Test Seam
+
+Hosting providers must be testable via:
+
+- Fake environment variable providers  
+- Fake GitHub artifact providers  
+- Fake HttpClient handlers  
+
+Tests must not rely on real hosting environments.
+
+---
+
+# 10. Authentication & Session Architecture (Implementation)
+
+Authentication uses OIDC (Auth0) and issues secure session cookies.
+
+## 10.1 Conventions
+
+- Login initiation endpoint redirects to OIDC provider  
+- Callback endpoint exchanges code for tokens  
+- Userinfo is fetched via HttpClient  
+- Identity is resolved via `IIdentityResolver`  
+- Session cookie is issued via `ISessionService`  
+- Audit logging is performed via `IAuditLogger`  
+
+## 10.2 Session Cookie Conventions
+
+- Cookie contains opaque session ID  
+- Cookie is HttpOnly  
+- Cookie is Secure in production  
+- Cookie is validated on each request  
+- Cookie is not a JWT  
+- Cookie does not contain PII  
+
+---
+
+# 11. Endpoint Architecture
+
+Endpoints implement `IEndpoint` and define a `Map` method.
+
+## 11.1 Conventions
+
+- Endpoints must use CQRS dispatchers  
+- Endpoints must not contain business logic  
+- Endpoints must not return domain entities  
+- Endpoints must use validation pipeline  
+- Endpoints must use error‑shaping conventions  
+- Endpoints must resolve identity via `ICurrentUserService`  
+
+## 11.2 Discovery
 
 - SharedKernel.Api scans assemblies for `IEndpoint` implementations  
-- Api assembly is registered for endpoint discovery  
-- All discovered endpoints are instantiated and mapped at startup
-
-Endpoints must:
-
-- Use CQRS dispatchers  
-- Resolve identity from the current user service  
-- Avoid leaking domain entities
+- Api assembly registers itself for discovery  
+- All endpoints are mapped automatically at startup  
 
 ---
 
-# Frontend Architecture
+# 12. Test Seam Architecture
+
+The system includes explicit test seams for deterministic testing.
+
+## 12.1 HttpClient Test Seam
+
+- All external HTTP calls must use named HttpClients  
+- Tests replace HttpClient with FakeHttpMessageHandler  
+- No real network calls are allowed in tests  
+
+## 12.2 Hosting Provider Test Seam
+
+- Environment variables are injected via test seam  
+- GitHub artifacts are injected via test seam  
+- Providers must be fully testable without real infrastructure  
+
+## 12.3 Identity Resolver Test Seam
+
+- Identity resolution is abstracted  
+- Tests use FakeIdentityResolver  
+
+## 12.4 Audit Logger Test Seam
+
+- Audit logging is abstracted  
+- Tests use FakeAuditLogger  
+
+---
+
+# 13. Frontend Architecture
 
 The frontend mirrors backend aggregate grouping.
 
-**Structure**
+## 13.1 Structure
 
-- `layer/aggregate/filename`
+```
+layer/aggregate/filename
+```
 
-**Layers**
+## 13.2 Layers
 
 - `api/` — server‑call functions  
 - `components/` — presentational components  
 - `lib/` — pure logic  
 - `hooks/` — behavioral hooks  
-- `app/` — Next.js routing
+- `app/` — Next.js routing  
 
-**Shared infrastructure**
-
-- `lib/api/`  
-- `lib/hooks/`  
-- `lib/components/`
-
-**Rules**
+## 13.3 Rules
 
 - Slice subfolders appear only when an aggregate accumulates 10+ files  
-- `test/` mirrors `src/` exactly
+- `test/` mirrors `src/` exactly  
+- Shared infrastructure lives in `lib/api`, `lib/hooks`, `lib/components`  
 
 ---
 
-# Frontend Form Architecture (Updated)
-
-All forms follow a unified architecture built on:
-
-- **FormCommand** — the canonical submit interface  
-- **useFormStateMachine** — deterministic state, validation, and error merging  
-- **FormField** — accessibility‑correct field rendering  
-- **Zod** — schema‑driven validation
-
-This replaces all legacy `submit()` patterns.
-
-## FormCommand Contract
-
-`````ts
-export interface FormCommand<T> {
-  run: (values: T) => Promise<void>;
-  errors?: Record<string, string>;
-  error?: string;
-  isSubmitting: boolean;
-}
-`````
-
-### Rules
-
-- `run` is the only allowed submit API  
-- `errors` maps backend field errors  
-- `error` maps backend form‑level errors  
-- `isSubmitting` disables UI and prevents double submits  
-- Commands must not mutate values or reshape backend responses  
-
----
-
-## Form State Machine
-
-All forms must use `useFormStateMachine`.
-
-Responsibilities:
-
-- Run client‑side validation  
-- Merge backend errors into `displayErrors`  
-- Track submission state  
-- Provide `update`, `handleSubmit`, and `values`  
-- Ensure deterministic behavior across slices  
-
-Forms must not manage their own error or submission state.
-
----
-
-## Field Rendering
-
-All fields must use `FormField`:
-
-`````tsx
-<FormField label="Name" name="name" error={displayErrors.name}>
-  {(fieldProps) => (
-    <input
-      {...fieldProps}
-      value={values.name}
-      onChange={update('name')}
-      disabled={isSubmitting}
-    />
-  )}
-</FormField>
-`````
-
-### Rules
-
-- Always spread `fieldProps`  
-- Never override `id` without checking for duplicates  
-- All fields must support `aria-invalid`, `aria-describedby`, and `role="alert"` via `FormField`  
-
----
-
-## Validation
-
-- All validation schemas live in `src/lib/<domain>/<feature>Schema.ts`  
-- Validation must use Zod  
-- Validation messages must originate from the schema  
-- Validation must return `{ field: message }` maps  
-- Forms must not implement validation logic  
-
----
-
-## Backend Contract Alignment
-
-Backend error envelopes:
-
-`````json
-{ "errors": { "field": "message" } }
-{ "error": "form-level message" }
-`````
-
-Backend success envelope for create-account:
-
-`````json
-{ "customerId": "guid" }
-`````
-
-### Rules
-
-- Frontend must not expect additional fields  
-- Frontend must normalize phone numbers to digits‑only  
-- Frontend must treat success as “account created” and handle navigation accordingly  
-
----
-
-# Hosting & Deployment Architecture
-
-(unchanged)
-
----
-
-# Summary
+# 14. Summary
 
 This document codifies:
 
-- Strict backend layering  
-- Consistent CQRS patterns  
-- Deterministic frontend form architecture  
-- Canonical FormCommand contract  
-- Schema‑driven validation  
-- Unified error envelope handling  
-- Contract‑aligned success behavior  
-- Deterministic PR Preview pipeline  
-- Script‑first, test‑enforced guardrails
+- Layered architecture implementation  
+- Dependency injection architecture  
+- CQRS implementation  
+- Domain modeling conventions  
+- Repository and EF Core conventions  
+- SharedKernel usage  
+- Hosting provider architecture  
+- Authentication/session architecture  
+- Endpoint architecture  
+- Test seam architecture  
+- Frontend architectural structure  
 
-All code, scripts, and documentation must follow these conventions.
+All code must follow these conventions.

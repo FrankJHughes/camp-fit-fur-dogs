@@ -4,9 +4,11 @@ Documentation is a first‑class artifact in the Camp Fit Fur Dogs system.
 It defines how architecture, workflow, code, and processes are communicated, maintained, and evolved.  
 All contributors must treat documentation with the same rigor as code.
 
+Documentation describes **how information is structured, maintained, and authored** — not governance, not architecture, and not implementation details.
+
 ---
 
-# Purpose
+# 1. Purpose
 
 Documentation exists to:
 
@@ -19,36 +21,91 @@ Documentation exists to:
 
 Documentation must always reflect **current behavior**, not historical behavior.
 
+Documentation must never redefine governance.  
+Governance lives in:
+
+- **Architecture Governance**  
+- **API Governance**  
+- **Security Governance**  
+- **Operations Governance**  
+
 ---
 
-# Canonical Structure
+# 2. Canonical Structure
 
 The repository uses four canonical convention documents. These are the single source of truth for repository rules and must remain synchronized:
 
-- **Architecture** — layers, boundaries, hosting model, PR Preview architecture, core building blocks  
+- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, core building blocks, DI architecture  
 - **Workflow** — CI/CD structure, composite actions, PR Preview lifecycle, script‑first rules  
-- **Code** — backend, frontend, CQRS, endpoints, EF Core, SharedKernel usage  
+- **Code** — backend, frontend, CQRS, endpoints, EF Core, SharedKernel usage, DI usage  
 - **Docs** — documentation rules, patching rules, fencing rules, ownership  
 
 Other documents (ADRs, guides, READMEs) may reference these conventions but must not redefine them.
 
-## Location
+## 2.1 Location
 
-`````text
+```
 docs/conventions/
   architecture.md
   workflow.md
   code.md
   docs.md   ← this file
-`````
+```
 
 ---
 
-# ADRs (Architecture Decision Records)
+# 3. Governance vs. Conventions vs. Guides
+
+To prevent drift and duplication, documentation must respect the system’s separation of concerns.
+
+## 3.1 Governance (What must be true)
+
+Governance defines:
+
+- Boundaries  
+- Responsibilities  
+- Enforcement  
+- Stability guarantees  
+- Security posture  
+- Operational rules  
+
+Governance documents must **never** contain implementation details.
+
+## 3.2 Conventions (How we write code)
+
+Conventions define:
+
+- Coding patterns  
+- Architectural implementation  
+- CQRS usage  
+- Endpoint structure  
+- Form architecture  
+- Test seams  
+- Folder structure  
+- Dependency injection usage (SharedKernel auto‑registration)  
+
+Conventions must **never** redefine governance.
+
+## 3.3 Guides (How to do things)
+
+Guides define:
+
+- How to run the system locally  
+- How to configure Auth0  
+- How to debug hosting providers  
+- How to test endpoints  
+- How to run migrations  
+- How SharedKernel auto‑registration works (reference only; rules live in conventions)  
+
+Guides must **never** define rules or boundaries.
+
+---
+
+# 4. ADRs (Architecture Decision Records)
 
 Significant architectural decisions must be captured as ADRs.
 
-## Requirements
+## 4.1 Requirements
 
 Each ADR must:
 
@@ -58,19 +115,19 @@ Each ADR must:
 - Reference relevant conventions and guardrails  
 - Clarify interactions with SharedKernel and other systems  
 
-## Placement
+## 4.2 Placement
 
 - ADRs may live next to the code they affect or in `docs/adr/`  
 - ADRs must be updated or superseded when decisions evolve  
 
-## Style
+## 4.3 Style
 
 - Concise and factual  
 - Use the ADR template: Status, Date, Context, Decision, Rationale, Consequences, Alternatives, Notes  
 
 ---
 
-# Documentation Lifecycle Rules
+# 5. Documentation Lifecycle Rules
 
 Documentation must evolve with the system.
 
@@ -83,7 +140,7 @@ Documentation must evolve with the system.
 
 ---
 
-# Universal Patch Rule
+# 6. Universal Patch Rule
 
 When updating a documentation file, regenerate and return the **entire file** with the patch already applied.
 
@@ -91,7 +148,7 @@ When updating a documentation file, regenerate and return the **entire file** wi
 - No diffs  
 - No search‑and‑replace instructions  
 
-## Rationale
+## 6.1 Rationale
 
 - Prevents corruption  
 - Eliminates ambiguity  
@@ -100,7 +157,7 @@ When updating a documentation file, regenerate and return the **entire file** wi
 
 ---
 
-# Style and Tone
+# 7. Style and Tone
 
 Documentation must be:
 
@@ -110,7 +167,7 @@ Documentation must be:
 - Free of fluff  
 - Free of narrative or opinionated language  
 
-## Guidelines
+## 7.1 Guidelines
 
 - Use active voice and present tense  
 - Prefer short paragraphs and bullet lists  
@@ -119,17 +176,17 @@ Documentation must be:
 
 ---
 
-# Fencing, Quoting, and Script‑First Rules
+# 8. Fencing, Quoting, and Script‑First Rules
 
 Documentation must be compatible with script‑first automation and safe for programmatic consumption.
 
-## General Rules
+## 8.1 General Rules
 
 - Prefer PowerShell examples when a shell is required  
 - Generated files must use `utf8NoBOM` encoding  
 - Scripts must be copy‑pasteable without manual fixes  
 
-## Fencing and Quoting
+## 8.2 Fencing and Quoting
 
 - Avoid nested triple‑backtick fences  
 - When inner fenced blocks are required, wrap the entire document with **four or more backticks**  
@@ -140,7 +197,7 @@ Documentation must be compatible with script‑first automation and safe for pro
 - Avoid nested here‑strings  
 - When syntax is unsafe to show literally, describe it in prose  
 
-## File Generation
+## 8.3 File Generation
 
 - Use single‑quoted here‑strings for file generation  
 - Avoid fenced code blocks inside here‑strings  
@@ -148,7 +205,7 @@ Documentation must be compatible with script‑first automation and safe for pro
 
 ---
 
-# Safe Examples
+# 9. Safe Examples
 
 Examples must be:
 
@@ -161,15 +218,15 @@ If an example cannot be shown safely, describe the pattern in prose.
 
 ---
 
-# Navigation and Ownership
+# 10. Navigation and Ownership
 
-## Navigation
+## 10.1 Navigation
 
 - `docs/conventions/` is the canonical hub  
 - Each file must have clear headings and stable anchors  
 - Cross‑references must be explicit and correct  
 
-## Ownership
+## 10.2 Ownership
 
 - **Architecture & SharedKernel conventions** — platform/architecture maintainers  
 - **Workflow & tooling conventions** — automation/build maintainers  
@@ -180,7 +237,7 @@ Ownership must be explicit in the file header.
 
 ---
 
-# Updating Conventions
+# 11. Updating Conventions
 
 When updating conventions:
 
@@ -193,7 +250,7 @@ When updating conventions:
 
 ---
 
-# Relationship to SharedKernel
+# 12. Relationship to SharedKernel
 
 SharedKernel is the authoritative source for cross‑cutting behavior.
 
@@ -205,15 +262,20 @@ Documentation must:
   - CQRS abstractions  
   - Domain primitives  
   - Endpoint discovery  
-  - DI conventions  
-  - EF Core base classes  
+  - **DI auto‑registration engine**  
+  - **`[AutoRegister]` attribute**  
+  - **Validator scanning**  
+  - **EF Core configuration auto‑discovery**  
   - Guardrail enforcement  
+  - Hosting provider infrastructure  
+  - Authentication/session abstractions  
+  - Test seams  
 
 SharedKernel and documentation must remain synchronized.
 
 ---
 
-# PR Preview Documentation Requirements
+# 13. PR Preview Documentation Requirements
 
 Because the system uses Neon + Render PR Previews, documentation must:
 
@@ -223,7 +285,7 @@ Because the system uses Neon + Render PR Previews, documentation must:
 - Ensure examples reflect Git‑backed Render PR Previews and label‑driven deployment  
 - Avoid references to image‑backed or manually triggered preview flows  
 
-## Minimum Required Content
+## 13.1 Minimum Required Content
 
 Documentation must include:
 
@@ -240,7 +302,7 @@ Documentation must include:
 
 ---
 
-# ADR and Docs Cross‑References
+# 14. ADR and Docs Cross‑References
 
 - ADRs must reference the canonical docs they affect  
 - When an ADR changes a convention, update the relevant canonical document(s) in the same PR  
@@ -248,7 +310,7 @@ Documentation must include:
 
 ---
 
-# Accessibility and Discoverability
+# 15. Accessibility and Discoverability
 
 - Use clear headings and short paragraphs  
 - Provide a short summary at the top of each convention file  
@@ -257,7 +319,7 @@ Documentation must include:
 
 ---
 
-# Enforcement and Tests
+# 16. Enforcement and Tests
 
 - Guardrail tests validate layering, dependency rules, and other enforceable conventions  
 - Documentation must describe which guardrail tests exist and where they run  

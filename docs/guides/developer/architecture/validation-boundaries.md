@@ -1,4 +1,3 @@
-`````markdown
 # Validation Boundaries  
 **API vs Application vs Domain**
 
@@ -190,4 +189,3 @@ See also:
 - [API Endpoint Purity Guide](ca://s?q=Show_API_endpoint_purity_guide)  
 - [Dispatcher Pipeline](ca://s?q=Show_dispatcher_pipeline_guide)  
 - [Authentication Overview](ca://s?q=Show_authentication_overview)
-`````

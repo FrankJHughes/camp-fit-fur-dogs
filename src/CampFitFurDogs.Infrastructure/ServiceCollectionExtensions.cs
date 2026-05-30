@@ -5,10 +5,11 @@ using Microsoft.Extensions.Configuration;
 using SharedKernel.Infrastructure.EntityFrameworkCore;
 
 using CampFitFurDogs.Infrastructure.Data;
-using SharedKernel.DependencyInjection;
-using CampFitFurDogs.Application.Abstractions.Identity.External;
-using CampFitFurDogs.Infrastructure.Identity.Auth0;
-
+using CampFitFurDogs.Application.Abstractions.Audit;
+using CampFitFurDogs.Infrastructure.Audit;
+using CampFitFurDogs.Infrastructure.Identity.Oidc;
+using CampFitFurDogs.Application.Abstractions.Authentication;
+using CampFitFurDogs.Application.Abstractions.Identity;
 
 namespace CampFitFurDogs.Infrastructure;
 
@@ -28,9 +29,14 @@ public static class ServiceCollectionExtensions
             [typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly]
         );
 
-        services.AddScoped<IExternalIdentityResolver, Auth0IdentityResolver>();
+        // External identity resolver
+        services.AddScoped<IIdentityResolver, OidcIdentityResolver>();
+
+        services.AddHttpClient<IAuthClient, OidcAuthClient>();
+
+        // ⭐ NEW: Audit logging (required for US‑110)
+        services.AddSingleton<IAuditLogger, AuditLogger>();
 
         return services;
     }
 }
-

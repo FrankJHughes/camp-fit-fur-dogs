@@ -3,6 +3,8 @@
 This guide describes the high‑level folder structure of the Camp Fit Fur Dogs solution and the anatomy of a vertical slice.  
 It ensures contributors understand where code belongs, why it belongs there, and how the layers interact.
 
+This guide belongs to the **architecture** category because it governs cross‑cutting structure across all vertical slices.
+
 ---
 
 # 1. Top‑Level Solution Structure
@@ -30,8 +32,10 @@ Each project has a clear responsibility:
 - **Api** — HTTP endpoints, request/response mapping, routing  
 - **Application** — use cases, handlers, validators, dispatchers, domain event dispatch  
 - **Domain** — entities, value objects, domain events, invariants  
-- **Infrastructure** — persistence, external systems, repository implementations  
-- **SharedKernel** — cross‑cutting primitives and abstractions  
+- **Infrastructure** — persistence, external systems, repository + reader implementations  
+- **SharedKernel** — cross‑cutting primitives, DI auto‑registration, endpoint discovery, guardrails  
+
+SharedKernel is a **product** (Frank), not a folder — see **[Multi‑Product Governance](ca://s?q=Open_multi_product_governance)**.
 
 ---
 
@@ -80,10 +84,12 @@ src/
 Each slice contains:
 
 - **Abstractions** — commands, queries, results, reader interfaces  
-- **Application** — handlers, validators  
+- **Application** — handlers, validators, domain event handlers  
 - **Domain** — entities, value objects, domain events  
-- **Infrastructure** — repositories (commands), readers (queries), persistence  
+- **Infrastructure** — repositories (commands), readers (queries), EF Core configuration  
 - **Api** — endpoints  
+
+All slice services are registered via **SharedKernel auto‑registration**.
 
 ---
 
@@ -96,6 +102,12 @@ Each slice contains:
 - Calls dispatchers  
 - Maps results to HTTP responses  
 - Contains no business logic  
+- Must not depend on Infrastructure  
+- Must not invoke handlers directly  
+
+See **[API Endpoint Purity Guide](ca://s?q=Generate_API_Endpoint_Purity_Guide)**.
+
+---
 
 ## 3.2 Application Layer
 
@@ -104,12 +116,22 @@ Each slice contains:
 - Dispatches domain events  
 - Contains no HTTP or persistence logic  
 - Command handlers call `IUnitOfWork.CommitAsync()`  
+- All services are auto‑registered via `[AutoRegister]`  
+
+See **[Dispatcher Pipeline](ca://s?q=Open_dispatcher_pipeline_guide)**.
+
+---
 
 ## 3.3 Domain Layer
 
 - Contains entities, value objects, domain events  
 - Enforces invariants  
-- Contains no infrastructure or application logic  
+- Contains no Infrastructure or Application logic  
+- Raises domain events internally  
+
+See **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**.
+
+---
 
 ## 3.4 Infrastructure Layer
 
@@ -118,11 +140,25 @@ Each slice contains:
 - Integrates with external systems  
 - Contains EF Core, file I/O, messaging  
 - Contains no domain logic  
+- Contains no API references  
+- All services are auto‑registered via `[AutoRegister]`  
+
+---
 
 ## 3.5 SharedKernel
 
-- Contains cross‑cutting primitives  
-- Contains no application or infrastructure concerns  
+SharedKernel provides:
+
+- Cross‑cutting primitives  
+- DI auto‑registration engine  
+- `[AutoRegister]` attribute  
+- Endpoint discovery  
+- Validation pipeline  
+- EF Core configuration scanning  
+- Hosting provider infrastructure  
+- Architecture guardrails  
+
+SharedKernel must not depend on any product code.
 
 ---
 
@@ -135,6 +171,7 @@ Application/<Feature>/
   <UseCase>/
     <UseCase>Handler.cs
     <UseCase>Validator.cs
+    <UseCase>DomainEventHandler.cs   # if applicable
 `````
 
 ## 4.2 Abstractions Structure
@@ -181,11 +218,14 @@ Api/<Feature>/
 - No domain logic  
 - No repository access  
 - No handler instantiation  
+- No Infrastructure references  
+- Must use dispatchers  
 
 ## Application
 - No HTTP  
 - No EF Core  
 - No Infrastructure references  
+- Must use `[AutoRegister]`  
 
 ## Domain
 - No Application references  
@@ -195,9 +235,12 @@ Api/<Feature>/
 ## Infrastructure
 - No domain logic  
 - No Api references  
+- Must use `[AutoRegister]`  
 
 ## SharedKernel
-- No dependencies on any other layer  
+- No dependencies on any product layer  
+
+These rules enforce **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
 
 ---
 
@@ -205,19 +248,20 @@ Api/<Feature>/
 
 When adding a new feature:
 
-1. Add commands/queries/results and reader interfaces (query slices) to **Abstractions**  
-2. Add handlers/validators to **Application**  
+1. Add commands/queries/results and reader interfaces to **Abstractions**  
+2. Add handlers/validators/domain event handlers to **Application**  
 3. Add domain entities/events to **Domain**  
 4. Add repositories (command slices), readers (query slices), and configurations to **Infrastructure**  
 5. Inject `IUnitOfWork` in command handlers and call `CommitAsync()`  
 6. Add endpoints to **Api** — each implements `IEndpoint`  
 7. Add tests to the corresponding test project  
 8. Guardrails:  
-   - Reflection guardrails → `Architecture.Tests`  
+   - Architecture guardrails → `Architecture.Tests`  
    - DI guardrails → `Api.Tests/Guardrails`  
 9. Follow naming conventions strictly  
 10. Do not bypass the dispatcher pipeline  
 11. Do not place code in SharedKernel unless it is truly cross‑cutting  
+12. Ensure all slice services use `[AutoRegister]`  
 
 If unsure where something belongs, default to the **most restrictive** layer:  
 **Domain → Application → Infrastructure → Api**
@@ -294,3 +338,13 @@ When adding a new frontend feature:
 5. Add tests mirroring `src/` structure  
 6. Follow naming conventions strictly  
 
+---
+
+# Related Documents
+
+- **[Architecture Governance](ca://s?q=Open_architecture_governance)**  
+- **[Code Conventions](ca://s?q=Open_code_conventions)**  
+- **[Dispatcher Pipeline](ca://s?q=Open_dispatcher_pipeline_guide)**  
+- **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**  
+- **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**  
+- **[Multi‑Product Governance](ca://s?q=Open_multi_product_governance)**  

@@ -1,37 +1,40 @@
 # Code Conventions
 
 This document defines the coding‑level rules for backend and frontend code.  
-It complements the architectural and workflow conventions and ensures code remains consistent, testable, and aligned with the system’s guardrails.
+It complements the architectural, security, and workflow conventions and ensures code remains consistent, testable, and aligned with system guardrails.
+
+Code conventions describe **how code is written**, not architectural policy or governance.
 
 ---
 
-# Backend Conventions
+# 1. Backend Conventions
 
-## Layer Responsibilities
+## 1.1 Layer Responsibilities
 
 - **Api** — endpoints, DTO binding, authorization, dispatching commands/queries.  
 - **Application** — use‑case orchestration, validation, domain interaction.  
 - **Domain** — business rules, aggregates, value objects, domain events.  
 - **Infrastructure** — persistence, external integrations, EF Core, repositories, unit of work.  
-- **SharedKernel** — cross‑cutting primitives, CQRS abstractions, endpoint discovery, DI conventions, guardrails.
+- **SharedKernel** — cross‑cutting primitives, CQRS abstractions, DI auto‑registration, endpoint discovery, guardrails.
 
-### Layering Rules
+### Layering Rules (Implementation-Level)
 
 - Domain must not depend on Application, Infrastructure, or Api.  
 - Application must not depend on Infrastructure or Api.  
 - Infrastructure must not depend on Api.  
 - Api must not contain business logic.  
-- SharedKernel is the only allowed source of cross‑cutting primitives — do not reimplement.
+- Api may depend on Application, SharedKernel, and Domain primitives only.  
+- SharedKernel is the only allowed cross‑cutting dependency.
 
 ---
 
-# CQRS Handler Conventions
+# 2. CQRS Handler Conventions
 
-## Placement
+## 2.1 Placement
 
 - Commands, queries, and handlers live in Application slices.
 
-## Responsibilities
+## 2.2 Responsibilities
 
 Handlers must:
 
@@ -41,7 +44,13 @@ Handlers must:
 - Persist changes via repositories and `IUnitOfWork`.  
 - Publish domain events via the dispatcher.
 
-## Prohibitions
+## 2.3 Registration
+
+- Handlers are **auto‑registered** via `[AutoRegister]`.  
+- Handlers must not be manually registered in DI.  
+- Handlers must not be invoked directly — always use dispatchers.
+
+## 2.4 Prohibitions
 
 - No business rules in handlers.  
 - No direct persistence logic (no `DbContext` access).  
@@ -50,29 +59,30 @@ Handlers must:
 
 ---
 
-# Endpoint Conventions
+# 3. Endpoint Conventions
 
-## Discovery & Structure
+## 3.1 Discovery & Structure
 
 - Endpoints implement `IEndpoint`.  
 - Each endpoint exposes `void Map(IEndpointRouteBuilder app)`.  
 - Endpoints live alongside slice commands, queries, and DTOs.
 
-## Allowed Responsibilities
+## 3.2 Allowed Responsibilities
 
 - DTO binding and shape validation.  
 - Authorization checks.  
-- Dispatching commands/queries.  
+- Dispatching commands/queries via dispatchers.  
 - Returning DTOs or appropriate HTTP results.
 
-## Forbidden Responsibilities
+## 3.3 Forbidden Responsibilities
 
 - No business logic.  
 - No returning domain entities.  
 - No Infrastructure references.  
-- No accepting identity from request bodies — use `ICurrentUserService`.
+- No accepting identity from request bodies — use `ICurrentUserService`.  
+- No direct handler invocation — always use dispatchers.
 
-## Routing Rules
+## 3.4 Routing Rules
 
 - Routes map one‑to‑one to commands or queries.  
 - Use explicit mapping inside the endpoint class.  
@@ -80,41 +90,57 @@ Handlers must:
 
 ---
 
-# Identity & Security
+# 4. Identity, Authentication & Security Conventions
 
-## Identity
+## 4.1 Identity Resolution
 
 - Resolve identity via `ICurrentUserService` only.  
-- Application depends on the abstraction; Infrastructure provides the implementation; Api tests provide a test implementation.
+- Application depends on the abstraction; Infrastructure provides the implementation; Api tests provide a fake implementation.
 
-## Passwords & Hashing
+## 4.2 Authentication Flow (Implementation-Level)
+
+- Login initiation endpoint redirects to OIDC provider.  
+- Callback endpoint exchanges code, fetches userinfo, resolves identity, issues session cookie.  
+- Authentication logic lives in Api + Infrastructure, not Application or Domain.
+
+## 4.3 Session Cookies
+
+- Cookies contain opaque session IDs only.  
+- Cookies are HttpOnly.  
+- Cookies are Secure in production.  
+- Cookies are validated on each request.  
+- Cookies must not contain JWTs, tokens, or PII.
+
+## 4.4 Passwords & Hashing
 
 - Use the domain `PasswordHash` value object.  
 - No plaintext passwords persisted or logged.  
 - Use BCrypt with SharedKernel defaults.
 
-## Authorization
-
-- Authorization checks belong in endpoints and, when necessary, handlers.  
-- Centralize policies; avoid duplication.
-
 ---
 
-# EF Core & Persistence Conventions
+# 5. EF Core & Persistence Conventions
 
-## Mapping
+## 5.1 Mapping
 
 - Aggregate root maps to a table; Id is the key and not value‑generated.  
 - Domain events are ignored by EF Core and not persisted.  
-- Use derived configurations for properties, relationships, and indexes.
+- Use derived configurations for properties, relationships, and indexes.  
+- Value objects are mapped as owned types.
 
-## Unit of Work
+## 5.2 Unit of Work
 
 - `DbContext` is the only layer that talks directly to the database.  
 - Unit of Work coordinates `SaveChangesAsync` and domain event dispatch.  
 - Unit of Work contains no business logic.
 
-## Migrations
+## 5.3 Repository Registration
+
+- Repositories are **auto‑registered** via `[AutoRegister]`.  
+- Repositories must not be manually registered in DI.  
+- Repositories must not expose EF Core types.
+
+## 5.4 Migrations
 
 - Migrations are applied by CI workflows only; tests must not apply migrations.  
 - Code must support clean migration runs against empty preview branches.  
@@ -122,11 +148,11 @@ Handlers must:
 
 ---
 
-# PR Preview Safety Rules
+# 6. PR Preview Safety Rules
 
 Code must be safe to run in ephemeral preview environments (Neon + Render).
 
-## Requirements
+## 6.1 Requirements
 
 - Expose `/health` for teardown readiness checks.  
 - Do not assume persistent DB state; tolerate empty databases.  
@@ -134,7 +160,7 @@ Code must be safe to run in ephemeral preview environments (Neon + Render).
 - Avoid environment‑specific branching.  
 - Do not hardcode URLs, credentials, or secrets.
 
-## Behavioral Expectations
+## 6.2 Behavioral Expectations
 
 - Code must tolerate cold starts and transient connection failures.  
 - Migrations must be idempotent and safe to run in CI against preview branches.  
@@ -142,11 +168,37 @@ Code must be safe to run in ephemeral preview environments (Neon + Render).
 
 ---
 
-# Frontend Conventions
+# 7. Test Seam Conventions
 
-## Structure
+## 7.1 HttpClient Test Seam
 
-`````text
+- All external HTTP calls must use named HttpClients.  
+- Tests replace HttpClient with FakeHttpMessageHandler.  
+- No real network calls are allowed in tests.
+
+## 7.2 Hosting Provider Test Seam
+
+- Environment variables are injected via test seam.  
+- GitHub artifacts are injected via test seam.  
+- Providers must be fully testable without real infrastructure.
+
+## 7.3 Identity Resolver Test Seam
+
+- Identity resolution is abstracted.  
+- Tests use FakeIdentityResolver.
+
+## 7.4 Audit Logger Test Seam
+
+- Audit logging is abstracted.  
+- Tests use FakeAuditLogger.
+
+---
+
+# 8. Frontend Conventions
+
+## 8.1 Structure
+
+```
 frontend/
   src/
     api/<aggregate>/...
@@ -158,187 +210,7 @@ frontend/
     lib/components/...
     app/...
   test/...
-`````
-
-## Layer Responsibilities
-
-- `api/` — server‑call functions (one per slice).  
-- `components/` — presentational React components.  
-- `lib/` — pure logic and action functions.  
-- `hooks/` — behavioral hooks for UI state and API calls.  
-- `app/` — Next.js routing layer.
-
-## Naming
-
-- `api/`: `camelCaseVerb.ts` (e.g., `getDogProfile.ts`).  
-- `components/`: `PascalCase.tsx` (e.g., `DogProfileCard.tsx`).  
-- `lib/`: `camelCase.ts` (e.g., `dogProfileActions.ts`).  
-- `app/`: Next.js conventions (`page.tsx`, `layout.tsx`).
-
-## Shared Infra
-
-- `lib/api/` — API client, `CommandResult`, `QueryResult`.  
-- `lib/hooks/` — shared hooks (`useApiQuery`, `useCommand`).  
-- `lib/components/` — cross‑aggregate components.
-
-## Dynamic Route Safety
-
-- When scripting file operations on dynamic route folders (e.g., `[id]`), use literal path semantics (`-LiteralPath` in PowerShell) to avoid globbing issues.
-
----
-
-# Frontend Form Conventions (Updated)
-
-The frontend now uses a unified form architecture built on:
-
-- **FormCommand** — canonical submit interface  
-- **useFormStateMachine** — deterministic validation + error merging  
-- **FormField** — accessibility‑correct field rendering  
-- **Zod** — schema‑driven validation  
-
-This replaces all legacy `submit()` patterns.
-
-## FormCommand Contract
-
-`````ts
-export interface FormCommand<T> {
-  run: (values: T) => Promise<void>;
-  errors?: Record<string, string>;
-  error?: string;
-  isSubmitting: boolean;
-}
-`````
-
-### Rules
-
-- `run` is the only allowed submit API.  
-- `errors` maps backend field errors.  
-- `error` maps backend form‑level errors.  
-- `isSubmitting` disables UI and prevents double submits.  
-- Commands must not reshape backend responses.
-
----
-
-## Form State Machine
-
-All forms must use `useFormStateMachine`.
-
-Responsibilities:
-
-- Run client‑side validation.  
-- Merge backend errors into `displayErrors`.  
-- Track submission state.  
-- Provide `update`, `handleSubmit`, and `values`.  
-- Ensure deterministic behavior across slices.
-
-Forms must not manage their own error or submission state.
-
----
-
-## Field Rendering
-
-All fields must use `FormField`:
-
-`````tsx
-<FormField label="Name" name="name" error={displayErrors.name}>
-  {(fieldProps) => (
-    <input
-      {...fieldProps}
-      value={values.name}
-      onChange={update('name')}
-      disabled={isSubmitting}
-    />
-  )}
-</FormField>
-`````
-
-### Rules
-
-- Always spread `fieldProps`.  
-- Never override `id` without checking for duplicates.  
-- All fields must support `aria-invalid`, `aria-describedby`, and `role="alert"`.
-
----
-
-## Validation
-
-- All validation schemas live in `src/lib/<domain>/<feature>Schema.ts`.  
-- Validation must use Zod.  
-- Validation messages must originate from the schema.  
-- Validation must return `{ field: message }` maps.  
-- Forms must not implement validation logic.
-
----
-
-## Backend Contract Alignment
-
-Backend error envelopes:
-
-`````json
-{ "errors": { "field": "message" } }
-{ "error": "form-level message" }
-`````
-
-Backend success envelope for create-account:
-
-`````json
-{ "customerId": "guid" }
-`````
-
-### Rules
-
-- Frontend must not expect additional fields.  
-- Frontend must normalize phone numbers to digits‑only.  
-- Frontend must treat success as “account created” and handle navigation accordingly.
-
----
-
-# Testing Conventions
-
-## Principles
-
-- Tests must be fast, deterministic, and isolated.  
-- Follow red–green–refactor discipline.
-
-## Backend
-
-- Unit tests: domain logic, handlers, small infra pieces.  
-- Integration tests: persistence, endpoint behavior, cross‑layer flows.  
-- Infrastructure tests run against the fresh preview DB and must not apply migrations.
-
-## Frontend
-
-- Use Vitest v3, React Testing Library, and `@testing-library/jest-dom`.  
-- Component tests focus on behavior, not implementation details.  
-- `test/` mirrors `src/`.
-
-## Naming
-
-- Tests should describe behavior and read like specifications.
-
----
-
-# Tooling & Scripts
-
-## Shell & Encoding
-
-- Primary shell: PowerShell.  
-- Generated files: `utf8NoBOM`.  
-- Scripts must be copy‑pasteable and idempotent.
-
-## File Generation
-
-- Use single‑quoted here‑strings for file generation.  
-- Avoid nested here‑strings, backticks, and problematic quoting sequences.
-
----
-
-# Enforcement & Guardrails
-
-- Guardrail tests validate layering and dependency rules.  
-- Document which guardrail tests exist and where they run.  
-- When a convention is enforced by SharedKernel or tests, reference the exact type or test name in code comments or docs.  
-- CI dependency graph enforces correct test ordering and architectural consistency.
+```
 
 ---
 
