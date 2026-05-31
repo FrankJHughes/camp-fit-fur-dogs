@@ -29,17 +29,21 @@ public sealed class AuthCallbackService : IAuthCallbackService
         if (string.IsNullOrWhiteSpace(code))
             throw new AuthCallbackException(AuthCallbackError.MissingAuthorizationCode);
 
-        // ⭐ Initialize context with a single deterministic timestamp
+        // Initialize context with a deterministic timestamp
         var ctx = new AuthCallbackContext(code)
         {
             Now = _clock.UtcNow
         };
 
-        // ⭐ Execute pipeline steps in order
+        // Execute pipeline steps in order
         foreach (var step in _steps)
             await step.ExecuteAsync(ctx, ct);
 
-        return ctx.Result!;
+        // Ensure a result was produced
+        if (ctx.Result is null)
+            throw new AuthCallbackException(AuthCallbackError.MissingResult);
+
+        return ctx.Result;
     }
 
     private sealed class DefaultSystemClock : ISystemClock
