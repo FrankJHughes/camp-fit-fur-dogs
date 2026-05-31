@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Identity;
-
-namespace CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication;
+using CampFitFurDogs.Application.Authentication.Steps;
 
 public sealed class ResolveIdentityStep : IAuthCallbackStep
 {
@@ -13,9 +13,13 @@ public sealed class ResolveIdentityStep : IAuthCallbackStep
 
     public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
-        // ctx.Profile is now an OidcUserProfile
-        ctx.CustomerId = await _resolver.ResolveAsync(
-            ctx.User!,   // pass the entire profile
-            ct);
+        ctx.RequireUser();
+
+        Guid? resolved = await _resolver.ResolveAsync(ctx.User!, ct);
+
+        if (resolved is null)
+            throw new InvalidOperationException("Unable to resolve customer identity.");
+
+        ctx.CustomerId = resolved.Value;
     }
 }

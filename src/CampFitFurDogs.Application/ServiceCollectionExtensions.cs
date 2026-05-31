@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthCallbackStep, ValidateUserInfoStep>();
         services.AddScoped<IAuthCallbackStep, ResolveIdentityStep>();
         services.AddScoped<IAuthCallbackStep, CreateSessionCookieStep>();
+        services.AddScoped<IAuthCallbackStep, CreateSessionStep>();
         services.AddScoped<IAuthCallbackStep, AuditLoginStep>();
         services.AddScoped<IAuthCallbackStep, BuildRedirectStep>();
 

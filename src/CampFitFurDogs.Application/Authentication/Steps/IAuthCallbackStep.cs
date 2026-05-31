@@ -1,5 +1,4 @@
-using System.Threading;
-using System.Threading.Tasks;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 
 namespace CampFitFurDogs.Application.Authentication.Steps;
 

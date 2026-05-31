@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
 using CampFitFurDogs.Domain.Errors;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 
 namespace CampFitFurDogs.Application.Authentication.Steps;
 

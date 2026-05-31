@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 
 namespace CampFitFurDogs.Application.Authentication.Steps;
 
@@ -14,6 +15,9 @@ public sealed class BuildRedirectStep : IAuthCallbackStep
 
     public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
+        ctx.RequireResult();
+        ctx.RequireSession();
+
         ctx.Result = ctx.Result!.WithRedirect(_options.PostLoginRedirectUrl);
         return Task.CompletedTask;
     }

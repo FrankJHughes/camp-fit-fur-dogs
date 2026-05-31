@@ -1,53 +1,44 @@
 using CampFitFurDogs.Application.Authentication;
 using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Domain.Customers;
 
-namespace CampFitFurDogs.Application.Tests.Authentication
+public sealed class CreateSessionCookieStepTests
 {
-    public sealed class CreateSessionCookieStepTests
+    [Fact]
+    public async Task Generates_token_hash_and_cookie_and_result()
     {
-        private static AuthCallbackContext ContextWithCustomerId(Guid id) =>
-            new AuthCallbackContext("dummy-code")
-            {
-                CustomerId = id
-            };
+        var customerId = Guid.NewGuid();
 
-        private static CreateSessionCookieStep CreateStep() => new CreateSessionCookieStep();
-
-        // ------------------------------------------------------------
-        // SUCCESSFUL RESULT CREATION
-        // ------------------------------------------------------------
-        [Fact]
-        public async Task Sets_result_to_success_with_customer_id()
+        var ctx = new AuthCallbackContext("code")
         {
-            var customerId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-            var ctx = ContextWithCustomerId(customerId);
+            CustomerId = customerId
+        };
 
-            var step = CreateStep();
+        var step = new CreateSessionCookieStep();
 
-            await step.ExecuteAsync(ctx, CancellationToken.None);
+        await step.ExecuteAsync(ctx, CancellationToken.None);
 
-            ctx.Result.Should().NotBeNull();
-            ctx.Result!.CustomerId.Should().Be(customerId);
-            ctx.Result.SessionCookie.Should().Be($"cfd.session={customerId}");
-            ctx.Result.RedirectUrl.Should().Be("");
-        }
+        ctx.TokenHash.Should().NotBeNull();
+        ctx.TokenHash!.Value.Length.Should().Be(64);
 
-        // ------------------------------------------------------------
-        // NULL CUSTOMER ID → NULL REFERENCE EXCEPTION
-        // ------------------------------------------------------------
-        [Fact]
-        public async Task Null_customer_id_throws_InvalidOperationException()
-        {
-            var ctx = new AuthCallbackContext("dummy-code")
-            {
-                CustomerId = null
-            };
+        ctx.Result.Should().NotBeNull();
+        ctx.Result!.CustomerId.Should().Be(CustomerId.From(customerId));
 
-            var step = new CreateSessionCookieStep();
+        ctx.Result.Cookie.Name.Should().Be("cfd.session");
+        ctx.Result.Cookie.Value.Should().HaveLength(64); // plaintext token
 
-            var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
+        ctx.Result.RedirectUrl.Should().Be("");
+    }
 
-            await act.Should().ThrowAsync<InvalidOperationException>();
-        }
+    [Fact]
+    public async Task Missing_customerId_throws()
+    {
+        var ctx = new AuthCallbackContext("code");
+
+        var step = new CreateSessionCookieStep();
+
+        Func<Task> act = () => step.ExecuteAsync(ctx, CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 }
