@@ -23,7 +23,7 @@ public sealed class CreateSessionStep : IAuthCallbackStep
         var session = Session.Create(
             ctx.TokenHash!,
             CustomerId.From(ctx.CustomerId!.Value),
-            ctx.CreatedAt
+            ctx.Now
         );
 
         await _repo.CreateAsync(session);

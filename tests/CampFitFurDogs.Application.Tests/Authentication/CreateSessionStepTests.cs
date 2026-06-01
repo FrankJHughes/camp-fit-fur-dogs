@@ -20,7 +20,7 @@ public sealed class CreateSessionStepTests
         {
             CustomerId = customerId,
             TokenHash = tokenHash,
-            CreatedAt = now ?? new DateTimeOffset(2025, 1, 1, 12, 0, 0, TimeSpan.Zero)
+            Now = now ?? new DateTimeOffset(2025, 1, 1, 12, 0, 0, TimeSpan.Zero)
         };
     }
 
@@ -46,7 +46,7 @@ public sealed class CreateSessionStepTests
         ctx.Session.Should().NotBeNull();
         ctx.Session!.OwnerId.Should().Be(CustomerId.From(customerId));
         ctx.Session.TokenHash.Should().Be(tokenHash);
-        ctx.Session.CreatedAt.Should().Be(ctx.CreatedAt);
+        ctx.Session.CreatedAt.Should().Be(ctx.Now);
 
         uow.CommitCount.Should().Be(1);
     }

@@ -17,6 +17,10 @@ public sealed class BuildRedirectStep : IAuthCallbackStep
     {
         ctx.RequireSessionCookie();
         ctx.RequireSession();
+
+        if (string.IsNullOrWhiteSpace(_options.PostLoginRedirectUrl))
+            throw new InvalidOperationException("PostLoginRedirectUrl must be configured.");
+
         ctx.RedirectUrl = _options.PostLoginRedirectUrl;
         return ctx;
     }

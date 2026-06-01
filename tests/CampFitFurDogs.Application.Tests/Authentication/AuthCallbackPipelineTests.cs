@@ -1,7 +1,5 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Time;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 
@@ -81,8 +79,20 @@ public sealed class AuthCallbackPipelineTests
     {
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
+            // Ensure a valid customer ID
+            ctx.CustomerId ??= Guid.NewGuid();
+
+            // Ensure a valid session
+            ctx.Session ??= Session.Create(
+                SessionTokenHash.From("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
+                CustomerId.From(ctx.CustomerId.Value),
+                DateTimeOffset.UtcNow
+            );
+
+            // Ensure a valid cookie
             ctx.SessionCookie ??= SessionCookie.FromPlaintextToken("final-cookie");
-            ctx.CustomerId ??= Guid.Empty;
+
+            // Ensure a redirect URL
             ctx.RedirectUrl ??= "/done";
 
             return Task.FromResult(ctx);
@@ -90,7 +100,7 @@ public sealed class AuthCallbackPipelineTests
     }
 
     // ------------------------------------------------------------
-    // 1. EXECUTES STEPS IN ORDER
+    // 1. EXECUTES STEPS IN ORDER (pipeline only — NOT service)
     // ------------------------------------------------------------
     [Fact]
     public async Task Executes_steps_in_order()
@@ -105,15 +115,16 @@ public sealed class AuthCallbackPipelineTests
         };
 
         var pipeline = new AuthCallbackPipeline(steps);
-        var service = new AuthCallbackService(pipeline, new FakeClock());
 
-        await service.HandleAsync("code", CancellationToken.None);
+        var ctx = new AuthCallbackContext("code");
+
+        await pipeline.ExecuteAsync(ctx, CancellationToken.None);
 
         log.Should().Equal("A", "B", "C");
     }
 
     // ------------------------------------------------------------
-    // 2. CONTEXT PROPAGATION BETWEEN STEPS
+    // 2. CONTEXT PROPAGATION BETWEEN STEPS (pipeline only)
     // ------------------------------------------------------------
     [Fact]
     public async Task Propagates_context_between_steps()
@@ -129,13 +140,14 @@ public sealed class AuthCallbackPipelineTests
         };
 
         var pipeline = new AuthCallbackPipeline(steps);
-        var service = new AuthCallbackService(pipeline, new FakeClock());
 
-        await service.HandleAsync("code", CancellationToken.None);
+        var ctx = new AuthCallbackContext("code");
+
+        await pipeline.ExecuteAsync(ctx, CancellationToken.None);
     }
 
     // ------------------------------------------------------------
-    // 3. EXCEPTION SHORT-CIRCUITS PIPELINE
+    // 3. EXCEPTION SHORT-CIRCUITS PIPELINE (pipeline only)
     // ------------------------------------------------------------
     [Fact]
     public async Task Stops_when_a_step_throws()
@@ -150,9 +162,10 @@ public sealed class AuthCallbackPipelineTests
         };
 
         var pipeline = new AuthCallbackPipeline(steps);
-        var service = new AuthCallbackService(pipeline, new FakeClock());
 
-        var act = () => service.HandleAsync("code", CancellationToken.None);
+        var ctx = new AuthCallbackContext("code");
+
+        Func<Task> act = () => pipeline.ExecuteAsync(ctx, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>();
 
@@ -160,14 +173,13 @@ public sealed class AuthCallbackPipelineTests
     }
 
     // ------------------------------------------------------------
-    // 4. FINAL RESULT IS PRODUCED
+    // 4. FINAL RESULT IS PRODUCED (service — requires full context)
     // ------------------------------------------------------------
     [Fact]
     public async Task Produces_final_result()
     {
         var steps = new IAuthCallbackStep[]
         {
-            new RecordingStep(new List<string>(), "A"),
             new FinalizeResultStep()
         };
 
@@ -176,7 +188,6 @@ public sealed class AuthCallbackPipelineTests
 
         var result = await service.HandleAsync("code", CancellationToken.None);
 
-        result.Should().NotBeNull();
         result.Cookie.Value.Should().Be("final-cookie");
         result.RedirectUrl.Should().Be("/done");
     }

@@ -4,6 +4,8 @@ using CampFitFurDogs.Application.Authentication.Steps;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 
+namespace CampFitFurDogs.Application.Tests.Authentication;
+
 public sealed class CreateSessionCookieStepTests
 {
     // ------------------------------------------------------------
@@ -14,7 +16,8 @@ public sealed class CreateSessionCookieStepTests
         public GeneratedSessionToken Generate()
         {
             // Deterministic plaintext token (64 hex chars)
-            var plaintext = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            var plaintext =
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
             // Deterministic hash (64 hex chars)
             var hash = SessionTokenHash.From(
@@ -38,7 +41,14 @@ public sealed class CreateSessionCookieStepTests
 
         var ctx = new AuthCallbackContext("code")
         {
-            CustomerId = customerId
+            CustomerId = customerId,
+            Session = Session.Create(
+                ownerId: CustomerId.From(customerId),
+                tokenHash: SessionTokenHash.From(
+                    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                ),
+                createdAt: DateTimeOffset.UtcNow
+            )
         };
 
         var step = new CreateSessionCookieStep(new FakeTokenService());
@@ -51,9 +61,8 @@ public sealed class CreateSessionCookieStepTests
             "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
         );
 
-        // Session is created
+        // Session is NOT created here — it must already exist
         updated.Session.Should().NotBeNull();
-        updated.Session!.OwnerId.Should().Be(CustomerId.From(customerId));
 
         // Cookie is correct
         updated.SessionCookie.Should().NotBeNull();

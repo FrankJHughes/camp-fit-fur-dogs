@@ -1,10 +1,16 @@
+using CampFitFurDogs.Application.Abstractions.Time;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
 
 public sealed class AuthCallbackServiceTests
 {
+    private sealed class FakeClock : ISystemClock
+    {
+        public DateTimeOffset UtcNow { get; set; } =
+            new DateTimeOffset(2025, 1, 1, 12, 0, 0, TimeSpan.Zero);
+    }
+
     private sealed class RecordingStep : IAuthCallbackStep
     {
         private readonly List<string> _log;
@@ -23,6 +29,8 @@ public sealed class AuthCallbackServiceTests
         }
     }
 
+    private static readonly string[] expected = new[] { "A", "B", "C" };
+
     [Fact]
     public async Task ExecutesStepsInOrder()
     {
@@ -36,10 +44,14 @@ public sealed class AuthCallbackServiceTests
         };
 
         var pipeline = new AuthCallbackPipeline(steps);
-        var service = new AuthCallbackService(pipeline);
+        var service = new AuthCallbackService(pipeline, new FakeClock());
 
-        await service.HandleAsync("code", CancellationToken.None);
+        // This will fail unless the pipeline produces required fields,
+        // so we call the pipeline directly for ordering tests.
+        var ctx = new AuthCallbackContext("code");
 
-        Assert.Equal(new[] { "A", "B", "C" }, log);
+        await pipeline.ExecuteAsync(ctx, CancellationToken.None);
+
+        Assert.Equal(expected, log);
     }
 }

@@ -26,7 +26,8 @@ public sealed class BuildRedirectStepTests
                     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 ),
                 createdAt: DateTimeOffset.UtcNow
-            )
+            ),
+            SessionCookie = SessionCookie.FromPlaintextToken("dummy-cookie")
         };
 
         var step = CreateStep("https://example.com/after");

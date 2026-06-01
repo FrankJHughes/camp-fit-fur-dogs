@@ -33,12 +33,13 @@ public sealed class AuthCallbackService : IAuthCallbackService
         // Initialize context with a deterministic timestamp
         var initial = new AuthCallbackContext(code)
         {
-            CreatedAt = _clock.UtcNow
+            Now = _clock.UtcNow
         };
 
         var final = await _pipeline.ExecuteAsync(initial, ct);
 
         final.RequireCustomerId();
+        final.RequireSession();
         final.RequireSessionCookie();
         final.RequireRedirectUrl();
 
