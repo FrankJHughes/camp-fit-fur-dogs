@@ -1,6 +1,7 @@
 using System.Diagnostics;
+using CampFitFurDogs.Application.Authentication.Pipeline;
 
-namespace CampFitFurDogs.Application.Authentication.Pipeline;
+namespace CampFitFurDogs.Application.Authentication;
 
 public sealed class AuthCallbackPipeline
 {
@@ -37,6 +38,32 @@ public sealed class AuthCallbackPipeline
             var after = await step.ExecuteAsync(before, ct);
             sw.Stop();
 
+            // -------------------------
+            // Pipeline Invariants
+            // -------------------------
+
+            if (after is null)
+                throw new InvalidOperationException(
+                    $"Pipeline step '{step.Metadata.Id}' returned null context.");
+
+            // Immutable fields
+            if (after.Code != before.Code)
+                throw new InvalidOperationException(
+                    $"Pipeline step '{step.Metadata.Id}' attempted to modify immutable field 'Code'.");
+
+            if (after.Now != before.Now)
+                throw new InvalidOperationException(
+                    $"Pipeline step '{step.Metadata.Id}' attempted to modify immutable field 'Now'.");
+
+            // No field may be cleared once set
+            EnsureNotCleared(before.Token, after.Token, step, "Token");
+            EnsureNotCleared(before.User, after.User, step, "User");
+            EnsureNotCleared(before.CustomerId, after.CustomerId, step, "CustomerId");
+            EnsureNotCleared(before.TokenHash, after.TokenHash, step, "TokenHash");
+            EnsureNotCleared(before.Session, after.Session, step, "Session");
+            EnsureNotCleared(before.SessionCookie, after.SessionCookie, step, "SessionCookie");
+            EnsureNotCleared(before.RedirectUrl, after.RedirectUrl, step, "RedirectUrl");
+
             // Emit END event
             _trace?.Invoke(new PipelineDiagnosticEvent(
                 StepId: step.Metadata.Id,
@@ -51,5 +78,18 @@ public sealed class AuthCallbackPipeline
         }
 
         return ctx;
+    }
+
+    private static void EnsureNotCleared<T>(
+        T before,
+        T after,
+        IAuthCallbackStep step,
+        string fieldName)
+    {
+        if (before is not null && after is null)
+        {
+            throw new InvalidOperationException(
+                $"Pipeline step '{step.Metadata.Id}' cleared previously set field '{fieldName}'.");
+        }
     }
 }
