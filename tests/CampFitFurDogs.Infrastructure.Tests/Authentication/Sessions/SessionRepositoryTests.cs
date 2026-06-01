@@ -63,6 +63,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
         persisted.TokenHash.Should().Be(session.TokenHash);
         persisted.OwnerId.Should().Be(ownerId);
         persisted.CreatedAt.Should().Be(SessionFixtures.CreatedAt);
+        persisted.RevokedAt.Should().BeNull();
     }
 
     [Fact]
@@ -99,6 +100,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
         retrieved!.TokenHash.Should().Be(tokenHash);
         retrieved.OwnerId.Should().Be(ownerId);
         retrieved.CreatedAt.Should().Be(SessionFixtures.CreatedAt);
+        retrieved.RevokedAt.Should().BeNull();
     }
 
     [Fact]
@@ -117,7 +119,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
     }
 
     [Fact]
-    public async Task RevokeAsync_removes_session_from_store()
+    public async Task RevokeAsync_marks_session_as_revoked()
     {
         var ownerId = await SeedOwnerAsync();
 
@@ -143,6 +145,8 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
         }
 
         // Act — revoke
+        var before = DateTimeOffset.UtcNow;
+
         await using (var ctx = _fixture.CreateContext())
         {
             var repo = new SessionRepository(ctx);
@@ -150,13 +154,15 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
             await ctx.SaveChangesAsync();
         }
 
-        // Assert — session gone
+        // Assert — session still exists but is revoked
         await using (var readCtx = _fixture.CreateContext())
         {
             var repo = new SessionRepository(readCtx);
             var retrieved = await repo.GetByTokenHashAsync(tokenHash);
 
-            retrieved.Should().BeNull();
+            retrieved.Should().NotBeNull();
+            retrieved!.RevokedAt.Should().NotBeNull();
+            retrieved.RevokedAt.Should().BeOnOrAfter(before);
         }
     }
 }

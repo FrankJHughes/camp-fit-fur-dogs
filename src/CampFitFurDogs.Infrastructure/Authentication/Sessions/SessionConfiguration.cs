@@ -50,5 +50,12 @@ public sealed class SessionConfiguration : AggregateRootConfiguration<Session, S
         builder.Property(s => s.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
+
+        //
+        // RevokedAt (nullable timestamp)
+        //
+        builder.Property(s => s.RevokedAt)
+            .HasColumnName("revoked_at")
+            .IsRequired(false);
     }
 }

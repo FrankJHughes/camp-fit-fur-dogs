@@ -8,6 +8,7 @@ public sealed class Session : AggregateRoot<SessionId>
     public SessionTokenHash TokenHash { get; }
     public CustomerId OwnerId { get; }
     public DateTimeOffset CreatedAt { get; }
+    public DateTimeOffset? RevokedAt { get; private set; }
 
 #pragma warning disable CS8618
     private Session() : base(default!)
@@ -23,14 +24,9 @@ public sealed class Session : AggregateRoot<SessionId>
         DateTimeOffset createdAt)
         : base(sessionId)
     {
-        // -----------------------------
-        // Domain invariants
-        // -----------------------------
-        if (tokenHash is null)
-            throw new ArgumentNullException(nameof(tokenHash));
+        ArgumentNullException.ThrowIfNull(tokenHash);
 
-        if (ownerId is null)
-            throw new ArgumentNullException(nameof(ownerId));
+        ArgumentNullException.ThrowIfNull(ownerId);
 
         if (createdAt == default)
             throw new ArgumentException("CreatedAt must be a valid timestamp.", nameof(createdAt));
@@ -45,4 +41,37 @@ public sealed class Session : AggregateRoot<SessionId>
         CustomerId ownerId,
         DateTimeOffset createdAt)
         => new(SessionId.New(), tokenHash, ownerId, createdAt);
+
+    // ------------------------------------------------------------
+    // Domain Behavior
+    // ------------------------------------------------------------
+
+    /// <summary>
+    /// Returns true if the session has expired based on the given TTL.
+    /// </summary>
+    public bool IsExpired(DateTimeOffset now, TimeSpan ttl)
+        => CreatedAt + ttl < now;
+
+    /// <summary>
+    /// Returns true if the session is revoked.
+    /// </summary>
+    public bool IsRevoked()
+        => RevokedAt is not null;
+
+    /// <summary>
+    /// Returns true if the session is active (not expired and not revoked).
+    /// </summary>
+    public bool IsActive(DateTimeOffset now, TimeSpan ttl)
+        => !IsExpired(now, ttl) && !IsRevoked();
+
+    /// <summary>
+    /// Revokes the session at the given timestamp.
+    /// </summary>
+    public void Revoke(DateTimeOffset now)
+    {
+        if (RevokedAt is not null)
+            throw new InvalidOperationException("Session is already revoked.");
+
+        RevokedAt = now;
+    }
 }

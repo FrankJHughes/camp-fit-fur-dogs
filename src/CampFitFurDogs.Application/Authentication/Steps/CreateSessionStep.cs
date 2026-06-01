@@ -1,16 +1,18 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
+using SharedKernel.Abstractions;
+
+namespace CampFitFurDogs.Application.Authentication.Steps;
 
 public sealed class CreateSessionStep : IAuthCallbackStep
 {
     private readonly ISessionRepository _repo;
+    private readonly IUnitOfWork _uow;
 
-    public CreateSessionStep(ISessionRepository repo)
+    public CreateSessionStep(ISessionRepository repo, IUnitOfWork uow)
     {
         _repo = repo;
+        _uow = uow;
     }
 
     public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
@@ -18,7 +20,6 @@ public sealed class CreateSessionStep : IAuthCallbackStep
         ctx.RequireCustomerId();
         ctx.RequireTokenHash();
 
-        // Domain invariants enforce correctness here
         var session = Session.Create(
             ctx.TokenHash!,
             CustomerId.From(ctx.CustomerId!.Value),
@@ -28,5 +29,7 @@ public sealed class CreateSessionStep : IAuthCallbackStep
         ctx.Session = session;
 
         await _repo.CreateAsync(session);
+
+        await _uow.CommitAsync(ct);
     }
 }

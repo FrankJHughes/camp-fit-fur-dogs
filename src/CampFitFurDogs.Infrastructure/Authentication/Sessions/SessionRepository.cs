@@ -33,7 +33,9 @@ public sealed class SessionRepository : ISessionRepository
         if (session is null)
             return;
 
-        _db.Set<Session>().Remove(session);
-    }
+        // Domain behavior
+        session.Revoke(DateTimeOffset.UtcNow);
 
+        // EF will track the change; SaveChanges is handled by the unit of work
+    }
 }

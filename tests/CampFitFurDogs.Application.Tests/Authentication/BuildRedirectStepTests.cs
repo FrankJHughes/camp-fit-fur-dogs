@@ -6,6 +6,8 @@ using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 using Microsoft.Extensions.Options;
 
+namespace CampFitFurDogs.Application.Tests.Authentication;
+
 public sealed class BuildRedirectStepTests
 {
     private static AuthCallbackResult FakeResult()

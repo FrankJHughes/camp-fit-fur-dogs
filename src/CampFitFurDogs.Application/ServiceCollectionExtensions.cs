@@ -20,6 +20,9 @@ public static class ServiceCollectionExtensions
         // ⭐ Pipeline service
         services.AddScoped<IAuthCallbackService, AuthCallbackService>();
 
+        // ⭐ Token service
+        services.AddScoped<ISessionTokenService, SessionTokenService>();
+
         // ⭐ Pipeline steps
         services.AddScoped<IAuthCallbackStep, ValidateConfigStep>();
         services.AddScoped<IAuthCallbackStep, ExchangeCodeStep>();

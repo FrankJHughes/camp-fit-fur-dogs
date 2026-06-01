@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
@@ -8,24 +6,25 @@ namespace CampFitFurDogs.Application.Authentication.Steps;
 
 public sealed class CreateSessionCookieStep : IAuthCallbackStep
 {
+    private readonly ISessionTokenService _tokens;
+
+    public CreateSessionCookieStep(ISessionTokenService tokens)
+    {
+        _tokens = tokens;
+    }
+
     public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         ctx.RequireCustomerId();
 
-        // 1. Generate secure random plaintext token
-        var tokenBytes = RandomNumberGenerator.GetBytes(32);
-        var token = Convert.ToHexString(tokenBytes).ToLowerInvariant();
-
-        // 2. Hash for DB storage
-        using var sha256 = SHA256.Create();
-        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
-        var tokenHash = Convert.ToHexString(hashBytes).ToLowerInvariant();
+        // 1–2. Generate plaintext token + hash via domain-aware service
+        var generated = _tokens.Generate();
 
         // 3. Store hash for CreateSessionStep
-        ctx.TokenHash = SessionTokenHash.From(tokenHash);
+        ctx.TokenHash = generated.Hash;
 
         // 4. Build cookie value using domain VO
-        var cookie = SessionCookie.FromPlaintextToken(token);
+        var cookie = SessionCookie.FromPlaintextToken(generated.PlaintextToken);
 
         // 5. Build result using domain types
         ctx.Result = new AuthCallbackResult(

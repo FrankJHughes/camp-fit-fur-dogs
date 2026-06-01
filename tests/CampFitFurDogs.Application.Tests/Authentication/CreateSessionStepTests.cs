@@ -1,39 +1,13 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
+using CampFitFurDogs.Application.Authentication.Steps;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.TestUtilities.Fakes;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
 
 public sealed class CreateSessionStepTests
 {
-    // ------------------------------------------------------------
-    // Fake repository (no mocking framework)
-    // ------------------------------------------------------------
-    private sealed class FakeSessionRepository : ISessionRepository
-    {
-        public Session? Created { get; private set; }
-
-        public Task CreateAsync(Session session)
-        {
-            Created = session;
-            return Task.CompletedTask;
-        }
-
-        public Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash)
-        {
-            return Task.FromResult<Session?>(null);
-        }
-
-        public Task RevokeAsync(SessionTokenHash tokenHash)
-        {
-            return Task.CompletedTask;
-        }
-    }
-
-    // ------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------
     private const string ValidHash =
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
@@ -63,8 +37,9 @@ public sealed class CreateSessionStepTests
 
         var ctx = MakeContext(customerId, tokenHash);
         var repo = FakeRepo();
+        var uow = new FakeUnitOfWork();
 
-        var step = new CreateSessionStep(repo);
+        var step = new CreateSessionStep(repo, uow);
 
         await step.ExecuteAsync(ctx, CancellationToken.None);
 
@@ -72,6 +47,8 @@ public sealed class CreateSessionStepTests
         ctx.Session!.OwnerId.Should().Be(CustomerId.From(customerId));
         ctx.Session.TokenHash.Should().Be(tokenHash);
         ctx.Session.CreatedAt.Should().Be(ctx.Now);
+
+        uow.CommitCount.Should().Be(1);
     }
 
     // ------------------------------------------------------------
@@ -85,13 +62,16 @@ public sealed class CreateSessionStepTests
 
         var ctx = MakeContext(customerId, tokenHash);
         var repo = FakeRepo();
+        var uow = new FakeUnitOfWork();
 
-        var step = new CreateSessionStep(repo);
+        var step = new CreateSessionStep(repo, uow);
 
         await step.ExecuteAsync(ctx, CancellationToken.None);
 
-        repo.Created.Should().NotBeNull();
-        repo.Created.Should().Be(ctx.Session);
+        repo.CreatedSessions.Should().ContainSingle();
+        repo.CreatedSessions.Single().Should().Be(ctx.Session);
+
+        uow.CommitCount.Should().Be(1);
     }
 
     // ------------------------------------------------------------
@@ -102,12 +82,14 @@ public sealed class CreateSessionStepTests
     {
         var ctx = MakeContext(customerId: null, tokenHash: SessionTokenHash.From(ValidHash));
         var repo = FakeRepo();
+        var uow = new FakeUnitOfWork();
 
-        var step = new CreateSessionStep(repo);
+        var step = new CreateSessionStep(repo, uow);
 
         var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>();
+        uow.CommitCount.Should().Be(0);
     }
 
     // ------------------------------------------------------------
@@ -118,12 +100,14 @@ public sealed class CreateSessionStepTests
     {
         var ctx = MakeContext(customerId: Guid.NewGuid(), tokenHash: null);
         var repo = FakeRepo();
+        var uow = new FakeUnitOfWork();
 
-        var step = new CreateSessionStep(repo);
+        var step = new CreateSessionStep(repo, uow);
 
         var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>();
+        uow.CommitCount.Should().Be(0);
     }
 
     // ------------------------------------------------------------
@@ -141,10 +125,13 @@ public sealed class CreateSessionStepTests
         );
 
         var repo = FakeRepo();
-        var step = new CreateSessionStep(repo);
+        var uow = new FakeUnitOfWork();
+
+        var step = new CreateSessionStep(repo, uow);
 
         await step.ExecuteAsync(ctx, CancellationToken.None);
 
         ctx.Session!.CreatedAt.Should().Be(now);
+        uow.CommitCount.Should().Be(1);
     }
 }

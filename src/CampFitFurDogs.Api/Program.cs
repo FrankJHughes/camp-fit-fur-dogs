@@ -1,23 +1,21 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 using SharedKernel.Api;
 using SharedKernel.Api.Hosting;
 using SharedKernel.DependencyInjection;
-using SharedKernel.Domain;
 
 using CampFitFurDogs.Api.Errors;
 using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
 
-AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
-{
-    Console.WriteLine("STARTUP EXCEPTION: " + e.Exception.GetType().Name + " - " + e.Exception.Message);
-};
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+
+// AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
+// {
+//     Console.WriteLine("STARTUP EXCEPTION: " + e.Exception.GetType().Name + " - " + e.Exception.Message);
+// };
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +42,24 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+// ────────────────────────────────────────────────────────────────
+// ⭐ Cookie Authentication (required for AuthCallback tests)
+// ────────────────────────────────────────────────────────────────
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.Cookie.Name = "cfd.session";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.Path = "/";
+    });
+
+builder.Services.AddAuthorization();
+
+// ────────────────────────────────────────────────────────────────
+// SharedKernel, Application, Infrastructure, API
+// ────────────────────────────────────────────────────────────────
 builder.Services.AddSharedKernel([
     typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
@@ -52,27 +68,35 @@ builder.Services.AddSharedKernel([
 ]);
 
 builder.Services.AddApplication();
-
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Endpoint discovery
 var apiAssembly = typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
 EndpointDiscovery.AddEndpoints(apiAssembly);
 
+// OpenAPI
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// ────────────────────────────────────────────────────────────────
+// Middleware pipeline
+// ────────────────────────────────────────────────────────────────
 app.UseExceptionHandler(ExceptionHandlingMiddleware.Configure);
 
 app.UseCors();
 app.UseHttpsRedirection();
+
+// ⭐ Required for cookie auth to work
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
 
 app.MapGet("/api/health", () => Results.Ok(new { Status = "Healthy" }))
    .WithName("HealthCheck");
