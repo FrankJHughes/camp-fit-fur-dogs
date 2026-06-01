@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Time;
 using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Application.Authentication;
 
@@ -10,17 +11,17 @@ namespace CampFitFurDogs.Application.Authentication;
 /// </summary>
 public sealed class AuthCallbackService : IAuthCallbackService
 {
-    private readonly IEnumerable<IAuthCallbackStep> _steps;
+    private readonly AuthCallbackPipeline _pipeline;
     private readonly ISystemClock _clock;
 
-    public AuthCallbackService(IEnumerable<IAuthCallbackStep> steps)
-        : this(steps, new DefaultSystemClock())
+    public AuthCallbackService(AuthCallbackPipeline pipeline)
+        : this(pipeline, new DefaultSystemClock())
     {
     }
 
-    public AuthCallbackService(IEnumerable<IAuthCallbackStep> steps, ISystemClock clock)
+    public AuthCallbackService(AuthCallbackPipeline pipeline, ISystemClock clock)
     {
-        _steps = steps;
+        _pipeline = pipeline;
         _clock = clock;
     }
 
@@ -30,20 +31,23 @@ public sealed class AuthCallbackService : IAuthCallbackService
             throw new AuthCallbackException(AuthCallbackError.MissingAuthorizationCode);
 
         // Initialize context with a deterministic timestamp
-        var ctx = new AuthCallbackContext(code)
+        var initial = new AuthCallbackContext(code)
         {
-            Now = _clock.UtcNow
+            CreatedAt = _clock.UtcNow
         };
 
-        // Execute pipeline steps in order
-        foreach (var step in _steps)
-            await step.ExecuteAsync(ctx, ct);
+        var final = await _pipeline.ExecuteAsync(initial, ct);
 
-        // Ensure a result was produced
-        if (ctx.Result is null)
-            throw new AuthCallbackException(AuthCallbackError.MissingResult);
+        final.RequireCustomerId();
+        final.RequireSessionCookie();
+        final.RequireRedirectUrl();
 
-        return ctx.Result;
+        return new AuthCallbackResult(
+            CustomerId.From(final.CustomerId!.Value),
+            final.SessionCookie!,
+            final.RedirectUrl!
+        );
+
     }
 
     private sealed class DefaultSystemClock : ISystemClock

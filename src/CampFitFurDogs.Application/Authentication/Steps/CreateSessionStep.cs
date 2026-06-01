@@ -15,7 +15,7 @@ public sealed class CreateSessionStep : IAuthCallbackStep
         _uow = uow;
     }
 
-    public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         ctx.RequireCustomerId();
         ctx.RequireTokenHash();
@@ -23,13 +23,13 @@ public sealed class CreateSessionStep : IAuthCallbackStep
         var session = Session.Create(
             ctx.TokenHash!,
             CustomerId.From(ctx.CustomerId!.Value),
-            ctx.Now
+            ctx.CreatedAt
         );
 
-        ctx.Session = session;
-
         await _repo.CreateAsync(session);
-
         await _uow.CommitAsync(ct);
+
+        ctx.Session = session;
+        return ctx;
     }
 }

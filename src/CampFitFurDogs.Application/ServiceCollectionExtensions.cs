@@ -18,21 +18,8 @@ public static class ServiceCollectionExtensions
                 .ValidateOnStart();
 
         // ⭐ Pipeline service
+        services.AddAuthCallbackPipeline();
         services.AddScoped<IAuthCallbackService, AuthCallbackService>();
-
-        // ⭐ Token service
-        services.AddScoped<ISessionTokenService, SessionTokenService>();
-
-        // ⭐ Pipeline steps
-        services.AddScoped<IAuthCallbackStep, ValidateConfigStep>();
-        services.AddScoped<IAuthCallbackStep, ExchangeCodeStep>();
-        services.AddScoped<IAuthCallbackStep, FetchUserInfoStep>();
-        services.AddScoped<IAuthCallbackStep, ValidateUserInfoStep>();
-        services.AddScoped<IAuthCallbackStep, ResolveIdentityStep>();
-        services.AddScoped<IAuthCallbackStep, CreateSessionCookieStep>();
-        services.AddScoped<IAuthCallbackStep, CreateSessionStep>();
-        services.AddScoped<IAuthCallbackStep, AuditLoginStep>();
-        services.AddScoped<IAuthCallbackStep, BuildRedirectStep>();
 
         return services;
     }

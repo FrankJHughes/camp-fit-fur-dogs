@@ -30,10 +30,10 @@ public sealed class AuthCallbackPipelineTests
             _id = id;
         }
 
-        public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+        public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
             _log.Add(_id);
-            return Task.CompletedTask;
+            return Task.FromResult(ctx);
         }
     }
 
@@ -46,15 +46,10 @@ public sealed class AuthCallbackPipelineTests
             _cookieValue = cookieValue;
         }
 
-        public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+        public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
-            ctx.Result = new AuthCallbackResult(
-                CustomerId: CustomerId.From(Guid.Empty),
-                Cookie: SessionCookie.FromPlaintextToken(_cookieValue),
-                RedirectUrl: ""
-            );
-
-            return Task.CompletedTask;
+            ctx.SessionCookie = SessionCookie.FromPlaintextToken(_cookieValue);
+            return Task.FromResult(ctx);
         }
     }
 
@@ -67,16 +62,16 @@ public sealed class AuthCallbackPipelineTests
             _assert = assert;
         }
 
-        public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+        public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
             _assert(ctx);
-            return Task.CompletedTask;
+            return Task.FromResult(ctx);
         }
     }
 
     private sealed class ThrowingStep : IAuthCallbackStep
     {
-        public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+        public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
             throw new InvalidOperationException("boom");
         }
@@ -84,15 +79,13 @@ public sealed class AuthCallbackPipelineTests
 
     private sealed class FinalizeResultStep : IAuthCallbackStep
     {
-        public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+        public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
-            ctx.Result ??= new AuthCallbackResult(
-                CustomerId: CustomerId.From(Guid.Empty),
-                Cookie: SessionCookie.FromPlaintextToken("final-cookie"),
-                RedirectUrl: "/done"
-            );
+            ctx.SessionCookie ??= SessionCookie.FromPlaintextToken("final-cookie");
+            ctx.CustomerId ??= Guid.Empty;
+            ctx.RedirectUrl ??= "/done";
 
-            return Task.CompletedTask;
+            return Task.FromResult(ctx);
         }
     }
 
@@ -111,8 +104,8 @@ public sealed class AuthCallbackPipelineTests
             new RecordingStep(log, "C")
         };
 
-        var clock = new FakeClock();
-        var service = new AuthCallbackService(steps, clock);
+        var pipeline = new AuthCallbackPipeline(steps);
+        var service = new AuthCallbackService(pipeline, new FakeClock());
 
         await service.HandleAsync("code", CancellationToken.None);
 
@@ -130,13 +123,13 @@ public sealed class AuthCallbackPipelineTests
             new WriteContextStep("hello-world"),
             new ReadContextStep(ctx =>
             {
-                ctx.Result.Should().NotBeNull();
-                ctx.Result!.Cookie.Value.Should().Be("hello-world");
+                ctx.SessionCookie.Should().NotBeNull();
+                ctx.SessionCookie!.Value.Should().Be("hello-world");
             })
         };
 
-        var clock = new FakeClock();
-        var service = new AuthCallbackService(steps, clock);
+        var pipeline = new AuthCallbackPipeline(steps);
+        var service = new AuthCallbackService(pipeline, new FakeClock());
 
         await service.HandleAsync("code", CancellationToken.None);
     }
@@ -156,8 +149,8 @@ public sealed class AuthCallbackPipelineTests
             new RecordingStep(log, "B") // must NOT run
         };
 
-        var clock = new FakeClock();
-        var service = new AuthCallbackService(steps, clock);
+        var pipeline = new AuthCallbackPipeline(steps);
+        var service = new AuthCallbackService(pipeline, new FakeClock());
 
         var act = () => service.HandleAsync("code", CancellationToken.None);
 
@@ -178,8 +171,8 @@ public sealed class AuthCallbackPipelineTests
             new FinalizeResultStep()
         };
 
-        var clock = new FakeClock();
-        var service = new AuthCallbackService(steps, clock);
+        var pipeline = new AuthCallbackPipeline(steps);
+        var service = new AuthCallbackService(pipeline, new FakeClock());
 
         var result = await service.HandleAsync("code", CancellationToken.None);
 

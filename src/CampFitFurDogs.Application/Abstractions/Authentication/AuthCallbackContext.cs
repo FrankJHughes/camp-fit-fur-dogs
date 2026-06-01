@@ -14,9 +14,11 @@ public sealed class AuthCallbackContext
     public SessionTokenHash? TokenHash { get; set; }
     public Session? Session { get; set; }
 
-    public AuthCallbackResult? Result { get; set; }
+    public SessionCookie? SessionCookie { get; set; }
 
-    public DateTimeOffset Now { get; set; }
+    public string? RedirectUrl { get; set; }
+
+    public DateTimeOffset CreatedAt { get; set; }
 
     public AuthCallbackContext(string code)
     {
@@ -63,9 +65,15 @@ public sealed class AuthCallbackContext
             throw new InvalidOperationException("Session must be created before this step.");
     }
 
-    public void RequireResult()
+    public void RequireSessionCookie()
     {
-        if (Result is null)
-            throw new InvalidOperationException("AuthCallbackResult must be set before this step.");
+        if (SessionCookie is null)
+            throw new InvalidOperationException("SessionCookie must be set before this step.");
+    }
+
+    public void RequireRedirectUrl()
+    {
+        if (RedirectUrl is null)
+            throw new InvalidOperationException("RedirectUrl must be set before this step.");
     }
 }

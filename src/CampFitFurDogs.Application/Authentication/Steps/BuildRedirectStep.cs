@@ -13,12 +13,11 @@ public sealed class BuildRedirectStep : IAuthCallbackStep
         _options = options.Value;
     }
 
-    public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
-        ctx.RequireResult();
+        ctx.RequireSessionCookie();
         ctx.RequireSession();
-
-        ctx.Result = ctx.Result!.WithRedirect(_options.PostLoginRedirectUrl);
-        return Task.CompletedTask;
+        ctx.RedirectUrl = _options.PostLoginRedirectUrl;
+        return ctx;
     }
 }

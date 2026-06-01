@@ -11,7 +11,7 @@ public sealed class ResolveIdentityStep : IAuthCallbackStep
         _resolver = resolver;
     }
 
-    public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         ctx.RequireUser();
 
@@ -21,5 +21,6 @@ public sealed class ResolveIdentityStep : IAuthCallbackStep
             throw new InvalidOperationException("Unable to resolve customer identity.");
 
         ctx.CustomerId = resolved.Value;
+        return ctx;
     }
 }

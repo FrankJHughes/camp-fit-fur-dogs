@@ -11,12 +11,12 @@ public sealed class ExchangeCodeStep : IAuthCallbackStep
         _client = client;
     }
 
-    public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         var token = await _client.ExchangeAsync(
             ctx.Code,
             ct);
-
         ctx.Token = token;
+        return ctx;
     }
 }

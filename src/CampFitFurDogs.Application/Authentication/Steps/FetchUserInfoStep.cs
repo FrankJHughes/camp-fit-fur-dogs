@@ -11,7 +11,7 @@ public sealed class FetchUserInfoStep : IAuthCallbackStep
         _client = client;
     }
 
-    public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         var user = await _client.GetUserAsync(
             ctx.Token!,      // 1. accessToken
@@ -21,5 +21,6 @@ public sealed class FetchUserInfoStep : IAuthCallbackStep
             throw new AuthCallbackException(AuthCallbackError.UserInfoFailure);
 
         ctx.User = user;
+        return ctx;
     }
 }

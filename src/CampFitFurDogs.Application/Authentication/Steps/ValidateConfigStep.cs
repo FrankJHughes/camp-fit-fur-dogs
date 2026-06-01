@@ -14,7 +14,7 @@ public sealed class ValidateConfigStep : IAuthCallbackStep
         _options = options.Value;
     }
 
-    public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(_options.Authority) ||
             string.IsNullOrWhiteSpace(_options.ClientId) ||
@@ -25,6 +25,6 @@ public sealed class ValidateConfigStep : IAuthCallbackStep
             throw new BadConfigurationException("Auth0 configuration is incomplete");
         }
 
-        return Task.CompletedTask;
+        return ctx;
     }
 }

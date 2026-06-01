@@ -32,7 +32,7 @@ public sealed class CreateSessionCookieStepTests
     // 1. SUCCESSFUL COOKIE + HASH GENERATION
     // ------------------------------------------------------------
     [Fact]
-    public async Task Generates_token_hash_and_cookie_and_result()
+    public async Task Generates_token_hash_and_cookie()
     {
         var customerId = Guid.NewGuid();
 
@@ -43,25 +43,24 @@ public sealed class CreateSessionCookieStepTests
 
         var step = new CreateSessionCookieStep(new FakeTokenService());
 
-        await step.ExecuteAsync(ctx, CancellationToken.None);
+        var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
         // TokenHash is set
-        ctx.TokenHash.Should().NotBeNull();
-        ctx.TokenHash!.Value.Should().Be(
+        updated.TokenHash.Should().NotBeNull();
+        updated.TokenHash!.Value.Should().Be(
             "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
         );
 
-        // Result is set
-        ctx.Result.Should().NotBeNull();
-        ctx.Result!.CustomerId.Should().Be(CustomerId.From(customerId));
+        // Session is created
+        updated.Session.Should().NotBeNull();
+        updated.Session!.OwnerId.Should().Be(CustomerId.From(customerId));
 
         // Cookie is correct
-        ctx.Result.Cookie.Name.Should().Be("cfd.session");
-        ctx.Result.Cookie.Value.Should().Be(
+        updated.SessionCookie.Should().NotBeNull();
+        updated.SessionCookie!.Name.Should().Be("cfd.session");
+        updated.SessionCookie!.Value.Should().Be(
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         );
-
-        ctx.Result.RedirectUrl.Should().Be("");
     }
 
     // ------------------------------------------------------------

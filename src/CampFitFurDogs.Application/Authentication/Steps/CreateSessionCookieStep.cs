@@ -13,26 +13,13 @@ public sealed class CreateSessionCookieStep : IAuthCallbackStep
         _tokens = tokens;
     }
 
-    public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         ctx.RequireCustomerId();
-
-        // 1–2. Generate plaintext token + hash via domain-aware service
         var generated = _tokens.Generate();
-
-        // 3. Store hash for CreateSessionStep
         ctx.TokenHash = generated.Hash;
-
-        // 4. Build cookie value using domain VO
         var cookie = SessionCookie.FromPlaintextToken(generated.PlaintextToken);
-
-        // 5. Build result using domain types
-        ctx.Result = new AuthCallbackResult(
-            CustomerId: CustomerId.From(ctx.CustomerId!.Value),
-            Cookie: cookie,
-            RedirectUrl: ""
-        );
-
-        return Task.CompletedTask;
+        ctx.SessionCookie = cookie;
+        return ctx;
     }
 }

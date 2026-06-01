@@ -1,4 +1,3 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
 using CampFitFurDogs.Application.Authentication.Steps;
 
@@ -17,10 +16,10 @@ public sealed class AuthCallbackServiceTests
             _id = id;
         }
 
-        public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+        public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
             _log.Add(_id);
-            return Task.CompletedTask;
+            return Task.FromResult(ctx);
         }
     }
 
@@ -36,7 +35,8 @@ public sealed class AuthCallbackServiceTests
             new RecordingStep(log, "C")
         };
 
-        var service = new AuthCallbackService(steps);
+        var pipeline = new AuthCallbackPipeline(steps);
+        var service = new AuthCallbackService(pipeline);
 
         await service.HandleAsync("code", CancellationToken.None);
 

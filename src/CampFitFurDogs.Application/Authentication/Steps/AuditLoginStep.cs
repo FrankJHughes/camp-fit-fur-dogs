@@ -1,5 +1,4 @@
 using CampFitFurDogs.Application.Abstractions.Audit;
-using CampFitFurDogs.Application.Abstractions.Authentication;
 
 namespace CampFitFurDogs.Application.Authentication.Steps;
 
@@ -12,7 +11,7 @@ public sealed class AuditLoginStep : IAuthCallbackStep
         _audit = audit;
     }
 
-    public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         ctx.RequireCustomerId();
         ctx.RequireUser();
@@ -21,5 +20,7 @@ public sealed class AuditLoginStep : IAuthCallbackStep
             ctx.CustomerId!.Value,
             ctx.User!.ExternalId
         );
+
+        return ctx;
     }
 }
