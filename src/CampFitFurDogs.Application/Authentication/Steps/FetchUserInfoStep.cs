@@ -5,6 +5,8 @@ namespace CampFitFurDogs.Application.Authentication.Steps;
 public sealed class FetchUserInfoStep : IAuthCallbackStep
 {
     private readonly IAuthClient _client;
+    public StepMetadata Metadata =>
+        new("FetchUserInfo", "Fetch User Information");
 
     public FetchUserInfoStep(IAuthClient client)
     {

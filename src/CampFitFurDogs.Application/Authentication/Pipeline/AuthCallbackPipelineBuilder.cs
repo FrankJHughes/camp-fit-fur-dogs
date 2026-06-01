@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CampFitFurDogs.Application.Authentication;
+namespace CampFitFurDogs.Application.Authentication.Pipeline;
 
 public sealed class AuthCallbackPipelineBuilder
 {

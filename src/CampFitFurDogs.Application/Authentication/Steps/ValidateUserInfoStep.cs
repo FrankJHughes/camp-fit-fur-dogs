@@ -4,6 +4,9 @@ namespace CampFitFurDogs.Application.Authentication.Steps;
 
 public sealed class ValidateUserInfoStep : IAuthCallbackStep
 {
+    public StepMetadata Metadata =>
+        new("ValidateUserInfo", "Validate User Information");
+
     public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         ctx.RequireUser();

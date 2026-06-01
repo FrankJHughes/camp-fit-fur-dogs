@@ -5,6 +5,9 @@ public sealed class ResolveIdentityStep : IAuthCallbackStep
 {
     private readonly IIdentityResolver _resolver;
 
+    public StepMetadata Metadata =>
+        new("ResolveIdentity", "Resolve Identity");
+
     public ResolveIdentityStep(IIdentityResolver resolver)
     {
         _resolver = resolver;

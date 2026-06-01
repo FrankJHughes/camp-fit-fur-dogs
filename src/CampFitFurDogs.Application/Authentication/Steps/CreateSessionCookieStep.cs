@@ -8,6 +8,9 @@ public sealed class CreateSessionCookieStep : IAuthCallbackStep
 {
     private readonly ISessionTokenService _tokens;
 
+    public StepMetadata Metadata =>
+        new("CreateSessionCookie", "Create Session Cookie");
+
     public CreateSessionCookieStep(ISessionTokenService tokens)
     {
         _tokens = tokens;

@@ -1,5 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Time;
 using CampFitFurDogs.Application.Authentication;
+using CampFitFurDogs.Application.Authentication.Pipeline;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
 
@@ -15,6 +16,8 @@ public sealed class AuthCallbackServiceTests
     {
         private readonly List<string> _log;
         private readonly string _id;
+        public StepMetadata Metadata =>
+            new(_id, $"Step {_id}");
 
         public RecordingStep(List<string> log, string id)
         {

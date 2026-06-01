@@ -1,5 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
+using CampFitFurDogs.Application.Authentication.Pipeline;
 using CampFitFurDogs.Application.Authentication.Steps;
 using Microsoft.Extensions.DependencyInjection;
 

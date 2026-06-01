@@ -6,6 +6,9 @@ public sealed class AuditLoginStep : IAuthCallbackStep
 {
     private readonly IAuditLogger _audit;
 
+    public StepMetadata Metadata =>
+        new("AuditLogin", "Audit Login");
+
     public AuditLoginStep(IAuditLogger audit)
     {
         _audit = audit;

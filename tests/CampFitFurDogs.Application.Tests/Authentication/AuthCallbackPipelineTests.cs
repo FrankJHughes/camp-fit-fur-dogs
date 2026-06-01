@@ -1,5 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Time;
 using CampFitFurDogs.Application.Authentication;
+using CampFitFurDogs.Application.Authentication.Pipeline;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 
@@ -21,6 +22,8 @@ public sealed class AuthCallbackPipelineTests
     {
         private readonly List<string> _log;
         private readonly string _id;
+        public StepMetadata Metadata =>
+            new(_id, $"Step {_id}");
 
         public RecordingStep(List<string> log, string id)
         {
@@ -38,6 +41,8 @@ public sealed class AuthCallbackPipelineTests
     private sealed class WriteContextStep : IAuthCallbackStep
     {
         private readonly string _cookieValue;
+        public StepMetadata Metadata =>
+            new("WriteContext", "Write Context");
 
         public WriteContextStep(string cookieValue)
         {
@@ -57,6 +62,8 @@ public sealed class AuthCallbackPipelineTests
     private sealed class ReadContextStep : IAuthCallbackStep
     {
         private readonly Action<AuthCallbackContext> _assert;
+        public StepMetadata Metadata =>
+            new("ReadContext", "Read Context");
 
         public ReadContextStep(Action<AuthCallbackContext> assert)
         {
@@ -72,6 +79,9 @@ public sealed class AuthCallbackPipelineTests
 
     private sealed class ThrowingStep : IAuthCallbackStep
     {
+        public StepMetadata Metadata =>
+            new("ThrowingStep", "Throwing Step");
+
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
             throw new InvalidOperationException("boom");
@@ -80,6 +90,9 @@ public sealed class AuthCallbackPipelineTests
 
     private sealed class FinalizeResultStep : IAuthCallbackStep
     {
+        public StepMetadata Metadata =>
+            new("FinalizeResult", "Finalize Result");
+
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
             var customerId = ctx.CustomerId ?? Guid.NewGuid();

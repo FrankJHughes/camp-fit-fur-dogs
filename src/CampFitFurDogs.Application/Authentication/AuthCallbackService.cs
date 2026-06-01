@@ -1,5 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Time;
+using CampFitFurDogs.Application.Authentication.Pipeline;
 using CampFitFurDogs.Application.Authentication.Steps;
 using CampFitFurDogs.Domain.Customers;
 
@@ -30,11 +31,7 @@ public sealed class AuthCallbackService : IAuthCallbackService
         if (string.IsNullOrWhiteSpace(code))
             throw new AuthCallbackException(AuthCallbackError.MissingAuthorizationCode);
 
-        // Initialize context with a deterministic timestamp
-        var initial = new AuthCallbackContext(code)
-        {
-            Now = _clock.UtcNow
-        };
+        var initial = new AuthCallbackContext(code, Now: _clock.UtcNow);
 
         var final = await _pipeline.ExecuteAsync(initial, ct);
 

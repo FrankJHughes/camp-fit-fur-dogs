@@ -8,6 +8,9 @@ public sealed class CreateSessionStep : IAuthCallbackStep
 {
     private readonly ISessionRepository _repo;
     private readonly IUnitOfWork _uow;
+    public StepMetadata Metadata =>
+        new("CreateSession", "Create Session");
+
 
     public CreateSessionStep(ISessionRepository repo, IUnitOfWork uow)
     {

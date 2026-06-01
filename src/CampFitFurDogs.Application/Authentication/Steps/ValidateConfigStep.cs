@@ -8,6 +8,8 @@ namespace CampFitFurDogs.Application.Authentication.Steps;
 public sealed class ValidateConfigStep : IAuthCallbackStep
 {
     private readonly OidcOptions _options;
+    public StepMetadata Metadata =>
+        new("ValidateConfig", "Validate Configuration");
 
     public ValidateConfigStep(IOptions<OidcOptions> options)
     {
