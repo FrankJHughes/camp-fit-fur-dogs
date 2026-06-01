@@ -31,7 +31,7 @@ public sealed class AuthCallbackPipelineTests
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
             _log.Add(_id);
-            return Task.FromResult(ctx);
+            return Task.FromResult(ctx); // no state change
         }
     }
 
@@ -46,8 +46,11 @@ public sealed class AuthCallbackPipelineTests
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
-            ctx.SessionCookie = SessionCookie.FromPlaintextToken(_cookieValue);
-            return Task.FromResult(ctx);
+            var cookie = SessionCookie.FromPlaintextToken(_cookieValue);
+
+            return Task.FromResult(
+                ctx with { SessionCookie = cookie }
+            );
         }
     }
 
@@ -79,23 +82,31 @@ public sealed class AuthCallbackPipelineTests
     {
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
-            // Ensure a valid customer ID
-            ctx.CustomerId ??= Guid.NewGuid();
+            var customerId = ctx.CustomerId ?? Guid.NewGuid();
 
-            // Ensure a valid session
-            ctx.Session ??= Session.Create(
-                SessionTokenHash.From("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
-                CustomerId.From(ctx.CustomerId.Value),
-                DateTimeOffset.UtcNow
+            var session = ctx.Session ??
+                Session.Create(
+                    tokenHash: SessionTokenHash.From(
+                        "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                    ),
+                    ownerId: CustomerId.From(customerId),
+                    createdAt: DateTimeOffset.UtcNow
+                );
+
+            var cookie = ctx.SessionCookie ??
+                SessionCookie.FromPlaintextToken("final-cookie");
+
+            var redirect = ctx.RedirectUrl ?? "/done";
+
+            return Task.FromResult(
+                ctx with
+                {
+                    CustomerId = customerId,
+                    Session = session,
+                    SessionCookie = cookie,
+                    RedirectUrl = redirect
+                }
             );
-
-            // Ensure a valid cookie
-            ctx.SessionCookie ??= SessionCookie.FromPlaintextToken("final-cookie");
-
-            // Ensure a redirect URL
-            ctx.RedirectUrl ??= "/done";
-
-            return Task.FromResult(ctx);
         }
     }
 

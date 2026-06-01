@@ -15,11 +15,9 @@ public sealed class CreateSessionCookieStep : IAuthCallbackStep
 
     public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
-        ctx.RequireCustomerId();
         var generated = _tokens.Generate();
-        ctx.TokenHash = generated.Hash;
         var cookie = SessionCookie.FromPlaintextToken(generated.PlaintextToken);
-        ctx.SessionCookie = cookie;
-        return ctx;
+
+        return ctx with { TokenHash = generated.Hash, SessionCookie = cookie };
     }
 }

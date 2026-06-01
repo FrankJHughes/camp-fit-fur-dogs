@@ -16,18 +16,18 @@ public sealed class CreateSessionStepTests
         SessionTokenHash? tokenHash = null,
         DateTimeOffset? now = null)
     {
-        return new AuthCallbackContext("dummy-code")
-        {
-            CustomerId = customerId,
-            TokenHash = tokenHash,
-            Now = now ?? new DateTimeOffset(2025, 1, 1, 12, 0, 0, TimeSpan.Zero)
-        };
+        return new AuthCallbackContext(
+            Code: "dummy-code",
+            CustomerId: customerId,
+            TokenHash: tokenHash,
+            Now: now ?? new DateTimeOffset(2025, 1, 1, 12, 0, 0, TimeSpan.Zero)
+        );
     }
 
     private static FakeSessionRepository FakeRepo() => new FakeSessionRepository();
 
     // ------------------------------------------------------------
-    // 1. Creates a session and stores it in ctx.Session
+    // 1. Creates a session and returns updated context
     // ------------------------------------------------------------
     [Fact]
     public async Task Creates_session_and_sets_ctx_Session()
@@ -41,12 +41,12 @@ public sealed class CreateSessionStepTests
 
         var step = new CreateSessionStep(repo, uow);
 
-        await step.ExecuteAsync(ctx, CancellationToken.None);
+        var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
-        ctx.Session.Should().NotBeNull();
-        ctx.Session!.OwnerId.Should().Be(CustomerId.From(customerId));
-        ctx.Session.TokenHash.Should().Be(tokenHash);
-        ctx.Session.CreatedAt.Should().Be(ctx.Now);
+        updated.Session.Should().NotBeNull();
+        updated.Session!.OwnerId.Should().Be(CustomerId.From(customerId));
+        updated.Session.TokenHash.Should().Be(tokenHash);
+        updated.Session.CreatedAt.Should().Be(ctx.Now);
 
         uow.CommitCount.Should().Be(1);
     }
@@ -66,10 +66,10 @@ public sealed class CreateSessionStepTests
 
         var step = new CreateSessionStep(repo, uow);
 
-        await step.ExecuteAsync(ctx, CancellationToken.None);
+        var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
         repo.CreatedSessions.Should().ContainSingle();
-        repo.CreatedSessions.Single().Should().Be(ctx.Session);
+        repo.CreatedSessions.Single().Should().Be(updated.Session);
 
         uow.CommitCount.Should().Be(1);
     }
@@ -129,9 +129,9 @@ public sealed class CreateSessionStepTests
 
         var step = new CreateSessionStep(repo, uow);
 
-        await step.ExecuteAsync(ctx, CancellationToken.None);
+        var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
-        ctx.Session!.CreatedAt.Should().Be(now);
+        updated.Session!.CreatedAt.Should().Be(now);
         uow.CommitCount.Should().Be(1);
     }
 }

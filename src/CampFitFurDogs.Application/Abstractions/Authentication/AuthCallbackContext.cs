@@ -3,33 +3,20 @@ using CampFitFurDogs.Domain.Authentication.Sessions;
 
 namespace CampFitFurDogs.Application.Authentication;
 
-public sealed class AuthCallbackContext
+public sealed record AuthCallbackContext(
+    string Code,
+    AuthToken? Token = null,
+    AuthUser? User = null,
+    Guid? CustomerId = null,
+    SessionTokenHash? TokenHash = null,
+    Session? Session = null,
+    SessionCookie? SessionCookie = null,
+    string? RedirectUrl = null,
+    DateTimeOffset Now = default
+)
 {
-    public string Code { get; }
-
-    public AuthToken? Token { get; set; }
-    public AuthUser? User { get; set; }
-
-    public Guid? CustomerId { get; set; }
-    public SessionTokenHash? TokenHash { get; set; }
-    public Session? Session { get; set; }
-    public SessionCookie? SessionCookie { get; set; }
-
-    public string? RedirectUrl { get; set; }
-
-    /// <summary>
-    /// Timestamp captured at the start of the callback flow.
-    /// Used for session creation and auditing.
-    /// </summary>
-    public DateTimeOffset Now { get; set; }
-
-    public AuthCallbackContext(string code)
-    {
-        Code = code;
-    }
-
     // ------------------------------------------------------------
-    // Pipeline sequencing validation (NOT domain validation)
+    // Sequencing validation (NOT domain validation)
     // ------------------------------------------------------------
 
     public void RequireCode()

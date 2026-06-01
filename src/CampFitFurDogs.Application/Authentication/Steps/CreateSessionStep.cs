@@ -29,7 +29,6 @@ public sealed class CreateSessionStep : IAuthCallbackStep
         await _repo.CreateAsync(session);
         await _uow.CommitAsync(ct);
 
-        ctx.Session = session;
-        return ctx;
+        return ctx with { Session = session };
     }
 }

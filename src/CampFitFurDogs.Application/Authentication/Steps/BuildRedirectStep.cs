@@ -21,7 +21,6 @@ public sealed class BuildRedirectStep : IAuthCallbackStep
         if (string.IsNullOrWhiteSpace(_options.PostLoginRedirectUrl))
             throw new InvalidOperationException("PostLoginRedirectUrl must be configured.");
 
-        ctx.RedirectUrl = _options.PostLoginRedirectUrl;
-        return ctx;
+        return ctx with { RedirectUrl = _options.PostLoginRedirectUrl };
     }
 }

@@ -1,6 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Identity;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
 
 public sealed class ResolveIdentityStep : IAuthCallbackStep
 {
@@ -20,7 +19,6 @@ public sealed class ResolveIdentityStep : IAuthCallbackStep
         if (resolved is null)
             throw new InvalidOperationException("Unable to resolve customer identity.");
 
-        ctx.CustomerId = resolved.Value;
-        return ctx;
+        return ctx with { CustomerId = resolved.Value };
     }
 }

@@ -32,37 +32,34 @@ public sealed class CreateSessionCookieStepTests
     }
 
     // ------------------------------------------------------------
-    // 1. SUCCESSFUL COOKIE + HASH GENERATION
+    // 1. SUCCESSFUL TOKEN HASH + COOKIE GENERATION
     // ------------------------------------------------------------
     [Fact]
     public async Task Generates_token_hash_and_cookie()
     {
         var customerId = Guid.NewGuid();
 
-        var ctx = new AuthCallbackContext("code")
-        {
-            CustomerId = customerId,
-            Session = Session.Create(
-                ownerId: CustomerId.From(customerId),
-                tokenHash: SessionTokenHash.From(
-                    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-                ),
-                createdAt: DateTimeOffset.UtcNow
-            )
-        };
+        var ctx = new AuthCallbackContext(
+            Code: "code",
+            CustomerId: customerId,
+            TokenHash: SessionTokenHash.From(
+                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            ),
+            Session: null
+        );
 
         var step = new CreateSessionCookieStep(new FakeTokenService());
 
         var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
-        // TokenHash is set
+        // TokenHash is overwritten with the generated hash
         updated.TokenHash.Should().NotBeNull();
         updated.TokenHash!.Value.Should().Be(
             "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
         );
 
-        // Session is NOT created here — it must already exist
-        updated.Session.Should().NotBeNull();
+        // Session is not created here
+        updated.Session.Should().BeNull();
 
         // Cookie is correct
         updated.SessionCookie.Should().NotBeNull();
@@ -73,17 +70,20 @@ public sealed class CreateSessionCookieStepTests
     }
 
     // ------------------------------------------------------------
-    // 2. MISSING CUSTOMER ID THROWS
+    // 2. DOES NOT REQUIRE EXISTING SESSION
     // ------------------------------------------------------------
     [Fact]
-    public async Task Missing_customerId_throws()
+    public async Task Does_not_require_existing_session()
     {
-        var ctx = new AuthCallbackContext("code");
+        var ctx = new AuthCallbackContext(
+            Code: "code",
+            CustomerId: Guid.NewGuid()
+        );
 
         var step = new CreateSessionCookieStep(new FakeTokenService());
 
-        Func<Task> act = () => step.ExecuteAsync(ctx, CancellationToken.None);
+        var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().NotThrowAsync<InvalidOperationException>();
     }
 }
