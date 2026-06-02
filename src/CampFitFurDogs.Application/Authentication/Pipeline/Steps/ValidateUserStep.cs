@@ -1,11 +1,15 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 
-public sealed class ValidateUserInfoStep : IAuthCallbackStep
+public sealed class ValidateUserStep : IAuthCallbackStep
 {
-    public StepMetadata Metadata =>
-        new("ValidateUserInfo", "Validate User Information");
+    public AuthCallbackStepMetadata Metadata =>
+        new(
+            "ValidateUser",
+            "Validate User",
+            AuthCallbackStepCategory.ValidateUser);
 
     public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {

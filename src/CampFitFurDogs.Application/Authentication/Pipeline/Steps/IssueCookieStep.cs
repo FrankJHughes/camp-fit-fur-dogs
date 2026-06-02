@@ -2,16 +2,20 @@ using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 
-public sealed class CreateSessionCookieStep : IAuthCallbackStep
+public sealed class IssueCookieStep : IAuthCallbackStep
 {
     private readonly ISessionTokenService _tokens;
 
-    public StepMetadata Metadata =>
-        new("CreateSessionCookie", "Create Session Cookie");
+    public AuthCallbackStepMetadata Metadata =>
+        new(
+            "IssueCookie",
+            "Issue Cookie",
+            AuthCallbackStepCategory.IssueCookie);
 
-    public CreateSessionCookieStep(ISessionTokenService tokens)
+    public IssueCookieStep(ISessionTokenService tokens)
     {
         _tokens = tokens;
     }

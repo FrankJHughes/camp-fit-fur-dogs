@@ -1,13 +1,16 @@
 using CampFitFurDogs.Application.Abstractions.Audit;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps;
 
 public sealed class AuditLoginStep : IAuthCallbackStep
 {
     private readonly IAuditLogger _audit;
 
-    public StepMetadata Metadata =>
-        new("AuditLogin", "Audit Login");
+    public AuthCallbackStepMetadata Metadata =>
+        new(
+            "AuditLogin",
+            "Audit Login",
+            AuthCallbackStepCategory.AuditLogin);
 
     public AuditLoginStep(IAuditLogger audit)
     {

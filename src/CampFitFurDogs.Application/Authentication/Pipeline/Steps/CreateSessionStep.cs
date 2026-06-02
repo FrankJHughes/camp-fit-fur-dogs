@@ -2,14 +2,18 @@ using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 using SharedKernel.Abstractions;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 
 public sealed class CreateSessionStep : IAuthCallbackStep
 {
     private readonly ISessionRepository _repo;
     private readonly IUnitOfWork _uow;
-    public StepMetadata Metadata =>
-        new("CreateSession", "Create Session");
+    public AuthCallbackStepMetadata Metadata =>
+        new(
+            "CreateSession",
+            "Create Session",
+            AuthCallbackStepCategory.CreateSession);
 
 
     public CreateSessionStep(ISessionRepository repo, IUnitOfWork uow)

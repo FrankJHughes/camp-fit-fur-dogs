@@ -1,4 +1,4 @@
-namespace CampFitFurDogs.Application.Authentication.Pipeline;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Diagnostics;
 
 /// <summary>
 /// A structured diagnostic event emitted by the authentication callback pipeline.

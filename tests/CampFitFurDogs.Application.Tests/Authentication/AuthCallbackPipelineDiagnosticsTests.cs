@@ -1,5 +1,6 @@
 using CampFitFurDogs.Application.Authentication;
 using CampFitFurDogs.Application.Authentication.Pipeline;
+using CampFitFurDogs.Application.Authentication.Pipeline.Diagnostics;
 using Xunit;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
@@ -13,7 +14,11 @@ public sealed class AuthCallbackPipelineDiagnosticsTests
     private sealed class NoOpStep : IAuthCallbackStep
     {
         private readonly string _id;
-        public StepMetadata Metadata => new(_id, $"Step {_id}");
+
+        public AuthCallbackStepMetadata Metadata => new(
+            _id,
+            $"Step {_id}",
+            AuthCallbackStepCategory.Precondition);
 
         public NoOpStep(string id)
         {
@@ -21,19 +26,18 @@ public sealed class AuthCallbackPipelineDiagnosticsTests
         }
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
-        {
-            return Task.FromResult(ctx);
-        }
+            => Task.FromResult(ctx);
     }
 
     private sealed class MutatingStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata => new("Mutating", "Mutating Step");
+        public AuthCallbackStepMetadata Metadata => new(
+            "Mutating",
+            "Mutating Step",
+            AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
-        {
-            return Task.FromResult(ctx with { RedirectUrl = "/changed" });
-        }
+            => Task.FromResult(ctx with { RedirectUrl = "/changed" });
     }
 
     // ------------------------------------------------------------
@@ -52,9 +56,7 @@ public sealed class AuthCallbackPipelineDiagnosticsTests
 
         var pipeline = new AuthCallbackPipeline(steps, events.Add);
 
-        var ctx = new AuthCallbackContext("code");
-
-        await pipeline.ExecuteAsync(ctx, CancellationToken.None);
+        await pipeline.ExecuteAsync(new AuthCallbackContext("code"), CancellationToken.None);
 
         events.Count.Should().Be(4); // 2 steps → 4 events
         events.Select(e => e.Phase).Should().Equal("Start", "End", "Start", "End");
@@ -76,9 +78,7 @@ public sealed class AuthCallbackPipelineDiagnosticsTests
 
         var pipeline = new AuthCallbackPipeline(steps, events.Add);
 
-        var ctx = new AuthCallbackContext("code");
-
-        await pipeline.ExecuteAsync(ctx, CancellationToken.None);
+        await pipeline.ExecuteAsync(new AuthCallbackContext("code"), CancellationToken.None);
 
         events[0].StepId.Should().Be("A");
         events[0].StepName.Should().Be("Step A");
@@ -102,14 +102,13 @@ public sealed class AuthCallbackPipelineDiagnosticsTests
 
         var pipeline = new AuthCallbackPipeline(steps, events.Add);
 
-        var ctx = new AuthCallbackContext("code");
-
-        await pipeline.ExecuteAsync(ctx, CancellationToken.None);
+        await pipeline.ExecuteAsync(new AuthCallbackContext("code"), CancellationToken.None);
 
         var start = events[0];
         var end = events[1];
 
         start.DurationMs.Should().BeNull();
+
         end.DurationMs.Should().NotBeNull();
         end.DurationMs!.Value.Should().BeGreaterThanOrEqualTo(0);
     }
@@ -157,9 +156,7 @@ public sealed class AuthCallbackPipelineDiagnosticsTests
 
         var pipeline = new AuthCallbackPipeline(steps);
 
-        var ctx = new AuthCallbackContext("code");
-
-        var result = await pipeline.ExecuteAsync(ctx, CancellationToken.None);
+        var result = await pipeline.ExecuteAsync(new AuthCallbackContext("code"), CancellationToken.None);
 
         result.Should().NotBeNull();
     }

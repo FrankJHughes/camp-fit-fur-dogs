@@ -16,8 +16,8 @@ public sealed class AuthCallbackServiceTests
     {
         private readonly List<string> _log;
         private readonly string _id;
-        public StepMetadata Metadata =>
-            new(_id, $"Step {_id}");
+        public AuthCallbackStepMetadata Metadata =>
+            new(_id, $"Step {_id}", AuthCallbackStepCategory.Precondition);
 
         public RecordingStep(List<string> log, string id)
         {

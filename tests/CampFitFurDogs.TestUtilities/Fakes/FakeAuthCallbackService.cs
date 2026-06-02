@@ -11,8 +11,6 @@ public sealed class FakeAuthCallbackService : IAuthCallbackService
 {
     public required CustomerId CustomerId { get; init; }
     public required string RedirectUrl { get; init; }
-
-    // Optional audit logger hook for tests that verify audit behavior
     public IAuditLogger? AuditLogger { get; init; }
 
     public Task<AuthCallbackResult> HandleAsync(string code, CancellationToken ct)

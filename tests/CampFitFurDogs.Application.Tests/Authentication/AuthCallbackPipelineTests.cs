@@ -22,8 +22,8 @@ public sealed class AuthCallbackPipelineTests
     {
         private readonly List<string> _log;
         private readonly string _id;
-        public StepMetadata Metadata =>
-            new(_id, $"Step {_id}");
+        public AuthCallbackStepMetadata Metadata =>
+            new(_id, $"Step {_id}", AuthCallbackStepCategory.Precondition);
 
         public RecordingStep(List<string> log, string id)
         {
@@ -41,8 +41,8 @@ public sealed class AuthCallbackPipelineTests
     private sealed class WriteContextStep : IAuthCallbackStep
     {
         private readonly string _cookieValue;
-        public StepMetadata Metadata =>
-            new("WriteContext", "Write Context");
+        public AuthCallbackStepMetadata Metadata =>
+            new("WriteContext", "Write Context", AuthCallbackStepCategory.Precondition);
 
         public WriteContextStep(string cookieValue)
         {
@@ -62,8 +62,8 @@ public sealed class AuthCallbackPipelineTests
     private sealed class ReadContextStep : IAuthCallbackStep
     {
         private readonly Action<AuthCallbackContext> _assert;
-        public StepMetadata Metadata =>
-            new("ReadContext", "Read Context");
+        public AuthCallbackStepMetadata Metadata =>
+            new("ReadContext", "Read Context", AuthCallbackStepCategory.Precondition);
 
         public ReadContextStep(Action<AuthCallbackContext> assert)
         {
@@ -79,8 +79,8 @@ public sealed class AuthCallbackPipelineTests
 
     private sealed class ThrowingStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata =>
-            new("ThrowingStep", "Throwing Step");
+        public AuthCallbackStepMetadata Metadata =>
+            new("ThrowingStep", "Throwing Step", AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
@@ -90,8 +90,8 @@ public sealed class AuthCallbackPipelineTests
 
     private sealed class FinalizeResultStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata =>
-            new("FinalizeResult", "Finalize Result");
+        public AuthCallbackStepMetadata Metadata =>
+            new("FinalizeResult", "Finalize Result", AuthCallbackStepCategory.Finalize);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {

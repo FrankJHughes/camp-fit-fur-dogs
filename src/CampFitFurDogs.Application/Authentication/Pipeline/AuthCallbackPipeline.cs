@@ -1,20 +1,26 @@
 using System.Diagnostics;
-using CampFitFurDogs.Application.Authentication.Pipeline;
+using CampFitFurDogs.Application.Authentication.Pipeline.Diagnostics;
 
-namespace CampFitFurDogs.Application.Authentication;
+namespace CampFitFurDogs.Application.Authentication.Pipeline;
 
 public sealed class AuthCallbackPipeline
 {
-    private readonly IEnumerable<IAuthCallbackStep> _steps;
+    private readonly IReadOnlyList<IAuthCallbackStep> _steps;
     private readonly AuthCallbackTrace? _trace;
 
     public AuthCallbackPipeline(
         IEnumerable<IAuthCallbackStep> steps,
         AuthCallbackTrace? trace = null)
     {
-        _steps = steps;
+        _steps = steps is IReadOnlyList<IAuthCallbackStep> list
+            ? list
+            : steps.ToList();
+
         _trace = trace;
     }
+
+    // Expose ordered steps for tests and diagnostics
+    public IReadOnlyList<IAuthCallbackStep> Steps => _steps;
 
     public async Task<AuthCallbackContext> ExecuteAsync(
         AuthCallbackContext ctx,

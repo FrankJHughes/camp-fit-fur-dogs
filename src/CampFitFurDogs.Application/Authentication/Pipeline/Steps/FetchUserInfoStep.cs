@@ -1,14 +1,18 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 
-public sealed class FetchUserInfoStep : IAuthCallbackStep
+public sealed class FetchUserStep : IAuthCallbackStep
 {
     private readonly IAuthClient _client;
-    public StepMetadata Metadata =>
-        new("FetchUserInfo", "Fetch User Information");
+    public AuthCallbackStepMetadata Metadata =>
+        new(
+            "FetchUser",
+            "Fetch User",
+            AuthCallbackStepCategory.FetchUser);
 
-    public FetchUserInfoStep(IAuthClient client)
+    public FetchUserStep(IAuthClient client)
     {
         _client = client;
     }

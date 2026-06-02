@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 using CampFitFurDogs.TestUtilities.Fakes;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
@@ -20,7 +21,7 @@ public sealed class FetchUserInfoStepTests
             Token: new AuthToken("abc123")
         );
 
-        var step = new FetchUserInfoStep(fake);
+        var step = new FetchUserStep(fake);
 
         var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
@@ -44,7 +45,7 @@ public sealed class FetchUserInfoStepTests
             Token: new AuthToken("abc123")
         );
 
-        var step = new FetchUserInfoStep(fake);
+        var step = new FetchUserStep(fake);
 
         await Assert.ThrowsAsync<AuthCallbackException>(() =>
             step.ExecuteAsync(ctx, CancellationToken.None));

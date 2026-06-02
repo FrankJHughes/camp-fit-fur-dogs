@@ -1,5 +1,6 @@
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.TestUtilities.Fakes;

@@ -81,6 +81,7 @@ public class TestClientBuilder
 
             builder.ConfigureServices(services =>
             {
+                // Fake OIDC HTTP responses
                 if (_fakeOidcResponses is not null)
                 {
                     services.AddHttpClient<IAuthClient, OidcAuthClient>()
@@ -94,6 +95,9 @@ public class TestClientBuilder
                 if (_auditLogger is not null)
                     services.AddSingleton<IAuditLogger>(_auditLogger);
 
+                // ------------------------------------------------------------
+                // OVERRIDE AUTH CALLBACK SERVICE FOR TESTS
+                // ------------------------------------------------------------
                 if (_authCallbackService is not null)
                 {
                     services.RemoveAll<IAuthCallbackService>();

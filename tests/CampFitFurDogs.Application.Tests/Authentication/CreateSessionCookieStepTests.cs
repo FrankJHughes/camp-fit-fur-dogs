@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 
@@ -48,7 +49,7 @@ public sealed class CreateSessionCookieStepTests
             Session: null
         );
 
-        var step = new CreateSessionCookieStep(new FakeTokenService());
+        var step = new IssueCookieStep(new FakeTokenService());
 
         var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
@@ -80,7 +81,7 @@ public sealed class CreateSessionCookieStepTests
             CustomerId: Guid.NewGuid()
         );
 
-        var step = new CreateSessionCookieStep(new FakeTokenService());
+        var step = new IssueCookieStep(new FakeTokenService());
 
         var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
 

@@ -1,14 +1,13 @@
 using Microsoft.Extensions.Options;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps;
 
 public sealed class BuildRedirectStep : IAuthCallbackStep
 {
     private readonly OidcOptions _options;
 
-    public StepMetadata Metadata =>
-        new("BuildRedirect", "Build Redirect URL");
+    public AuthCallbackStepMetadata Metadata => new("BuildRedirect", "Build Redirect", AuthCallbackStepCategory.BuildRedirect);
 
     public BuildRedirectStep(IOptions<OidcOptions> options)
     {

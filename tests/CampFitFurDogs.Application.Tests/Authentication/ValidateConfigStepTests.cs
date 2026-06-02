@@ -1,7 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 using CampFitFurDogs.Domain.Errors;
 using Microsoft.Extensions.Options;
 
@@ -9,9 +10,9 @@ namespace CampFitFurDogs.Application.Tests.Authentication
 {
     public sealed class ValidateConfigStepTests
     {
-        private static ValidateConfigStep CreateStep(OidcOptions options)
+        private static ValidateConfigurationStep CreateStep(OidcOptions options)
         {
-            return new ValidateConfigStep(Options.Create(options));
+            return new ValidateConfigurationStep(Options.Create(options));
         }
 
         private static AuthCallbackContext DummyContext()

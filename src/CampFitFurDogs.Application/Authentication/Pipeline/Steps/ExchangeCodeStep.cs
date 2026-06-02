@@ -1,13 +1,17 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 
 public sealed class ExchangeCodeStep : IAuthCallbackStep
 {
     private readonly IAuthClient _client;
 
-    public StepMetadata Metadata =>
-        new("ExchangeCode", "Exchange Code");
+    public AuthCallbackStepMetadata Metadata =>
+        new(
+            "ExchangeCode",
+            "Exchange Code",
+            AuthCallbackStepCategory.ExchangeCode);
 
     public ExchangeCodeStep(IAuthClient client)
     {

@@ -1,4 +1,4 @@
-namespace CampFitFurDogs.Application.Authentication.Pipeline;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Diagnostics;
 
 /// <summary>
 /// Delegate for receiving structured diagnostic events.

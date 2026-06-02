@@ -3,15 +3,19 @@ using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
 using CampFitFurDogs.Domain.Errors;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 
-namespace CampFitFurDogs.Application.Authentication.Steps;
+namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps
+;
 
-public sealed class ValidateConfigStep : IAuthCallbackStep
+public sealed class ValidateConfigurationStep : IAuthCallbackStep
 {
     private readonly OidcOptions _options;
-    public StepMetadata Metadata =>
-        new("ValidateConfig", "Validate Configuration");
+    public AuthCallbackStepMetadata Metadata =>
+        new(
+            "ValidateConfiguration",
+            "Validate Configuration",
+            AuthCallbackStepCategory.Precondition);
 
-    public ValidateConfigStep(IOptions<OidcOptions> options)
+    public ValidateConfigurationStep(IOptions<OidcOptions> options)
     {
         _options = options.Value;
     }

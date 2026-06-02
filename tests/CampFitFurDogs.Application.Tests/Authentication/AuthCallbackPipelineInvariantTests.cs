@@ -1,5 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
+using CampFitFurDogs.Application.Authentication.Pipeline;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
 
@@ -11,7 +12,11 @@ public sealed class AuthCallbackPipelineInvariantTests
 
     private sealed class NullReturningStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata => new("NullStep", "Null Step");
+        public AuthCallbackStepMetadata Metadata =>
+        new(
+            "NullStep",
+            "Null Step",
+            AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
@@ -21,7 +26,11 @@ public sealed class AuthCallbackPipelineInvariantTests
 
     private sealed class CodeMutatingStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata => new("CodeMutate", "Code Mutate");
+        public AuthCallbackStepMetadata Metadata =>
+            new(
+                "CodeMutate",
+                "Code Mutate",
+                AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
@@ -31,7 +40,11 @@ public sealed class AuthCallbackPipelineInvariantTests
 
     private sealed class NowMutatingStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata => new("NowMutate", "Now Mutate");
+        public AuthCallbackStepMetadata Metadata =>
+            new(
+                "NowMutate",
+                "Now Mutate",
+                AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
@@ -41,7 +54,10 @@ public sealed class AuthCallbackPipelineInvariantTests
 
     private sealed class ClearingFieldStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata => new("ClearField", "Clear Field");
+        public AuthCallbackStepMetadata Metadata => new(
+            "ClearField",
+            "Clear Field",
+            AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
@@ -51,7 +67,11 @@ public sealed class AuthCallbackPipelineInvariantTests
 
     private sealed class SameInstanceStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata => new("SameInstance", "Same Instance");
+        public AuthCallbackStepMetadata Metadata =>
+            new(
+                "SameInstance",
+                "Same Instance",
+                AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {
@@ -61,7 +81,11 @@ public sealed class AuthCallbackPipelineInvariantTests
 
     private sealed class RefinementStep : IAuthCallbackStep
     {
-        public StepMetadata Metadata => new("Refine", "Refine");
+        public AuthCallbackStepMetadata Metadata =>
+            new(
+                "Refine",
+                "Refine",
+                AuthCallbackStepCategory.Precondition);
 
         public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
         {

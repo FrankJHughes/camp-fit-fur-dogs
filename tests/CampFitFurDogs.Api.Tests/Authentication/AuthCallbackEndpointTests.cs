@@ -3,10 +3,10 @@ using System.Text.Json;
 using FluentAssertions;
 
 using CampFitFurDogs.TestUtilities.Builders;
-using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fakes;
 using Microsoft.Extensions.Configuration;
 using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.TestUtilities.Factories;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
@@ -79,7 +79,7 @@ public class AuthCallbackEndpointTests
     }
 
     // ------------------------------------------------------------
-    // ERROR PATHS (unchanged)
+    // ERROR PATHS
     // ------------------------------------------------------------
     [Fact]
     public async Task Missing_authorization_code_returns_bad_request_problem_details()
