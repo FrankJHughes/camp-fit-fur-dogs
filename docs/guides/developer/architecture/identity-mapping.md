@@ -1,6 +1,6 @@
 # Identity Mapping Guide
 
-This guide explains how **identity mapping** works today based on the implementation completed for **US‑110 (Authentication: Owner Login)**.  
+This guide explains how **identity mapping** works today based on the implementation completed for **US‑110 (Authentication: Owner Login)** and used by **US‑111 (Session Management)**.  
 It documents the *runtime behavior* and *developer workflow* for mapping an external OIDC identity (Auth0) to an internal domain identity (Owner/Customer).
 
 This guide does **not** define rules, boundaries, or architectural decisions — those live in:
@@ -21,7 +21,8 @@ Identity mapping answers one question:
 
 US‑110 implements the first half of the identity lifecycle:
 
-- Extract external identity (`sub`) from Auth0  
+- Fetch external user profile from Auth0  
+- Validate required claims (`sub`)  
 - Look up an existing Owner by external ID  
 - Create a new Owner if none exists  
 - Return the internal `OwnerId`  
@@ -33,17 +34,20 @@ This guide documents the behavior that exists today.
 
 # Identity Mapping Flow
 
-Identity mapping runs inside the **Auth Callback pipeline**.
+Identity mapping runs inside the **Auth Callback pipeline**, specifically between:
+
+- **ValidateUserStep**  
+- **AuditLoginStep**  
 
 High‑level flow:
 
-1. Auth0 returns an ID token + user profile  
-2. The callback pipeline extracts the external subject (`sub`)  
-3. The system checks whether an Owner already exists with that external ID  
-4. If found → return the existing `OwnerId`  
-5. If not found → create a new Owner  
-6. Return the new `OwnerId`  
-7. Pass the `OwnerId` to the session creation step  
+1. Auth0 returns an access token  
+2. Pipeline fetches the user profile (`FetchUserStep`)  
+3. Pipeline validates the profile (`ValidateUserStep`)  
+4. Pipeline resolves identity (`ResolveIdentityStep`)  
+5. If an Owner exists → return the existing `OwnerId`  
+6. If not → create a new Owner  
+7. Pass the `OwnerId` to session creation  
 
 This ensures that **every login results in a valid internal Owner identity**.
 
@@ -99,9 +103,10 @@ ResolveIdentityStep
 
 This step:
 
-1. Extracts the external subject (`sub`)  
-2. Calls the identity resolver  
-3. Returns the internal `OwnerId`  
+1. Requires `ctx.User`  
+2. Extracts the external subject (`sub`)  
+3. Calls the identity resolver  
+4. Returns the internal `OwnerId`  
 
 The identity resolver is injected via DI and follows purity and boundary conventions.
 
@@ -160,17 +165,18 @@ Email is treated as **profile data**, not identity.
 Identity mapping may fail for several reasons:
 
 ### Missing `sub`
-- The Auth0 token is malformed  
-- The callback request is invalid  
+- Handled in `ValidateUserStep`  
+- Returns **502 Bad Gateway**  
 
 ### Database failure
 - Owner lookup fails  
 - Owner creation fails  
+- Returns **500 Internal Server Error**  
 
 ### Invalid profile data
-- Missing required fields for Owner creation (rare)
+- Missing required fields for Owner creation (rare)  
 
-In all cases, the callback pipeline returns a **500** and logs the failure.
+All failures are surfaced through the callback endpoint’s ProblemDetails mapping.
 
 ---
 
@@ -210,7 +216,7 @@ Identity mapping is tested in three layers:
 
 ### Callback returning 500  
 - Usually caused by missing Auth0 secrets  
-- Check `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_DOMAIN`
+- Check `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_DOMAIN`  
 
 ---
 

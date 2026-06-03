@@ -10,14 +10,18 @@ All notable changes to this project will be documented in this file.
 - New success flow guiding owners after account creation.
 - New duplicate‑email handling with friendly, blame‑free messaging.
 - New hardened validation for owner name, email, phone number, and password to ensure consistent behavior across frontend and backend.
+- New secure login flow using Auth0, including external authentication, identity mapping, and automatic Owner creation on first login.
+- New session management system with secure, HttpOnly cookies and server‑side session persistence.
 
 ### Changed
 - Updated account creation UI to use the new FormCommand state machine for deterministic validation and error handling.
 - Updated account creation API client to match the finalized CreateCustomer backend contract.
+- Updated authentication callback flow to use a deterministic, step‑based pipeline for improved reliability and error handling.
 
 ### Fixed
 - Improved error messaging to avoid exposing internal system details.
 - Ensured all account creation errors (validation + API) are surfaced consistently and accessibly.
+- Fixed inconsistent cookie behavior in preview/prod by enforcing correct security flags.
 
 ## [Sprint 7] - 2026-05-11
 | Story  | Title                              | Issue |
