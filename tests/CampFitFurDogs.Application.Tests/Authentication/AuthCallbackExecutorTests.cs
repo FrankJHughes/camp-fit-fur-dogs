@@ -415,6 +415,7 @@ public sealed class AuthCallbackExecutorTests
             {
                 b.Code(before.Code);
                 b.Now(before.Now);
+                b.Token(before.Token!); // ← REQUIRED
                 calls.Add("B");
             }));
 
