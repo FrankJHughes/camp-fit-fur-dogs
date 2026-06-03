@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Pipeline;
-using CampFitFurDogs.Application.Authentication.Pipeline.Steps
+using CampFitFurDogs.Application.Authentication.Steps
+
 ;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,11 +25,7 @@ public static class AuthCallbackServiceCollectionExtensions
         services.AddScoped<IAuthCallbackStep, AuditLoginStep>();
         services.AddScoped<IAuthCallbackStep, BuildRedirectStep>();
 
-        // Register the pipeline using the builder
-        services.AddScoped<AuthCallbackPipeline>(sp =>
-            new AuthCallbackPipelineBuilder(sp)
-                .Build());
-
+        services.AddScoped<AuthCallbackExecutor>();
         return services;
     }
 }

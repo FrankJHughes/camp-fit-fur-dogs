@@ -1,8 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Time;
-using CampFitFurDogs.Application.Authentication.Pipeline;
-using CampFitFurDogs.Application.Authentication.Pipeline.Steps
-;
 using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Application.Authentication;
@@ -13,17 +10,17 @@ namespace CampFitFurDogs.Application.Authentication;
 /// </summary>
 public sealed class AuthCallbackService : IAuthCallbackService
 {
-    private readonly AuthCallbackPipeline _pipeline;
+    private readonly AuthCallbackExecutor _executor;
     private readonly ISystemClock _clock;
 
-    public AuthCallbackService(AuthCallbackPipeline pipeline)
-        : this(pipeline, new DefaultSystemClock())
+    public AuthCallbackService(AuthCallbackExecutor executor)
+        : this(executor, new DefaultSystemClock())
     {
     }
 
-    public AuthCallbackService(AuthCallbackPipeline pipeline, ISystemClock clock)
+    public AuthCallbackService(AuthCallbackExecutor executor, ISystemClock clock)
     {
-        _pipeline = pipeline;
+        _executor = executor;
         _clock = clock;
     }
 
@@ -32,19 +29,19 @@ public sealed class AuthCallbackService : IAuthCallbackService
         if (string.IsNullOrWhiteSpace(code))
             throw new AuthCallbackException(AuthCallbackError.MissingAuthorizationCode);
 
-        var initial = new AuthCallbackContext(code, Now: _clock.UtcNow);
+        var ctx = new AuthCallbackContext(code, Now: _clock.UtcNow);
 
-        var final = await _pipeline.ExecuteAsync(initial, ct);
+        await _executor.ExecuteAsync(ctx, ct);
 
-        final.RequireCustomerId();
-        final.RequireSession();
-        final.RequireSessionCookie();
-        final.RequireRedirectUrl();
+        ctx.RequireCustomerId();
+        ctx.RequireSession();
+        ctx.RequireSessionCookie();
+        ctx.RequireRedirectUrl();
 
         return new AuthCallbackResult(
-            CustomerId.From(final.CustomerId!.Value),
-            final.SessionCookie!,
-            final.RedirectUrl!
+            CustomerId.From(ctx.CustomerId!.Value),
+            ctx.SessionCookie!,
+            ctx.RedirectUrl!
         );
 
     }

@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Pipeline.Steps
+using CampFitFurDogs.Application.Authentication.Steps
+
 ;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;

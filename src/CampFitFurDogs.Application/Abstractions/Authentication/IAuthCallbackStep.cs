@@ -1,4 +1,4 @@
-namespace CampFitFurDogs.Application.Authentication.Pipeline;
+namespace CampFitFurDogs.Application.Abstractions.Authentication;
 
 public interface IAuthCallbackStep
 {
@@ -7,8 +7,11 @@ public interface IAuthCallbackStep
     /// </summary>
     AuthCallbackStepMetadata Metadata { get; }
 
+    bool CanExecute(AuthCallbackContext ctx);
+
     /// <summary>
     /// Executes this step and returns a new immutable context.
     /// </summary>
     Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct);
+
 }

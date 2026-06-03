@@ -1,30 +1,34 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Authentication.Sessions;
-using CampFitFurDogs.Domain.Customers;
 
-namespace CampFitFurDogs.Application.Authentication.Pipeline.Steps
-;
+namespace CampFitFurDogs.Application.Authentication.Steps;
 
 public sealed class IssueCookieStep : IAuthCallbackStep
 {
     private readonly ISessionTokenService _tokens;
 
     public AuthCallbackStepMetadata Metadata =>
-        new(
-            "IssueCookie",
-            "Issue Cookie",
-            AuthCallbackStepCategory.IssueCookie);
+        new("IssueCookie", "Issue Cookie");
 
     public IssueCookieStep(ISessionTokenService tokens)
     {
         _tokens = tokens;
     }
 
-    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public bool CanExecute(AuthCallbackContext ctx)
+        => true; // Always runs
+
+    public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         var generated = _tokens.Generate();
         var cookie = SessionCookie.FromPlaintextToken(generated.PlaintextToken);
 
-        return ctx with { TokenHash = generated.Hash, SessionCookie = cookie };
+        return Task.FromResult(
+            ctx with
+            {
+                TokenHash = generated.Hash,
+                SessionCookie = cookie
+            }
+        );
     }
 }

@@ -1,7 +1,6 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Authentication.Sessions;
 
-namespace CampFitFurDogs.Application.Authentication;
+namespace CampFitFurDogs.Application.Abstractions.Authentication;
 
 public sealed record AuthCallbackContext(
     string Code,
