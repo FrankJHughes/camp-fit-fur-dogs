@@ -6,5 +6,6 @@ public enum AuthCallbackError
     IncompleteConfiguration,
     MissingAccessToken,
     UserInfoFailure,
-    MissingExternalId
+    MissingExternalId,
+    MissingResult
 }

@@ -23,7 +23,7 @@ public class AuthCallbackEndpoint : IEndpoint
 
         var result = await service.HandleAsync(code, CancellationToken.None);
 
-        IssueSessionCookie(http, result.CustomerId, env);
+        IssueSessionCookie(http, result.CustomerId.Value, env);
 
         return Results.Redirect(result.RedirectUrl);
     }

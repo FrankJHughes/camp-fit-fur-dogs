@@ -1,14 +1,14 @@
+using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.Domain.Authentication.Sessions;
+
 namespace CampFitFurDogs.Application.Abstractions.Authentication;
 
 public sealed record AuthCallbackResult(
-    Guid CustomerId,
-    string SessionCookie,
+    CustomerId CustomerId,
+    SessionCookie Cookie,
     string RedirectUrl
 )
 {
-    public static AuthCallbackResult CreateSuccess(Guid customerId)
-        => new(customerId, $"cfd.session={customerId}", "");
-
     public AuthCallbackResult WithRedirect(string redirectUrl)
         => this with { RedirectUrl = redirectUrl };
 }

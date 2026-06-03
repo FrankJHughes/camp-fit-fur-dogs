@@ -1,25 +1,30 @@
 # Authentication Architecture Guide
 
-This guide explains the **authentication architecture** as implemented in **US‑110 (Authentication: Owner Login)**.  
-It documents how the system performs OIDC login, identity resolution, and session issuance using the dispatcher pipeline and the current backend architecture.
+This guide documents the **authentication architecture** implemented across:
 
-This guide does **not** define rules, boundaries, or decisions — those live in:
+- **US‑110 — Authentication: Owner Login (OIDC)**
+- **US‑111 — Authentication: Session Management**
+
+It explains how the system performs OIDC login, validates configuration, fetches userinfo, resolves identity, issues session cookies, creates sessions, and builds the final redirect — all using the dispatcher pipeline.
+
+This guide does **not** define rules, boundaries, or decisions.  
+Those live in:
 
 - Governance (process + enforcement)  
 - Conventions (how we implement)  
 - ADRs (why decisions were made)
 
-This guide focuses solely on **how the authentication architecture works today**.
+This guide focuses solely on **how authentication works today**.
 
 ---
 
 # High‑Level Architecture
 
-Authentication in the system is composed of three cooperating components:
+Authentication consists of three cooperating components:
 
 1. **OIDC Login Initiation**  
 2. **Auth Callback Pipeline**  
-3. **Session Issuance + Identity Mapping**
+3. **Session Issuance + Identity Mapping + Audit Logging**
 
 These components work together to produce a secure, server‑managed session cookie.
 
@@ -34,54 +39,177 @@ The login initiation endpoint:
 - Includes PKCE parameters  
 - Redirects the browser to Auth0  
 
-This endpoint is intentionally simple — it delegates all identity proof to Auth0.
+This endpoint performs no identity logic and no session logic.  
+It simply begins the OIDC flow.
 
 ---
 
 # Component 2 — Auth Callback Pipeline
 
-The callback endpoint is implemented using the **dispatcher pipeline**, which breaks the authentication flow into small, composable steps.
+The callback endpoint uses the **dispatcher pipeline**, which breaks the authentication flow into small, composable steps.
 
-The pipeline looks like this:
+The **actual pipeline**, in execution order, is:
 
-1. **ExchangeAuthorizationCodeStep**  
-2. **FetchUserProfileStep**  
-3. **ResolveIdentityStep**  
-4. **CreateSessionCookieStep**  
-5. **ReturnCallbackResultStep**
+1. **ValidateConfigurationStep**  
+2. **ExchangeCodeStep**  
+3. **FetchUserStep**  
+4. **ValidateUserStep**  
+5. **ResolveIdentityStep**  
+6. **AuditLoginStep**  
+7. **IssueCookieStep**  
+8. **CreateSessionStep**  
+9. **BuildRedirectStep**
 
 Each step:
 
 - Performs one job  
 - Has no side effects outside its boundary  
-- Receives a shared context object  
-- Writes results back into the context  
-- Passes control to the next step  
+- Receives a shared immutable context  
+- Writes results back into the context via `with`  
+- Must obey context invariants enforced by the executor  
 
-This keeps the authentication flow deterministic, testable, and composable.
+This makes the authentication flow deterministic, testable, and composable.
 
 ---
 
 # Pipeline Step Responsibilities
 
-### 1. ExchangeAuthorizationCodeStep  
-Exchanges the authorization code for:
+## 1. ValidateConfigurationStep
+Ensures all required OIDC configuration values are present:
 
-- ID token  
-- Access token  
-- Token metadata  
+- Authority  
+- ClientId  
+- ClientSecret  
+- CallbackUrl  
+- PostLoginRedirectUrl  
 
-### 2. FetchUserProfileStep  
+If any are missing → **500 Internal Server Error**.
+
+Runs unconditionally.
+
+---
+
+## 2. ExchangeCodeStep
+Exchanges the authorization code for an access token.
+
+Input:  
+- `ctx.Code`
+
+Output:  
+- `ctx.Token`
+
+If the code is missing → **400 Bad Request** (handled by endpoint).  
+If Auth0 returns no access token → next step fails with **502**.
+
+---
+
+## 3. FetchUserStep
 Uses the access token to fetch the Auth0 user profile.
 
-### 3. ResolveIdentityStep  
-Maps the external identity (`sub`) to an internal `OwnerId`.
+Input:  
+- `ctx.Token`
 
-### 4. CreateSessionCookieStep  
-Creates a new session record and issues the session cookie.
+Output:  
+- `ctx.User`
 
-### 5. ReturnCallbackResultStep  
-Returns the final redirect response to the frontend.
+If userinfo retrieval fails → **502 Bad Gateway**.
+
+---
+
+## 4. ValidateUserStep
+Ensures the userinfo contains a valid external identifier:
+
+- `ExternalId` (Auth0 `sub`)
+
+If missing or empty → **502 Bad Gateway**.
+
+---
+
+## 5. ResolveIdentityStep
+Maps the external identity to an internal domain identity.
+
+Input:  
+- `ctx.User`
+
+Output:  
+- `ctx.CustomerId`
+
+Identity resolution:
+
+- Is pure  
+- May create a new Owner  
+- Never uses email for identity  
+- Never exposes internal IDs to Auth0  
+
+---
+
+## 6. AuditLoginStep
+Writes an audit log entry for successful authentication.
+
+Input:  
+- `ctx.CustomerId`  
+- `ctx.User.ExternalId`
+
+Output:  
+- No context mutation except returning same instance
+
+Runs **before** session creation so login is recorded even if session creation fails.
+
+---
+
+## 7. IssueCookieStep
+Generates a new session token and cookie.
+
+Output:  
+- `ctx.TokenHash`  
+- `ctx.SessionCookie`
+
+This step:
+
+- Generates a 256‑bit random token  
+- Hashes it using SHA‑256  
+- Creates a `SessionCookie` value object  
+- Does **not** persist anything  
+
+Runs unconditionally.
+
+---
+
+## 8. CreateSessionStep
+Creates and persists the session.
+
+Input:  
+- `ctx.TokenHash`  
+- `ctx.CustomerId`  
+- `ctx.Now`
+
+Output:  
+- `ctx.Session`
+
+This step:
+
+- Creates a domain `Session`  
+- Stores the hash in the database  
+- Associates the session with the Customer  
+- Commits via `IUnitOfWork`  
+
+---
+
+## 9. BuildRedirectStep
+Builds the final redirect URL.
+
+Input:  
+- `ctx.Session`  
+- `ctx.SessionCookie`
+
+Output:  
+- `ctx.RedirectUrl`
+
+The API layer uses this to issue:
+
+- `302 Found`  
+- `Location: <redirect>`  
+- `Set-Cookie: cfd.session=...`  
 
 ---
 
@@ -90,96 +218,138 @@ Returns the final redirect response to the frontend.
 Identity mapping is a core architectural boundary:
 
 - External identity → internal domain identity  
-- Implemented via the identity resolver  
-- Pure, deterministic, and side‑effect‑free except for Owner creation  
-- Never uses email for identity  
+- Implemented via `IIdentityResolver`  
+- Pure and deterministic  
+- Never uses email  
 - Never exposes internal IDs to Auth0  
 
-Identity mapping is documented in detail in the **Identity Mapping Guide**.
+See the **Identity Mapping Guide** for details.
 
 ---
 
 # Session Issuance in the Architecture
 
-Session issuance is handled by the session service:
+Session issuance consists of:
 
-- Generates a 256‑bit random token  
-- Hashes the token using SHA‑256  
-- Stores the hash in the database  
-- Issues the raw token as a secure cookie  
-- Associates the session with the resolved `OwnerId`  
+1. **Token generation** (IssueCookieStep)  
+2. **Token hashing** (IssueCookieStep)  
+3. **Session creation** (CreateSessionStep)  
+4. **Cookie issuance** (API layer)  
+5. **Redirect** (BuildRedirectStep)
 
-Session validation middleware will be added in **US‑111**.
+Session tokens:
+
+- Are 256‑bit random values  
+- Are hashed using SHA‑256  
+- Are stored only as hashes  
+- Are issued as secure cookies  
+
+Production cookie flags:
+
+- `Secure=true`  
+- `HttpOnly=true`  
+- `SameSite=Lax`  
+
+Local development uses `Secure=false`.
+
+---
+
+# Audit Logging in the Architecture
+
+Audit logging is performed by **AuditLoginStep**:
+
+- Runs after identity resolution  
+- Logs `CustomerId` + `ExternalId`  
+- Does not mutate context  
+- Does not affect session creation  
+
+This ensures login events are recorded even if session creation fails.
 
 ---
 
 # Architectural Boundaries
 
-Authentication touches several architectural layers:
+Authentication spans four layers:
 
-### **1. API Layer**  
+## 1. API Layer
 - Defines endpoints  
-- Orchestrates the dispatcher pipeline  
+- Orchestrates the pipeline  
 - Issues cookies  
 - Returns redirect responses  
 
-### **2. Application Layer**  
-- Contains the pipeline steps  
+## 2. Application Layer
+- Contains pipeline steps  
 - Contains identity resolution logic  
 - Contains session creation logic  
+- Contains audit logging logic  
 
-### **3. Domain Layer**  
-- Owns the Owner aggregate  
-- Owns the session model  
-- Owns domain invariants  
+## 3. Domain Layer
+- Owns Owner aggregate  
+- Owns Session entity  
+- Owns invariants  
 
-### **4. Infrastructure Layer**  
+## 4. Infrastructure Layer
 - Implements Auth0 client  
 - Implements session repository  
 - Implements Owner repository  
+- Implements audit logger  
 
-Each layer has strict purity and dependency rules (defined in conventions, not here).
+Purity and dependency rules are defined in Conventions.
 
 ---
 
-# Data Flow Diagram (Textual)
+# Data Flow Diagram (Updated)
 
-````  
-Browser → /api/auth/login  
-    → Redirect to Auth0  
-Auth0 → /api/auth/callback  
-    → Exchange code  
-    → Fetch profile  
-    → Resolve identity  
-    → Create session  
-    → Issue cookie  
-    → Redirect to frontend  
-````
+```
+Browser → /api/auth/login
+    → Redirect to Auth0
+
+Auth0 → /api/auth/callback?code=XYZ
+    → Validate configuration
+    → Exchange code
+    → Fetch userinfo
+    → Validate userinfo
+    → Resolve identity
+    → Audit login
+    → Issue cookie
+    → Create session
+    → Build redirect
+    → Return redirect response
+```
 
 ---
 
 # Error Handling Architecture
 
-Authentication errors fall into three categories:
+Authentication errors fall into these categories:
 
-### **1. External Errors**  
-- Auth0 unreachable  
-- Invalid authorization code  
-- Missing tokens  
+## 1. Configuration Errors — 500
+- Missing Authority  
+- Missing ClientId  
+- Missing ClientSecret  
+- Missing CallbackUrl  
+- Missing PostLoginRedirectUrl  
 
-### **2. Identity Errors**  
-- Missing `sub`  
-- Invalid external ID  
+## 2. Client Errors — 400
+- Missing authorization code  
+
+## 3. External Errors — 502
+- Missing access token  
+- Userinfo failure  
+- Missing external ID (`sub`)  
+
+## 4. Identity Errors — 500
+- Identity resolver failure  
 - Owner creation failure  
 
-### **3. Session Errors**  
+## 5. Session Errors — 500
 - Database failure  
 - Cookie issuance failure  
 
 All errors are surfaced as:
 
+- ProblemDetails JSON  
 - Logged exceptions  
-- 500 responses  
 - No cookies issued  
 
 ---
@@ -188,47 +358,61 @@ All errors are surfaced as:
 
 Authentication is tested at three levels:
 
-### **1. Unit Tests**  
-- Pipeline step logic  
-- Identity resolver  
-- Session creation  
+## 1. Unit Tests
+- ValidateConfigurationStep  
+- ExchangeCodeStep  
+- FetchUserStep  
+- ValidateUserStep  
+- ResolveIdentityStep  
+- AuditLoginStep  
+- IssueCookieStep  
+- CreateSessionStep  
+- BuildRedirectStep  
 
-### **2. Integration Tests**  
+## 2. Executor Tests
+- Step ordering  
+- Conditional execution  
+- Invariant enforcement  
+- Diagnostics lifecycle  
+- Error propagation  
+
+## 3. Integration Tests
 - Full callback flow  
 - Cookie issuance  
-- Owner creation  
-
-### **3. Guardrail Tests**  
-- Cookie flags  
-- No sensitive data in cookies  
-- Identity mapping purity  
+- Audit logging  
+- Error paths  
+- Production cookie security  
 
 ---
 
-# Local Development Architecture Notes
+# Local Development Notes
 
-### Auth0  
+## Auth0
 Local dev uses:
 
-````  
+```
 http://localhost:5000/api/auth/callback
-````
+```
 
-### Cookies  
-Local dev uses:
+## Cookies
+Local dev:
 
 - `Secure=false`  
 - `SameSite=Lax`  
 
-Preview/prod enforce `Secure=true`.
+Preview/prod:
+
+- `Secure=true`  
+- `HttpOnly=true`  
+- `SameSite=Lax`  
 
 ---
 
 # Related Documents
 
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
-- **[Identity Mapping](ca://s?q=Generate_Identity_Mapping_Guide)**  
-- **[Authentication Testing](ca://s?q=Generate_Authentication_Testing_Guide)**  
-- **[Authentication Operations](ca://s?q=Generate_Authentication_Operations_Guide)**  
-- **[Create Account Form](ca://s?q=Generate_Create_Account_Form_Guide)**  
-- **[Create Account Feature Slice](ca://s?q=Generate_Create_Account_Slice_Guide)**  
+- **Session Management Guide**  
+- **Identity Mapping Guide**  
+- **Authentication Testing Guide**  
+- **Authentication Operations Guide**  
+- **Create Account Form Guide**  
+- **Create Account Feature Slice Guide**

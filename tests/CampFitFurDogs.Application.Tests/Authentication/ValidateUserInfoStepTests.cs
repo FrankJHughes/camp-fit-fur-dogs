@@ -1,6 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Steps
+
+;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
 
@@ -14,7 +16,7 @@ public sealed class ValidateUserInfoStepTests
             User = new AuthUser("", "Frank", "Smith", "frank@example.com")
         };
 
-        var step = new ValidateUserInfoStep();
+        var step = new ValidateUserStep();
 
         await Assert.ThrowsAsync<AuthCallbackException>(() =>
             step.ExecuteAsync(ctx, CancellationToken.None));
@@ -28,7 +30,7 @@ public sealed class ValidateUserInfoStepTests
             User = new AuthUser("ext-1", "Frank", "Smith", "frank@example.com")
         };
 
-        var step = new ValidateUserInfoStep();
+        var step = new ValidateUserStep();
 
         await step.ExecuteAsync(ctx, CancellationToken.None);
     }

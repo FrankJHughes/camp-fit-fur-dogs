@@ -1,6 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Steps
+
+;
 using CampFitFurDogs.TestUtilities.Fakes;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
@@ -8,7 +10,7 @@ namespace CampFitFurDogs.Application.Tests.Authentication;
 public sealed class ExchangeCodeStepTests
 {
     [Fact]
-    public async Task ExecuteAsync_SetsTokenOnContext()
+    public async Task ExecuteAsync_SetsTokenOnReturnedContext()
     {
         var fake = new FakeAuthClient
         {
@@ -18,8 +20,12 @@ public sealed class ExchangeCodeStepTests
         var ctx = new AuthCallbackContext("the-code");
         var step = new ExchangeCodeStep(fake);
 
-        await step.ExecuteAsync(ctx, CancellationToken.None);
+        var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
-        Assert.Equal("abc123", ctx.Token!.AccessToken);
+        updated.Token.Should().NotBeNull();
+        updated.Token!.AccessToken.Should().Be("abc123");
+
+        // original context remains unchanged (immutability guarantee)
+        ctx.Token.Should().BeNull();
     }
 }

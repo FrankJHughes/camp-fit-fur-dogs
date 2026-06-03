@@ -2,7 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Steps
+
+;
 
 namespace CampFitFurDogs.Application;
 
@@ -18,17 +20,8 @@ public static class ServiceCollectionExtensions
                 .ValidateOnStart();
 
         // ⭐ Pipeline service
+        services.AddAuthCallbackPipeline();
         services.AddScoped<IAuthCallbackService, AuthCallbackService>();
-
-        // ⭐ Pipeline steps
-        services.AddScoped<IAuthCallbackStep, ValidateConfigStep>();
-        services.AddScoped<IAuthCallbackStep, ExchangeCodeStep>();
-        services.AddScoped<IAuthCallbackStep, FetchUserInfoStep>();
-        services.AddScoped<IAuthCallbackStep, ValidateUserInfoStep>();
-        services.AddScoped<IAuthCallbackStep, ResolveIdentityStep>();
-        services.AddScoped<IAuthCallbackStep, CreateSessionCookieStep>();
-        services.AddScoped<IAuthCallbackStep, AuditLoginStep>();
-        services.AddScoped<IAuthCallbackStep, BuildRedirectStep>();
 
         return services;
     }

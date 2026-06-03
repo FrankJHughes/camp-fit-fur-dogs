@@ -10,6 +10,8 @@ using CampFitFurDogs.Infrastructure.Audit;
 using CampFitFurDogs.Infrastructure.Identity.Oidc;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Identity;
+using CampFitFurDogs.Application.Abstractions.Time;
+using CampFitFurDogs.Infrastructure.Time;
 
 namespace CampFitFurDogs.Infrastructure;
 
@@ -36,6 +38,9 @@ public static class ServiceCollectionExtensions
 
         // ⭐ NEW: Audit logging (required for US‑110)
         services.AddSingleton<IAuditLogger, AuditLogger>();
+
+        services.AddSingleton<ISystemClock, SystemClock>();
+
 
         return services;
     }

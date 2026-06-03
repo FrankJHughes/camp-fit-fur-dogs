@@ -1,6 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Steps
+
+;
 using CampFitFurDogs.TestUtilities.Fakes;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
@@ -8,23 +10,27 @@ namespace CampFitFurDogs.Application.Tests.Authentication;
 public sealed class FetchUserInfoStepTests
 {
     [Fact]
-    public async Task ExecuteAsync_SetsUserOnContext()
+    public async Task ExecuteAsync_SetsUserOnReturnedContext()
     {
         var fake = new FakeAuthClient
         {
             UserToReturn = new AuthUser("ext-1", "Frank", "Smith", "frank@example.com")
         };
 
-        var ctx = new AuthCallbackContext("code")
-        {
-            Token = new AuthToken("abc123")
-        };
+        var ctx = new AuthCallbackContext(
+            Code: "code",
+            Token: new AuthToken("abc123")
+        );
 
-        var step = new FetchUserInfoStep(fake);
+        var step = new FetchUserStep(fake);
 
-        await step.ExecuteAsync(ctx, CancellationToken.None);
+        var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
 
-        Assert.Equal("ext-1", ctx.User!.ExternalId);
+        updated.User.Should().NotBeNull();
+        updated.User!.ExternalId.Should().Be("ext-1");
+
+        // original context remains unchanged (immutability guarantee)
+        ctx.User.Should().BeNull();
     }
 
     [Fact]
@@ -35,12 +41,12 @@ public sealed class FetchUserInfoStepTests
             UserToReturn = null
         };
 
-        var ctx = new AuthCallbackContext("code")
-        {
-            Token = new AuthToken("abc123")
-        };
+        var ctx = new AuthCallbackContext(
+            Code: "code",
+            Token: new AuthToken("abc123")
+        );
 
-        var step = new FetchUserInfoStep(fake);
+        var step = new FetchUserStep(fake);
 
         await Assert.ThrowsAsync<AuthCallbackException>(() =>
             step.ExecuteAsync(ctx, CancellationToken.None));

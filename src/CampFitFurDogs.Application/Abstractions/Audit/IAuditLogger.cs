@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 namespace CampFitFurDogs.Application.Abstractions.Audit;
 
 public interface IAuditLogger

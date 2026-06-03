@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CampFitFurDogs.Infrastructure.Data;
@@ -69,6 +63,12 @@ public abstract class ApiTestBase : IAsyncLifetime
     {
         using var scope = CreateScope();
         return scope.ServiceProvider.GetServices(serviceType).Cast<object>().ToList();
+    }
+
+    protected async Task WithScope(Func<IServiceProvider, Task> action)
+    {
+        using var scope = CreateScope();
+        await action(scope.ServiceProvider);
     }
 
 }

@@ -1,6 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Steps
+
+;
 using CampFitFurDogs.TestUtilities.Fakes;
 
 namespace CampFitFurDogs.Application.Tests.Authentication
@@ -69,7 +71,7 @@ namespace CampFitFurDogs.Application.Tests.Authentication
         // NULL PROFILE → NULL REFERENCE EXCEPTION
         // ------------------------------------------------------------
         [Fact]
-        public async Task Null_profile_throws_NullReferenceException()
+        public async Task Null_profile_throws_InvalidOperationException()
         {
             var ctx = new AuthCallbackContext("dummy-code")
             {
@@ -82,7 +84,7 @@ namespace CampFitFurDogs.Application.Tests.Authentication
 
             var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
 
-            await act.Should().ThrowAsync<NullReferenceException>();
+            await act.Should().ThrowAsync<InvalidOperationException>();
         }
 
         // ------------------------------------------------------------

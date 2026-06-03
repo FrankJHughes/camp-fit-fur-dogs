@@ -1,53 +1,91 @@
+using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Authentication.Steps
 
-namespace CampFitFurDogs.Application.Tests.Authentication
+;
+using CampFitFurDogs.Domain.Authentication.Sessions;
+using CampFitFurDogs.Domain.Customers;
+
+namespace CampFitFurDogs.Application.Tests.Authentication;
+
+public sealed class CreateSessionCookieStepTests
 {
-    public sealed class CreateSessionCookieStepTests
+    // ------------------------------------------------------------
+    // Fake token service
+    // ------------------------------------------------------------
+    private sealed class FakeTokenService : ISessionTokenService
     {
-        private static AuthCallbackContext ContextWithCustomerId(Guid id) =>
-            new AuthCallbackContext("dummy-code")
-            {
-                CustomerId = id
-            };
-
-        private static CreateSessionCookieStep CreateStep() => new CreateSessionCookieStep();
-
-        // ------------------------------------------------------------
-        // SUCCESSFUL RESULT CREATION
-        // ------------------------------------------------------------
-        [Fact]
-        public async Task Sets_result_to_success_with_customer_id()
+        public GeneratedSessionToken Generate()
         {
-            var customerId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-            var ctx = ContextWithCustomerId(customerId);
+            // Deterministic plaintext token (64 hex chars)
+            var plaintext =
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
-            var step = CreateStep();
+            // Deterministic hash (64 hex chars)
+            var hash = SessionTokenHash.From(
+                "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            );
 
-            await step.ExecuteAsync(ctx, CancellationToken.None);
-
-            ctx.Result.Should().NotBeNull();
-            ctx.Result!.CustomerId.Should().Be(customerId);
-            ctx.Result.SessionCookie.Should().Be($"cfd.session={customerId}");
-            ctx.Result.RedirectUrl.Should().Be("");
+            return new GeneratedSessionToken(
+                PlaintextToken: plaintext,
+                Hash: hash
+            );
         }
+    }
 
-        // ------------------------------------------------------------
-        // NULL CUSTOMER ID → NULL REFERENCE EXCEPTION
-        // ------------------------------------------------------------
-        [Fact]
-        public async Task Null_customer_id_throws_InvalidOperationException()
-        {
-            var ctx = new AuthCallbackContext("dummy-code")
-            {
-                CustomerId = null
-            };
+    // ------------------------------------------------------------
+    // 1. SUCCESSFUL TOKEN HASH + COOKIE GENERATION
+    // ------------------------------------------------------------
+    [Fact]
+    public async Task Generates_token_hash_and_cookie()
+    {
+        var customerId = Guid.NewGuid();
 
-            var step = new CreateSessionCookieStep();
+        var ctx = new AuthCallbackContext(
+            Code: "code",
+            CustomerId: customerId,
+            TokenHash: SessionTokenHash.From(
+                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            ),
+            Session: null
+        );
 
-            var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
+        var step = new IssueCookieStep(new FakeTokenService());
 
-            await act.Should().ThrowAsync<InvalidOperationException>();
-        }
+        var updated = await step.ExecuteAsync(ctx, CancellationToken.None);
+
+        // TokenHash is overwritten with the generated hash
+        updated.TokenHash.Should().NotBeNull();
+        updated.TokenHash!.Value.Should().Be(
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        );
+
+        // Session is not created here
+        updated.Session.Should().BeNull();
+
+        // Cookie is correct
+        updated.SessionCookie.Should().NotBeNull();
+        updated.SessionCookie!.Name.Should().Be("cfd.session");
+        updated.SessionCookie!.Value.Should().Be(
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        );
+    }
+
+    // ------------------------------------------------------------
+    // 2. DOES NOT REQUIRE EXISTING SESSION
+    // ------------------------------------------------------------
+    [Fact]
+    public async Task Does_not_require_existing_session()
+    {
+        var ctx = new AuthCallbackContext(
+            Code: "code",
+            CustomerId: Guid.NewGuid()
+        );
+
+        var step = new IssueCookieStep(new FakeTokenService());
+
+        var act = () => step.ExecuteAsync(ctx, CancellationToken.None);
+
+        await act.Should().NotThrowAsync<InvalidOperationException>();
     }
 }

@@ -1,20 +1,28 @@
-using Microsoft.Extensions.Options;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
-
-namespace CampFitFurDogs.Application.Authentication.Steps;
+using Microsoft.Extensions.Options;
 
 public sealed class BuildRedirectStep : IAuthCallbackStep
 {
-    private readonly OidcOptions _options;
+    private readonly string _redirectUrl;
+
+    public AuthCallbackStepMetadata Metadata =>
+        new("BuildRedirect", "Build Redirect");
 
     public BuildRedirectStep(IOptions<OidcOptions> options)
     {
-        _options = options.Value;
+        _redirectUrl = options.Value.PostLoginRedirectUrl
+            ?? throw new InvalidOperationException("PostLoginRedirectUrl must be configured.");
     }
 
-    public Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public bool CanExecute(AuthCallbackContext ctx)
+        => ctx.SessionCookie is not null && ctx.Session is not null;
+
+    public Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
-        ctx.Result = ctx.Result!.WithRedirect(_options.PostLoginRedirectUrl);
-        return Task.CompletedTask;
+        ctx.RequireSessionCookie();
+        ctx.RequireSession();
+
+        return Task.FromResult(ctx with { RedirectUrl = _redirectUrl });
     }
 }

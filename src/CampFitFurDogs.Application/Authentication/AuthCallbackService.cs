@@ -1,5 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Application.Authentication.Steps;
+using CampFitFurDogs.Application.Abstractions.Time;
+using CampFitFurDogs.Domain.Customers;
+
 namespace CampFitFurDogs.Application.Authentication;
 
 /// <summary>
@@ -8,11 +10,18 @@ namespace CampFitFurDogs.Application.Authentication;
 /// </summary>
 public sealed class AuthCallbackService : IAuthCallbackService
 {
-    private readonly IEnumerable<IAuthCallbackStep> _steps;
+    private readonly AuthCallbackExecutor _executor;
+    private readonly ISystemClock _clock;
 
-    public AuthCallbackService(IEnumerable<IAuthCallbackStep> steps)
+    public AuthCallbackService(AuthCallbackExecutor executor)
+        : this(executor, new DefaultSystemClock())
     {
-        _steps = steps;
+    }
+
+    public AuthCallbackService(AuthCallbackExecutor executor, ISystemClock clock)
+    {
+        _executor = executor;
+        _clock = clock;
     }
 
     public async Task<AuthCallbackResult> HandleAsync(string code, CancellationToken ct)
@@ -20,11 +29,25 @@ public sealed class AuthCallbackService : IAuthCallbackService
         if (string.IsNullOrWhiteSpace(code))
             throw new AuthCallbackException(AuthCallbackError.MissingAuthorizationCode);
 
-        var ctx = new AuthCallbackContext(code);
+        var ctx = new AuthCallbackContext(code, Now: _clock.UtcNow);
 
-        foreach (var step in _steps)
-            await step.ExecuteAsync(ctx, ct);
+        await _executor.ExecuteAsync(ctx, ct);
 
-        return ctx.Result!;
+        ctx.RequireCustomerId();
+        ctx.RequireSession();
+        ctx.RequireSessionCookie();
+        ctx.RequireRedirectUrl();
+
+        return new AuthCallbackResult(
+            CustomerId.From(ctx.CustomerId!.Value),
+            ctx.SessionCookie!,
+            ctx.RedirectUrl!
+        );
+
+    }
+
+    private sealed class DefaultSystemClock : ISystemClock
+    {
+        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
     }
 }
