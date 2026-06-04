@@ -1,10 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
 using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Application.Authentication;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
-using CampFitFurDogs.Application.Authentication.Steps
-
-;
+using CampFitFurDogs.Application.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application;
 

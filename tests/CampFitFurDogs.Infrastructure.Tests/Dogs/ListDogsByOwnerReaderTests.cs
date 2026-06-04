@@ -1,4 +1,3 @@
-using FluentAssertions;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Customers;
@@ -6,6 +5,7 @@ using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Infrastructure.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using FluentAssertions;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 

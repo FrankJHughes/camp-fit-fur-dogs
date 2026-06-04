@@ -1,6 +1,4 @@
-using FluentAssertions;
 using Frank.Events;
-using Xunit;
 
 namespace Frank.Tests.Events;
 

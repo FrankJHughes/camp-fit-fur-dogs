@@ -1,5 +1,3 @@
-using System;
-
 namespace CampFitFurDogs.Application.Abstractions.Authentication;
 
 public sealed class AuthCallbackException : Exception

@@ -1,10 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Application.Authentication;
 using CampFitFurDogs.Application.Authentication.Steps
 
 ;
 using CampFitFurDogs.Domain.Authentication.Sessions;
-using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Application.Tests.Authentication;
 

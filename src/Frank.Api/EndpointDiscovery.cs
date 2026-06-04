@@ -1,6 +1,6 @@
+using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.AspNetCore.Routing;
-using System.Collections.Concurrent;
 
 namespace Frank.Api;
 

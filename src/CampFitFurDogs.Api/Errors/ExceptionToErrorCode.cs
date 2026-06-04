@@ -1,8 +1,8 @@
+using CampFitFurDogs.Application.Abstractions.Authentication;
+using CampFitFurDogs.Domain.Customers.Exceptions;
+using CampFitFurDogs.Domain.Errors;
 using FluentValidation;
 using Frank.Domain;
-using CampFitFurDogs.Domain.Errors;
-using CampFitFurDogs.Domain.Customers.Exceptions;
-using CampFitFurDogs.Application.Abstractions.Authentication;
 
 namespace CampFitFurDogs.Api.Errors;
 

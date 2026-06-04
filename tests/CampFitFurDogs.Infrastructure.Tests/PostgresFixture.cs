@@ -1,6 +1,6 @@
+using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
-using CampFitFurDogs.Infrastructure.Data;
 
 namespace CampFitFurDogs.Infrastructure.Tests;
 

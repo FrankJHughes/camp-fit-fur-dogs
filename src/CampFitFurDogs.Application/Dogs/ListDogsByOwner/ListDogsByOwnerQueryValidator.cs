@@ -1,6 +1,6 @@
+using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using FluentValidation;
 using Frank.Abstractions;
-using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 
 namespace CampFitFurDogs.Application.Dogs.ListDogsByOwner;
 

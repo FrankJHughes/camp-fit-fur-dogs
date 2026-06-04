@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Frank.Domain;
 
 public abstract class AggregateId : ValueObject

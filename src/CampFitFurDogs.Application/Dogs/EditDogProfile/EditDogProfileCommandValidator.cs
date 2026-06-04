@@ -1,6 +1,6 @@
-using FluentValidation;
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Domain.Dogs;
+using FluentValidation;
 
 namespace CampFitFurDogs.Application.Dogs.EditDogProfile;
 

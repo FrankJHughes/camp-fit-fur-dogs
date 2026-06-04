@@ -1,6 +1,5 @@
-using FluentAssertions;
-using CampFitFurDogs.Api.Tests;
 using CampFitFurDogs.Api.Tests.Fixtures;
+using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -8,7 +7,7 @@ public class NoManualHandlerRegistrationGuardrailTests
     : ApiTestBase
 {
     public NoManualHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture){ }
+        : base(factory, fixture) { }
 
     [Fact]
     public void Should_Not_Have_Manual_Handler_Registrations()

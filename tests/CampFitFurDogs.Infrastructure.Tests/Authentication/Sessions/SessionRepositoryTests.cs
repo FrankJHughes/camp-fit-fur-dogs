@@ -1,12 +1,11 @@
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Infrastructure.Authentication.Sessions;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Authentication.Sessions;
 

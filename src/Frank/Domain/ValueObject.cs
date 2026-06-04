@@ -1,5 +1,3 @@
-using System.Numerics;
-
 namespace Frank.Domain;
 
 public abstract class ValueObject

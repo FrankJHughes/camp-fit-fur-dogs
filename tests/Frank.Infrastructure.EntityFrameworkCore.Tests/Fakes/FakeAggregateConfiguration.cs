@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Frank.Infrastructure.EntityFrameworkCore.Configurations;
-using Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
 

@@ -1,13 +1,11 @@
-using FluentValidation;
-
-using Frank.Api;
-using Frank.Api.Hosting;
-using Frank.DependencyInjection;
-
 using CampFitFurDogs.Api.Errors;
 using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
+using FluentValidation;
+using Frank.Api;
+using Frank.Api.Hosting;
+using Frank.DependencyInjection;
 
 // AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
 // {

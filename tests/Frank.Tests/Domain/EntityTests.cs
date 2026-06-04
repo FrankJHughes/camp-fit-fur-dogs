@@ -1,5 +1,3 @@
-using Frank.Tests.Fakes;
-
 namespace Frank.Tests.Domain;
 
 public sealed partial class EntityTests

@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace CampFitFurDogs.Api.Tests.Fixtures;
 
 [CollectionDefinition("api")]

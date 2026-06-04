@@ -1,6 +1,4 @@
-using FluentAssertions;
 using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using CampFitFurDogs.Domain.Customers.Exceptions;
 
 namespace CampFitFurDogs.Domain.Tests.Customers;

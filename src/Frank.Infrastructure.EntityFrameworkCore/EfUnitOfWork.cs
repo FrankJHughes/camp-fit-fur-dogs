@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Frank.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Frank.Infrastructure.EntityFrameworkCore;
 

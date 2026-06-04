@@ -1,7 +1,7 @@
 using FluentAssertions;
+using Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
 using Xunit;
 
 namespace Frank.Infrastructure.EntityFrameworkCore.Tests.ModelConfiguration;

@@ -1,8 +1,8 @@
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Frank.Abstractions;
 using Frank.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Infrastructure.EntityFrameworkCore;
 

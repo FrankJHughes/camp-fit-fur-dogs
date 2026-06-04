@@ -1,7 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
-using Frank.Abstractions;
-
 namespace Frank.Tests.Fakes;
 
 public sealed class FakeCommandHandler : ICommandHandler<FakeCommand, FakeResponse>

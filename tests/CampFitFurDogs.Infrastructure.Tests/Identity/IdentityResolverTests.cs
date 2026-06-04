@@ -1,13 +1,13 @@
-using Microsoft.Extensions.DependencyInjection;
-using Frank;
-using Frank.Abstractions;
-using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
-using CampFitFurDogs.Infrastructure.Tests.Fakes;
+using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
+using CampFitFurDogs.Application.Abstractions.Identity;
 using CampFitFurDogs.Domain.Customers.Exceptions;
 using CampFitFurDogs.Infrastructure.Identity.Oidc;
-using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Application.Abstractions.Identity;
+using CampFitFurDogs.Infrastructure.Tests.Fakes;
+using Frank;
+using Frank.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.Identity;
 

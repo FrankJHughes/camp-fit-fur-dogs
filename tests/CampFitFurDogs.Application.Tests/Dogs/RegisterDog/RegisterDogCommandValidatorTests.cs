@@ -1,8 +1,5 @@
-using FluentAssertions;
-using FluentValidation;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
-
 using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;

@@ -1,17 +1,14 @@
-using System.Linq;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Infrastructure.Data;
-
 using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.Infrastructure.Data;
+using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
 public class TestcontainersGuardrailTests : ApiTestBase
 {
     public TestcontainersGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture){ }
+        : base(factory, fixture) { }
 
     [Fact]
     public async Task Database_ShouldBeReachable()

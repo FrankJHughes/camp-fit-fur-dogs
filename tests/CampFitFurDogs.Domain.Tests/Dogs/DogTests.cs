@@ -1,4 +1,3 @@
-using FluentAssertions;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 

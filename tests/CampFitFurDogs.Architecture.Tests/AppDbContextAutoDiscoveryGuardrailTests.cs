@@ -1,7 +1,7 @@
 using System.Reflection;
+using CampFitFurDogs.Infrastructure.Data;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using CampFitFurDogs.Infrastructure.Data;
 
 namespace CampFitFurDogs.Architecture.Tests;
 

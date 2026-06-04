@@ -1,5 +1,3 @@
-using Frank.Abstractions;
-
 namespace Frank.Tests.Fakes;
 
 public sealed class TrackingCommandHandler<TCommand, TResponse>

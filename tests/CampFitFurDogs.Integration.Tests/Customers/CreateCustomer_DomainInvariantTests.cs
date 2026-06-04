@@ -1,7 +1,3 @@
-using System.Net;
-using System.Net.Http.Json;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using CampFitFurDogs.Integration.Tests.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;

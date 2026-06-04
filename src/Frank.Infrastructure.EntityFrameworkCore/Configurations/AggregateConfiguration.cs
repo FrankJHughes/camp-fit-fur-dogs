@@ -1,6 +1,6 @@
+using Frank.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Frank.Domain;
 
 namespace Frank.Infrastructure.EntityFrameworkCore.Configurations;
 

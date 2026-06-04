@@ -1,12 +1,11 @@
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.Infrastructure.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 

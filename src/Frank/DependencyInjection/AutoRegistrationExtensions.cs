@@ -1,6 +1,6 @@
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Frank.DependencyInjection.AutoRegistration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.DependencyInjection;
 

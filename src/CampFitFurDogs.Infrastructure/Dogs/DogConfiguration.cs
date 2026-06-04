@@ -1,10 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-using Frank.Infrastructure.EntityFrameworkCore.Configurations;
-
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
+using Frank.Infrastructure.EntityFrameworkCore.Configurations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;
 

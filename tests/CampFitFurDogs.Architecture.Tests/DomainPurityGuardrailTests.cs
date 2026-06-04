@@ -1,5 +1,5 @@
-using FluentAssertions;
 using System.Reflection;
+using FluentAssertions;
 
 namespace CampFitFurDogs.Architecture.Tests;
 

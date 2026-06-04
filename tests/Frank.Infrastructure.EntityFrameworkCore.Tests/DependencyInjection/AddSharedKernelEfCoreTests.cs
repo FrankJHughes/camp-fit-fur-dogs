@@ -1,9 +1,8 @@
 using FluentAssertions;
+using Frank.Abstractions;
+using Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Frank.Abstractions;
-using Frank.Infrastructure.EntityFrameworkCore;
-using Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
 using Xunit;
 
 namespace Frank.Infrastructure.EntityFrameworkCore.Tests.DependencyInjection;

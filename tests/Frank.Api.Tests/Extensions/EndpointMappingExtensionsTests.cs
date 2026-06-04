@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Frank.Api;
 using Frank.Api.Tests.Fakes;
 using Xunit;
 

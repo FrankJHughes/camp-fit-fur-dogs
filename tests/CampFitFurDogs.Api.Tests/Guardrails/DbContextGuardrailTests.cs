@@ -1,10 +1,8 @@
-using System.Linq;
+using CampFitFurDogs.Api.Tests.Fixtures;
 using CampFitFurDogs.Infrastructure.Data;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
-using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -12,7 +10,7 @@ public class DbContextGuardrailTests
     : ApiTestBase
 {
     public DbContextGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture){ }
+        : base(factory, fixture) { }
 
     [Fact]
     public void ShouldUseNpgsqlProvider()

@@ -1,5 +1,5 @@
-using Frank.Domain;
 using CampFitFurDogs.Domain.Authentication.Sessions.Errors;
+using Frank.Domain;
 
 namespace CampFitFurDogs.Domain.Authentication.Sessions;
 

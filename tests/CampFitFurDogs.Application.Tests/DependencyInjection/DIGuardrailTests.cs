@@ -1,9 +1,6 @@
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
-
-using Frank.DependencyInjection;
 using System.Reflection;
+using Frank.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 

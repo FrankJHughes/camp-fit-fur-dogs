@@ -1,9 +1,6 @@
-using System;
-using System.Threading.Tasks;
+using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Infrastructure.Data;
-using Xunit;
 
 namespace CampFitFurDogs.Infrastructure.IntegrationTests.Fixtures;
 

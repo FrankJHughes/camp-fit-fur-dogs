@@ -1,7 +1,6 @@
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-
 using Frank.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank;
 

@@ -1,10 +1,9 @@
-using FluentValidation;
-using Microsoft.AspNetCore.Builder;
-using Frank.Abstractions;
-using Frank.Api;
 using CampFitFurDogs.Api.Validation;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
+using FluentValidation;
+using Frank.Abstractions;
+using Frank.Api;
 
 namespace CampFitFurDogs.Api.Customers;
 

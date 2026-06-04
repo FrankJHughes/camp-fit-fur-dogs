@@ -1,6 +1,5 @@
 using System.IO.Compression;
 using System.Net;
-using System.Text;
 using CampFitFurDogs.Api.Hosting;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;

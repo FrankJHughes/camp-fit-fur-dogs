@@ -1,10 +1,6 @@
-using System.Reflection;
-using FluentAssertions;
-using Frank.Domain;
-using Frank.Abstractions;
-using Frank.Events;
-
 using CampFitFurDogs.Api.Tests.Fixtures;
+using FluentAssertions;
+using Frank.Events;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 

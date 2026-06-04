@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Builder;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Abstractions;
 using Frank.Api;

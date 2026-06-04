@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Frank.Tests.Fakes;
 
 public sealed class FakeServiceProvider : IServiceProvider

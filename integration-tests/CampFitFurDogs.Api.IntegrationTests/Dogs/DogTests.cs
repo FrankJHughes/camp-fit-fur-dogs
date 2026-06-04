@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Xunit;
 
 namespace CampFitFurDogs.Api.IntegrationTests.Dogs;
 

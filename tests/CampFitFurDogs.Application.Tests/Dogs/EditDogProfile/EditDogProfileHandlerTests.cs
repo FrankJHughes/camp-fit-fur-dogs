@@ -1,13 +1,10 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Tests.Fakes;
-
-using CampFitFurDogs.TestUtilities.Builders;
-using CampFitFurDogs.TestUtilities.Fixtures;
-
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
-using FluentAssertions;
+using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.EditDogProfile;
 

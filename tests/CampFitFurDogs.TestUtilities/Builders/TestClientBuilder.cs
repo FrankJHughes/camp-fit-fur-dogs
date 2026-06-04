@@ -1,14 +1,13 @@
+using CampFitFurDogs.Application.Abstractions.Audit;
+using CampFitFurDogs.Application.Abstractions.Authentication;
+using CampFitFurDogs.Application.Abstractions.Identity;
+using CampFitFurDogs.Infrastructure.Identity.Oidc;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fakes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Infrastructure.Identity.Oidc;
-using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fakes;
-using CampFitFurDogs.Application.Abstractions.Audit;
-using CampFitFurDogs.Application.Abstractions.Identity;
 
 namespace CampFitFurDogs.TestUtilities.Builders;
 

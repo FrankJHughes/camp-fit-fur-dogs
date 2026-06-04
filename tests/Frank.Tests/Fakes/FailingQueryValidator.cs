@@ -1,5 +1,3 @@
-using FluentValidation;
-
 namespace Frank.Tests.Fakes;
 
 public sealed class FailingQueryValidator<T> : AbstractValidator<T>

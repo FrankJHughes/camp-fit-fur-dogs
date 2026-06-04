@@ -1,5 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using Frank.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank;
 

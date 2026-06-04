@@ -1,7 +1,5 @@
-using FluentAssertions;
 using Frank.Events;
 using Frank.Tests.Fakes;
-using Xunit;
 
 namespace Frank.Tests.Events;
 

@@ -1,6 +1,6 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Builder;
 using Frank.Api.Hosting;
+using Microsoft.AspNetCore.Builder;
 using Xunit;
 
 namespace Frank.Api.Tests.Hosting;

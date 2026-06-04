@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using CampFitFurDogs.Application.Abstractions.Audit;
 using Microsoft.Extensions.Logging;
 
