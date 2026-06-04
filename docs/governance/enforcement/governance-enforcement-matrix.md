@@ -15,7 +15,7 @@ This matrix defines **who is accountable for each enforcement area**.
 - **REV** — Reviewers  
 - **CI** — Continuous Integration  
 - **SCR** — Scripts & Automation  
-- **SK** — SharedKernel Guardrails  
+- **SK** — Frank Guardrails  
 - **OPS** — Operations / Hosting Providers  
 
 Guided links point to the relevant governance area for deeper review.
@@ -71,7 +71,7 @@ Guided links point to the relevant governance area for deeper review.
 - Enforce CI dependency graph correctness  
 - Support operational safety (e.g., teardown probes, readiness probes)  
 
-## SharedKernel Guardrails (SK)
+## Frank Guardrails (SK)
 - Enforce architectural boundaries  
 - Enforce layering rules  
 - Enforce endpoint discovery rules  
@@ -112,7 +112,7 @@ Guided links point to the relevant governance area for deeper review.
 - **CI** uses it to validate structural rules  
 - **Product Owner** uses it to approve governance changes  
 - **Scripts** use it to enforce deterministic behavior  
-- **SharedKernel** uses it to enforce architectural guardrails  
+- **Frank** uses it to enforce architectural guardrails  
 - **Operations** uses it to enforce hosting and configuration safety  
 
 This matrix ensures **every governance rule has a clear enforcement owner**.
@@ -128,7 +128,7 @@ The Governance Enforcement Matrix ensures:
 - CI and scripts enforce structural rules  
 - Reviewers enforce boundaries and hygiene  
 - Product Owner maintains strategic control  
-- SharedKernel enforces architecture  
+- Frank enforces architecture  
 - Operations enforces hosting and configuration safety  
 
 Governance defines the rules.  

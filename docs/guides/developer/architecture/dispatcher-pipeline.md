@@ -38,7 +38,7 @@ public interface IQueryDispatcher
 
 These abstractions live in Application and are consumed by API endpoints and other application services.
 
-Handlers, validators, and dispatchers are registered via SharedKernel’s **[Auto‑Registration](ca://s?q=Open_dependency_injection_architecture)** system.
+Handlers, validators, and dispatchers are registered via Frank’s **[Auto‑Registration](ca://s?q=Open_dependency_injection_architecture)** system.
 
 ---
 
@@ -60,7 +60,7 @@ Validation is a pipeline concern — not a handler concern.
 ## 3.2 Handler Resolution
 
 - Resolve `ICommandHandler<TCommand, TResult>` via `[AutoRegister]`  
-- Ensure exactly one handler exists (enforced by SharedKernel guardrails)  
+- Ensure exactly one handler exists (enforced by Frank guardrails)  
 - Handlers must not be invoked directly by endpoints  
 
 ---

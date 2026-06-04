@@ -1,5 +1,5 @@
 using FluentAssertions;
-using SharedKernel.Abstractions;
+using Frank.Abstractions;
 
 using CampFitFurDogs.Api.Tests.Fixtures;
 

@@ -12,7 +12,7 @@ public class QueryHandlerIsolationGuardrailTests
     public void Query_handlers_should_not_depend_on_repository_interfaces()
     {
         var queryHandlerInterface = typeof(
-            SharedKernel.Abstractions.IQueryHandler<,>);
+            Frank.Abstractions.IQueryHandler<,>);
 
         var violations = ApplicationAssembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface

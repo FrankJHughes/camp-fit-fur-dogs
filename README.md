@@ -67,7 +67,7 @@ camp-fit-fur-dogs/
 |   +-- CampFitFurDogs.Application/
 |   +-- CampFitFurDogs.Domain/
 |   +-- CampFitFurDogs.Infrastructure/
-|   +-- SharedKernel/
+|   +-- Frank/
 |
 +-- tests/                      # Mirror of src/ for unit tests
 |
@@ -134,7 +134,7 @@ camp-fit-fur-dogs/
 This repository demonstrates:
 
 - **Story-first product design** with emotional safety guarantees
-- **DDD layered architecture** with SharedKernel, Domain, Application, Infrastructure, API
+- **DDD layered architecture** with Frank, Domain, Application, Infrastructure, API
 - **Deterministic CI/CD** with GitHub Actions
 - **Explicit merge governance** with branch protection and CODEOWNERS
 - **Reproducible developer onboarding** via devcontainer and bootstrap scripts

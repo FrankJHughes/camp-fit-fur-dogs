@@ -1,7 +1,7 @@
 # Multi-Product Governance
 
 This document defines how multiple products coexist within the repository.  
-Camp Fit Fur Dogs and Frank (SharedKernel) are **independent products** with shared infrastructure but separate lifecycles, boundaries, and governance.
+Camp Fit Fur Dogs and Frank (Frank) are **independent products** with shared infrastructure but separate lifecycles, boundaries, and governance.
 
 This governance ensures:
 
@@ -23,7 +23,7 @@ The customer-facing application consisting of:
 - Product-specific domain logic  
 - Booking, customer, and operational features  
 
-## Frank (SharedKernel)
+## Frank (Frank)
 A standalone product providing:
 
 - Domain primitives  
@@ -46,7 +46,7 @@ Frank is not a folder — it is a **product** with its own:
 - Versioning  
 - Release cycle  
 
-SharedKernel must remain product‑agnostic and must not depend on Camp Fit Fur Dogs.
+Frank must remain product‑agnostic and must not depend on Camp Fit Fur Dogs.
 
 ---
 
@@ -55,7 +55,7 @@ SharedKernel must remain product‑agnostic and must not depend on Camp Fit Fur 
 The dependency graph must always follow:
 
 ```
-Camp Fit Fur Dogs → Frank (SharedKernel)
+Camp Fit Fur Dogs → Frank (Frank)
 ```
 
 Prohibited:
@@ -64,16 +64,16 @@ Prohibited:
 - Frontend → Backend internals  
 - Backend → Frontend  
 - Any product → Another product’s domain model  
-- SharedKernel → product-specific abstractions  
-- Manual DI registration of SharedKernel services in Camp Fit Fur Dogs  
+- Frank → product-specific abstractions  
+- Manual DI registration of Frank services in Camp Fit Fur Dogs  
 
 Allowed:
 
-- Backend → SharedKernel  
+- Backend → Frank  
 - Frontend → Backend API surface  
 - Backend → Frontend only through HTTP responses  
 
-This ensures SharedKernel remains clean, reusable, and product-agnostic.
+This ensures Frank remains clean, reusable, and product-agnostic.
 
 ---
 
@@ -82,15 +82,15 @@ This ensures SharedKernel remains clean, reusable, and product-agnostic.
 Each product maintains its own changelog:
 
 - `CHANGELOG.md` in the root for Camp Fit Fur Dogs  
-- `CHANGELOG.md` inside the SharedKernel project for Frank  
+- `CHANGELOG.md` inside the Frank project for Frank  
 
 Rules:
 
 - A change affecting both products requires entries in both changelogs  
-- A SharedKernel change must never appear in the Camp Fit Fur Dogs changelog  
-- A Camp Fit Fur Dogs change must never appear in the SharedKernel changelog  
+- A Frank change must never appear in the Camp Fit Fur Dogs changelog  
+- A Camp Fit Fur Dogs change must never appear in the Frank changelog  
 - Version numbers are independent  
-- SharedKernel breaking changes require a major version bump  
+- Frank breaking changes require a major version bump  
 
 Cross-product drift is prohibited.
 
@@ -136,11 +136,11 @@ Each product has its own backlog:
 Rules:
 
 - Stories must not mix concerns from both products  
-- SharedKernel stories must not reference Camp Fit Fur Dogs behavior  
-- Camp Fit Fur Dogs stories must not reference SharedKernel internals  
+- Frank stories must not reference Camp Fit Fur Dogs behavior  
+- Camp Fit Fur Dogs stories must not reference Frank internals  
 - Dependencies must not cross product boundaries except:  
-  - Camp Fit Fur Dogs may depend on SharedKernel stories  
-  - SharedKernel may not depend on Camp Fit Fur Dogs stories  
+  - Camp Fit Fur Dogs may depend on Frank stories  
+  - Frank may not depend on Camp Fit Fur Dogs stories  
 
 ---
 
@@ -150,17 +150,17 @@ CI must treat products independently:
 
 - Backend tests run for backend changes  
 - Frontend tests run for frontend changes  
-- SharedKernel tests run for SharedKernel changes  
+- Frank tests run for Frank changes  
 - Infra changes run all suites  
 - Docs-only changes run none  
 
-SharedKernel changes must trigger:
+Frank changes must trigger:
 
-- SharedKernel tests  
-- Backend tests (because backend depends on SharedKernel)  
-- Frontend tests (because SharedKernel affects endpoint discovery and DI)  
+- Frank tests  
+- Backend tests (because backend depends on Frank)  
+- Frontend tests (because Frank affects endpoint discovery and DI)  
 
-Camp Fit Fur Dogs changes must not trigger SharedKernel tests.
+Camp Fit Fur Dogs changes must not trigger Frank tests.
 
 ---
 
@@ -176,18 +176,18 @@ Camp Fit Fur Dogs release:
 
 Frank release:
 
-- Version bump in SharedKernel `CHANGELOG.md`  
+- Version bump in Frank `CHANGELOG.md`  
 - NuGet package version bump (future)  
 - Release notes referencing story IDs  
 
 Rules:
 
-- A SharedKernel release must not require a Camp Fit Fur Dogs release  
-- A Camp Fit Fur Dogs release must not require a SharedKernel release  
-- Breaking changes in SharedKernel require a major version bump  
-- SharedKernel releases must maintain DI compatibility  
-- SharedKernel releases must maintain EF Core configuration compatibility  
-- SharedKernel releases must maintain hosting provider compatibility  
+- A Frank release must not require a Camp Fit Fur Dogs release  
+- A Camp Fit Fur Dogs release must not require a Frank release  
+- Breaking changes in Frank require a major version bump  
+- Frank releases must maintain DI compatibility  
+- Frank releases must maintain EF Core configuration compatibility  
+- Frank releases must maintain hosting provider compatibility  
 
 ---
 
@@ -197,10 +197,10 @@ Documentation must:
 
 - Clearly distinguish product boundaries  
 - Avoid mixing product-specific rules  
-- Reference SharedKernel only where appropriate  
-- Avoid duplicating SharedKernel documentation in product docs  
+- Reference Frank only where appropriate  
+- Avoid duplicating Frank documentation in product docs  
 
-SharedKernel documentation lives with SharedKernel.  
+Frank documentation lives with Frank.  
 Camp Fit Fur Dogs documentation lives under `docs/`.  
 Canonical conventions live under `docs/conventions/`.
 
@@ -215,7 +215,7 @@ Guides must not mix product boundaries.
 - Scripts enforce metadata correctness  
 - Product Owner enforces milestone separation  
 - Architecture tests enforce layer boundaries  
-- SharedKernel guardrails enforce DI and hosting provider correctness  
+- Frank guardrails enforce DI and hosting provider correctness  
 
 No PR may merge if:
 
@@ -223,5 +223,5 @@ No PR may merge if:
 - A dependency direction is reversed  
 - A changelog entry is placed in the wrong product  
 - A story mixes concerns from multiple products  
-- SharedKernel is polluted with product-specific logic  
-- Camp Fit Fur Dogs bypasses SharedKernel DI or hosting provider infrastructure
+- Frank is polluted with product-specific logic  
+- Camp Fit Fur Dogs bypasses Frank DI or hosting provider infrastructure

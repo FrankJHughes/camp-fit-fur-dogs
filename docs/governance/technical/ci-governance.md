@@ -41,7 +41,7 @@ Paths:
 Triggers:
 
 - Backend tests  
-- SharedKernel tests (because backend depends on SharedKernel)  
+- Frank tests (because backend depends on Frank)  
 - Integration tests (colocated inside backend job)
 
 ## Frontend Zone
@@ -53,19 +53,19 @@ Triggers:
 
 - Frontend tests only
 
-## SharedKernel Zone
+## Frank Zone
 Paths:
 
-- `src/SharedKernel/**`  
-- `tests/SharedKernel.*/**`
+- `src/Frank/**`  
+- `tests/Frank.*/**`
 
 Triggers:
 
-- SharedKernel tests  
-- Backend tests (because backend depends on SharedKernel)  
-- Frontend tests (because SharedKernel affects endpoint discovery and DI)
+- Frank tests  
+- Backend tests (because backend depends on Frank)  
+- Frontend tests (because Frank affects endpoint discovery and DI)
 
-SharedKernel tests validate:
+Frank tests validate:
 
 - Auto‑registration engine  
 - `[AutoRegister]` attribute behavior  
@@ -109,9 +109,9 @@ Docs-only changes must not trigger any test jobs.
 ## 3.1 Pull Requests
 PRs use path-based filtering:
 
-- Backend-only changes → backend + SharedKernel tests  
+- Backend-only changes → backend + Frank tests  
 - Frontend-only changes → frontend tests  
-- SharedKernel changes → SharedKernel + backend tests  
+- Frank changes → Frank + backend tests  
 - Infra changes → all tests  
 - Docs-only changes → no tests  
 
@@ -122,7 +122,7 @@ Merges to `main` always run:
 
 - Backend tests  
 - Frontend tests  
-- SharedKernel tests  
+- Frank tests  
 
 No skipping is allowed on the default branch.
 
@@ -163,9 +163,9 @@ Suites:
 
 - **Backend** — domain, application, infrastructure, endpoint tests, integration tests  
 - **Frontend** — Vitest + React Testing Library  
-- **SharedKernel** — primitives, dispatchers, validators, guardrails, DI auto‑registration, EF Core scanning  
+- **Frank** — primitives, dispatchers, validators, guardrails, DI auto‑registration, EF Core scanning  
 
-SharedKernel failures block backend merges.
+Frank failures block backend merges.
 
 ---
 

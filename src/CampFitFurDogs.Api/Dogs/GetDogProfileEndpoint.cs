@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
-using SharedKernel.Abstractions;
-using SharedKernel.Api;
+using Frank.Abstractions;
+using Frank.Api;
 
 namespace CampFitFurDogs.Api.Dogs;
 

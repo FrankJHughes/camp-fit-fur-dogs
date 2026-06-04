@@ -1,4 +1,4 @@
-using SharedKernel.Abstractions;
+using Frank.Abstractions;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 

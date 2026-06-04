@@ -14,7 +14,7 @@ Copilot must also respect the governance enforcement system:
 - **[Governance Enforcement Checklist](ca://s?q=Open_governance_enforcement_checklist)**
 - **[Governance Enforcement Matrix](ca://s?q=Open_governance_enforcement_matrix)**
 
-These documents define *how governance is enforced* across roles, CI, scripts, and SharedKernel.
+These documents define *how governance is enforced* across roles, CI, scripts, and Frank.
 
 ---
 

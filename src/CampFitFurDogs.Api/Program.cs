@@ -1,16 +1,13 @@
 using FluentValidation;
 
-using SharedKernel.Api;
-using SharedKernel.Api.Hosting;
-using SharedKernel.DependencyInjection;
+using Frank.Api;
+using Frank.Api.Hosting;
+using Frank.DependencyInjection;
 
 using CampFitFurDogs.Api.Errors;
 using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
-
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 
 // AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
 // {
@@ -58,9 +55,9 @@ builder.Services.AddAuthentication("Cookies")
 builder.Services.AddAuthorization();
 
 // ────────────────────────────────────────────────────────────────
-// SharedKernel, Application, Infrastructure, API
+// Frank, Application, Infrastructure, API
 // ────────────────────────────────────────────────────────────────
-builder.Services.AddSharedKernel([
+builder.Services.AddFrank([
     typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,

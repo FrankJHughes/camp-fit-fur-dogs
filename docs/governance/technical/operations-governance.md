@@ -53,7 +53,7 @@ Governance rules:
 - Hosting must not expose internal ports or services  
 - Hosting providers must be **hardened** and must **abort startup** if configuration cannot be applied  
 - Hosting provider selection must follow **first‑active‑wins** semantics  
-- Hosting provider infrastructure must be implemented in **SharedKernel**  
+- Hosting provider infrastructure must be implemented in **Frank**  
 
 Frontend and API hosting must be independent but coordinated.
 
@@ -180,7 +180,7 @@ Hosting providers must:
 - Fail fast if configuration cannot be applied  
 - Never silently skip required configuration  
 - Never allow the API to start in an insecure or incomplete state  
-- Use SharedKernel hosting provider infrastructure  
+- Use Frank hosting provider infrastructure  
 
 ## 8.1 Render Hosting Provider Requirements
 
@@ -266,7 +266,7 @@ Operations must not:
 - Introduce undocumented infrastructure changes  
 - Allow hosting providers to run without validation  
 - Allow the API to start with missing or invalid configuration  
-- Bypass SharedKernel startup validation  
+- Bypass Frank startup validation  
 
 All operational changes must be:
 
@@ -284,7 +284,7 @@ All operational changes must be:
 - Product Owner enforces EG/LG alignment  
 - Scripts enforce deterministic behavior  
 - Hosting platforms enforce environment isolation  
-- SharedKernel enforces startup validation  
+- Frank enforces startup validation  
 - DI auto‑registration enforces service correctness  
 
 No PR may merge if it violates operational governance.

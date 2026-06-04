@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-using SharedKernel.DependencyInjection;
+using Frank.DependencyInjection;
 
 namespace CampFitFurDogs.Domain.Dogs;
 

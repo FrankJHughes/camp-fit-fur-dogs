@@ -34,9 +34,9 @@ Ensures:
 - Correct dependency graph  
 - Targeted test execution  
 - Full test coverage on `main` and nightly runs  
-- Deterministic execution of backend, frontend, and SharedKernel tests  
+- Deterministic execution of backend, frontend, and Frank tests  
 - Integration tests run as part of the backend job (current behavior)  
-- SharedKernel auto‑registration and EF Core configuration scanning are validated in CI  
+- Frank auto‑registration and EF Core configuration scanning are validated in CI  
 
 ---
 
@@ -77,14 +77,14 @@ Ensures workflow dependency graph remains correct.
 Runs when:
 
 - On `main`  
-- SharedKernel changed  
+- Frank changed  
 - Infra changed
 
 Projects:
 
-- `tests/SharedKernel.Tests`  
-- `tests/SharedKernel.Api.Tests`  
-- `tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests`
+- `tests/Frank.Tests`  
+- `tests/Frank.Api.Tests`  
+- `tests/Frank.Infrastructure.EntityFrameworkCore.Tests`
 
 Validates:
 
@@ -101,7 +101,7 @@ Runs when:
 
 - On `main`  
 - Backend changed  
-- SharedKernel changed  
+- Frank changed  
 - Infra changed
 
 Projects:
@@ -114,7 +114,7 @@ Projects:
 
 Integration tests rely on:
 
-- SharedKernel auto‑registration  
+- Frank auto‑registration  
 - Repository auto‑registration  
 - Handler auto‑registration  
 - Reader auto‑registration  
@@ -150,7 +150,7 @@ Steps:
 - Nightly full runs  
 - Script‑first logic (no complex inline shell)  
 - Integration tests colocated with backend tests until a dedicated job is introduced  
-- SharedKernel tests validate DI auto‑registration and EF Core scanning  
+- Frank tests validate DI auto‑registration and EF Core scanning  
 
 ---
 
@@ -162,7 +162,7 @@ The CI pipeline uses a **path‑based, dependency‑aware test selection model**
 
 - Backend changes impact the frontend  
 - Frontend changes do **not** impact the backend  
-- SharedKernel changes impact backend and frontend  
+- Frank changes impact backend and frontend  
 - Infrastructure changes impact all integration tests  
 - Governance changes (stories, catalog, scripts) require governance checks only  
 
@@ -172,7 +172,7 @@ The CI pipeline uses a **path‑based, dependency‑aware test selection model**
 |-------------|---------------------------------------------|--------------------------------------------|
 | Backend     | `src/**`, `tests/**`                        | Backend tests + frontend tests             |
 | Frontend    | `frontend/**`                               | Frontend tests, lint, build                |
-| SharedKernel| `src/SharedKernel/**`, `tests/SharedKernel/**` | SharedKernel tests + backend + frontend |
+| Frank| `src/Frank/**`, `tests/Frank/**` | Frank tests + backend + frontend |
 | Governance  | `product/stories/**`, `scripts/**`, `catalog.csv` | Catalog + frontmatter checks          |
 | Infra       | `docker-compose.yml`, `infrastructure/**`   | Compose validation + infra tests           |
 
@@ -359,7 +359,7 @@ API integration tests
 - Deterministic artifacts  
 - Reproducibility via scripts and documented env vars  
 - Integration tests remain inside the backend job until a dedicated job is introduced  
-- SharedKernel tests validate DI auto‑registration and EF Core scanning  
+- Frank tests validate DI auto‑registration and EF Core scanning  
 
 ---
 

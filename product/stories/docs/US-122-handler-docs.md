@@ -16,7 +16,7 @@ dependencies:
 # US-122 — US‑122 — Understand Handler Registration Through Documentation and Examples
 
 ## Intent
-_As a product engineer, I should be able to quickly understand how to define commands, queries, and handlers through clear documentation and examples, so that I can adopt SharedKernel without friction._
+_As a product engineer, I should be able to quickly understand how to define commands, queries, and handlers through clear documentation and examples, so that I can adopt Frank without friction._
 
 ## Value
 Reduces onboarding time and prevents common mistakes.

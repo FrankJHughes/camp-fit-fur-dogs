@@ -4,10 +4,10 @@
     <Project Path="src/CampFitFurDogs.Application/CampFitFurDogs.Application.csproj" />
     <Project Path="src/CampFitFurDogs.Domain/CampFitFurDogs.Domain.csproj" />
     <Project Path="src/CampFitFurDogs.Infrastructure/CampFitFurDogs.Infrastructure.csproj" />
-    <Project Path="src/SharedKernel.Infrastructure.EntityFrameworkCore/SharedKernel.Infrastructure.EntityFrameworkCore.csproj" />
-    <Project Path="src/SharedKernel.Infrastructure/SharedKernel.Infrastructure.csproj" />
-    <Project Path="src/SharedKernel/SharedKernel.csproj" />
-    <Project Path="src/SharedKernel.Api/SharedKernel.Api.csproj" />
+    <Project Path="src/Frank.Infrastructure.EntityFrameworkCore/Frank.Infrastructure.EntityFrameworkCore.csproj" />
+    <Project Path="src/Frank.Infrastructure/Frank.Infrastructure.csproj" />
+    <Project Path="src/Frank/Frank.csproj" />
+    <Project Path="src/Frank.Api/Frank.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj" />
@@ -15,14 +15,14 @@
     <Project Path="tests/CampFitFurDogs.Architecture.Tests/CampFitFurDogs.Architecture.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj" />
-    <Project Path="tests/SharedKernel.Tests/SharedKernel.Tests.csproj" />
-    <Project Path="tests/SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers/SharedKernel.Tests.DependencyInjection.DuplicateCommandHandlers.csproj" />
-    <Project Path="tests/SharedKernel.Tests.DependencyInjection.Fakes/SharedKernel.Tests.DependencyInjection.Fakes.csproj" />
-    <Project Path="tests/SharedKernel.Tests.EmptyAssembly/SharedKernel.Tests.EmptyAssembly.csproj" />
-    <Project Path="tests/SharedKernel.Infrastructure.Tests/SharedKernel.Infrastructure.Tests.csproj" />
-    <Project Path="tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Frank.Tests/Frank.Tests.csproj" />
+    <Project Path="tests/Frank.Tests.DependencyInjection.DuplicateCommandHandlers/Frank.Tests.DependencyInjection.DuplicateCommandHandlers.csproj" />
+    <Project Path="tests/Frank.Tests.DependencyInjection.Fakes/Frank.Tests.DependencyInjection.Fakes.csproj" />
+    <Project Path="tests/Frank.Tests.EmptyAssembly/Frank.Tests.EmptyAssembly.csproj" />
+    <Project Path="tests/Frank.Infrastructure.Tests/Frank.Infrastructure.Tests.csproj" />
+    <Project Path="tests/Frank.Infrastructure.EntityFrameworkCore.Tests/Frank.Infrastructure.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.TestUtilities/CampFitFurDogs.TestUtilities.csproj" />
-    <Project Path="tests/SharedKernel.Api.Tests/SharedKernel.Api.Tests.csproj" />
+    <Project Path="tests/Frank.Api.Tests/Frank.Api.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Integration.Tests/CampFitFurDogs.Integration.Tests.csproj" />
   </Folder>
   <Folder Name="/integration-tests/">

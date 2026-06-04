@@ -133,7 +133,7 @@ Documentation drift is a governance violation.
 
 # 7. Multi-Product Hygiene
 
-Camp Fit Fur Dogs and Frank (SharedKernel) are separate products.
+Camp Fit Fur Dogs and Frank (Frank) are separate products.
 
 Governance requires:
 
@@ -142,9 +142,9 @@ Governance requires:
 - Separate story domains  
 - Separate architectural boundaries  
 - No cross-product leakage  
-- No shared folders except SharedKernel  
+- No shared folders except Frank  
 
-SharedKernel is a product, not a folder.
+Frank is a product, not a folder.
 
 ---
 

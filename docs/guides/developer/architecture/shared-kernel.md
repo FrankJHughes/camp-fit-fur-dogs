@@ -63,7 +63,7 @@ If an event is specific to a single aggregate, it belongs in that aggregate’s 
 The Shared Kernel also contains **cross-cutting technical infrastructure** required by all layers.
 
 ## Auto‑Registration System  
-SharedKernel provides the DI architecture used across the entire application:
+Frank provides the DI architecture used across the entire application:
 
 - `[AutoRegister]` attribute  
 - Assembly scanning for decorated interfaces  
@@ -79,21 +79,21 @@ This system ensures:
 - Strict enforcement of architectural rules  
 
 ## FluentValidation Integration  
-SharedKernel registers validators from all participating assemblies:
+Frank registers validators from all participating assemblies:
 
 ```
 services.AddValidatorsFromAssembly(assembly);
 ```
 
 ## EF Core Configuration Auto‑Discovery  
-SharedKernel provides helpers for:
+Frank provides helpers for:
 
 - Applying all `IEntityTypeConfiguration<T>` implementations  
 - Enforcing DbContext guardrails  
 - Ensuring consistent EF Core configuration across slices  
 
 ## Hosting Abstractions  
-SharedKernel includes:
+Frank includes:
 
 - Hosting provider interfaces  
 - API hosting helpers  
@@ -156,8 +156,8 @@ These belong in:
 |-------|------------------------------|
 | Domain | ✅ Yes |
 | Application | ✅ Yes |
-| Infrastructure | ⚠️ Yes, but only for domain primitives and SharedKernel infrastructure |
-| API | ⚠️ Yes, but only for domain primitives and SharedKernel infrastructure |
+| Infrastructure | ⚠️ Yes, but only for domain primitives and Frank infrastructure |
+| API | ⚠️ Yes, but only for domain primitives and Frank infrastructure |
 | Shared Kernel | ❌ Must not depend on any other layer |
 
 ## 4.2 Forbidden Dependencies
@@ -198,7 +198,7 @@ Application may reference Shared Kernel types:
 - Domain primitives  
 - Domain events  
 - Domain interfaces  
-- SharedKernel technical infrastructure (e.g., `[AutoRegister]`)  
+- Frank technical infrastructure (e.g., `[AutoRegister]`)  
 
 Application must not:
 

@@ -44,7 +44,7 @@ Security responsibilities include:
 - OIDC configuration and identity mapping  
 - Session cookie issuance and lifecycle management  
 
-## Frank (SharedKernel)
+## Frank (Frank)
 Security responsibilities include:
 
 - Cryptographic primitives  
@@ -57,7 +57,7 @@ Security responsibilities include:
 - Hosting provider selection and hardening infrastructure  
 - Startup validation for configuration safety  
 
-SharedKernel must never depend on product-specific security logic.
+Frank must never depend on product-specific security logic.
 
 ---
 
@@ -185,7 +185,7 @@ Hosting providers must:
 - Validate all required external configuration sources  
 - Never silently skip required configuration  
 - Never allow the API to start in an insecure or incomplete state  
-- Use SharedKernel hosting provider infrastructure  
+- Use Frank hosting provider infrastructure  
 
 ## 7.2 Render Hosting Provider Requirements
 
@@ -220,8 +220,8 @@ API endpoints must:
 - Avoid leaking stack traces  
 - Avoid returning internal identifiers  
 - Use dispatchers (never invoke handlers directly)  
-- Use SharedKernel error shaping  
-- Use SharedKernel validation pipeline  
+- Use Frank error shaping  
+- Use Frank validation pipeline  
 
 Endpoints must not:
 
@@ -229,7 +229,7 @@ Endpoints must not:
 - Accept unvalidated JSON  
 - Expose internal exceptions  
 
-SharedKernel guardrails must be used for:
+Frank guardrails must be used for:
 
 - Endpoint discovery  
 - Validation  
@@ -353,7 +353,7 @@ Incidents must be treated as top-priority work.
 - CI enforces scanning and safe workflows  
 - Product Owner enforces EG/LG alignment  
 - Scripts enforce safe defaults  
-- SharedKernel enforces startup validation  
+- Frank enforces startup validation  
 - DI auto‑registration enforces service correctness  
 
 No PR may merge if:

@@ -18,8 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
     <ProjectReference Include="..\CampFitFurDogs.Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
-    <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
-    <ProjectReference Include="..\SharedKernel.Api\SharedKernel.Api.csproj" />
+    <ProjectReference Include="..\Frank\Frank.csproj" />
+    <ProjectReference Include="..\Frank.Api\Frank.Api.csproj" />
   </ItemGroup>
 
 </Project>

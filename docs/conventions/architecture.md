@@ -16,16 +16,16 @@ The backend follows a strict layered architecture enforced by guardrail tests.
 ```
 Api → Application → Domain
 Application → Infrastructure
-All layers → SharedKernel
+All layers → Frank
 ```
 
 ## 1.1 Allowed Dependencies
 
-- **Api** → Application, Domain (primitives only), SharedKernel  
-- **Application** → Domain, SharedKernel  
-- **Infrastructure** → Application, Domain, SharedKernel  
-- **Domain** → SharedKernel only  
-- **SharedKernel** → no product dependencies  
+- **Api** → Application, Domain (primitives only), Frank  
+- **Application** → Domain, Frank  
+- **Infrastructure** → Application, Domain, Frank  
+- **Domain** → Frank only  
+- **Frank** → no product dependencies  
 
 ## 1.2 Implementation Conventions
 
@@ -33,7 +33,7 @@ All layers → SharedKernel
 - Application contains **use‑case orchestration only**  
 - Domain contains **business rules**  
 - Infrastructure contains **persistence and external integrations**  
-- SharedKernel contains **cross‑cutting primitives, abstractions, and DI infrastructure**  
+- Frank contains **cross‑cutting primitives, abstractions, and DI infrastructure**  
 
 Guardrail tests enforce these boundaries.
 
@@ -41,7 +41,7 @@ Guardrail tests enforce these boundaries.
 
 # 2. Dependency Injection Architecture (Implementation)
 
-Dependency injection is implemented through **SharedKernel’s auto‑registration engine**.
+Dependency injection is implemented through **Frank’s auto‑registration engine**.
 
 ## 2.1 Auto‑Registration via `[AutoRegister]`
 
@@ -52,7 +52,7 @@ Interfaces intended for DI must be decorated with:
 public interface IMyService { }
 ````
 
-SharedKernel:
+Frank:
 
 - Scans assemblies for attributed interfaces  
 - Discovers implementing classes  
@@ -80,7 +80,7 @@ Slice‑specific services (repositories, readers, handlers) are **never** regist
 Program.cs must contain only:
 
 ````  
-builder.Services.AddSharedKernel([...]);
+builder.Services.AddFrank([...]);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(configuration);
 ````
@@ -196,9 +196,9 @@ Tests must not apply migrations.
 
 ---
 
-# 8. SharedKernel Architecture
+# 8. Frank Architecture
 
-SharedKernel contains cross‑cutting building blocks:
+Frank contains cross‑cutting building blocks:
 
 - CQRS abstractions  
 - Validation pipeline integration  
@@ -214,9 +214,9 @@ SharedKernel contains cross‑cutting building blocks:
 
 ## 8.1 Conventions
 
-- Product layers must not reimplement SharedKernel primitives  
-- SharedKernel is the only allowed cross‑layer dependency  
-- SharedKernel must remain product‑agnostic  
+- Product layers must not reimplement Frank primitives  
+- Frank is the only allowed cross‑layer dependency  
+- Frank must remain product‑agnostic  
 
 ---
 
@@ -291,7 +291,7 @@ Endpoints implement `IEndpoint` and define a `Map` method.
 
 ## 11.2 Discovery
 
-- SharedKernel.Api scans assemblies for `IEndpoint` implementations  
+- Frank.Api scans assemblies for `IEndpoint` implementations  
 - Api assembly registers itself for discovery  
 - All endpoints are mapped automatically at startup  
 
@@ -360,7 +360,7 @@ This document codifies:
 - CQRS implementation  
 - Domain modeling conventions  
 - Repository and EF Core conventions  
-- SharedKernel usage  
+- Frank usage  
 - Hosting provider architecture  
 - Authentication/session architecture  
 - Endpoint architecture  

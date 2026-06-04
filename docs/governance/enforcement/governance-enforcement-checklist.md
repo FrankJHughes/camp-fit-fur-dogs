@@ -62,16 +62,16 @@ This checklist defines **how governance is verified**.
 
 # 4. Multi‑Product Governance Enforcement
 
-- Camp Fit Fur Dogs must not depend on Frank (SharedKernel) internals  
-- SharedKernel must not depend on product code  
+- Camp Fit Fur Dogs must not depend on Frank (Frank) internals  
+- Frank must not depend on product code  
 - Product boundaries are respected in code, stories, and CI  
 - Milestones remain independent  
 - Releases remain independent  
 - No cross‑product coupling in migrations, workflows, or scripts  
 - CI enforces dependency direction  
 - Reviewers enforce product boundaries  
-- SharedKernel changes require architectural review  
-- Product code must use SharedKernel primitives, not reimplement them
+- Frank changes require architectural review  
+- Product code must use Frank primitives, not reimplement them
 
 ---
 
@@ -157,7 +157,7 @@ This checklist defines **how governance is verified**.
 - No manual DI registration of slice services  
 - All slice services use `[AutoRegister]`  
 - No Scrutor or suffix-based scanning  
-- SharedKernel DI auto‑registration must pass  
+- Frank DI auto‑registration must pass  
 - EF Core configuration scanning must pass  
 - Endpoint discovery must pass  
 - No API → Infrastructure dependencies  
@@ -187,7 +187,7 @@ This checklist defines **how governance is verified**.
 - **Reviewers** — enforce hygiene, CI, contributor governance, product boundaries  
 - **CI** — enforces structural rules, metadata validation, dependency direction  
 - **Scripts** — enforce deterministic behavior, prevent drift  
-- **SharedKernel** — enforces architectural guardrails (DI, EF Core, hosting providers)  
+- **Frank** — enforces architectural guardrails (DI, EF Core, hosting providers)  
 - **Preview Pipeline** — enforces hosting, configuration, and operational safety
 
 ---

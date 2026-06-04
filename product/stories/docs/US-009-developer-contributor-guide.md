@@ -90,7 +90,7 @@ dedicated guide.
 ### Developer Guide — Code Standards
 
 - [x] Solution architecture overview: DDD layers (Domain, Application,
-      Infrastructure, Api, SharedKernel), project dependency rules.
+      Infrastructure, Api, Frank), project dependency rules.
 - [x] `.editorconfig` explained: what it enforces, why Makefile uses
       tabs, why markdown preserves trailing whitespace.
 - [x] Recommended extensions explained: what each one does, why it

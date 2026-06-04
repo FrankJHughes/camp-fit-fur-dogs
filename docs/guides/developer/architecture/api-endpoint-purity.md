@@ -39,7 +39,7 @@ API endpoints **should**:
   - `queryDispatcher.DispatchAsync(query, cancellationToken)`  
 - Map results to response DTOs  
 - Return appropriate HTTP status codes  
-- Use SharedKernel endpoint discovery  
+- Use Frank endpoint discovery  
 
 API endpoints **must not**:
 
@@ -208,7 +208,7 @@ Endpoints must follow strict dependency direction:
 ```
 Api → Application → Domain
 Infrastructure → Application → Domain
-All layers → SharedKernel
+All layers → Frank
 ```
 
 Endpoints must not depend on:
@@ -222,13 +222,13 @@ This enforces **[Architecture Governance](ca://s?q=Open_architecture_governance)
 
 ---
 
-# DI & SharedKernel Rules
+# DI & Frank Rules
 
 Endpoints participate in DI only through:
 
 - Dispatcher abstractions  
 - Request DTO validators (auto‑registered)  
-- Endpoint discovery (SharedKernel)  
+- Endpoint discovery (Frank)  
 
 Endpoints must not:
 
@@ -251,7 +251,7 @@ When adding a new endpoint:
 5. Keep endpoint logic limited to mapping and HTTP concerns  
 6. Do not bypass the dispatcher pipeline  
 7. Do not reference Application internals or Infrastructure  
-8. Ensure endpoint is discovered via SharedKernel endpoint discovery  
+8. Ensure endpoint is discovered via Frank endpoint discovery  
 9. Ensure endpoint follows API security rules  
 10. Ensure endpoint follows error‑shaping conventions  
 

@@ -402,13 +402,13 @@ All notable changes to this project will be documented in this file.
 - ADR-0005: Makefile for Standardized Developer Commands
 - ADR-0006: Dev Container for Containerized Development Environment
 - ADR-0007: One-Command Local Bootstrap
-- `src/SharedKernel/` — Entity, AggregateRoot, ValueObject,
+- `src/Frank/` — Entity, AggregateRoot, ValueObject,
   IDomainEvent, IRepository base types
 - `src/CampFitFurDogs.Domain/Dogs/` — Dog aggregate, DogId value object
 - `src/CampFitFurDogs.Domain/Guardians/` — Guardian aggregate, GuardianId
 - `src/CampFitFurDogs.Application/DependencyInjection.cs`
 - `src/CampFitFurDogs.Infrastructure/DependencyInjection.cs`
-- Domain and SharedKernel unit tests
+- Domain and Frank unit tests
 
 ## [Sprint 0] — 2026-03-27
 
@@ -428,7 +428,7 @@ All notable changes to this project will be documented in this file.
 - `.gitignore` for .NET projects
 - `CampFitFurDogs.slnx` solution file
 - `src/CampFitFurDogs.Api/` project with minimal API
-- Test project scaffolds (Api, Application, Domain, Infrastructure, SharedKernel)
+- Test project scaffolds (Api, Application, Domain, Infrastructure, Frank)
 - `.github/workflows/ci.yaml` — build and test pipeline
 - `global.json` pinning .NET SDK version
 - Product vision, capability themes, emotional guarantees, definition of ready

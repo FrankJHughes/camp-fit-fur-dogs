@@ -41,7 +41,7 @@ tests/
 - **Api** references Application and Infrastructure (for DI wiring)
 - No layer may reference a layer above it
 - Cross-cutting building blocks (base entity types, value object base class,
-  repository interfaces) will live in a SharedKernel project added in a
+  repository interfaces) will live in a Frank project added in a
   follow-up story
 
 ### Key patterns
@@ -77,5 +77,5 @@ tests/
 
 - The four-layer structure is a well-known DDD pattern with broad community
   support and documentation
-- SharedKernel will be introduced as a separate project in Sprint 1 to
+- Frank will be introduced as a separate project in Sprint 1 to
   house reusable building blocks

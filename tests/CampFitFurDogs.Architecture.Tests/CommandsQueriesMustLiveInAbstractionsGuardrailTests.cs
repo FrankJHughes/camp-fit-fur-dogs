@@ -8,17 +8,17 @@ public class CommandsQueriesMustLiveInAbstractionsGuardrailTests
     [Fact]
     public void Commands_And_Queries_Must_Live_In_Application_Abstractions()
     {
-        var sharedKernelAssembly = typeof(SharedKernel.AssemblyMarker).Assembly;
+        var FrankAssembly = typeof(Frank.AssemblyMarker).Assembly;
 
         // Find ICommand<T> and IQuery<T> interfaces
-        var commandInterface = sharedKernelAssembly
+        var commandInterface = FrankAssembly
             .GetTypes()
             .FirstOrDefault(t =>
                 t.IsInterface &&
                 t.IsGenericTypeDefinition &&
                 t.Name == "ICommand`1");
 
-        var queryInterface = sharedKernelAssembly
+        var queryInterface = FrankAssembly
             .GetTypes()
             .FirstOrDefault(t =>
                 t.IsInterface &&
@@ -28,7 +28,7 @@ public class CommandsQueriesMustLiveInAbstractionsGuardrailTests
         commandInterface.Should().NotBeNull("ICommand<TResponse> must exist");
         queryInterface.Should().NotBeNull("IQuery<TResponse> must exist");
 
-        var appAssembly = typeof(SharedKernel.AssemblyMarker).Assembly;
+        var appAssembly = typeof(Frank.AssemblyMarker).Assembly;
 
         var allTypes = appAssembly.GetTypes();
 

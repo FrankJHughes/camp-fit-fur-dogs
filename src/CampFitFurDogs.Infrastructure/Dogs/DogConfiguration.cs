@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using SharedKernel.Infrastructure.EntityFrameworkCore.Configurations;
+using Frank.Infrastructure.EntityFrameworkCore.Configurations;
 
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;

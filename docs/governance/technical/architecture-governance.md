@@ -39,7 +39,7 @@ The system uses a strict layered architecture:
 ```
 Api → Application → Domain
 Infrastructure → Application → Domain
-All layers → SharedKernel
+All layers → Frank
 ```
 
 ## 2.1 Domain Layer
@@ -52,7 +52,7 @@ The Domain layer:
 - Must not depend on any other layer  
 - Must not reference infrastructure, API, or external libraries except:  
   - BCL  
-  - SharedKernel primitives  
+  - Frank primitives  
 
 Forbidden:
 
@@ -71,7 +71,7 @@ The Application layer:
 - Implements CQRS command/query handlers  
 - Defines readers and application-level abstractions  
 - Dispatches domain events  
-- Depends only on Domain and SharedKernel  
+- Depends only on Domain and Frank  
 - Participates in DI via `[AutoRegister]`  
 
 Forbidden:
@@ -95,7 +95,7 @@ The Infrastructure layer:
 - Implements hosting providers  
 - Implements authentication providers  
 - Depends on Application and Domain  
-- Uses SharedKernel auto‑registration for DI participation  
+- Uses Frank auto‑registration for DI participation  
 
 Forbidden:
 
@@ -131,12 +131,12 @@ Allowed dependencies:
 
 - Api → Application  
 - Api → Domain (primitives only)  
-- Api → SharedKernel  
+- Api → Frank  
 - Application → Domain  
-- Application → SharedKernel  
+- Application → Frank  
 - Infrastructure → Application  
 - Infrastructure → Domain  
-- Infrastructure → SharedKernel  
+- Infrastructure → Frank  
 
 Forbidden dependencies:
 
@@ -187,7 +187,7 @@ Hosting providers:
 - Must not silently skip required configuration  
 - Must not depend on product-specific logic  
 
-Only SharedKernel may define hosting provider infrastructure.
+Only Frank may define hosting provider infrastructure.
 
 ---
 
@@ -238,7 +238,7 @@ The following patterns are prohibited:
 - Runtime type scanning for business logic  
 - **Manual DI registration of slice services**  
 - **Scrutor or suffix-based DI scanning**  
-- **Any DI mechanism other than SharedKernel auto‑registration**  
+- **Any DI mechanism other than Frank auto‑registration**  
 
 ---
 
@@ -249,7 +249,7 @@ Architecture is enforced through:
 - Automated architecture tests  
 - CI dependency graph validation  
 - Reviewer enforcement  
-- SharedKernel guardrails  
+- Frank guardrails  
 - Static analysis  
 
 No PR may merge if:

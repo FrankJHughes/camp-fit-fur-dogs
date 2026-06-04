@@ -1,8 +1,8 @@
 using System.Reflection;
 using FluentAssertions;
-using SharedKernel.Domain;
-using SharedKernel.Abstractions;
-using SharedKernel.Events;
+using Frank.Domain;
+using Frank.Abstractions;
+using Frank.Events;
 
 using CampFitFurDogs.Api.Tests.Fixtures;
 
@@ -12,7 +12,7 @@ public class DomainEventHandlerRegistrationGuardrailTests
     : ApiTestBase
 {
     public DomainEventHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture){ }
+        : base(factory, fixture) { }
 
     [Fact]
     public void Should_Register_All_DomainEventHandlers()
@@ -29,7 +29,7 @@ public class DomainEventHandlerRegistrationGuardrailTests
                     i.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>)))
             .ToList();
 
-        if(handlerTypes.Count == 0)
+        if (handlerTypes.Count == 0)
         {
             return;
         }

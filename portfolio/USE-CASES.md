@@ -37,7 +37,7 @@ advancing, not abandoned.
 1. Opens [`docs/adr/`](../docs/adr/) → reviews 10 Architecture Decision Records covering
    DDD layers, DX toolchain, infrastructure, and governance choices.
 2. Inspects [`src/`](../src/) → sees clean DDD layer separation (Api, Application,
-   Domain, Infrastructure, SharedKernel).
+   Domain, Infrastructure, Frank).
 3. Opens milestone M1 on GitHub → sees which stories are in progress and
    how domain aggregates map to customer-facing features.
 4. Inspects CI/CD pipeline ([`.github/workflows/ci.yaml`](../.github/workflows/ci.yaml)) → confirms

@@ -15,7 +15,7 @@ Code conventions describe **how code is written**, not architectural policy or g
 - **Application** — use‑case orchestration, validation, domain interaction.  
 - **Domain** — business rules, aggregates, value objects, domain events.  
 - **Infrastructure** — persistence, external integrations, EF Core, repositories, unit of work.  
-- **SharedKernel** — cross‑cutting primitives, CQRS abstractions, DI auto‑registration, endpoint discovery, guardrails.
+- **Frank** — cross‑cutting primitives, CQRS abstractions, DI auto‑registration, endpoint discovery, guardrails.
 
 ### Layering Rules (Implementation-Level)
 
@@ -23,8 +23,8 @@ Code conventions describe **how code is written**, not architectural policy or g
 - Application must not depend on Infrastructure or Api.  
 - Infrastructure must not depend on Api.  
 - Api must not contain business logic.  
-- Api may depend on Application, SharedKernel, and Domain primitives only.  
-- SharedKernel is the only allowed cross‑cutting dependency.
+- Api may depend on Application, Frank, and Domain primitives only.  
+- Frank is the only allowed cross‑cutting dependency.
 
 ---
 
@@ -115,7 +115,7 @@ Handlers must:
 
 - Use the domain `PasswordHash` value object.  
 - No plaintext passwords persisted or logged.  
-- Use BCrypt with SharedKernel defaults.
+- Use BCrypt with Frank defaults.
 
 ---
 
@@ -222,7 +222,7 @@ These conventions ensure:
 - Deterministic CI and preview behavior.  
 - Preview‑safe code that tolerates ephemeral databases and cold starts.  
 - Testable, maintainable backend and frontend slices.  
-- Consistent use of SharedKernel for cross‑cutting concerns.  
+- Consistent use of Frank for cross‑cutting concerns.  
 - Enforcement through guardrails and CI validation.
 
 All contributors must follow these rules.

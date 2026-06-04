@@ -1,7 +1,7 @@
 # Dependency Injection Architecture
 
 This guide describes how dependency injection works across the entire Camp Fit Fur Dogs system.  
-It explains the role of SharedKernel as the DI orchestrator, how attribute‑based auto‑registration works, and how Application and Infrastructure participate in the DI pipeline.
+It explains the role of Frank as the DI orchestrator, how attribute‑based auto‑registration works, and how Application and Infrastructure participate in the DI pipeline.
 
 ---
 
@@ -16,13 +16,13 @@ The DI architecture ensures:
 - Explicit registration of cross‑cutting services  
 - Consistent behavior across Domain, Application, and Infrastructure  
 
-The system is built around **SharedKernel’s auto‑registration engine**, which performs attribute‑driven scanning and validation.
+The system is built around **Frank’s auto‑registration engine**, which performs attribute‑driven scanning and validation.
 
 ---
 
-# 2. SharedKernel as the DI Orchestrator
+# 2. Frank as the DI Orchestrator
 
-SharedKernel provides the **core DI infrastructure** for the entire application.  
+Frank provides the **core DI infrastructure** for the entire application.  
 It is responsible for:
 
 - Discovering interfaces decorated with `[AutoRegister]`  
@@ -33,12 +33,12 @@ It is responsible for:
 - Applying EF Core configurations  
 - Providing hosting and environment abstractions  
 
-SharedKernel is the **only layer** that performs assembly scanning.
+Frank is the **only layer** that performs assembly scanning.
 
 In `Program.cs`:
 
 ````  
-builder.Services.AddSharedKernel([
+builder.Services.AddFrank([
     typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
@@ -72,7 +72,7 @@ If the number of implementations falls outside the allowed range, startup fails 
 
 # 4. How Auto‑Registration Works
 
-SharedKernel’s auto‑registration pipeline consists of:
+Frank’s auto‑registration pipeline consists of:
 
 ## 4.1 Scanner  
 Finds:
@@ -98,7 +98,7 @@ Registers:
 - Optionally `ImplementingClass → ImplementingClass`  
 
 ## 4.5 FluentValidation Integration  
-SharedKernel also registers validators via:
+Frank also registers validators via:
 
 ````  
 services.AddValidatorsFromAssembly(assembly);
@@ -120,7 +120,7 @@ The following interface categories participate in auto‑registration:
 - `IListDogsByOwnerReader`  
 - `IFindCustomerByExternalIdReader`  
 
-## 5.3 Command and Query Dispatching (SharedKernel.Abstractions)
+## 5.3 Command and Query Dispatching (Frank.Abstractions)
 - `ICommandDispatcher`  
 - `IQueryDispatcher`  
 
@@ -129,7 +129,7 @@ The following interface categories participate in auto‑registration:
 - `ICommandHandler<TCommand, TResponse>`  
 - `IQueryHandler<TQuery, TResponse>`  
 
-## 5.5 Domain Event Dispatching (SharedKernel.Events)
+## 5.5 Domain Event Dispatching (Frank.Events)
 - `IDomainEventDispatcher`  
 - `IDomainEventHandler<TEvent>`  
 
@@ -143,7 +143,7 @@ All of these are auto‑registered via `[AutoRegister]`.
 
 # 6. EF Core Configuration Auto‑Discovery
 
-SharedKernel provides EF Core helpers that:
+Frank provides EF Core helpers that:
 
 - Discover all `IEntityTypeConfiguration<T>` implementations  
 - Apply them automatically  
@@ -168,7 +168,7 @@ Application does **not** register:
 - Repositories  
 - Readers  
 
-These are handled by SharedKernel’s auto‑registration.
+These are handled by Frank’s auto‑registration.
 
 ---
 
@@ -177,7 +177,7 @@ These are handled by SharedKernel’s auto‑registration.
 `AddInfrastructure()` registers **infrastructure‑level services** explicitly:
 
 - `AppDbContext`  
-- `AddSharedKernelEfCore<AppDbContext>()`  
+- `AddFrankEfCore<AppDbContext>()`  
 - External identity resolver  
 - HttpClient integrations  
 - Audit logging  
@@ -188,7 +188,7 @@ Infrastructure does **not** register:
 - Readers  
 - EF Core configurations  
 
-These are handled by SharedKernel.
+These are handled by Frank.
 
 ---
 
@@ -221,13 +221,13 @@ public interface IRegisterDogService { }
 - Add DI logic to Program.cs  
 - Add DI logic to slices  
 
-SharedKernel owns all auto‑registration.
+Frank owns all auto‑registration.
 
 ---
 
 # 10. Relationship to Shared Kernel
 
-SharedKernel provides:
+Frank provides:
 
 - DI auto‑registration  
 - Validator scanning  
@@ -236,13 +236,13 @@ SharedKernel provides:
 - Domain primitives  
 - Domain abstractions  
 
-Application and Infrastructure rely on SharedKernel for:
+Application and Infrastructure rely on Frank for:
 
 - Automatic registration of slice services  
 - Enforcement of DI rules  
 - Consistent cross‑cutting behavior  
 
-SharedKernel must not depend on:
+Frank must not depend on:
 
 - Domain  
 - Application  

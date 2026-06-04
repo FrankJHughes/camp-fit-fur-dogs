@@ -1,0 +1,11 @@
+using Microsoft.Extensions.DependencyInjection;
+using Frank.DependencyInjection;
+
+namespace Frank.Events;
+
+[AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true)]
+public interface IDomainEventHandler<in TEvent>
+    where TEvent : IDomainEvent
+{
+    Task HandleAsync(TEvent domainEvent, CancellationToken cancellationToken = default);
+}

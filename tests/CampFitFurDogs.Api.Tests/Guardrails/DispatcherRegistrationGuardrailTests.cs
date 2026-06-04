@@ -1,6 +1,6 @@
 using FluentAssertions;
-using SharedKernel.Abstractions;
-using SharedKernel.Events;
+using Frank.Abstractions;
+using Frank.Events;
 
 using CampFitFurDogs.Api.Tests.Fixtures;
 
@@ -10,7 +10,7 @@ public class DispatcherRegistrationGuardrailTests
     : ApiTestBase
 {
     public DispatcherRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture){ }
+        : base(factory, fixture) { }
 
     [Fact]
     public void CommandDispatcher_ShouldBeRegistered() =>

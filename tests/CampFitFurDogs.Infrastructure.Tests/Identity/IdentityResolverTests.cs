@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using SharedKernel;
-using SharedKernel.Abstractions;
+using Frank;
+using Frank.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Infrastructure.Tests.Fakes;

@@ -29,8 +29,8 @@ Example:
 
 This ensures:
 
-- SharedKernel tests run first  
-- Backend tests run only after SharedKernel  
+- Frank tests run first  
+- Backend tests run only after Frank  
 - Frontend tests run only after Backend  
 
 The graph is the **single source of truth** for CI test ordering.

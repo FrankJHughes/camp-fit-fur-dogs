@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsTestProject>true</IsTestProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <VSTestUseDotNet>true</VSTestUseDotNet>
+  </PropertyGroup>
+
+  <!-- Central Package Management handles versions -->
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference the Frank project under test -->
+    <ProjectReference Include="..\..\src\Frank\Frank.csproj" />
+    <ProjectReference Include="..\..\src\Frank.Infrastructure\Frank.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Frank.Infrastructure.EntityFrameworkCore\Frank.Infrastructure.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Frank.Tests.DependencyInjection.Fakes\Frank.Tests.DependencyInjection.Fakes.csproj" />
+    <ProjectReference Include="..\Frank.Tests.EmptyAssembly\Frank.Tests.EmptyAssembly.csproj" />
+  </ItemGroup>
+
+</Project>

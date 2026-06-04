@@ -1,4 +1,4 @@
-using SharedKernel.Abstractions;
+using Frank.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;

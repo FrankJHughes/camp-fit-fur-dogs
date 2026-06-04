@@ -2,7 +2,7 @@ using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
-using SharedKernel.Api.Hosting;
+using Frank.Api.Hosting;
 
 namespace CampFitFurDogs.Api.Hosting;
 

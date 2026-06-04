@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
-using SharedKernel.Abstractions;
-using SharedKernel.Api;
+using Frank.Abstractions;
+using Frank.Api;
 using CampFitFurDogs.Api.Validation;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;

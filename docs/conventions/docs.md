@@ -37,7 +37,7 @@ The repository uses four canonical convention documents. These are the single so
 
 - **Architecture** — layering, boundaries, hosting model, PR Preview architecture, core building blocks, DI architecture  
 - **Workflow** — CI/CD structure, composite actions, PR Preview lifecycle, script‑first rules  
-- **Code** — backend, frontend, CQRS, endpoints, EF Core, SharedKernel usage, DI usage  
+- **Code** — backend, frontend, CQRS, endpoints, EF Core, Frank usage, DI usage  
 - **Docs** — documentation rules, patching rules, fencing rules, ownership  
 
 Other documents (ADRs, guides, READMEs) may reference these conventions but must not redefine them.
@@ -82,7 +82,7 @@ Conventions define:
 - Form architecture  
 - Test seams  
 - Folder structure  
-- Dependency injection usage (SharedKernel auto‑registration)  
+- Dependency injection usage (Frank auto‑registration)  
 
 Conventions must **never** redefine governance.
 
@@ -95,7 +95,7 @@ Guides define:
 - How to debug hosting providers  
 - How to test endpoints  
 - How to run migrations  
-- How SharedKernel auto‑registration works (reference only; rules live in conventions)  
+- How Frank auto‑registration works (reference only; rules live in conventions)  
 
 Guides must **never** define rules or boundaries.
 
@@ -113,7 +113,7 @@ Each ADR must:
 - State the **decision** clearly  
 - Explain **consequences** (positive and negative)  
 - Reference relevant conventions and guardrails  
-- Clarify interactions with SharedKernel and other systems  
+- Clarify interactions with Frank and other systems  
 
 ## 4.2 Placement
 
@@ -228,7 +228,7 @@ If an example cannot be shown safely, describe the pattern in prose.
 
 ## 10.2 Ownership
 
-- **Architecture & SharedKernel conventions** — platform/architecture maintainers  
+- **Architecture & Frank conventions** — platform/architecture maintainers  
 - **Workflow & tooling conventions** — automation/build maintainers  
 - **Code conventions** — backend, frontend, and infra maintainers  
 - **Docs conventions** — shared responsibility with a designated maintainer  
@@ -250,15 +250,15 @@ When updating conventions:
 
 ---
 
-# 12. Relationship to SharedKernel
+# 12. Relationship to Frank
 
-SharedKernel is the authoritative source for cross‑cutting behavior.
+Frank is the authoritative source for cross‑cutting behavior.
 
 Documentation must:
 
-- Indicate when a rule is enforced by SharedKernel types or helpers  
-- Encourage product code to use SharedKernel instead of duplicating patterns  
-- Highlight SharedKernel as the canonical home for:
+- Indicate when a rule is enforced by Frank types or helpers  
+- Encourage product code to use Frank instead of duplicating patterns  
+- Highlight Frank as the canonical home for:
   - CQRS abstractions  
   - Domain primitives  
   - Endpoint discovery  
@@ -271,7 +271,7 @@ Documentation must:
   - Authentication/session abstractions  
   - Test seams  
 
-SharedKernel and documentation must remain synchronized.
+Frank and documentation must remain synchronized.
 
 ---
 
@@ -335,7 +335,7 @@ Documentation ensures:
 - Workflow consistency  
 - Coding discipline  
 - Preview‑safe behavior  
-- SharedKernel alignment  
+- Frank alignment  
 - Long‑term maintainability  
 
 All contributors must follow these conventions and keep documentation accurate, complete, and synchronized with the system.

@@ -46,7 +46,7 @@ These guides evolve as the system evolves.
   Cross-layer architectural purity constraints.
 
 - **[Shared Kernel](../shared-kernel.md)**  
-  What belongs in the SharedKernel and why.
+  What belongs in the Frank and why.
 
 - **[Validation Boundaries](validation-boundaries.md)**  
   Clear separation of API, Application, and Domain validation responsibilities.

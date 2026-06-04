@@ -1,7 +1,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using SharedKernel.DependencyInjection;
+using Frank.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 

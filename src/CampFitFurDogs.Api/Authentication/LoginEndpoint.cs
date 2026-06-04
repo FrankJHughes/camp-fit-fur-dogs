@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using SharedKernel.Api;
+using Frank.Api;
 using CampFitFurDogs.Api.Errors;
 using CampFitFurDogs.Domain.Errors;
 

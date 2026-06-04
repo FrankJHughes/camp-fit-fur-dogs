@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-using SharedKernel.Infrastructure.EntityFrameworkCore;
+using Frank.Infrastructure.EntityFrameworkCore;
 
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Application.Abstractions.Audit;
@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
 
-        services.AddSharedKernelEfCore<AppDbContext>(
+        services.AddFrankEfCore<AppDbContext>(
             [typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly]
         );
 

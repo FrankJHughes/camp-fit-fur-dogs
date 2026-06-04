@@ -1,5 +1,5 @@
 using System.Linq;
-using SharedKernel.Abstractions;
+using Frank.Abstractions;
 using Xunit;
 
 namespace CampFitFurDogs.Architecture.Tests.Identity;

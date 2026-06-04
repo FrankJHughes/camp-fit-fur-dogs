@@ -45,7 +45,7 @@ The API layer is responsible for:
 - Session cookie issuance  
 - Mapping to/from Application layer  
 - Using dispatchers (`ICommandDispatcher`, `IQueryDispatcher`)  
-- Using SharedKernel endpoint discovery  
+- Using Frank endpoint discovery  
 
 The API layer must not:
 
@@ -121,7 +121,7 @@ API errors must be:
 - Documented  
 - Stable  
 
-Error shaping must use SharedKernel error boundary helpers.
+Error shaping must use Frank error boundary helpers.
 
 ---
 
@@ -220,7 +220,7 @@ API governance is enforced through:
 - Automated error-shaping tests  
 - CI validation  
 - Reviewer enforcement  
-- SharedKernel guardrails  
+- Frank guardrails  
 - Dispatcher pipeline tests  
 
 No PR may merge if:

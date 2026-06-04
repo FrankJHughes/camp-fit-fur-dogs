@@ -17,7 +17,7 @@ src/
   CampFitFurDogs.Application/
   CampFitFurDogs.Domain/
   CampFitFurDogs.Infrastructure/
-  SharedKernel/
+  Frank/
 
 tests/
   CampFitFurDogs.Api.Tests/
@@ -33,9 +33,9 @@ Each project has a clear responsibility:
 - **Application** — use cases, handlers, validators, dispatchers, domain event dispatch  
 - **Domain** — entities, value objects, domain events, invariants  
 - **Infrastructure** — persistence, external systems, repository + reader implementations  
-- **SharedKernel** — cross‑cutting primitives, DI auto‑registration, endpoint discovery, guardrails  
+- **Frank** — cross‑cutting primitives, DI auto‑registration, endpoint discovery, guardrails  
 
-SharedKernel is a **product** (Frank), not a folder — see **[Multi‑Product Governance](ca://s?q=Open_multi_product_governance)**.
+Frank is a **product** (Frank), not a folder — see **[Multi‑Product Governance](ca://s?q=Open_multi_product_governance)**.
 
 ---
 
@@ -89,7 +89,7 @@ Each slice contains:
 - **Infrastructure** — repositories (commands), readers (queries), EF Core configuration  
 - **Api** — endpoints  
 
-All slice services are registered via **SharedKernel auto‑registration**.
+All slice services are registered via **Frank auto‑registration**.
 
 ---
 
@@ -145,9 +145,9 @@ See **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**.
 
 ---
 
-## 3.5 SharedKernel
+## 3.5 Frank
 
-SharedKernel provides:
+Frank provides:
 
 - Cross‑cutting primitives  
 - DI auto‑registration engine  
@@ -158,7 +158,7 @@ SharedKernel provides:
 - Hosting provider infrastructure  
 - Architecture guardrails  
 
-SharedKernel must not depend on any product code.
+Frank must not depend on any product code.
 
 ---
 
@@ -237,7 +237,7 @@ Api/<Feature>/
 - No Api references  
 - Must use `[AutoRegister]`  
 
-## SharedKernel
+## Frank
 - No dependencies on any product layer  
 
 These rules enforce **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
@@ -260,7 +260,7 @@ When adding a new feature:
    - DI guardrails → `Api.Tests/Guardrails`  
 9. Follow naming conventions strictly  
 10. Do not bypass the dispatcher pipeline  
-11. Do not place code in SharedKernel unless it is truly cross‑cutting  
+11. Do not place code in Frank unless it is truly cross‑cutting  
 12. Ensure all slice services use `[AutoRegister]`  
 
 If unsure where something belongs, default to the **most restrictive** layer:  
