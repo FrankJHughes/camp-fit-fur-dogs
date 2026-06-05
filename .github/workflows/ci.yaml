@@ -64,7 +64,7 @@ jobs:
         run: node scripts/ci/validate-ci-dependencies.mjs
 
   shared-kernel:
-    name: Frank Tests
+    name: Shared Kernel Tests
     runs-on: ubuntu-latest
     needs: [determine-changes, validate-ci-deps]
     if: |

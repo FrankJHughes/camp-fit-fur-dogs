@@ -33,7 +33,7 @@ var configWriter = new RenderConfigurationWriter();
 await builder.UseHostingProviders(
     new RenderHostingProvider(env, prParser, artifacts, configWriter));
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+var port = env.Get("PORT") ?? "8080";
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(port)); // IPv4 ANY
