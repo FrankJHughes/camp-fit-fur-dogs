@@ -64,7 +64,7 @@ jobs:
         run: node scripts/ci/validate-ci-dependencies.mjs
 
   shared-kernel:
-    name: Shared Kernel Tests
+    name: SharedKernel Tests
     runs-on: ubuntu-latest
     needs: [determine-changes, validate-ci-deps]
     if: |
