@@ -1,5 +1,5 @@
-using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Authentication.Sessions;
+using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Application.Abstractions.Authentication;
 

@@ -22,7 +22,7 @@ Provide compile-time-safe base types (Entity, AggregateRoot, ValueObject, Domain
 Eliminates boilerplate, enforces DDD patterns structurally, and makes domain code expressive and auditable.
 
 ## Acceptance Criteria
-- [x] SharedKernel project contains Entity<TId>, AggregateRoot<TId>, ValueObject, IDomainEvent
+- [x] Frank project contains Entity<TId>, AggregateRoot<TId>, ValueObject, IDomainEvent
 - [x] Base types enforce equality and identity contracts via tests
 - [x] No reflection or magic — all behavior is explicit and compile-time verifiable
 - [x] NuGet-packageable structure (even if not published yet)

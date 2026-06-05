@@ -1,8 +1,6 @@
+using CampFitFurDogs.Api.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-
-using CampFitFurDogs.Api.Tests;
-using CampFitFurDogs.Api.Tests.Fixtures;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -10,7 +8,7 @@ public class NoDuplicateServiceRegistrationGuardrailTests
     : ApiTestBase
 {
     public NoDuplicateServiceRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture){ }
+        : base(factory, fixture) { }
 
     [Fact]
     public void Should_Not_Have_Duplicate_DI_Registrations()

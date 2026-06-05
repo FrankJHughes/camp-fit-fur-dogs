@@ -11,8 +11,8 @@ COPY Directory.Packages.props ./
 COPY src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj src/CampFitFurDogs.Api/
 COPY src/CampFitFurDogs.Application/CampFitFurDogs.Application.csproj src/CampFitFurDogs.Application/
 COPY src/CampFitFurDogs.Infrastructure/CampFitFurDogs.Infrastructure.csproj src/CampFitFurDogs.Infrastructure/
-COPY src/SharedKernel/SharedKernel.csproj src/SharedKernel/
-COPY src/SharedKernel.Api/SharedKernel.Api.csproj src/SharedKernel.Api/
+COPY src/Frank/Frank.csproj src/Frank/
+COPY src/Frank.Api/Frank.Api.csproj src/Frank.Api/
 
 RUN dotnet restore src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj
 

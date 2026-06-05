@@ -15,7 +15,7 @@ containing an `action.yml` manifest and a `README.md` that follows the
 |--------|------|---------|-----------------|
 | [postgres-uri-to-npgsql-connection-string](../../../.github/actions/postgres-uri-to-npgsql-connection-string/README.md) | `.github/actions/postgres-uri-to-npgsql-connection-string/` | Converts a PostgreSQL URI into a fully normalized Npgsql connection string used by EF Core and .NET clients. | `preview.yaml` |
 | [wait-for-endpoint](../../../.github/actions/wait-for-endpoint/README.md) | `.github/actions/wait-for-endpoint/` | Polls an HTTP endpoint until it reaches a healthy or unhealthy state, supporting teardown and readiness checks with configurable timeouts and success thresholds. | `preview.yaml` |
-| [run-dotnet-tests](../../../.github/actions/run-dotnet-tests/README.md) | `.github/actions/run-dotnet-tests/` | Standardized .NET test runner used across SharedKernel, backend, and integration test suites. Ensures consistent logging, exit behavior, and test isolation. | `ci.yaml` |
+| [run-dotnet-tests](../../../.github/actions/run-dotnet-tests/README.md) | `.github/actions/run-dotnet-tests/` | Standardized .NET test runner used across Frank, backend, and integration test suites. Ensures consistent logging, exit behavior, and test isolation. | `ci.yaml` |
 
 ## Conventions
 

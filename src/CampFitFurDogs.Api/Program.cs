@@ -1,16 +1,13 @@
-using FluentValidation;
-
-using SharedKernel.Api;
-using SharedKernel.Api.Hosting;
-using SharedKernel.DependencyInjection;
-
 using CampFitFurDogs.Api.Errors;
 using CampFitFurDogs.Api.Hosting;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
-
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
+using FluentValidation;
+using Frank.Api;
+using Frank.Api.Hosting;
+using Frank.Api.SecurityHeaders;
+using Frank.DependencyInjection;
+using Frank.Infrastructure.Environment;
 
 // AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
 // {
@@ -22,10 +19,21 @@ var builder = WebApplication.CreateBuilder(args);
 // ── Hosting-provider overrides (pluggable) ───────────────────────
 // Add new providers here in priority order.  The first whose
 // IsActive() returns true wins; the rest are skipped.
-await builder.UseHostingProviders(
-    new RenderHostingProvider());
+// Manually construct hosting provider dependencies
+var env = new SystemEnvironment();
+var prParser = new RenderPrParser();
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+// Wire HttpClient override into GitHubArtifactClient if tests use it
+IGitHubArtifactClient artifacts = RenderHostingProvider.HttpClientFactoryOverride is null
+    ? new GitHubArtifactClient()
+    : new GitHubArtifactClient(RenderHostingProvider.HttpClientFactoryOverride);
+
+var configWriter = new RenderConfigurationWriter();
+
+await builder.UseHostingProviders(
+    new RenderHostingProvider(env, prParser, artifacts, configWriter));
+
+var port = env.Get("PORT") ?? "8080";
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(port)); // IPv4 ANY
@@ -58,14 +66,16 @@ builder.Services.AddAuthentication("Cookies")
 builder.Services.AddAuthorization();
 
 // ────────────────────────────────────────────────────────────────
-// SharedKernel, Application, Infrastructure, API
+// Frank, Application, Infrastructure, API
 // ────────────────────────────────────────────────────────────────
-builder.Services.AddSharedKernel([
+builder.Services.AddFrank([
     typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly // request dto validators
 ]);
+
+builder.Services.AddSecurityHeaders();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -82,6 +92,8 @@ var app = builder.Build();
 // ────────────────────────────────────────────────────────────────
 // Middleware pipeline
 // ────────────────────────────────────────────────────────────────
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
 app.UseExceptionHandler(ExceptionHandlingMiddleware.Configure);
 
 app.UseCors();

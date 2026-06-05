@@ -1,9 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Audit;
-using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Authentication.Sessions;
+using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 

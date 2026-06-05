@@ -10,9 +10,11 @@ It explains how the system performs OIDC login, validates configuration, fetches
 This guide does **not** define rules, boundaries, or decisions.  
 Those live in:
 
-- Governance (process + enforcement)  
-- Conventions (how we implement)  
-- ADRs (why decisions were made)
+- Architecture Governance  
+- Security Governance  
+- Operations Governance  
+- Conventions  
+- ADRs  
 
 This guide focuses solely on **how authentication works today**.
 
@@ -28,6 +30,13 @@ Authentication consists of three cooperating components:
 
 These components work together to produce a secure, server‑managed session cookie.
 
+Authentication spans:
+
+- API (endpoint orchestration + cookie issuance)  
+- Application (pipeline steps + identity resolution + session creation)  
+- Domain (Owner + Session invariants)  
+- Infrastructure (Auth0 client + repositories + audit logger)  
+
 ---
 
 # Component 1 — OIDC Login Initiation
@@ -39,7 +48,14 @@ The login initiation endpoint:
 - Includes PKCE parameters  
 - Redirects the browser to Auth0  
 
-This endpoint performs no identity logic and no session logic.  
+This endpoint:
+
+- Contains **no identity logic**  
+- Contains **no session logic**  
+- Contains **no business logic**  
+- Uses only configuration + URL generation  
+- Relies on Frank middleware for security headers and CORS  
+
 It simply begins the OIDC flow.
 
 ---
@@ -62,11 +78,13 @@ The **actual pipeline**, in execution order, is:
 
 Each step:
 
-- Performs one job  
+- Performs exactly one responsibility  
 - Has no side effects outside its boundary  
 - Receives a shared immutable context  
-- Writes results back into the context via `with`  
+- Returns a new context via `with`  
 - Must obey context invariants enforced by the executor  
+- Uses Infrastructure only through abstractions  
+- Never touches hosting providers, environment variables, or configuration directly  
 
 This makes the authentication flow deterministic, testable, and composable.
 
@@ -87,6 +105,8 @@ If any are missing → **500 Internal Server Error**.
 
 Runs unconditionally.
 
+This step enforces **startup configuration safety** required by Security + Operations Governance.
+
 ---
 
 ## 2. ExchangeCodeStep
@@ -98,8 +118,10 @@ Input:
 Output:  
 - `ctx.Token`
 
-If the code is missing → **400 Bad Request** (handled by endpoint).  
-If Auth0 returns no access token → next step fails with **502**.
+If the code is missing → **400 Bad Request** (endpoint-level).  
+If Auth0 returns no access token → next step fails with **502 Bad Gateway**.
+
+Uses Infrastructure via abstractions (never directly).
 
 ---
 
@@ -114,6 +136,8 @@ Output:
 
 If userinfo retrieval fails → **502 Bad Gateway**.
 
+This step performs no identity logic.
+
 ---
 
 ## 4. ValidateUserStep
@@ -122,6 +146,8 @@ Ensures the userinfo contains a valid external identifier:
 - `ExternalId` (Auth0 `sub`)
 
 If missing or empty → **502 Bad Gateway**.
+
+This step enforces **external identity integrity**.
 
 ---
 
@@ -137,9 +163,13 @@ Output:
 Identity resolution:
 
 - Is pure  
+- Uses `IIdentityResolver`  
 - May create a new Owner  
-- Never uses email for identity  
+- Never uses email  
 - Never exposes internal IDs to Auth0  
+- Never touches Infrastructure directly  
+
+This step enforces **Identity Mapping Governance**.
 
 ---
 
@@ -151,9 +181,11 @@ Input:
 - `ctx.User.ExternalId`
 
 Output:  
-- No context mutation except returning same instance
+- Same context instance (no mutation)
 
 Runs **before** session creation so login is recorded even if session creation fails.
+
+This step enforces **Audit Logging Governance**.
 
 ---
 
@@ -170,8 +202,9 @@ This step:
 - Hashes it using SHA‑256  
 - Creates a `SessionCookie` value object  
 - Does **not** persist anything  
+- Does **not** issue the cookie (API layer does that)  
 
-Runs unconditionally.
+This step enforces **Session Token Governance**.
 
 ---
 
@@ -193,6 +226,8 @@ This step:
 - Associates the session with the Customer  
 - Commits via `IUnitOfWork`  
 
+This step enforces **Session Persistence Governance**.
+
 ---
 
 ## 9. BuildRedirectStep
@@ -211,6 +246,8 @@ The API layer uses this to issue:
 - `Location: <redirect>`  
 - `Set-Cookie: cfd.session=...`  
 
+This step enforces **Post‑Login Redirect Governance**.
+
 ---
 
 # Identity Mapping in the Architecture
@@ -222,6 +259,7 @@ Identity mapping is a core architectural boundary:
 - Pure and deterministic  
 - Never uses email  
 - Never exposes internal IDs to Auth0  
+- Never touches Infrastructure directly  
 
 See the **Identity Mapping Guide** for details.
 
@@ -252,6 +290,8 @@ Production cookie flags:
 
 Local development uses `Secure=false`.
 
+This enforces **Session Security Governance**.
+
 ---
 
 # Audit Logging in the Architecture
@@ -276,25 +316,29 @@ Authentication spans four layers:
 - Orchestrates the pipeline  
 - Issues cookies  
 - Returns redirect responses  
+- Uses Frank error boundary, security headers, and CORS  
 
 ## 2. Application Layer
 - Contains pipeline steps  
 - Contains identity resolution logic  
 - Contains session creation logic  
 - Contains audit logging logic  
+- Contains no Infrastructure references  
 
 ## 3. Domain Layer
 - Owns Owner aggregate  
 - Owns Session entity  
 - Owns invariants  
+- Contains no Infrastructure or API references  
 
 ## 4. Infrastructure Layer
 - Implements Auth0 client  
 - Implements session repository  
 - Implements Owner repository  
 - Implements audit logger  
+- Implements hosting provider abstractions  
 
-Purity and dependency rules are defined in Conventions.
+Purity and dependency rules are defined in **Architecture Governance**.
 
 ---
 
@@ -346,8 +390,9 @@ Authentication errors fall into these categories:
 - Database failure  
 - Cookie issuance failure  
 
-All errors are surfaced as:
+All errors are surfaced via:
 
+- Frank error boundary  
 - ProblemDetails JSON  
 - Logged exceptions  
 - No cookies issued  
@@ -382,6 +427,7 @@ Authentication is tested at three levels:
 - Audit logging  
 - Error paths  
 - Production cookie security  
+- Frank middleware integration  
 
 ---
 
@@ -415,4 +461,7 @@ Preview/prod:
 - **Authentication Testing Guide**  
 - **Authentication Operations Guide**  
 - **Create Account Form Guide**  
-- **Create Account Feature Slice Guide**
+- **Create Account Feature Slice Guide**  
+- **Architecture Governance**  
+- **Security Governance**  
+- **Operations Governance**  

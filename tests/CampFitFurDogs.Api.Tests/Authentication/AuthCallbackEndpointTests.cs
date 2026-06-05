@@ -1,12 +1,11 @@
 using System.Net;
 using System.Text.Json;
-using FluentAssertions;
-
-using CampFitFurDogs.TestUtilities.Builders;
-using CampFitFurDogs.TestUtilities.Fakes;
-using Microsoft.Extensions.Configuration;
 using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fakes;
+using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 

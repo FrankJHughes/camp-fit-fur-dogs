@@ -1,8 +1,9 @@
-# API Hosting Guide
-
+# API Hosting Guide  
 **Path:** `docs/guides/developer/api-hosting.md`
 
 This guide documents how the Camp Fit Fur Dogs API is hosted, deployed, tested, and previewed using **Render** and **Neon**, and how developers can work with these environments safely and effectively.
+
+It reflects the **current**, **fully aligned**, **governance‑compliant** hosting model.
 
 ---
 
@@ -18,6 +19,8 @@ This guide documents how the Camp Fit Fur Dogs API is hosted, deployed, tested, 
 
 This guide explains the full lifecycle, local workflows, troubleshooting, and operational expectations.
 
+All behavior follows **Operations Governance**, **Security Governance**, and **Hosting Provider Abstraction Rules**.
+
 ---
 
 # Render Hosting Model
@@ -25,11 +28,13 @@ This guide explains the full lifecycle, local workflows, troubleshooting, and op
 ## Main Branch Deployments
 
 - Render is configured for **Git-backed automatic deploys** on push to `main`.  
-- No GitHub Actions workflow triggers deployment.  
+- GitHub Actions does **not** deploy to production.  
 - Render builds the Dockerfile at:  
   ```
   src/CampFitFurDogs.Api/Dockerfile
   ```
+- Environment variables are injected by Render at runtime.  
+- API startup uses Frank hosting abstractions — no direct environment access.
 
 ## PR Preview Deployments (Manual Mode)
 
@@ -37,15 +42,21 @@ Render PR Previews run in **Manual** mode:
 
 - **Label added** → Render creates a preview instance  
 - **Label removed** → Render destroys the preview instance  
-- **PR synchronize** → Render redeploys *only if the label is present*
+- **PR synchronize** → Render redeploys *only if the label is present*  
 
-This label-driven model gives CI full control over preview lifecycle.
+This label-driven model gives CI full control over preview lifecycle and ensures:
+
+- Predictable teardown  
+- Predictable startup  
+- No accidental preview creation  
 
 ## Preview URL Format
 
 ```
 https://campfitfurdogsapi-pr-<number>.onrender.com
 ```
+
+Preview URLs are stable for the lifetime of the PR.
 
 ---
 
@@ -56,6 +67,7 @@ https://campfitfurdogsapi-pr-<number>.onrender.com
 - Persistent Neon branch  
 - Connection string stored in Render environment variables  
 - SSL required  
+- Managed entirely through Neon dashboard + Render environment settings  
 
 ## PR Preview Branches
 
@@ -67,6 +79,9 @@ https://campfitfurdogsapi-pr-<number>.onrender.com
 - Branch is deleted when the PR closes  
 - EF Core migrations are applied in CI before the API preview is deployed  
 - Connection string is converted from PostgreSQL URI → Npgsql format using the repo’s composite action  
+- No developer ever manually creates preview DBs  
+
+This model ensures **isolation**, **repeatability**, and **zero shared state**.
 
 ---
 
@@ -85,6 +100,8 @@ The GitHub Actions workflow orchestrates the entire preview lifecycle.
   - Timeout: **300 seconds**  
   - Poll: **5 seconds**
 
+This ensures Render has fully removed the instance before provisioning a new one.
+
 ## 2. Provision fresh Neon branch
 
 - Create branch `pr-<number>`  
@@ -93,6 +110,8 @@ The GitHub Actions workflow orchestrates the entire preview lifecycle.
 - Apply EF Core migrations  
 - Run Infrastructure Integration Tests  
 - Upload `db-conn.txt` artifact  
+
+This ensures the DB is ready **before** the API preview deploys.
 
 ## 3. Deploy fresh API preview
 
@@ -104,16 +123,21 @@ The GitHub Actions workflow orchestrates the entire preview lifecycle.
   - **3 consecutive** successes  
   - Timeout: **300 seconds**
 
+This ensures the API is fully warmed and routing is functional.
+
 ## 4. Run API Integration Tests
 
 - Tests run against the live preview URL  
 - Validate routing, middleware, auth, and end‑to‑end flows  
+- Ensures preview is production‑faithful
 
 ## 5. Cleanup
 
 - On PR close:  
   - Neon branch deleted  
-  - Render preview destroyed (label removed)
+  - Render preview destroyed (label removed)  
+
+This ensures no orphaned resources remain.
 
 ---
 
@@ -136,6 +160,7 @@ The GitHub Actions workflow orchestrates the entire preview lifecycle.
 - Never print secrets in logs  
 - Treat artifacts containing connection strings as sensitive  
 - Do not commit `.env` files or local secrets  
+- API code must use **Frank hosting abstractions**, not `Environment.GetEnvironmentVariable`
 
 ---
 
@@ -161,6 +186,8 @@ dotnet run --project src/CampFitFurDogs.Api
 - Download `db-conn.txt` from CI  
 - Set `ConnectionStrings__DefaultConnection` to its contents  
 - Run migrations and tests locally  
+
+This reproduces CI behavior exactly.
 
 ---
 
@@ -224,6 +251,8 @@ dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests `
   --logger "trx"
 ```
 
+This reproduces CI’s DB + API environment exactly.
+
 ---
 
 # FAQ
@@ -246,5 +275,4 @@ Up to 300 seconds due to cold starts and route propagation.
 - `.github/workflows/preview.yml`  
 - Composite actions:  
   - `postgres-uri-to-npgsql-connection-string`  
-  - `wait-for-endpoint`
-
+  - `wait-for-endpoint`  

@@ -1,7 +1,6 @@
-using FluentAssertions;
-using SharedKernel.Abstractions;
-
 using CampFitFurDogs.Api.Tests.Fixtures;
+using FluentAssertions;
+using Frank.Abstractions;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 

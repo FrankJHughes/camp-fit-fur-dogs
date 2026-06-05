@@ -19,7 +19,7 @@ dependencies:
 _As a product engineer, I must never experience silent failures when dispatching commands or queries, so that I can trust the correctness of the CQRS pipeline._
 
 ## Value
-Ensures reliability, prevents data loss, and builds trust in SharedKernel.
+Ensures reliability, prevents data loss, and builds trust in Frank.
 
 ## Acceptance Criteria
 - Dispatching a command/query with no handler always throws.

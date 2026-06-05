@@ -182,10 +182,10 @@ CI failures are governance failures.
 
 Contributors must not:
 
-- Mix Camp Fit Fur Dogs and SharedKernel concerns  
-- Introduce SharedKernel dependencies on product code  
-- Place SharedKernel code in product folders  
-- Place product code in SharedKernel  
+- Mix Camp Fit Fur Dogs and Frank concerns  
+- Introduce Frank dependencies on product code  
+- Place Frank code in product folders  
+- Place product code in Frank  
 - Mix frontend and backend concerns  
 - Mix domains within a story  
 
@@ -204,7 +204,7 @@ Contributors must create an ADR when:
 - Architecture changes  
 - Dependencies change  
 - Hosting or deployment changes  
-- SharedKernel behavior changes  
+- Frank behavior changes  
 - Security posture changes  
 
 ADR must:

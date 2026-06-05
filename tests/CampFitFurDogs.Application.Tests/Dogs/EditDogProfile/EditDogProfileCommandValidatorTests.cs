@@ -1,9 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Dogs.EditDogProfile;
-using FluentAssertions;
-
 using CampFitFurDogs.TestUtilities.Fixtures;
-using CampFitFurDogs.TestUtilities.Builders;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.EditDogProfile;
 

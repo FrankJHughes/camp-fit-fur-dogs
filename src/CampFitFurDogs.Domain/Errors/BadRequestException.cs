@@ -1,4 +1,4 @@
-using SharedKernel.Domain;
+using Frank.Domain;
 
 namespace CampFitFurDogs.Domain.Errors;
 

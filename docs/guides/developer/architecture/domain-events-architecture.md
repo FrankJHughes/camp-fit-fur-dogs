@@ -71,7 +71,7 @@ public interface IDomainEventDispatcher
 Responsibilities:
 
 - Accept a batch of domain events  
-- Resolve handlers via SharedKernel auto‑registration  
+- Resolve handlers via Frank auto‑registration  
 - Invoke handlers in a deterministic order  
 - Run inside the Application layer (never API or Infrastructure)  
 
@@ -108,7 +108,7 @@ The concrete dispatcher:
 - Runs **inside** the Unit of Work boundary  
 - Is invoked automatically by the persistence pipeline  
 
-The dispatcher is registered via SharedKernel DI.
+The dispatcher is registered via Frank DI.
 
 ---
 
@@ -158,7 +158,7 @@ This enforces **[Dispatcher Pipeline](ca://s?q=Open_dispatcher_pipeline_guide)**
 
 # 6. Purity Rules
 
-- Domain events are defined in Domain or SharedKernel  
+- Domain events are defined in Domain or Frank  
 - Domain must not reference Application or Infrastructure  
 - Event handlers live in Application  
 - Event handlers must not contain business rules  
@@ -176,7 +176,7 @@ This enforces **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guid
 
 When adding a new domain event:
 
-1. Define the event in Domain (or SharedKernel if cross‑aggregate)  
+1. Define the event in Domain (or Frank if cross‑aggregate)  
 2. Raise it from aggregate methods  
 3. Add one or more `IDomainEventHandler<T>` implementations in Application  
 4. Mark handlers with `[AutoRegister]`  

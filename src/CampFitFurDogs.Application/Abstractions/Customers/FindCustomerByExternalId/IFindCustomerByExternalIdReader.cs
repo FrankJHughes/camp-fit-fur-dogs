@@ -1,6 +1,5 @@
+using Frank.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-
-using SharedKernel.DependencyInjection;
 namespace CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
 
 [AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]

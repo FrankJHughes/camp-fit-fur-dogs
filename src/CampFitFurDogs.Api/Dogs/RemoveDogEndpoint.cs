@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.RemoveDog;
-using SharedKernel.Abstractions;
-using SharedKernel.Api;
+using Frank.Abstractions;
+using Frank.Api;
 
 namespace CampFitFurDogs.Api.Dogs;
 

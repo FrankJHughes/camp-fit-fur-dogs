@@ -45,7 +45,7 @@ This story delivers the **decision‑making clarity** needed before any technica
   - Risks and tradeoffs (loss of dynamic behaviors, trimming constraints)
   - Estimated engineering effort and sequencing
   - Recommendation: pursue, defer, or reject AOT
-- [ ] The plan clearly identifies which SharedKernel components require annotations or redesign
+- [ ] The plan clearly identifies which Frank components require annotations or redesign
 - [ ] The plan identifies which Infrastructure components are incompatible with AOT (EF Core, migrations)
 - [ ] The plan includes a proposed spike story if further investigation is needed
 - [ ] The plan is written for **humans**, not engineers — no implementation details, no code

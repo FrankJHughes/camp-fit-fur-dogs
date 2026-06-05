@@ -1,8 +1,8 @@
 using CampFitFurDogs.Domain.Authentication.Sessions;
 using CampFitFurDogs.Domain.Customers;
+using Frank.Infrastructure.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SharedKernel.Infrastructure.EntityFrameworkCore.Configurations;
 
 namespace CampFitFurDogs.Infrastructure.Authentication.Sessions;
 

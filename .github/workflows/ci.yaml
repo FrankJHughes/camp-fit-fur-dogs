@@ -34,8 +34,8 @@ jobs:
             frontend:
               - 'frontend/**'
             shared-kernel:
-              - 'src/SharedKernel*/**'
-              - 'tests/SharedKernel*/**'
+              - 'src/Frank*/**'
+              - 'tests/Frank*/**'
             infra:
               - '.github/**'
               - '*.sln'
@@ -76,9 +76,9 @@ jobs:
       - uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
-            tests/SharedKernel.Tests
-            tests/SharedKernel.Api.Tests
-            tests/SharedKernel.Infrastructure.EntityFrameworkCore.Tests
+            tests/Frank.Tests
+            tests/Frank.Api.Tests
+            tests/Frank.Infrastructure.EntityFrameworkCore.Tests
 
   backend:
     name: Backend Tests

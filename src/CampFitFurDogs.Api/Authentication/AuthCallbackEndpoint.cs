@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using SharedKernel.Api;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Errors;
+using Frank.Api;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Authentication;
 

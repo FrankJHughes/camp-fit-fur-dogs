@@ -25,6 +25,8 @@ Endpoints must remain **pure orchestrators**, not business logic containers.
 - Make endpoints easy to read, test, and maintain  
 - Prevent duplication of business rules  
 - Enforce strict layering and dependency direction  
+- Ensure compliance with Frank security headers, CORS, and error boundary middleware  
+- Ensure endpoints participate correctly in authentication and authorization governance  
 
 ---
 
@@ -39,7 +41,9 @@ API endpoints **should**:
   - `queryDispatcher.DispatchAsync(query, cancellationToken)`  
 - Map results to response DTOs  
 - Return appropriate HTTP status codes  
-- Use SharedKernel endpoint discovery  
+- Use Frank endpoint discovery  
+- Rely on Frank’s security headers and CORS middleware  
+- Allow Frank’s error boundary to shape errors  
 
 API endpoints **must not**:
 
@@ -52,6 +56,12 @@ API endpoints **must not**:
 - Reference Infrastructure types  
 - Depend on Infrastructure assemblies  
 - Perform domain mutations  
+- Perform identity resolution  
+- Perform authorization checks manually  
+- Perform configuration access  
+- Perform environment access  
+- Perform HTTP/JSON/ZIP operations  
+- Interact with hosting providers  
 
 ---
 
@@ -67,7 +77,7 @@ A clean endpoint follows this pattern:
 
 Example:
 
-````  
+````csharp
 var command = new RegisterDogCommand(request.Name, request.Breed);
 
 var result = await commandDispatcher.DispatchAsync(command, cancellationToken);
@@ -83,6 +93,9 @@ Notice what’s missing:
 - No validation logic  
 - No event dispatching  
 - No Infrastructure references  
+- No identity resolution  
+- No authorization logic  
+- No configuration access  
 
 ---
 
@@ -97,6 +110,7 @@ Endpoints may reference:
 - Result DTOs  
 - Dispatcher interfaces  
 - ASP.NET primitives  
+- Frank endpoint discovery attributes  
 
 Endpoints must **not** reference:
 
@@ -107,8 +121,10 @@ Endpoints must **not** reference:
 - EF Core DbContexts  
 - Infrastructure services  
 - Hosting providers  
+- Environment abstractions  
+- Artifact clients  
 
-This enforces **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
+This enforces **Architecture Governance**.
 
 ---
 
@@ -121,7 +137,7 @@ Endpoints must call:
 
 Direct handler invocation is forbidden.
 
-This enforces **[Dispatcher Pipeline](ca://s?q=Open_dispatcher_pipeline_guide)**.
+This enforces the **Dispatcher Pipeline**.
 
 ---
 
@@ -134,7 +150,7 @@ Business logic belongs in:
 
 Endpoints only orchestrate HTTP.
 
-This enforces **[Code Conventions](ca://s?q=Open_code_conventions)**.
+This enforces **Code Conventions**.
 
 ---
 
@@ -148,7 +164,7 @@ Domain events are:
 
 Endpoints must not interact with domain events.
 
-This enforces **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**.
+This enforces **Domain Events Architecture**.
 
 ---
 
@@ -164,7 +180,42 @@ Identity must be resolved via:
 
 - `ICurrentUserService` (Application abstraction)  
 
-This enforces **[Security Governance](ca://s?q=Open_security_governance)**.
+This enforces **Security Governance**.
+
+---
+
+## 6. Endpoints must not perform authorization logic
+
+Endpoints must not:
+
+- Check roles manually  
+- Check permissions manually  
+- Trust frontend authorization  
+
+Authorization must be enforced by:
+
+- Frank authorization seams  
+- Application abstractions  
+
+This enforces **Authorization Governance**.
+
+---
+
+## 7. Endpoints must rely on Frank middleware
+
+Endpoints must not:
+
+- Implement their own error handling  
+- Implement their own security headers  
+- Implement their own CORS logic  
+
+Endpoints must rely on:
+
+- Frank error boundary  
+- Frank security headers middleware  
+- Frank CORS policy enforcement  
+
+This enforces **Security Headers Governance** and **CORS Governance**.
 
 ---
 
@@ -180,7 +231,7 @@ DTOs used by endpoints must:
 
 DTOs should be simple records or classes.
 
-This enforces **[API Governance](ca://s?q=Open_api_governance)**.
+This enforces **API Governance**.
 
 ---
 
@@ -208,7 +259,7 @@ Endpoints must follow strict dependency direction:
 ```
 Api → Application → Domain
 Infrastructure → Application → Domain
-All layers → SharedKernel
+All layers → Frank
 ```
 
 Endpoints must not depend on:
@@ -218,25 +269,26 @@ Endpoints must not depend on:
 - Domain entities  
 - Application handlers  
 
-This enforces **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
+This enforces **Architecture Governance**.
 
 ---
 
-# DI & SharedKernel Rules
+# DI & Frank Rules
 
 Endpoints participate in DI only through:
 
 - Dispatcher abstractions  
 - Request DTO validators (auto‑registered)  
-- Endpoint discovery (SharedKernel)  
+- Endpoint discovery (Frank)  
 
 Endpoints must not:
 
 - Register services manually  
 - Use Scrutor or suffix scanning  
 - Use Infrastructure services  
+- Use hosting provider abstractions  
 
-This enforces **[Dependency Injection Architecture](ca://s?q=Open_dependency_injection_architecture)**.
+This enforces **Dependency Injection Architecture**.
 
 ---
 
@@ -251,9 +303,11 @@ When adding a new endpoint:
 5. Keep endpoint logic limited to mapping and HTTP concerns  
 6. Do not bypass the dispatcher pipeline  
 7. Do not reference Application internals or Infrastructure  
-8. Ensure endpoint is discovered via SharedKernel endpoint discovery  
+8. Ensure endpoint is discovered via Frank endpoint discovery  
 9. Ensure endpoint follows API security rules  
 10. Ensure endpoint follows error‑shaping conventions  
+11. Ensure endpoint relies on Frank security headers and CORS  
+12. Ensure endpoint does not perform identity or authorization logic  
 
 If an endpoint grows beyond ~10–20 lines, logic is leaking into the wrong layer.
 
@@ -261,10 +315,13 @@ If an endpoint grows beyond ~10–20 lines, logic is leaking into the wrong laye
 
 # Related Documents
 
-- **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Identity Mapping](ca://s?q=Generate_Identity_Mapping_Guide)**  
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
-- **[Dispatcher Pipeline](ca://s?q=Open_dispatcher_pipeline_guide)**  
-- **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**  
-- **[Architecture Governance](ca://s?q=Open_architecture_governance)**  
-- **[Security Governance](ca://s?q=Open_security_governance)**  
+- Authentication Architecture  
+- Identity Mapping  
+- Session Management  
+- Dispatcher Pipeline  
+- Domain Events Architecture  
+- Architecture Governance  
+- Security Governance  
+- API Governance  
+- CI Governance  
+- Operations Governance  

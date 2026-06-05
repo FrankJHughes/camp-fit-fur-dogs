@@ -13,7 +13,7 @@
 - [Application Purity](#application-purity)
 - [Infrastructure Purity](#infrastructure-purity)
 - [API Purity](#api-purity)
-- [SharedKernel Purity](#sharedkernel-purity)
+- [Frank Purity](#Frank-purity)
 - [DI Purity](#di-purity)
 - [DTO Purity](#dto-purity)
 - [Handler Purity](#handler-purity)
@@ -42,7 +42,7 @@ API → Application → Domain
 | **Application** | Domain | Infrastructure, Api |
 | **Infrastructure** | Application, Domain | Api |
 | **Api** | Application, Infrastructure | Domain (direct use of entities — see [API Purity](#api-purity)) |
-| **SharedKernel** | Nothing | All four layers |
+| **Frank** | Nothing | All four layers |
 
 **Golden rule:** dependencies point inward.  
 No layer may reference a layer above it.
@@ -198,9 +198,9 @@ app.MapPost("/dogs", async (RegisterDogCommand command, ICommandDispatcher dispa
 
 ---
 
-## SharedKernel Purity
+## Frank Purity
 
-SharedKernel contains cross-cutting building blocks reused by multiple layers. It has **zero** project references.
+Frank contains cross-cutting building blocks reused by multiple layers. It has **zero** project references.
 
 ### Allowed
 
@@ -405,7 +405,7 @@ Is it wiring DI?
   → Api
 
 Is it a reusable primitive?
-  → SharedKernel
+  → Frank
 ```
 
 ### Common Mistakes and Fixes

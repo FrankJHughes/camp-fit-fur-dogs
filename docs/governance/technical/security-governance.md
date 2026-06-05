@@ -11,7 +11,7 @@ Security governance ensures:
 - Compliance with legal and operational guarantees  
 - A stable foundation for customer trust  
 
-Security is not optional. It is a first-class product requirement.
+Security is not optional. It is a first‑class product requirement.
 
 ---
 
@@ -24,7 +24,7 @@ All products must follow these principles:
 - **Secure by Default** — insecure configurations are not allowed  
 - **Fail Safe** — failures must not expose data  
 - **Zero Trust** — no implicit trust between components  
-- **Auditability** — all security-relevant actions must be traceable  
+- **Auditability** — all security‑relevant actions must be traceable  
 
 Security is a product feature, not a technical afterthought.
 
@@ -43,8 +43,12 @@ Security responsibilities include:
 - Operational security for deployments  
 - OIDC configuration and identity mapping  
 - Session cookie issuance and lifecycle management  
+- Rate limiting (US‑132)  
+- Account lockout (US‑133)  
+- Email verification (US‑148)  
+- Password reset flows (US‑146)  
 
-## Frank (SharedKernel)
+## Frank
 Security responsibilities include:
 
 - Cryptographic primitives  
@@ -54,10 +58,14 @@ Security responsibilities include:
 - Guardrails for dispatching and error shaping  
 - DI auto‑registration enforcement  
 - EF Core configuration scanning  
+- **Security headers middleware (US‑134)**  
+- **CORS policy enforcement seams (US‑135)**  
 - Hosting provider selection and hardening infrastructure  
 - Startup validation for configuration safety  
+- Environment abstraction (no direct env var access)  
+- Artifact client abstraction (no direct HTTP/JSON/ZIP)  
 
-SharedKernel must never depend on product-specific security logic.
+Frank must never depend on product‑specific security logic.
 
 ---
 
@@ -69,9 +77,10 @@ Authentication must:
 - Use validated identity flows (OIDC for US‑110)  
 - Never store plaintext credentials  
 - Never bypass validation pipelines  
-- Fail fast on misconfiguration (e.g., missing OIDC keys)  
+- Fail fast on misconfiguration  
 - Resolve identity via `ICurrentUserService`  
 - Issue session cookies via `ISessionService`  
+- Integrate with Frank’s authentication seams  
 
 Authorization must:
 
@@ -127,7 +136,7 @@ Data must never be:
 - Stored in browser localStorage if sensitive  
 - Exposed through error messages  
 
-Error messages must be generic and non-revealing.
+Error messages must be generic and non‑revealing.
 
 ---
 
@@ -161,10 +170,11 @@ DI governance:
 Hosting must:
 
 - Use HTTPS  
-- Use secure headers  
-- Use environment-based configuration  
+- Use secure headers (US‑134)  
+- Use environment‑based configuration  
 - Avoid exposing internal ports  
 - Restrict database access to the API only  
+- Enforce CORS policy (US‑135)  
 
 Deployment must:
 
@@ -173,6 +183,7 @@ Deployment must:
 - Never expose internal endpoints publicly  
 - Validate hosting provider configuration before startup  
 - Validate DI auto‑registration and EF Core scanning before startup  
+- Validate security headers middleware is active  
 
 Infrastructure changes must trigger all test suites.
 
@@ -185,7 +196,9 @@ Hosting providers must:
 - Validate all required external configuration sources  
 - Never silently skip required configuration  
 - Never allow the API to start in an insecure or incomplete state  
-- Use SharedKernel hosting provider infrastructure  
+- Use Frank hosting provider infrastructure  
+- Use Frank’s injected abstractions exclusively  
+- Never perform HTTP, JSON, or ZIP operations directly  
 
 ## 7.2 Render Hosting Provider Requirements
 
@@ -220,21 +233,24 @@ API endpoints must:
 - Avoid leaking stack traces  
 - Avoid returning internal identifiers  
 - Use dispatchers (never invoke handlers directly)  
-- Use SharedKernel error shaping  
-- Use SharedKernel validation pipeline  
+- Use Frank error shaping  
+- Use Frank validation pipeline  
+- Apply Frank security headers middleware  
+- Apply Frank CORS policy  
 
 Endpoints must not:
 
-- Trust client-provided IDs  
+- Trust client‑provided IDs  
 - Accept unvalidated JSON  
 - Expose internal exceptions  
 
-SharedKernel guardrails must be used for:
+Frank guardrails must be used for:
 
 - Endpoint discovery  
 - Validation  
 - Dispatching  
 - Error shaping  
+- Security headers  
 
 ---
 
@@ -245,7 +261,7 @@ Frontend must:
 - Never store sensitive data in localStorage  
 - Use secure cookies for authentication tokens  
 - Avoid inline scripts  
-- Use framework-provided escaping  
+- Use framework‑provided escaping  
 - Avoid exposing internal API details  
 
 Frontend must not:
@@ -260,7 +276,7 @@ Frontend must not:
 
 Session cookies must:
 
-- Use secure, HTTP-only cookies  
+- Use secure, HTTP‑only cookies  
 - Never store tokens in localStorage  
 - Use `Secure` flag in Production  
 - Use strict SameSite rules  
@@ -283,8 +299,8 @@ Audit logs must record:
 
 - Successful logins  
 - Failed logins  
-- Security-relevant actions  
-- Identity resolution events (non-PII)  
+- Security‑relevant actions  
+- Identity resolution events (non‑PII)  
 
 Audit logs must:
 
@@ -295,7 +311,7 @@ Audit logs must:
 Audit logs must be:
 
 - Structured  
-- Machine-readable  
+- Machine‑readable  
 - Immutable  
 - Queryable  
 
@@ -308,7 +324,7 @@ CI must:
 - Never print secrets  
 - Never expose environment variables in logs  
 - Use pinned action versions  
-- Use least-privilege tokens  
+- Use least‑privilege tokens  
 - Block merges on security violations  
 
 Security scanning must run:
@@ -323,27 +339,28 @@ Security scanning must run:
 
 If a security issue is discovered:
 
-1. **Stop the bleeding**  
-   - Disable affected features  
-   - Revoke compromised tokens  
-   - Block deployments if necessary  
+## 13.1 Immediate Actions
+- Stop the bleeding  
+- Disable affected features  
+- Revoke compromised tokens  
+- Block deployments if necessary  
 
-2. **Assess impact**  
-   - Identify affected users  
-   - Identify affected systems  
-   - Determine severity  
+## 13.2 Assess Impact
+- Identify affected users  
+- Identify affected systems  
+- Determine severity  
 
-3. **Fix the issue**  
-   - Patch the vulnerability  
-   - Add tests to prevent regression  
-   - Update documentation  
+## 13.3 Fix the Issue
+- Patch the vulnerability  
+- Add tests to prevent regression  
+- Update documentation  
 
-4. **Communicate**  
-   - Notify stakeholders  
-   - Update changelog  
-   - Document the incident  
+## 13.4 Communication
+- Notify stakeholders  
+- Update changelog  
+- Document the incident  
 
-Incidents must be treated as top-priority work.
+Incidents must be treated as top‑priority work.
 
 ---
 
@@ -353,8 +370,9 @@ Incidents must be treated as top-priority work.
 - CI enforces scanning and safe workflows  
 - Product Owner enforces EG/LG alignment  
 - Scripts enforce safe defaults  
-- SharedKernel enforces startup validation  
+- Frank enforces startup validation  
 - DI auto‑registration enforces service correctness  
+- Security header enforcement tests validate API safety  
 
 No PR may merge if:
 
@@ -363,4 +381,4 @@ No PR may merge if:
 - It introduces insecure patterns  
 - It violates hosting or deployment rules  
 
-Security governance is non-negotiable.
+Security governance is non‑negotiable.

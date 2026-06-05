@@ -33,15 +33,15 @@ As a **developer**, I want compile-time enforcement of clean architecture bounda
 - **Portfolio signal** — demonstrates Roslyn analyzer authoring, diagnostic violations. A developer cannot accidentally merge a boundary violation even if they skip tests.
 - **Portfolio signal** — demonstrates Roslyn analyzer authoring, diagnostic reporting, code fix providers, and NuGet analyzer packaging.
 - **Defense in depth** — complements the test-time reporting, code fix providers, and NuGet analyzer packaging.
-- **Defense in depth** — complements the test-time guardrails (US-108 SharedKernel.Testing) and runtime validation (US-108 `AddSharedKernel()`). Three layers of enforcement: compile, test, runtime.
+- **Defense in depth** — complements the test-time guardrails (US-108 Frank.Testing) and runtime validation (US-108 `AddFrank()`). Three layers of enforcement: compile, test, runtime.
 
 ## Problem
 
-After US-108, boundary enforcement exists guardrails (US-108 SharedKernel.Testing) and runtime validation (US-108 `AddSharedKernel()`). Three layers of enforcement: compile, test, runtime at two points:
+After US-108, boundary enforcement exists guardrails (US-108 Frank.Testing) and runtime validation (US-108 `AddFrank()`). Three layers of enforcement: compile, test, runtime at two points:
 
 | Enforcement point | When violations surface | Feedback latency |
 |---|---|---|
-| SharedKernel.Testing (.
+| Frank.Testing (.
 
 ## Problem
 
@@ -49,9 +49,9 @@ After US-108, boundary enforcement exists at two points:
 
 | Enforcement point | When violations surface | Feedback latency |
 |---|---|---|
-| SharedKernel.Testing (test time) | `dotnet test` or CI | Seconds to minutes |
-| `AddSharedKernel()` (runtime) | Application startup | Seconds (dev) to minutes (CItest time) | `dotnet test` or CI | Seconds to minutes |
-| `AddSharedKernel()` (runtime) | Application startup | Seconds (dev) to minutes (CI) |
+| Frank.Testing (test time) | `dotnet test` or CI | Seconds to minutes |
+| `AddFrank()` (runtime) | Application startup | Seconds (dev) to minutes (CItest time) | `dotnet test` or CI | Seconds to minutes |
+| `AddFrank()` (runtime) | Application startup | Seconds (dev) to minutes (CI) |
 
 Neither catches violations **while the developer is writing code**. A developer can type `using CampFitFurDogs.Infrastructure;` inside) |
 
@@ -66,14 +66,14 @@ Roslyn analyzers run inside the compiler pipeline. They see every syntax tree an
 ### Part A: Analyzer project
 
 ```
-src/SharedKernel.Analyzers/ real time. A custom analyzer can flag forbidden `using` statements, constructor injections, and type references **as the code is written** — same experience as a compiler error.
+src/Frank.Analyzers/ real time. A custom analyzer can flag forbidden `using` statements, constructor injections, and type references **as the code is written** — same experience as a compiler error.
 
 ## Solution
 
 ### Part A: Analyzer project
 
 ```
-src/SharedKernel.Analyzers/
+src/Frank.Analyzers/
   LayerDependencyAnalyzer.cs           (DiagnosticAnalyzer)
   LayerConfiguration.cs                (reads layer metadata from .csproj)
   DiagnosticDescriptors.cs             (all
@@ -82,10 +82,10 @@ src/SharedKernel.Analyzers/
   DiagnosticDescriptors.cs             (all diagnostic IDs and messages)
 ```
 
-The analyzer ships as part of the SharedKernel solution. Products reference it as an analyzer project reference diagnostic IDs and messages)
+The analyzer ships as part of the Frank solution. Products reference it as an analyzer project reference diagnostic IDs and messages)
 ```
 
-The analyzer ships as part of the SharedKernel solution. Products reference it as an analyzer project reference or (later) as a NuGet analyzer package.
+The analyzer ships as part of the Frank solution. Products reference it as an analyzer project reference or (later) as a NuGet analyzer package.
 
 ### Part B: Layer declaration via MSBuild properties
 
@@ -153,9 +153,9 @@ The analyzer reads `ArchitectureLayer` from `AnalyzerConfigOptions
 </PropertyGroup>
 ```
 
-The analyzer reads `ArchitectureLayer` from `AnalyzerConfigOptions` and applies the rule set for that layer. SharedKernel projects do not set this property — they are foundation, not product layers.
+The analyzer reads `ArchitectureLayer` from `AnalyzerConfigOptions` and applies the rule set for that layer. Frank projects do not set this property — they are foundation, not product layers.
 
-### Part C: Diagnostic` and applies the rule set for that layer. SharedKernel projects do not set this property — they are foundation, not product layers.
+### Part C: Diagnostic` and applies the rule set for that layer. Frank projects do not set this property — they are foundation, not product layers.
 
 ### Part C: Diagnostic rules
 
@@ -316,10 +316,10 @@ Roslyn analyzers have their own test framework (`Microsoft.CodeAnalysis.CSharp.A
 Roslyn analyzers have their own test framework (`Microsoft.CodeAnalysis.CSharp.Analyzer.Testing`). Each diagnostic gets a test class verifying it fires on violation code and stays silent on clean code:
 
 ```
-tests/SharedKernel. gets a test class verifying it fires on violation code and stays silent on clean code:
+tests/Frank. gets a test class verifying it fires on violation code and stays silent on clean code:
 
 ```
-tests/SharedKernel.Analyzers.Tests/
+tests/Frank.Analyzers.Tests/
   CFFD001_DomainMustNotReferenceApplicationTests.cs
   CFFD002_DomainMustNotReferenceInfrastructureTests.cs
   CFFD008_ApplicationMustNotReferenceInfrastructureTests.cs
@@ -353,7 +353,7 @@ Product projects add an analyzer reference:
 <!-- In Directory.Build.props or each .csproj -->
 <ItemGroup>
   <ProjectReference
-    Include="..\SharedKernel.Analyzers\CampFitFurDogs. integration
+    Include="..\Frank.Analyzers\CampFitFurDogs. integration
 
 Product projects add an analyzer reference:
 
@@ -361,7 +361,7 @@ Product projects add an analyzer reference:
 <!-- In Directory.Build.props or each .csproj -->
 <ItemGroup>
   <ProjectReference
-    Include="..\CampFitFurSharedKernel.Analyzers.csproj"
+    Include="..\CampFitFurFrank.Analyzers.csproj"
     OutputItemType="Analyzer"
     ReferenceOutputAssembly="false" />
 </ItemGroup>
@@ -369,7 +369,7 @@ Product projects add an analyzer reference:
 
 That is it. No test code, no configuration beyond the `ArchitectureLayer` property. The analyzer runs inside `dotnet build` and inside the IDE.
 
-## DeliverablesDogs.SharedKernel.Analyzers\SharedKernel.Analyzers.csproj"
+## DeliverablesDogs.Frank.Analyzers\Frank.Analyzers.csproj"
     OutputItemType="Analyzer"
     ReferenceOutputAssembly="false" />
 </ItemGroup>
@@ -378,13 +378,13 @@ That is it. No test code, no configuration beyond the `ArchitectureLayer` proper
 That is it. No test code, no configuration
 
 - [ ] ADR-0023: Architecture Boundary Roslyn Analyzer
-- [ ] `SharedKernel.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
+- [ ] `Frank.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
 - [ ] `LayerDependencyAnalyzer` diagnostic analyzer beyond the `ArchitectureLayer` property. The analyzer runs inside `dotnet build` and inside the IDE.
 
 ## Deliverables
 
 - [ ] ADR-0023: Architecture Boundary Roslyn Analyzer
-- [ ] `SharedKernel.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
+- [ ] `Frank.Analyzers` project targeting `netstandard2.0` (Roslyn analyzer requirement)
 - [ ] `LayerDependencyAnalyzer` diagnostic analyzer with all 14 diagnostic rules
 - [ ] `LayerConfiguration` with all 14 diagnostic rules
 - [ ] `LayerConfiguration` reads `ArchitectureLayer` from MSBuild properties via `AnalyzerConfigOptions`
@@ -395,10 +395,10 @@ That is it. No test code, no configuration
 - [ ] `DiagnosticDescriptors` with clear, actionable messages for each violation
 - [ ] All product `.csproj` files updated with `<ArchitectureLayer>` property
 - [ ] `Directory.Build.props` updated with analyzer project reference
-- [ ] `SharedKernel.Analyzers.Tests` project created
+- [ ] `Frank.Analyzers.Tests` project created
 - [ ] Analyzer verification tests for all 14 diagnostic rules (violation + clean code)
 - [ ] Project added to `CampFitFurDogs.sln`
-- [ ] `copampFitFurDogs.SharedKernel.Analyzers.Tests` project created
+- [ ] `copampFitFurDogs.Frank.Analyzers.Tests` project created
 - [ ] Analyzer verification tests for all 14 diagnostic rules (violation + clean code)
 - [ ] Project added to `CampFitFurDogs.sln`
 - [ ] `copilot-instructions.md` updated with analyzer conventions
@@ -436,9 +436,9 @@ That is it. No test code, no configuration
 - [ ] EF Core migrations ] A query handler constructor accepting `ICustomerRepository` produces diagnostic `CFFD011` as a warning
 - [ ] Clean code (no violations) produces zero diagnostics
 - [ ] EF Core migrations and generated code are excluded from analysis
-- [ ] SharedKernel projects (no `ArchitectureLayer` property) are excluded from analysis
+- [ ] Frank projects (no `ArchitectureLayer` property) are excluded from analysis
 - [ ] All 14 diagnostic rules have passing verification tests (both positive and generated code are excluded from analysis
-- [ ] SharedKernel projects (no `ArchitectureLayer` property) are excluded from analysis
+- [ ] Frank projects (no `ArchitectureLayer` property) are excluded from analysis
 - [ ] All 14 diagnostic rules have passing verification tests (both positive and negative cases)
 - [ ] `dotnet build` fails when a layer violation exists — CI catches violations without running tests
 - [ ] Diagnostic messages include the offending type name, the current layer, and the forbidden layer
@@ -467,7 +467,7 @@ That is it. No test code, no configuration
 
 ## Dependencies
 
-- US-108 (Foundation Extraction) — required (establishes the SharedKernel project structure and boundary definitions that the analyzer enforces)
+- US-108 (Foundation Extraction) — required (establishes the Frank project structure and boundary definitions that the analyzer enforces)
 
 ## Estimated Effort
 
@@ -475,7 +475,7 @@ That is it. No test code, no configuration
 
 ## Dependencies
 
-- US-108 (Foundation Extraction) — required (establishes the SharedKernel project structure and boundary definitions that the analyzer enforces)
+- US-108 (Foundation Extraction) — required (establishes the Frank project structure and boundary definitions that the analyzer enforces)
 
 ## Estimated Effort
 
@@ -488,8 +488,8 @@ That is it. No test code, no configuration
 ## Notes
 
 - The analyzer targets `netstandard2.0` — this is a Roslyn requirement, not a choice. Analyzers must be loadable by both VS Code ( — this is a Roslyn requirement, not a choice. Analyzers must be loadable by both VS Code (OmniSharp/.NET 6+) and Visual Studio (Roslyn 4.x).
-- The analyzer complements but does not replace SharedKernel.Testing guardrails. Test-time guardrails can enforce rules that areOmniSharp/.NET 6+) and Visual Studio (Roslyn 4.x).
-- The analyzer complements but does not replace SharedKernel.Testing guardrails. Test-time guardrails can enforce rules that are impractical for a syntax/semantic analyzer (e.g., "every IEndpoint implementation must be discoverable by assembly scanning"). The two enforcement impractical for a syntax/semantic analyzer (e.g., "every IEndpoint implementation must be discoverable by assembly scanning"). The two enforcement layers cover different rule categories.
+- The analyzer complements but does not replace Frank.Testing guardrails. Test-time guardrails can enforce rules that areOmniSharp/.NET 6+) and Visual Studio (Roslyn 4.x).
+- The analyzer complements but does not replace Frank.Testing guardrails. Test-time guardrails can enforce rules that are impractical for a syntax/semantic analyzer (e.g., "every IEndpoint implementation must be discoverable by assembly scanning"). The two enforcement impractical for a syntax/semantic analyzer (e.g., "every IEndpoint implementation must be discoverable by assembly scanning"). The two enforcement layers cover different rule categories.
 - If the analyzer is later published as a NuGet package, the `OutputItemType="Analyzer"` reference becomes a standard `PackageReference` with analyzer assets layers cover different rule categories.
 - If the analyzer is later published as a NuGet package, the `OutputItemType="Analyzer"` reference becomes a standard `PackageReference` with analyzer assets — zero product code change.
 

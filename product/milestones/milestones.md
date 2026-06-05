@@ -17,7 +17,7 @@ multiple milestones when dependencies allow.
 **Status:** ✅ Shipped (Sprints 1–6)
 
 **What shipped:**
-- Frank (SharedKernel) v0.1.0: DDD building blocks — entities, value objects,
+- Frank (Frank) v0.1.0: DDD building blocks — entities, value objects,
   aggregates, repository contracts, CQRS abstractions, dispatchers, DI conventions
 - Frank v0.2.0: Foundation Extraction — Unit of Work, BCrypt hashing, EF Entity
   Auto-Discovery, Readers

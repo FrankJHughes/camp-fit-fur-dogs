@@ -1,6 +1,6 @@
+using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Infrastructure.Data;
 
 namespace CampFitFurDogs.Api.Tests.Fixtures;
 

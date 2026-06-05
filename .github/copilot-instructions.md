@@ -14,7 +14,7 @@ Copilot must also respect the governance enforcement system:
 - **[Governance Enforcement Checklist](ca://s?q=Open_governance_enforcement_checklist)**
 - **[Governance Enforcement Matrix](ca://s?q=Open_governance_enforcement_matrix)**
 
-These documents define *how governance is enforced* across roles, CI, scripts, and SharedKernel.
+These documents define *how governance is enforced* across roles, CI, scripts, and Frank.
 
 ---
 
@@ -105,6 +105,25 @@ Additional requirements:
 
 ---
 
+# Copilot Silence Protocol
+
+Multi‑message workflows in this repository use an explicit turn‑taking protocol:
+
+- `MY TURN:` — The user is streaming content (often multiple messages) that Copilot must ingest **silently**.
+  During `MY TURN`, Copilot must:
+  - Produce **no output at all** (no acknowledgements, no apologies, no meta‑commentary).
+  - Not attempt partial edits or speculative responses.
+
+- `YOUR TURN:` — The user explicitly invites a response and provides an instruction.
+  During `YOUR TURN`, Copilot must:
+  - Respond **exactly once**.
+  - Operate **only** on the content the user has provided.
+  - Follow file generation rules (full‑file replacement, script‑first, no partial edits).
+
+Violating the silence protocol is treated as a governance violation and must be captured as a lesson learned.
+
+---
+
 # Hosting & Deployment Guidance
 
 Copilot must follow the hosting and deployment conventions defined in:
@@ -183,4 +202,4 @@ These rules prevent corruption, drift, and ambiguity.
 | 34 | 13 | Neon branch not ready before migrations | Add Neon readiness probe before migrations |
 | 35 | 13 | Vitest config drifted from folder structure | Add guardrail asserting test dirs match Vitest globs |
 | 36 | 13 | Authentication tests reused stale cookies | Add shared helper to clear cookies between tests |
-
+| 37 | 14 | Copilot responded during `MY TURN` multi‑message ingestion | Formalized **Copilot Silence Protocol** and documented it as a convention in Copilot Instructions |

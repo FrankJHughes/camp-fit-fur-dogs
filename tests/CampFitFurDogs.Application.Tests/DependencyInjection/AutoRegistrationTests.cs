@@ -1,15 +1,12 @@
-using FluentAssertions;
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-
-using SharedKernel.Abstractions;
-using SharedKernel.DependencyInjection;
-
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
+using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
-using CampFitFurDogs.Application.Tests.Fakes;
+using FluentValidation;
+using Frank.Abstractions;
+using Frank.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 
@@ -21,7 +18,7 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddSharedKernel(
+        services.AddFrank(
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
 
@@ -48,7 +45,7 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddSharedKernel(
+        services.AddFrank(
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
         // Provide required fakes so handlers/validators can be constructed

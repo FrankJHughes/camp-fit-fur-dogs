@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Customers.Exceptions;
-using SharedKernel.Abstractions;
+using Frank.Abstractions;
 
 namespace CampFitFurDogs.Application.Customers.CreateCustomer;
 

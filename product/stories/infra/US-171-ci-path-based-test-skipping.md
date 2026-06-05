@@ -29,7 +29,7 @@ on unaffected code.
 ## Value
 
 The Camp Fit Fur Dogs repo is a monorepo with three independently testable
-layers: backend (.NET), frontend (Next.js), and SharedKernel (Frank). A
+layers: backend (.NET), frontend (Next.js), and Frank (Frank). A
 frontend-only CSS fix should not trigger a 2-minute `dotnet test` run.
 A backend domain model change should not trigger `npm test`. Path-based
 filtering cuts CI time by 40–60% for single-layer changes while maintaining
@@ -42,7 +42,7 @@ full coverage for cross-cutting changes.
 - [ ] Changed paths are classified into zones:
   - **backend**: `src/CampFitFurDogs.*/**`, `tests/CampFitFurDogs.*/**`
   - **frontend**: `frontend/**`
-  - **shared-kernel**: `src/SharedKernel/**`, `tests/SharedKernel.*/**`
+  - **shared-kernel**: `src/Frank/**`, `tests/Frank.*/**`
   - **infra**: `.github/**`, `Makefile`, `docker-compose*`, `*.sln`
   - **docs-only**: `*.md`, `product/**`, `docs/**`, `LICENSE`, `.editorconfig`
 - [ ] Changes to **infra** zone trigger ALL test suites
@@ -87,5 +87,5 @@ full coverage for cross-cutting changes.
 - Consider future test splitting for parallelism
 - Demo scenarios:
   - Frontend-only change → backend skipped
-  - SharedKernel change → backend + shared-kernel run
+  - Frank change → backend + shared-kernel run
   - README edit → all suites skipped

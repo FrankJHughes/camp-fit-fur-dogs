@@ -1,12 +1,9 @@
-using FluentAssertions;
 using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Tests.Fakes;
-
+using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
-
-using CampFitFurDogs.Domain.Customers;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.ListDogsByOwner;
 

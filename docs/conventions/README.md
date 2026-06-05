@@ -21,7 +21,7 @@ These are the single source of truth for implementation‑level rules and must r
 
 System‑wide architectural implementation rules and guardrails.
 
-- **[Architecture Conventions](architecture.md)** — DDD layering, hosting provider architecture, authentication/session architecture, endpoint architecture, test seams, SharedKernel boundaries
+- **[Architecture Conventions](architecture.md)** — DDD layering, hosting provider architecture, authentication/session architecture, endpoint architecture, test seams, Frank boundaries
 
 ---
 
@@ -59,7 +59,7 @@ Conventions ensure:
 - Safe and maintainable documentation  
 - Clear onboarding for new contributors  
 - Reduced cognitive load across the team  
-- Alignment with SharedKernel and governance  
+- Alignment with Frank and governance  
 - Preview‑safe behavior across all environments  
 
 Conventions are **living documents** and should be reviewed at each sprint close.

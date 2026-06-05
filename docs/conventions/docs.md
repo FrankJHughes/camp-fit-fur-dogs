@@ -27,7 +27,7 @@ Governance lives in:
 - **Architecture Governance**  
 - **API Governance**  
 - **Security Governance**  
-- **Operations Governance**  
+- **Operations Governance**
 
 ---
 
@@ -35,9 +35,9 @@ Governance lives in:
 
 The repository uses four canonical convention documents. These are the single source of truth for repository rules and must remain synchronized:
 
-- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, core building blocks, DI architecture  
+- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, cross‑cutting primitives  
 - **Workflow** — CI/CD structure, composite actions, PR Preview lifecycle, script‑first rules  
-- **Code** — backend, frontend, CQRS, endpoints, EF Core, SharedKernel usage, DI usage  
+- **Code** — backend, frontend, CQRS, endpoints, EF Core, Frank usage, DI usage  
 - **Docs** — documentation rules, patching rules, fencing rules, ownership  
 
 Other documents (ADRs, guides, READMEs) may reference these conventions but must not redefine them.
@@ -56,7 +56,7 @@ docs/conventions/
 
 # 3. Governance vs. Conventions vs. Guides
 
-To prevent drift and duplication, documentation must respect the system’s separation of concerns.
+Documentation must respect the system’s separation of concerns.
 
 ## 3.1 Governance (What must be true)
 
@@ -82,7 +82,7 @@ Conventions define:
 - Form architecture  
 - Test seams  
 - Folder structure  
-- Dependency injection usage (SharedKernel auto‑registration)  
+- Dependency injection usage (Frank auto‑registration)  
 
 Conventions must **never** redefine governance.
 
@@ -95,7 +95,7 @@ Guides define:
 - How to debug hosting providers  
 - How to test endpoints  
 - How to run migrations  
-- How SharedKernel auto‑registration works (reference only; rules live in conventions)  
+- How Frank auto‑registration works (reference only; rules live in conventions)  
 
 Guides must **never** define rules or boundaries.
 
@@ -113,7 +113,7 @@ Each ADR must:
 - State the **decision** clearly  
 - Explain **consequences** (positive and negative)  
 - Reference relevant conventions and guardrails  
-- Clarify interactions with SharedKernel and other systems  
+- Clarify interactions with Frank and other systems  
 
 ## 4.2 Placement
 
@@ -228,7 +228,7 @@ If an example cannot be shown safely, describe the pattern in prose.
 
 ## 10.2 Ownership
 
-- **Architecture & SharedKernel conventions** — platform/architecture maintainers  
+- **Architecture & Frank conventions** — platform/architecture maintainers  
 - **Workflow & tooling conventions** — automation/build maintainers  
 - **Code conventions** — backend, frontend, and infra maintainers  
 - **Docs conventions** — shared responsibility with a designated maintainer  
@@ -250,39 +250,42 @@ When updating conventions:
 
 ---
 
-# 12. Relationship to SharedKernel
+# 12. Relationship to Frank
 
-SharedKernel is the authoritative source for cross‑cutting behavior.
+Frank is the authoritative source for cross‑cutting behavior.
 
 Documentation must:
 
-- Indicate when a rule is enforced by SharedKernel types or helpers  
-- Encourage product code to use SharedKernel instead of duplicating patterns  
-- Highlight SharedKernel as the canonical home for:
+- Indicate when a rule is enforced by Frank types or helpers  
+- Encourage product code to use Frank instead of duplicating patterns  
+- Highlight Frank as the canonical home for:
   - CQRS abstractions  
   - Domain primitives  
   - Endpoint discovery  
   - **DI auto‑registration engine**  
-  - **`[AutoRegister]` attribute**  
   - **Validator scanning**  
-  - **EF Core configuration auto‑discovery**  
+  - **Security headers middleware**  
+  - **Hosting provider abstractions**  
+  - **Environment abstraction**  
+  - **GitHub artifact client abstraction**  
+  - **PR parser abstraction**  
+  - **Configuration writer abstraction**  
   - Guardrail enforcement  
-  - Hosting provider infrastructure  
-  - Authentication/session abstractions  
   - Test seams  
 
-SharedKernel and documentation must remain synchronized.
+Frank and documentation must remain synchronized.
 
 ---
 
 # 13. PR Preview Documentation Requirements
 
-Because the system uses Neon + Render PR Previews, documentation must:
+Because the system uses Render PR Previews, documentation must:
 
-- Describe the preview lifecycle (Neon branch creation → migrations → infra tests → Render preview deployment → API tests)  
+- Describe the preview lifecycle  
 - Document preview‑safe coding rules  
-- Clarify environment variable expectations (`PREVIEW_DB_CONNECTION_STRING`, `ConnectionStrings__DefaultConnection`)  
-- Ensure examples reflect Git‑backed Render PR Previews and label‑driven deployment  
+- Clarify environment variable expectations  
+- Document hosting provider behavior  
+- Document artifact naming conventions  
 - Avoid references to image‑backed or manually triggered preview flows  
 
 ## 13.1 Minimum Required Content
@@ -296,7 +299,7 @@ Documentation must include:
   - Startup: `/api/dogs` → `200,400,401` ×3  
   - Timeout: 300s  
   - Poll interval: 5s  
-- Artifact handling (`db-conn.txt`) and sensitivity guidance  
+- Artifact handling (`db-conn.txt`, `frontend-url.txt`)  
 - Secrets handling (GitHub Secrets, Render environment)  
 - How to reproduce locally (recommended commands and environment variables)  
 
@@ -321,7 +324,7 @@ Documentation must include:
 
 # 16. Enforcement and Tests
 
-- Guardrail tests validate layering, dependency rules, and other enforceable conventions  
+- Guardrail tests validate layering, dependency rules, hosting provider behavior, and security headers  
 - Documentation must describe which guardrail tests exist and where they run  
 - When a convention is enforced by tests, document the test name and location  
 
@@ -335,7 +338,7 @@ Documentation ensures:
 - Workflow consistency  
 - Coding discipline  
 - Preview‑safe behavior  
-- SharedKernel alignment  
+- Frank alignment  
 - Long‑term maintainability  
 
 All contributors must follow these conventions and keep documentation accurate, complete, and synchronized with the system.

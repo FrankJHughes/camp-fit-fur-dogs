@@ -1,17 +1,13 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
-using SharedKernel.Infrastructure.EntityFrameworkCore;
-
-using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Application.Abstractions.Audit;
-using CampFitFurDogs.Infrastructure.Audit;
-using CampFitFurDogs.Infrastructure.Identity.Oidc;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Identity;
-using CampFitFurDogs.Application.Abstractions.Time;
-using CampFitFurDogs.Infrastructure.Time;
+using CampFitFurDogs.Infrastructure.Audit;
+using CampFitFurDogs.Infrastructure.Data;
+using CampFitFurDogs.Infrastructure.Identity.Oidc;
+using Frank.Infrastructure.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Infrastructure;
 
@@ -27,7 +23,7 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
 
-        services.AddSharedKernelEfCore<AppDbContext>(
+        services.AddFrankEfCore<AppDbContext>(
             [typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly]
         );
 
@@ -38,9 +34,6 @@ public static class ServiceCollectionExtensions
 
         // ⭐ NEW: Audit logging (required for US‑110)
         services.AddSingleton<IAuditLogger, AuditLogger>();
-
-        services.AddSingleton<ISystemClock, SystemClock>();
-
 
         return services;
     }

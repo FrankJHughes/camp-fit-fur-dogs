@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;
 

@@ -1,10 +1,10 @@
+using CampFitFurDogs.Infrastructure.Data;
+using Frank.Abstractions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SharedKernel.Abstractions;
 using Testcontainers.PostgreSql;
-using CampFitFurDogs.Infrastructure.Data;
 
 namespace CampFitFurDogs.Api.Tests.Fixtures;
 

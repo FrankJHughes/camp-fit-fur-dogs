@@ -1,9 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
 using CampFitFurDogs.Api.Tests.Fixtures;
+using FluentAssertions;
+using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 

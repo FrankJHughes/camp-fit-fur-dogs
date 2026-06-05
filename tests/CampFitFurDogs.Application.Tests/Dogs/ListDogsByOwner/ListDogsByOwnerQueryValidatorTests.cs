@@ -1,4 +1,3 @@
-using FluentAssertions;
 using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Tests.Fakes;

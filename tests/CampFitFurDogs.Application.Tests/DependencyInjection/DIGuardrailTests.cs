@@ -1,9 +1,6 @@
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
-
-using SharedKernel.DependencyInjection;
 using System.Reflection;
+using Frank.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 
@@ -22,7 +19,7 @@ public class DiGuardrailTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddSharedKernel(
+        services.AddFrank(
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
         var descriptors = services.ToList();

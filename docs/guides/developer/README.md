@@ -82,7 +82,7 @@ product/
   stories/          # Backlog stories (source of truth)
 
 src/
-  ...               # Backend, frontend, and SharedKernel source code
+  ...               # Backend, frontend, and Frank source code
 
 integration-tests/
   ...               # Infrastructure and API integration test suites
@@ -225,7 +225,7 @@ Backend code must respect:
 
 - Domain purity  
 - CQRS pipelines  
-- SharedKernel primitives  
+- Frank primitives  
 
 Frontend code must follow:
 

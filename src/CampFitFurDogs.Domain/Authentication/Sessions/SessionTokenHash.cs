@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
-using SharedKernel.Domain;
 using CampFitFurDogs.Domain.Authentication.Sessions.Errors;
+using Frank.Domain;
 
 namespace CampFitFurDogs.Domain.Authentication.Sessions;
 

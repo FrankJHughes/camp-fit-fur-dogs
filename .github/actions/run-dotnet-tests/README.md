@@ -31,7 +31,7 @@ A **newline‑separated list** of test project paths.
 Example:
 
 ```
-tests/SharedKernel.Tests
+tests/Frank.Tests
 tests/CampFitFurDogs.Api.Tests
 tests/CampFitFurDogs.Infrastructure.Tests
 ```
@@ -44,7 +44,7 @@ tests/CampFitFurDogs.Infrastructure.Tests
 - uses: ./.github/actions/run-dotnet-tests
   with:
     projects: |
-      tests/SharedKernel.Tests
+      tests/Frank.Tests
       tests/CampFitFurDogs.Api.Tests
       tests/CampFitFurDogs.Infrastructure.Tests
 ```

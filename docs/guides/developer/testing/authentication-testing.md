@@ -16,11 +16,11 @@ This guide focuses solely on **how to test the authentication implementation tha
 
 # Testing Strategy Overview
 
-Authentication is tested across **three layers**, each with a different purpose:
+Authentication is tested across **three layers**, each with a distinct purpose:
 
-1. **[Unit Tests](ca://s?q=Explain_auth_unit_tests)** — Validate individual pipeline steps  
-2. **[Integration Tests](ca://s?q=Explain_auth_integration_tests)** — Validate the full callback flow end‑to‑end  
-3. **[Guardrail Tests](ca://s?q=Explain_auth_guardrail_tests)** — Validate security‑critical invariants  
+1. **Unit Tests** — Validate individual pipeline steps  
+2. **Integration Tests** — Validate the full callback flow end‑to‑end  
+3. **Guardrail Tests** — Validate security‑critical invariants  
 
 This layered approach ensures:
 
@@ -33,49 +33,60 @@ This layered approach ensures:
 
 # Test Layer 1 — Unit Tests
 
-Unit tests validate the behavior of **individual pipeline steps** in isolation.
+Unit tests validate the behavior of **individual pipeline steps** in isolation.  
+Each step is tested with:
+
+- A minimal context  
+- Mocked dependencies  
+- Deterministic inputs  
+- Deterministic outputs  
 
 ## What unit tests cover
 
-### **[ValidateConfigurationStep](ca://s?q=Explain_ValidateConfigurationStep_tests)**  
+### ValidateConfigurationStep
 - Missing OIDC configuration → throws `BadConfigurationException`
 
-### **[ExchangeCodeStep](ca://s?q=Explain_ExchangeCodeStep_tests)**  
+### ExchangeCodeStep
 - Requires `ctx.Code`  
-- Calls Auth0 token exchange  
+- Calls token exchange abstraction  
 - Stores `ctx.Token`
 
-### **[FetchUserStep](ca://s?q=Explain_FetchUserStep_tests)**  
+### FetchUserStep
 - Requires `ctx.Token`  
-- Calls Auth0 `/userinfo`  
-- Handles null userinfo → `AuthCallbackError.UserInfoFailure`
+- Calls userinfo abstraction  
+- Null userinfo → `AuthCallbackError.UserInfoFailure`
 
-### **[ValidateUserStep](ca://s?q=Explain_ValidateUserStep_tests)**  
+### ValidateUserStep
 - Requires `ctx.User`  
-- Missing `ExternalId` → `AuthCallbackError.MissingExternalId`
+- Missing `ExternalId` (`sub`) → `AuthCallbackError.MissingExternalId`
 
-### **[ResolveIdentityStep](ca://s?q=Explain_ResolveIdentityStep_tests)**  
+### ResolveIdentityStep
 - Maps external ID to internal `CustomerId`  
 - Creates Owner if missing  
 - Returns existing Owner if present  
+- Never uses email for identity
 
-### **[AuditLoginStep](ca://s?q=Explain_AuditLoginStep_tests)**  
+### AuditLoginStep
 - Requires `ctx.User` + `ctx.CustomerId`  
 - Calls audit logger exactly once  
+- Does not mutate context
 
-### **[IssueCookieStep](ca://s?q=Explain_IssueCookieStep_tests)**  
+### IssueCookieStep
 - Always runs  
 - Generates token + hash  
-- Creates `SessionCookie`  
+- Creates `SessionCookie` value object  
+- Stores `ctx.TokenHash` + `ctx.SessionCookie`
 
-### **[CreateSessionStep](ca://s?q=Explain_CreateSessionStep_tests)**  
+### CreateSessionStep
 - Requires `ctx.TokenHash` + `ctx.CustomerId`  
 - Persists session  
 - Commits unit of work  
+- Does not issue cookies
 
-### **[BuildRedirectStep](ca://s?q=Explain_BuildRedirectStep_tests)**  
+### BuildRedirectStep
 - Requires `ctx.Session` + `ctx.SessionCookie`  
 - Sets `ctx.RedirectUrl`  
+- Uses configured `PostLoginRedirectUrl`
 
 ---
 
@@ -124,41 +135,41 @@ These tests run against:
 - The real DI container  
 - The real session repository  
 - The real Owner repository  
-- A fake Auth0 client  
+- A fake Auth0 client (deterministic)  
 
 ---
 
 ## Integration Test Responsibilities
 
-### **Happy Path**  
+### Happy Path
 - Valid code → valid token → valid userinfo  
 - Owner created or reused  
 - Session created  
 - Cookie issued  
 - Redirect returned  
 
-### **Missing Authorization Code**  
+### Missing Authorization Code
 - Returns 400  
 - No session created  
 - No cookie issued  
 
-### **Missing Access Token**  
-- Exchange returns null token  
+### Missing Access Token
+- Token exchange returns null  
 - Next step fails with 502  
 
-### **Missing User Profile**  
+### Missing User Profile
 - `/userinfo` returns null  
 - Returns 502  
 
-### **Missing `sub` Claim**  
-- `ValidateUserStep` throws `MissingExternalId`  
+### Missing `sub` Claim
+- `ValidateUserStep` fails  
 - Returns 502  
 
-### **Identity Mapping Failure**  
+### Identity Mapping Failure
 - Resolver throws  
 - Returns 500  
 
-### **Session Creation Failure**  
+### Session Creation Failure
 - Repository throws  
 - Returns 500  
 - No cookie issued  
@@ -191,33 +202,32 @@ tests/Api.Tests/Authentication/Callback
 
 # Test Layer 3 — Guardrail Tests
 
-Guardrail tests ensure **security‑critical invariants** never regress.
-
-These tests validate **safety**, not business logic.
+Guardrail tests ensure **security‑critical invariants** never regress.  
+They validate **safety**, not business logic.
 
 ---
 
 ## Guardrail Responsibilities
 
-### **Cookie Flags**  
+### Cookie Flags
 - `HttpOnly=true`  
 - `Secure=true` (preview/prod)  
 - `SameSite=Lax`  
 - `Path=/`  
 - No sensitive data in cookie value  
 
-### **Token Opacity**  
+### Token Opacity
 - Token is random  
 - Token contains no user data  
 - Token is not a JWT  
 - Token contains no dots (`.`)  
 
-### **Identity Mapping Purity**  
+### Identity Mapping Purity
 - Email is never used for identity  
 - Only `ExternalId` (`sub`) determines identity  
 - Missing `sub` → 502  
 
-### **No Leaks**  
+### No Leaks
 - No tokens logged  
 - No userinfo logged  
 - No internal IDs leaked to Auth0  
@@ -253,51 +263,51 @@ tests/Api.Tests/Guardrails
 
 Authentication tests rely on:
 
-### **Test Auth0 Client**  
+### Test Auth0 Client
 - Deterministic token exchange  
 - Deterministic userinfo  
 - Simulated failures  
 
-### **Test Owner Repository**  
+### Test Owner Repository
 - In‑memory  
 - Supports lookup + creation  
 
-### **Test Session Repository**  
+### Test Session Repository
 - In‑memory  
 - Supports creation + lookup  
 
-### **Test Clock**  
+### Test Clock
 - Deterministic timestamps  
 
-### **Test Cookie Extractor**  
+### Test Cookie Extractor
 - Parses `Set-Cookie` headers  
 
 ---
 
 # Common Testing Pitfalls
 
-### **Missing `sub` in test profiles**  
+### Missing `sub` in test profiles
 `ValidateUserStep` will fail with 502.
 
-### **Using real Auth0 endpoints**  
+### Using real Auth0 endpoints
 Never required — always mock.
 
-### **Forgetting to assert cookie flags**  
+### Forgetting to assert cookie flags
 Security regressions can slip through.
 
-### **Not testing Owner reuse**  
+### Not testing Owner reuse
 Identity mapping must be idempotent.
 
-### **Not testing failure modes**  
+### Not testing failure modes
 Authentication has many.
 
 ---
 
 # Related Documents
 
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
-- **[Identity Mapping](ca://s?q=Generate_Identity_Mapping_Guide)**  
-- **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Authentication Operations](ca://s?q=Generate_Authentication_Operations_Guide)**  
-- **[Create Account Form](ca://s?q=Generate_Create_Account_Form_Guide)**  
-- **[Create Account Feature Slice](ca://s?q=Generate_Create_Account_Slice_Guide)**  
+- **Session Management Guide**  
+- **Identity Mapping Guide**  
+- **Authentication Architecture Guide**  
+- **Authentication Operations Guide**  
+- **Create Account Form Guide**  
+- **Create Account Feature Slice Guide**  

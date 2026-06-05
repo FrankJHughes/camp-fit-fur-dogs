@@ -1,7 +1,8 @@
-using SharedKernel.Abstractions;
+
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
+using Frank.Abstractions;
 
 namespace CampFitFurDogs.Application.Dogs.RegisterDog;
 

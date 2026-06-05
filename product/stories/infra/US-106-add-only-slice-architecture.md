@@ -46,7 +46,7 @@ Two root causes produce all four modification points.
 Each endpoint self-registers its own route via a marker interface:
 
 ```csharp
-// SharedKernel or Abstractions
+// Frank or Abstractions
 public interface IEndpoint
 {
     void Map(IEndpointRouteBuilder app);
@@ -100,7 +100,7 @@ Move the read path from `IDogRepository.GetByIdAsync` into a `IDogProfileReader`
 
 - [ ] ADR-0013: Auto-Discovered Endpoints
 - [ ] ADR-0014: Query-Side Reader Pattern
-- [ ] `IEndpoint` interface in SharedKernel or Abstractions
+- [ ] `IEndpoint` interface in Frank or Abstractions
 - [ ] `DiscoverEndpoints()` extension method
 - [ ] Program.cs wired with `app.DiscoverEndpoints()`
 - [ ] Existing endpoints retrofitted to implement `IEndpoint`

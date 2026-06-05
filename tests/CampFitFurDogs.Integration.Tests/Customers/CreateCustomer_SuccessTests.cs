@@ -1,12 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using CampFitFurDogs.Api;
-using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Domain.Customers;
+using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Integration.Tests.Fixtures;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 

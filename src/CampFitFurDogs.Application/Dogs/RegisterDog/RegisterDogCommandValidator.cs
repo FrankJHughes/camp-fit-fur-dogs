@@ -1,6 +1,5 @@
-using FluentValidation;
-
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
+using FluentValidation;
 
 namespace CampFitFurDogs.Application.Dogs.RegisterDog;
 

@@ -1,9 +1,14 @@
 # Authentication Overview
 
-The application uses **OIDC-based authentication** via an external identity provider (Auth0).  
+The application uses **OIDC‑based authentication** via an external identity provider (Auth0).  
 Owners authenticate using Auth0’s hosted login page; **no passwords are stored locally**, **no identity provider tokens are persisted**, and **the backend manages all session state**.
 
-Authentication is implemented as a **pure login initiation endpoint** plus a **deterministic callback pipeline** that performs configuration validation, token exchange, userinfo retrieval, identity resolution, audit logging, session creation, and redirect construction.
+Authentication is implemented as:
+
+- A **pure login initiation endpoint** (no domain logic, no persistence)  
+- A **deterministic callback pipeline** that performs configuration validation, token exchange, userinfo retrieval, identity resolution, audit logging, session creation, and redirect construction  
+
+All authentication behavior follows **Architecture Governance**, **Security Governance**, and **API Endpoint Purity**.
 
 ---
 
@@ -25,12 +30,14 @@ Authentication is implemented as a **pure login initiation endpoint** plus a **d
 14. Pipeline builds the final redirect URL  
 15. API issues the secure session cookie and redirects the user to the frontend dashboard  
 
+This flow is deterministic, invariant‑checked, and enforced by the dispatcher pipeline.
+
 ---
 
 # Principles
 
 - Authentication is **external** — Auth0 performs identity proof  
-- Login initiation endpoint is **pure** — no domain logic, no persistence  
+- Login initiation endpoint is **pure** — no domain logic, no persistence, no identity resolution  
 - Callback endpoint is implemented as a **strict, ordered pipeline**  
 - Pipeline steps are **small, deterministic, and invariant‑checked**  
 - No identity provider tokens are stored  
@@ -38,6 +45,12 @@ Authentication is implemented as a **pure login initiation endpoint** plus a **d
 - Session cookie is the only client‑side authentication state  
 - Audit logging occurs **before** session creation  
 - Redirect construction occurs **after** session creation  
+- API endpoints rely on **Frank security headers**, **Frank CORS**, and **Frank error boundary**  
+- Identity is resolved exclusively through `IIdentityResolver`  
+- No endpoint performs identity parsing or authorization logic  
+- No pipeline step accesses hosting providers or environment directly  
+
+These principles align with **Security Governance**, **Architecture Governance**, and **Session Management Governance**.
 
 ---
 
@@ -47,3 +60,5 @@ Authentication is implemented as a **pure login initiation endpoint** plus a **d
 - **[Callback Endpoint](ca://s?q=Show_callback_endpoint_doc)**  
 - **[Authentication Configuration](ca://s?q=Show_authentication_configuration_doc)**  
 - **[Authentication Architecture Guide](ca://s?q=Show_authentication_architecture_doc)**  
+- **[Identity Mapping Guide](ca://s?q=Show_identity_mapping_guide)**  
+- **[Session Management Guide](ca://s?q=Show_session_management_guide)**  

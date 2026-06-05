@@ -26,7 +26,7 @@ The changelog is not a commit log. It is a curated, human-readable summary.
 Each product maintains its own changelog:
 
 - `CHANGELOG.md` for Camp Fit Fur Dogs  
-- `CHANGELOG.md` for Frank (SharedKernel)  
+- `CHANGELOG.md` for Frank (Frank)  
 
 Each changelog contains:
 
@@ -92,14 +92,14 @@ Entries must **not** include:
 
 # 5. Multi-Product Changelog Governance
 
-Camp Fit Fur Dogs and Frank (SharedKernel) are separate products.
+Camp Fit Fur Dogs and Frank (Frank) are separate products.
 
 Rules:
 
 - Each product has its own changelog  
 - A change affecting both products requires entries in both files  
 - Cross-product changes must reference the same story ID  
-- SharedKernel changes must never appear in the Camp Fit Fur Dogs changelog  
+- Frank changes must never appear in the Camp Fit Fur Dogs changelog  
 
 This prevents cross-product drift and maintains clear boundaries.
 

@@ -33,19 +33,19 @@ Automating this at the persistence layer eliminates an entire class of
 "forgot to set the timestamp" bugs and ensures consistency across all current
 and future slices.
 
-Implementing this as a SharedKernel capability means any future consumer gets
+Implementing this as a Frank capability means any future consumer gets
 audit timestamps for free — same extraction pattern established by US-108.
 
 ## Acceptance Criteria
 
-### SharedKernel (the capability)
-- [ ] `IAuditable` interface in `SharedKernel/Domain/` declares `CreatedAt` and `ModifiedAt` properties
-- [ ] `AuditTimestampInterceptor` in `SharedKernel/Persistence/` sets `CreatedAt` on `Added` entities and `ModifiedAt` on `Modified` entities via change tracker state
+### Frank (the capability)
+- [ ] `IAuditable` interface in `Frank/Domain/` declares `CreatedAt` and `ModifiedAt` properties
+- [ ] `AuditTimestampInterceptor` in `Frank/Persistence/` sets `CreatedAt` on `Added` entities and `ModifiedAt` on `Modified` entities via change tracker state
 - [ ] Interceptor ignores entities that do not implement `IAuditable`
-- [ ] Interceptor auto-registers via SharedKernel DI conventions — consumers opt in by referencing SharedKernel, not by manual wiring
+- [ ] Interceptor auto-registers via Frank DI conventions — consumers opt in by referencing Frank, not by manual wiring
 - [ ] Timestamps use UTC
-- [ ] SharedKernel unit tests verify timestamps are set correctly for create and update operations
-- [ ] SharedKernel unit tests verify non-auditable entities are unaffected
+- [ ] Frank unit tests verify timestamps are set correctly for create and update operations
+- [ ] Frank unit tests verify non-auditable entities are unaffected
 
 ### Camp Fit Fur Dogs (the consumer)
 - [ ] All existing entities implement `IAuditable`
@@ -68,6 +68,6 @@ audit timestamps for free — same extraction pattern established by US-108.
 ## Notes
 
 - Dependencies are all shipped: US-050 (Unit of Work), US-107 (EF Entity Auto-Discovery), US-108 (Foundation Extraction)
-- `IAuditable` is opt-in by interface, not mandatory on `Entity` base — keeps SharedKernel flexible for diverse consumers
+- `IAuditable` is opt-in by interface, not mandatory on `Entity` base — keeps Frank flexible for diverse consumers
 - App-level architecture tests enforce the "all entities must be auditable" policy
 - **Demo:** Create a dog, update it — query the database and show `CreatedAt` and `ModifiedAt` populated automatically

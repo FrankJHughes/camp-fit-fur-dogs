@@ -106,7 +106,7 @@ Examples:
 - Handlers must follow naming conventions.
 - DTOs must not reference domain entities.
 - Endpoints must not bypass the dispatcher pipeline.
-- SharedKernel must have no upstream dependencies.
+- Frank must have no upstream dependencies.
 - Query handlers must not depend on repository interfaces (ADR‑0021).
 
 ### 3.3 When to Use Which

@@ -31,23 +31,23 @@ Hard delete (US-032) is the simplest correct implementation today, but real user
 make mistakes. Soft-delete adds a safety net — removed dogs are hidden but
 recoverable within a grace period, reducing support burden and owner anxiety.
 
-The soft-delete mechanism itself is implemented as a SharedKernel capability
+The soft-delete mechanism itself is implemented as a Frank capability
 (`ISoftDeletable` + interceptor + global query filter), following the same
-extraction pattern as US-108. Any future SharedKernel consumer gets soft-delete
+extraction pattern as US-108. Any future Frank consumer gets soft-delete
 for free. The restore UX, grace period policy, and purge strategy remain
 app-specific to Camp Fit Fur Dogs.
 
 ## Acceptance Criteria
 
-### SharedKernel (the capability)
-- [ ] `ISoftDeletable` interface in `SharedKernel/Domain/` declares a nullable `DeletedAt` property
-- [ ] `SoftDeleteInterceptor` in `SharedKernel/Persistence/` intercepts `Deleted` entity state on `ISoftDeletable` entities and converts it to `Modified` with `DeletedAt` set to UTC now
+### Frank (the capability)
+- [ ] `ISoftDeletable` interface in `Frank/Domain/` declares a nullable `DeletedAt` property
+- [ ] `SoftDeleteInterceptor` in `Frank/Persistence/` intercepts `Deleted` entity state on `ISoftDeletable` entities and converts it to `Modified` with `DeletedAt` set to UTC now
 - [ ] Interceptor ignores entities that do not implement `ISoftDeletable`
 - [ ] Global query filter convention automatically applies `WHERE DeletedAt IS NULL` to all `ISoftDeletable` entities
 - [ ] Query filter can be bypassed explicitly (e.g., `IgnoreQueryFilters()`) for admin or restore scenarios
-- [ ] Interceptor and query filter auto-register via SharedKernel DI conventions
-- [ ] SharedKernel unit tests verify delete interception, query filtering, and filter bypass
-- [ ] SharedKernel unit tests verify non-soft-deletable entities are unaffected
+- [ ] Interceptor and query filter auto-register via Frank DI conventions
+- [ ] Frank unit tests verify delete interception, query filtering, and filter bypass
+- [ ] Frank unit tests verify non-soft-deletable entities are unaffected
 
 ### Camp Fit Fur Dogs (the consumer)
 - [ ] `Dog` aggregate implements `ISoftDeletable`
