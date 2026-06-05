@@ -27,7 +27,7 @@ Governance lives in:
 - **Architecture Governance**  
 - **API Governance**  
 - **Security Governance**  
-- **Operations Governance**  
+- **Operations Governance**
 
 ---
 
@@ -35,7 +35,7 @@ Governance lives in:
 
 The repository uses four canonical convention documents. These are the single source of truth for repository rules and must remain synchronized:
 
-- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, core building blocks, DI architecture  
+- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, cross‑cutting primitives  
 - **Workflow** — CI/CD structure, composite actions, PR Preview lifecycle, script‑first rules  
 - **Code** — backend, frontend, CQRS, endpoints, EF Core, Frank usage, DI usage  
 - **Docs** — documentation rules, patching rules, fencing rules, ownership  
@@ -56,7 +56,7 @@ docs/conventions/
 
 # 3. Governance vs. Conventions vs. Guides
 
-To prevent drift and duplication, documentation must respect the system’s separation of concerns.
+Documentation must respect the system’s separation of concerns.
 
 ## 3.1 Governance (What must be true)
 
@@ -263,12 +263,14 @@ Documentation must:
   - Domain primitives  
   - Endpoint discovery  
   - **DI auto‑registration engine**  
-  - **`[AutoRegister]` attribute**  
   - **Validator scanning**  
-  - **EF Core configuration auto‑discovery**  
+  - **Security headers middleware**  
+  - **Hosting provider abstractions**  
+  - **Environment abstraction**  
+  - **GitHub artifact client abstraction**  
+  - **PR parser abstraction**  
+  - **Configuration writer abstraction**  
   - Guardrail enforcement  
-  - Hosting provider infrastructure  
-  - Authentication/session abstractions  
   - Test seams  
 
 Frank and documentation must remain synchronized.
@@ -277,12 +279,13 @@ Frank and documentation must remain synchronized.
 
 # 13. PR Preview Documentation Requirements
 
-Because the system uses Neon + Render PR Previews, documentation must:
+Because the system uses Render PR Previews, documentation must:
 
-- Describe the preview lifecycle (Neon branch creation → migrations → infra tests → Render preview deployment → API tests)  
+- Describe the preview lifecycle  
 - Document preview‑safe coding rules  
-- Clarify environment variable expectations (`PREVIEW_DB_CONNECTION_STRING`, `ConnectionStrings__DefaultConnection`)  
-- Ensure examples reflect Git‑backed Render PR Previews and label‑driven deployment  
+- Clarify environment variable expectations  
+- Document hosting provider behavior  
+- Document artifact naming conventions  
 - Avoid references to image‑backed or manually triggered preview flows  
 
 ## 13.1 Minimum Required Content
@@ -296,7 +299,7 @@ Documentation must include:
   - Startup: `/api/dogs` → `200,400,401` ×3  
   - Timeout: 300s  
   - Poll interval: 5s  
-- Artifact handling (`db-conn.txt`) and sensitivity guidance  
+- Artifact handling (`db-conn.txt`, `frontend-url.txt`)  
 - Secrets handling (GitHub Secrets, Render environment)  
 - How to reproduce locally (recommended commands and environment variables)  
 
@@ -321,7 +324,7 @@ Documentation must include:
 
 # 16. Enforcement and Tests
 
-- Guardrail tests validate layering, dependency rules, and other enforceable conventions  
+- Guardrail tests validate layering, dependency rules, hosting provider behavior, and security headers  
 - Documentation must describe which guardrail tests exist and where they run  
 - When a convention is enforced by tests, document the test name and location  
 

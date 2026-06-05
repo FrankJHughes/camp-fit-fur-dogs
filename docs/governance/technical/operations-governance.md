@@ -54,6 +54,11 @@ Governance rules:
 - Hosting providers must be **hardened** and must **abort startup** if configuration cannot be applied  
 - Hosting provider selection must follow **first‑active‑wins** semantics  
 - Hosting provider infrastructure must be implemented in **Frank**  
+- Hosting providers must use Frank’s injected abstractions:
+  - `IEnvironment`  
+  - `IRenderPrParser`  
+  - `IGitHubArtifactClient`  
+  - `IRenderConfigurationWriter`  
 
 Frontend and API hosting must be independent but coordinated.
 
@@ -73,6 +78,7 @@ Deployments must:
 - Fail fast if required configuration is missing  
 - Validate hosting provider configuration before application startup  
 - Validate DI auto‑registration and EF Core configuration scanning at startup  
+- Validate security headers middleware is active  
 
 Pull requests must generate preview deployments when supported by the platform.
 
@@ -152,6 +158,7 @@ Operational logs must include:
 - Startup failures  
 - DI auto‑registration validation failures  
 - EF Core configuration scanning failures  
+- Security header validation failures  
 
 ---
 
@@ -181,6 +188,8 @@ Hosting providers must:
 - Never silently skip required configuration  
 - Never allow the API to start in an insecure or incomplete state  
 - Use Frank hosting provider infrastructure  
+- Use Frank’s injected abstractions exclusively  
+- Never perform HTTP, JSON, or ZIP operations directly  
 
 ## 8.1 Render Hosting Provider Requirements
 
@@ -218,6 +227,8 @@ PR preview environments must:
 - Validate readiness via health probes  
 - Fail fast on misconfiguration  
 - Publish deterministic artifacts (`db-conn.txt`, `frontend-url.txt`)  
+- Use Frank hosting provider abstractions for configuration  
+- Use Frank security headers and error boundary middleware  
 
 Preview environments must be fully reproducible.
 
@@ -267,6 +278,7 @@ Operations must not:
 - Allow hosting providers to run without validation  
 - Allow the API to start with missing or invalid configuration  
 - Bypass Frank startup validation  
+- Bypass Frank security headers or error boundary middleware  
 
 All operational changes must be:
 
@@ -285,8 +297,9 @@ All operational changes must be:
 - Scripts enforce deterministic behavior  
 - Hosting platforms enforce environment isolation  
 - Frank enforces startup validation  
-- DI auto‑registration enforces service correctness  
+- Frank guardrails enforce architectural boundaries  
+- Security header enforcement tests validate API safety  
 
 No PR may merge if it violates operational governance.
 
-Operations governance is non-negotiable.
+Operations governance is non‑negotiable.

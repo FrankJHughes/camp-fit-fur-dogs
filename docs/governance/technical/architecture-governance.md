@@ -8,7 +8,7 @@ Architecture governance ensures:
 - Stable, predictable system structure  
 - Clear separation of responsibilities  
 - Enforceable dependency boundaries  
-- Long-term maintainability  
+- Long‑term maintainability  
 - Zero architectural drift  
 - Consistent behavior across all products  
 
@@ -22,7 +22,7 @@ All products must follow these principles:
 
 - **Separation of Concerns** — each layer has a single purpose  
 - **Explicit Dependencies** — no hidden or implicit coupling  
-- **Inversion of Control** — high-level policies depend on abstractions  
+- **Inversion of Control** — high‑level policies depend on abstractions  
 - **Testability** — architecture must enable deterministic testing  
 - **Replaceability** — components must be swappable without cascade changes  
 - **Purity** — domain logic must remain free of infrastructure concerns  
@@ -41,6 +41,9 @@ Api → Application → Domain
 Infrastructure → Application → Domain
 All layers → Frank
 ```
+
+Frank is the **only allowed cross‑cutting dependency**.  
+Frank provides primitives, DI auto‑registration, endpoint discovery, validator scanning, hosting provider abstractions, environment abstraction, security headers, and test seams.
 
 ## 2.1 Domain Layer
 
@@ -69,7 +72,7 @@ The Application layer:
 
 - Coordinates use cases  
 - Implements CQRS command/query handlers  
-- Defines readers and application-level abstractions  
+- Defines readers and application‑level abstractions  
 - Dispatches domain events  
 - Depends only on Domain and Frank  
 - Participates in DI via `[AutoRegister]`  
@@ -96,6 +99,11 @@ The Infrastructure layer:
 - Implements authentication providers  
 - Depends on Application and Domain  
 - Uses Frank auto‑registration for DI participation  
+- Uses Frank hosting provider abstractions:
+  - `IEnvironment`  
+  - `IRenderPrParser`  
+  - `IGitHubArtifactClient`  
+  - `IRenderConfigurationWriter`
 
 Forbidden:
 
@@ -103,6 +111,8 @@ Forbidden:
 - Implementing business rules  
 - Creating domain entities outside factories  
 - Manual DI registration of slice services  
+- Direct environment variable access  
+- Direct HTTP, JSON, or ZIP handling inside hosting providers  
 
 ## 2.4 API Layer
 
@@ -113,6 +123,9 @@ The API layer:
 - Performs authentication and authorization  
 - Performs validation  
 - Dispatches to Application layer  
+- Uses Frank endpoint discovery  
+- Applies Frank security headers middleware  
+- Uses Frank error boundary helpers  
 
 Forbidden:
 
@@ -122,6 +135,7 @@ Forbidden:
 - Domain mutation outside Application layer  
 - Direct handler invocation (must use dispatchers)  
 - Infrastructure dependencies  
+- Bypassing Frank middleware (security headers, correlation, error boundary)
 
 ---
 
@@ -174,6 +188,13 @@ Forbidden:
 - Mixing command and query responsibilities  
 - Direct handler invocation (must use dispatchers)  
 
+Frank enforces:
+
+- Handler auto‑registration  
+- Dispatcher pipeline behavior  
+- Validation integration  
+- Error boundary integration  
+
 ---
 
 # 5. Hosting Provider Governance
@@ -185,9 +206,28 @@ Hosting providers:
 - Must validate required configuration  
 - Must fail fast on misconfiguration  
 - Must not silently skip required configuration  
-- Must not depend on product-specific logic  
+- Must not depend on product‑specific logic  
+- Must use injected abstractions only  
+- Must not read environment variables directly  
+- Must not perform HTTP directly  
+- Must not parse JSON or ZIP directly  
+- Must not write configuration directly  
 
 Only Frank may define hosting provider infrastructure.
+
+The Render hosting provider must use:
+
+- `IEnvironment`  
+- `IRenderPrParser`  
+- `IGitHubArtifactClient`  
+- `IRenderConfigurationWriter`
+
+Provider selection rules:
+
+- Providers are evaluated in order  
+- First active provider wins  
+- All others are skipped  
+- Enforced by guardrails  
 
 ---
 
@@ -201,11 +241,14 @@ Authentication:
 - Must issue opaque session identifiers only  
 - Must not expose tokens to the frontend  
 - Must not store tokens in Domain or Application  
+- Must integrate with Frank’s authentication seams  
 
 Identity resolution:
 
 - Must be implemented via an Application abstraction  
 - Must not depend on infrastructure details  
+- Must not accept identity from request bodies  
+- Must use Frank’s identity seam  
 
 ---
 
@@ -218,6 +261,12 @@ Errors must:
 - Never expose stack traces  
 - Never expose infrastructure details  
 - Never expose domain internals  
+
+Error shaping must use:
+
+- Frank error boundary helpers  
+- Frank correlation middleware  
+- Frank security headers middleware  
 
 Domain errors must be mapped to API errors through Application layer boundaries.
 
@@ -237,8 +286,11 @@ The following patterns are prohibited:
 - Circular dependencies  
 - Runtime type scanning for business logic  
 - **Manual DI registration of slice services**  
-- **Scrutor or suffix-based DI scanning**  
+- **Scrutor or suffix‑based DI scanning**  
 - **Any DI mechanism other than Frank auto‑registration**  
+- Hosting providers accessing environment variables directly  
+- Hosting providers performing HTTP, JSON, or ZIP operations directly  
+- API bypassing Frank middleware  
 
 ---
 
@@ -251,11 +303,15 @@ Architecture is enforced through:
 - Reviewer enforcement  
 - Frank guardrails  
 - Static analysis  
+- Hosting provider seam tests  
+- Endpoint discovery tests  
+- Security header enforcement tests  
 
 No PR may merge if:
 
 - It violates dependency rules  
 - It introduces forbidden patterns  
 - It weakens architectural boundaries  
+- It bypasses Frank’s cross‑cutting infrastructure  
 
-Architecture governance is non-negotiable.
+Architecture governance is non‑negotiable.

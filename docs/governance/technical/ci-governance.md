@@ -28,9 +28,10 @@ CI is a governance mechanism, not just automation.
 
 ---
 
-# 2. CI Zones (Path-Based Classification)
+# 2. CI Zones (Path‑Based Classification)
 
-Every file in the repository belongs to exactly one CI zone.
+Every file in the repository belongs to exactly one CI zone.  
+Zones determine which test suites run.
 
 ## Backend Zone
 Paths:
@@ -41,8 +42,18 @@ Paths:
 Triggers:
 
 - Backend tests  
-- Frank tests (because backend depends on Frank)  
+- Frank tests (backend depends on Frank)  
 - Integration tests (colocated inside backend job)
+
+Backend tests validate:
+
+- Domain invariants  
+- Application handlers  
+- Infrastructure persistence  
+- Endpoint behavior  
+- Integration behavior  
+- Frank dispatcher integration  
+- Frank endpoint discovery integration  
 
 ## Frontend Zone
 Paths:
@@ -53,6 +64,13 @@ Triggers:
 
 - Frontend tests only
 
+Frontend tests validate:
+
+- React components  
+- Hooks  
+- API client behavior  
+- Preview‑safe assumptions  
+
 ## Frank Zone
 Paths:
 
@@ -62,16 +80,19 @@ Paths:
 Triggers:
 
 - Frank tests  
-- Backend tests (because backend depends on Frank)  
-- Frontend tests (because Frank affects endpoint discovery and DI)
+- Backend tests (backend depends on Frank)  
+- Frontend tests (Frank affects endpoint discovery, DI, validators, security headers)
 
 Frank tests validate:
 
 - Auto‑registration engine  
 - `[AutoRegister]` attribute behavior  
+- Endpoint discovery  
+- Validator scanning  
 - EF Core configuration scanning  
-- Endpoint discovery infrastructure  
-- Guardrail enforcement
+- Security headers middleware  
+- Hosting provider abstractions  
+- Guardrail enforcement  
 
 ## Infra Zone
 Paths:
@@ -83,11 +104,13 @@ Paths:
 
 Triggers:
 
-- **All** test suites (infra changes affect the entire system)  
+- **All** test suites  
 - CI workflow logic validation  
 - Dependency graph validation  
 
-## Docs-Only Zone
+Infra changes affect the entire system.
+
+## Docs‑Only Zone
 Paths:
 
 - `*.md`  
@@ -100,20 +123,20 @@ Triggers:
 
 - **No** test suites
 
-Docs-only changes must not trigger any test jobs.
+Docs‑only changes must not trigger any test jobs.
 
 ---
 
 # 3. CI Behavior Rules
 
 ## 3.1 Pull Requests
-PRs use path-based filtering:
+PRs use path‑based filtering:
 
-- Backend-only changes → backend + Frank tests  
-- Frontend-only changes → frontend tests  
-- Frank changes → Frank + backend tests  
+- Backend‑only changes → backend + Frank tests  
+- Frontend‑only changes → frontend tests  
+- Frank changes → Frank + backend + frontend tests  
 - Infra changes → all tests  
-- Docs-only changes → no tests  
+- Docs‑only changes → no tests  
 
 Skipped suites must be logged in the workflow summary.
 
@@ -131,7 +154,7 @@ A scheduled nightly run executes **all** suites, regardless of path filters.
 
 This ensures:
 
-- No long-term drift  
+- No long‑term drift  
 - No missed regressions  
 - No dependency surprises  
 
@@ -163,7 +186,7 @@ Suites:
 
 - **Backend** — domain, application, infrastructure, endpoint tests, integration tests  
 - **Frontend** — Vitest + React Testing Library  
-- **Frank** — primitives, dispatchers, validators, guardrails, DI auto‑registration, EF Core scanning  
+- **Frank** — primitives, dispatchers, validators, guardrails, DI auto‑registration, endpoint discovery, EF Core scanning, security headers  
 
 Frank failures block backend merges.
 
@@ -173,7 +196,7 @@ Frank failures block backend merges.
 
 CI must enforce:
 
-- Changelog updates for user-facing changes  
+- Changelog updates for user‑facing changes  
 - Story ID references in PRs  
 - No drift between story metadata and code  
 - No missing acceptance criteria in sprint stories  
@@ -208,6 +231,8 @@ Workflows must:
 - Use path filters defined in governance  
 - Avoid duplication across workflow files  
 - Use consistent naming for jobs and steps  
+- Use script‑first logic (no complex inline shell)  
+- Use Make targets for deterministic behavior  
 
 Workflows must not:
 
@@ -228,6 +253,8 @@ A PR must fail if:
 - CI workflow logic is violated  
 - A product boundary is crossed  
 - A dependency direction is reversed  
+- Frank guardrails fail  
+- Endpoint discovery or security header enforcement fails  
 
 CI failures are governance failures.
 
@@ -239,5 +266,6 @@ CI failures are governance failures.
 - CI enforces structural and behavioral rules  
 - Product Owner enforces story and milestone alignment  
 - Scripts enforce metadata correctness  
+- Frank guardrails enforce architectural boundaries  
 
 No PR may merge if CI governance is violated.

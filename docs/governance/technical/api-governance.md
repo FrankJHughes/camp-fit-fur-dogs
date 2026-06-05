@@ -9,7 +9,7 @@ API governance ensures:
 - Clear boundary responsibilities  
 - Consistent error handling  
 - Safe authentication and authorization  
-- Long-term API stability  
+- Long‑term API stability  
 - Zero accidental breaking changes  
 
 The API is a contract. Breaking it is a product failure.
@@ -46,6 +46,7 @@ The API layer is responsible for:
 - Mapping to/from Application layer  
 - Using dispatchers (`ICommandDispatcher`, `IQueryDispatcher`)  
 - Using Frank endpoint discovery  
+- Applying Frank security headers middleware  
 
 The API layer must not:
 
@@ -56,6 +57,7 @@ The API layer must not:
 - Perform domain mutations outside Application layer  
 - Invoke handlers directly (must use dispatchers)  
 - Depend on Infrastructure  
+- Bypass Frank’s cross‑cutting middleware (security headers, error boundary, correlation)
 
 ---
 
@@ -81,6 +83,13 @@ Identity resolution must:
 - Use `ICurrentUserService`  
 - Never accept identity from request bodies  
 - Never rely on frontend checks  
+- Never bypass Frank’s authentication seams  
+
+Session creation must:
+
+- Use Frank’s session helpers  
+- Be auditable via `IAuditLogger`  
+- Produce deterministic, secure cookies  
 
 ---
 
@@ -102,6 +111,12 @@ Endpoints must declare:
 
 Endpoints without explicit authorization are prohibited.
 
+Authorization must integrate with:
+
+- Frank’s dispatcher pipeline  
+- Frank’s identity seam  
+- Frank’s error boundary  
+
 ---
 
 # 5. Error Boundary Governance
@@ -121,7 +136,17 @@ API errors must be:
 - Documented  
 - Stable  
 
-Error shaping must use Frank error boundary helpers.
+Error shaping must use:
+
+- Frank’s error boundary helpers  
+- Frank’s correlation ID middleware  
+- Frank’s security headers middleware  
+
+The API must never:
+
+- Return raw exceptions  
+- Return framework‑generated HTML error pages  
+- Return inconsistent error shapes  
 
 ---
 
@@ -140,6 +165,14 @@ Breaking changes require:
 - Product Owner approval  
 - Migration documentation  
 - Changelog updates  
+- Updated API tests  
+- Updated governance documentation  
+
+Versioning must integrate with:
+
+- Frank endpoint discovery  
+- Frank error boundary  
+- Frank security headers  
 
 ---
 
@@ -159,6 +192,8 @@ Forbidden:
 - Changing error shapes without versioning  
 - Changing authentication flows without approval  
 - Removing fields without deprecation  
+- Introducing new required fields without versioning  
+- Changing cookie behavior without governance approval  
 
 ---
 
@@ -173,7 +208,18 @@ Session cookies must:
 - Never contain tokens  
 - Never contain PII  
 
-Session creation must be audited via `IAuditLogger`.
+Session creation must:
+
+- Use Frank’s session helpers  
+- Integrate with Frank’s correlation ID  
+- Be audited via `IAuditLogger`  
+- Produce deterministic, testable behavior  
+
+Session validation must:
+
+- Occur before endpoint execution  
+- Use Frank’s identity seam  
+- Never rely on frontend checks  
 
 ---
 
@@ -186,12 +232,19 @@ The API must provide:
 - Authentication event logs  
 - Hosting provider selection logs  
 - Startup validation logs  
+- Security header validation logs  
 
 Logs must never contain:
 
 - Secrets  
 - Tokens  
 - PII  
+
+Observability must integrate with:
+
+- Frank correlation middleware  
+- Frank hosting provider abstractions  
+- Frank error boundary  
 
 ---
 
@@ -209,6 +262,9 @@ The following patterns are prohibited:
 - Using HTTP 500 for validation errors  
 - Invoking handlers directly (must use dispatchers)  
 - Depending on Infrastructure  
+- Bypassing Frank’s middleware pipeline  
+- Skipping security headers  
+- Skipping correlation IDs  
 
 ---
 
@@ -217,11 +273,13 @@ The following patterns are prohibited:
 API governance is enforced through:
 
 - Automated endpoint tests  
-- Automated error-shaping tests  
+- Automated error‑shaping tests  
+- Authentication and authorization tests  
 - CI validation  
 - Reviewer enforcement  
 - Frank guardrails  
 - Dispatcher pipeline tests  
+- Security header enforcement tests  
 
 No PR may merge if:
 
@@ -229,5 +287,7 @@ No PR may merge if:
 - It weakens authentication or authorization  
 - It exposes internal details  
 - It violates API boundary rules  
+- It bypasses Frank’s cross‑cutting middleware  
+- It introduces unversioned breaking changes  
 
-API governance is non-negotiable.
+API governance is non‑negotiable.

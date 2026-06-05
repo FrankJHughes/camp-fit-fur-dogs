@@ -1,13 +1,15 @@
 # Session Management Guide
 
-This guide explains how session management works **today** based on the implementation completed for **US‑110 (Authentication: Owner Login)** and **US‑111 (Authentication: Session Management)**.  
+This guide explains how session management works **today** based on the implementation completed for **US‑110 (Authentication: Owner Login)** and **US‑111 (Session Management)**.  
 It documents the *runtime behavior* and *developer workflow* for issuing and persisting session cookies after a successful OIDC login.
 
 This guide does **not** define rules, boundaries, or architectural requirements — those live in:
 
-- Governance (process + enforcement)  
-- Conventions (how we implement)  
-- ADRs (why decisions were made)
+- Architecture Governance  
+- Security Governance  
+- Operations Governance  
+- Conventions  
+- ADRs  
 
 This guide focuses solely on **how the current session implementation behaves**.
 
@@ -17,14 +19,14 @@ This guide focuses solely on **how the current session implementation behaves**.
 
 The current system implements the **first half** of the session lifecycle:
 
-- Session token **generation**
-- Token **hashing**
-- Cookie **creation**
-- Cookie **security flags**
-- Cookie **issuance** during the Auth Callback
-- Session **persistence** in the database
-- Session **association** with an Owner
-- Session **lookup** (internal only — middleware not yet implemented)
+- Session token **generation**  
+- Token **hashing**  
+- Cookie **creation**  
+- Cookie **security flags**  
+- Cookie **issuance** during the Auth Callback  
+- Session **persistence** in the database  
+- Session **association** with an Owner  
+- Session **lookup** (internal only — middleware not yet implemented)  
 
 Not yet implemented (future stories):
 
@@ -54,10 +56,12 @@ This guide documents only what exists today.
    - **CreateSessionStep** ← session persisted here  
    - **BuildRedirectStep**
 
-4. The API issues the session cookie  
+4. The API layer writes the session cookie to the HTTP response  
 5. The browser stores the cookie automatically  
 6. Future API requests will include the cookie  
 7. Session validation middleware (coming in US‑111) will consume it  
+
+All of this behavior follows **Session Management Governance** and **API Endpoint Purity**.
 
 ---
 
@@ -86,6 +90,8 @@ Set-Cookie: cfd.session=2f9c3e2a...; HttpOnly; Secure; SameSite=Lax; Path=/; Max
 
 The cookie is created in **IssueCookieStep** and written by the **API layer** after `BuildRedirectStep`.
 
+Cookie issuance follows **Security Governance**.
+
 ---
 
 # Session Token Generation
@@ -105,6 +111,8 @@ The **plaintext token** is sent to the browser as a cookie.
 The **hash** is stored in the database.
 
 The plaintext token is **never persisted**.
+
+This aligns with **Security Governance** and **Session Token Governance**.
 
 ---
 
@@ -158,6 +166,8 @@ Cookie issuance happens in **IssueCookieStep**:
    - `ctx.SessionCookie`
 
 The API layer writes the cookie to the HTTP response after `BuildRedirectStep`.
+
+This separation enforces **API Endpoint Purity** and **Session Management Governance**.
 
 ---
 
@@ -223,6 +233,7 @@ Session behavior is tested in three layers:
 - No sensitive data in cookies  
 - Token opacity  
 - No JWTs  
+- No Infrastructure leakage into Application  
 
 Tests live in:
 
@@ -253,9 +264,9 @@ tests/Api.Tests/Guardrails
 
 # Related Documents
 
-- **[Identity Mapping](ca://s?q=Generate_Identity_Mapping_Guide)**  
-- **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Authentication Testing](ca://s?q=Generate_Authentication_Testing_Guide)**  
-- **[Authentication Operations](ca://s?q=Generate_Authentication_Operations_Guide)**  
-- **[Create Account Form](ca://s?q=Generate_Create_Account_Form_Guide)**  
-- **[Create Account Feature Slice](ca://s?q=Generate_Create_Account_Slice_Guide)**  
+- **Identity Mapping Guide**  
+- **Authentication Architecture Guide**  
+- **Authentication Testing Guide**  
+- **Authentication Operations Guide**  
+- **Create Account Form Guide**  
+- **Create Account Feature Slice Guide**  

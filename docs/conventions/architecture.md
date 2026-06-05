@@ -1,370 +1,280 @@
 # Architecture Conventions
 
-This document defines the architectural layering, implementation patterns, hosting model, and cross‑cutting conventions for the Camp Fit Fur Dogs system.  
-It describes **how the architecture is implemented**, not governance, policy, or security posture.
+The architecture of Camp Fit Fur Dogs defines the structural boundaries, layering rules, hosting model, and cross‑cutting primitives that shape the entire system.  
+Architecture conventions describe **how the system is organized**, not how code is written or how workflows operate.
 
-For architectural *rules*, see `architecture-governance.md`.  
-For security posture, see `security-governance.md`.  
-For operational rules, see `operations-governance.md`.
-
----
-
-# 1. Layered Architecture (Implementation)
-
-The backend follows a strict layered architecture enforced by guardrail tests.
-
-```
-Api → Application → Domain
-Application → Infrastructure
-All layers → Frank
-```
-
-## 1.1 Allowed Dependencies
-
-- **Api** → Application, Domain (primitives only), Frank  
-- **Application** → Domain, Frank  
-- **Infrastructure** → Application, Domain, Frank  
-- **Domain** → Frank only  
-- **Frank** → no product dependencies  
-
-## 1.2 Implementation Conventions
-
-- Api contains **no business logic**  
-- Application contains **use‑case orchestration only**  
-- Domain contains **business rules**  
-- Infrastructure contains **persistence and external integrations**  
-- Frank contains **cross‑cutting primitives, abstractions, and DI infrastructure**  
-
-Guardrail tests enforce these boundaries.
+Frank is the system’s cross‑cutting backbone.  
+Application, Domain, Infrastructure, and Api form the vertical slices of behavior.
 
 ---
 
-# 2. Dependency Injection Architecture (Implementation)
+# 1. Layering Model
 
-Dependency injection is implemented through **Frank’s auto‑registration engine**.
+The system uses a strict layered architecture:
 
-## 2.1 Auto‑Registration via `[AutoRegister]`
+- **Domain** — business rules, aggregates, value objects, domain events  
+- **Application** — use‑case orchestration, CQRS handlers, validation, domain interaction  
+- **Infrastructure** — persistence, external integrations, hosting provider implementations  
+- **Api** — endpoints, DTO binding, authorization, request/response shaping  
+- **Frank** — cross‑cutting primitives, DI auto‑registration engine, endpoint discovery, hosting provider abstractions, environment abstraction, security headers, test seams
 
-Interfaces intended for DI must be decorated with:
+## 1.1 Layering Rules
 
-````  
-[AutoRegister(ServiceLifetime.Scoped)]
-public interface IMyService { }
-````
+These rules are enforced by guardrail tests:
 
-Frank:
+- Domain depends on **nothing** outside Domain  
+- Application depends only on **Domain** and **Frank abstractions**  
+- Infrastructure depends on **Application**, **Domain**, and **Frank abstractions**  
+- Api depends on **Application**, **Domain**, and **Frank**  
+- Frank depends on **nothing in the product code**  
 
-- Scans assemblies for attributed interfaces  
-- Discovers implementing classes  
-- Validates min/max implementation counts  
-- Registers services with the correct lifetime  
-- Optionally registers concrete types  
-- Registers validators from all assemblies  
-- Applies EF Core configurations  
-
-Slices do **not** perform their own DI scanning.
-
-## 2.2 Explicit Registration
-
-Application and Infrastructure register only:
-
-- Pipeline steps  
-- DbContext  
-- HttpClient integrations  
-- Cross‑cutting services (e.g., audit logging)  
-
-Slice‑specific services (repositories, readers, handlers) are **never** registered manually.
-
-## 2.3 Program.cs
-
-Program.cs must contain only:
-
-````  
-builder.Services.AddFrank([...]);
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(configuration);
-````
-
-No slice‑specific DI is allowed here.
+Frank is the **only allowed cross‑layer dependency**.
 
 ---
 
-# 3. CQRS Implementation Conventions
+# 2. Frank (Cross‑Cutting Layer)
 
-Commands and queries follow a consistent pipeline.
+Frank provides the system’s cross‑cutting primitives and infrastructure.  
+It is not a general DI container — it registers **core services** and **attributed interfaces**, nothing more.
 
-## 3.1 Commands
+## 2.1 Responsibilities
 
-- Implement `ICommand<TResponse>`  
-- Handled by `ICommandHandler<TCommand, TResponse>`  
-- Handlers are auto‑registered via `[AutoRegister]`  
-- Dispatched via `ICommandDispatcher`  
-- Must not return domain entities  
-- Must not perform queries  
+Frank provides:
 
-## 3.2 Queries
-
-- Implement `IQuery<TResponse>`  
-- Handled by `IQueryHandler<TQuery, TResponse>`  
-- Handlers are auto‑registered via `[AutoRegister]`  
-- Dispatched via `IQueryDispatcher`  
-- Must not mutate state  
-
-## 3.3 Dispatcher Behavior
-
-The dispatcher:
-
-- Resolves validators  
-- Runs validation  
-- Throws on validation failure  
-- Invokes handler  
-- Ensures consistent pipeline behavior  
-
-Handlers must **never** be invoked directly.
-
----
-
-# 4. Domain Events Architecture (Implementation)
-
-Domain events follow a strict pipeline:
-
-- Raised inside aggregates  
-- Collected by Application  
-- Dispatched via `IDomainEventDispatcher`  
-- Handled by `IDomainEventHandler<T>`  
-- Handlers are auto‑registered via `[AutoRegister]`  
-
-Domain events must not cross the Api boundary.
-
----
-
-# 5. Domain Model Conventions
-
-The domain model uses:
-
-- **Value Objects** — immutable, equality by components  
-- **Entities** — identity by Id  
-- **Aggregate Roots** — consistency boundaries  
-- **AggregateId** — value object wrapping a Guid  
-- **Domain Events** — raised inside aggregates  
-
-## 5.1 Domain Rules
-
-- Domain must not depend on Application, Infrastructure, or Api  
-- Business rules live inside aggregates, value objects, and domain services  
-- Domain events must not cross the Api boundary  
-- Domain types must not be returned from endpoints  
-
----
-
-# 6. Repository & Persistence Conventions
-
-Repositories provide persistence for aggregates:
-
-- `GetByIdAsync`  
-- `AddAsync`  
-- `Update`  
-- `Delete`  
-
-`IUnitOfWork` coordinates saving changes.
-
-## 6.1 Infrastructure Responsibilities
-
-Infrastructure must:
-
-- Implement repositories using EF Core  
-- Implement Unit of Work using `DbContext`  
-- Ensure `CommitAsync` is called after successful command handling  
-- Never expose EF Core types to Application or Api  
-
-Domain must not reference repositories.
-
----
-
-# 7. EF Core Mapping Conventions
-
-Infrastructure provides base configurations for aggregates.
-
-- Aggregate root maps to a table  
-- Id is the key and is **not** value‑generated  
-- Domain events are ignored  
-- Value objects are mapped as owned types  
-- Navigation properties must be explicit  
-- Migrations run only in CI/CD  
-
-Tests must not apply migrations.
-
----
-
-# 8. Frank Architecture
-
-Frank contains cross‑cutting building blocks:
-
-- CQRS abstractions  
-- Validation pipeline integration  
 - **DI auto‑registration engine**  
-- Domain primitives (`ValueObject`, `Entity`, `AggregateRoot`, `AggregateId`)  
-- Domain event abstractions and dispatcher  
-- EF Core base classes  
-- Endpoint discovery infrastructure  
-- Hosting provider infrastructure  
-- Authentication/session abstractions  
-- HttpClient test seam  
-- Audit logging abstractions  
+  - Registers services derived from interfaces marked with `[AutoRegister]`  
+  - Registers core CQRS services (CommandDispatcher, QueryDispatcher, DomainEventDispatcher)
 
-## 8.1 Conventions
+- **Endpoint discovery**  
+  - Scans assemblies for `IEndpoint` implementations  
+  - Registers them automatically
 
-- Product layers must not reimplement Frank primitives  
-- Frank is the only allowed cross‑layer dependency  
-- Frank must remain product‑agnostic  
+- **Validator scanning**  
+  - Discovers and registers FluentValidation validators
+
+- **Security headers**  
+  - `AddSecurityHeaders()` extension  
+  - `SecurityHeadersMiddleware` with hardened OWASP defaults  
+  - Required for all environments, including PR Previews
+
+- **Hosting provider abstractions**  
+  - `IHostingProvider`  
+  - `IEnvironment`  
+  - `IRenderPrParser`  
+  - `IGitHubArtifactClient`  
+  - `IRenderConfigurationWriter`  
+  - Deterministic, testable hosting provider pipeline
+
+- **Environment abstraction**  
+  - `IEnvironment` for safe, testable environment variable access
+
+- **Test seams**  
+  - Environment seam  
+  - Hosting provider seam  
+  - Artifact client seam  
+  - PR parser seam  
+  - Configuration writer seam
+
+Frank does **not** register slice‑specific services or own all DI.
 
 ---
 
-# 9. Hosting Provider Architecture (Implementation)
+# 3. Hosting Model
 
-Hosting providers run **before DI is built** and configure the hosting environment.
+The system supports pluggable hosting providers.  
+Hosting providers configure environment‑specific behavior at startup.
 
-## 9.1 Conventions
+## 3.1 Provider Selection
 
-- Providers implement `IHostingProvider`  
-- Providers expose `IsActive()` and `ConfigureAsync()`  
-- Providers must be deterministic  
-- Providers must validate required configuration  
-- Providers must throw on misconfiguration  
-- Providers must not silently skip configuration  
-- Providers must not depend on product‑specific logic  
-
-## 9.2 Provider Selection
-
-- Providers are evaluated in order  
-- The **first active provider wins**  
+- Providers are evaluated **in order**  
+- The **first provider whose `IsActive()` returns true** wins  
 - All others are skipped  
+- This rule is enforced by guardrails
 
-## 9.3 Test Seam
+## 3.2 Provider Requirements
 
-Hosting providers must be testable via:
+All hosting providers must:
 
-- Fake environment variable providers  
-- Fake GitHub artifact providers  
-- Fake HttpClient handlers  
+- Use **injected abstractions only**  
+- Never read environment variables directly  
+- Never perform HTTP calls directly  
+- Never parse JSON or ZIP files directly  
+- Never write configuration directly  
+- Be fully testable without touching real infrastructure
 
-Tests must not rely on real hosting environments.
+## 3.3 Render Hosting Provider
 
----
+Render is the canonical hosting provider for PR Previews.
 
-# 10. Authentication & Session Architecture (Implementation)
+It uses:
 
-Authentication uses OIDC (Auth0) and issues secure session cookies.
+- `IEnvironment`  
+- `IRenderPrParser`  
+- `IGitHubArtifactClient`  
+- `IRenderConfigurationWriter`
 
-## 10.1 Conventions
+### Required environment variables:
 
-- Login initiation endpoint redirects to OIDC provider  
-- Callback endpoint exchanges code for tokens  
-- Userinfo is fetched via HttpClient  
-- Identity is resolved via `IIdentityResolver`  
-- Session cookie is issued via `ISessionService`  
-- Audit logging is performed via `IAuditLogger`  
+- `IS_PULL_REQUEST`  
+- `RENDER_GIT_REPO_SLUG`  
+- `RENDER_SERVICE_NAME`  
+- `GITHUB_PAT`
 
-## 10.2 Session Cookie Conventions
+### Required artifacts:
 
-- Cookie contains opaque session ID  
-- Cookie is HttpOnly  
-- Cookie is Secure in production  
-- Cookie is validated on each request  
-- Cookie is not a JWT  
-- Cookie does not contain PII  
+- `pr-{n}-db/db-conn.txt`  
+- `pr-{n}-frontend/frontend-url.txt`
 
----
+### Behavior:
 
-# 11. Endpoint Architecture
-
-Endpoints implement `IEndpoint` and define a `Map` method.
-
-## 11.1 Conventions
-
-- Endpoints must use CQRS dispatchers  
-- Endpoints must not contain business logic  
-- Endpoints must not return domain entities  
-- Endpoints must use validation pipeline  
-- Endpoints must use error‑shaping conventions  
-- Endpoints must resolve identity via `ICurrentUserService`  
-
-## 11.2 Discovery
-
-- Frank.Api scans assemblies for `IEndpoint` implementations  
-- Api assembly registers itself for discovery  
-- All endpoints are mapped automatically at startup  
+- Extract PR number from `RENDER_SERVICE_NAME`  
+- Load DB connection string from GitHub artifacts  
+- Load frontend base URL from GitHub artifacts  
+- Apply configuration via `IRenderConfigurationWriter`  
+- Throw on missing or invalid data
 
 ---
 
-# 12. Test Seam Architecture
+# 4. PR Preview Architecture
 
-The system includes explicit test seams for deterministic testing.
+PR Previews run on Render using Git‑backed deployments.
 
-## 12.1 HttpClient Test Seam
+## 4.1 Lifecycle
 
-- All external HTTP calls must use named HttpClients  
-- Tests replace HttpClient with FakeHttpMessageHandler  
-- No real network calls are allowed in tests  
+1. Label removed  
+2. Teardown probe (`/health` → 404 ×3)  
+3. Database provisioning  
+4. Migrations  
+5. Infrastructure tests  
+6. Label added  
+7. Readiness probe (`/api/dogs` → 200/400/401 ×3)  
+8. API tests
 
-## 12.2 Hosting Provider Test Seam
+## 4.2 Requirements
 
-- Environment variables are injected via test seam  
-- GitHub artifacts are injected via test seam  
-- Providers must be fully testable without real infrastructure  
-
-## 12.3 Identity Resolver Test Seam
-
-- Identity resolution is abstracted  
-- Tests use FakeIdentityResolver  
-
-## 12.4 Audit Logger Test Seam
-
-- Audit logging is abstracted  
-- Tests use FakeAuditLogger  
+- Code must tolerate empty databases  
+- Migrations must be idempotent  
+- No environment‑specific branching  
+- No hardcoded URLs or secrets  
+- Security headers must be present  
+- Hosting provider must be deterministic and testable
 
 ---
 
-# 13. Frontend Architecture
+# 5. Api Architecture
 
-The frontend mirrors backend aggregate grouping.
+Api is responsible for:
 
-## 13.1 Structure
+- Endpoint definitions  
+- DTO binding  
+- Authorization  
+- Dispatching commands/queries  
+- Applying security headers  
+- Mapping endpoints via Frank’s endpoint discovery
 
-```
-layer/aggregate/filename
-```
+Api must not:
 
-## 13.2 Layers
-
-- `api/` — server‑call functions  
-- `components/` — presentational components  
-- `lib/` — pure logic  
-- `hooks/` — behavioral hooks  
-- `app/` — Next.js routing  
-
-## 13.3 Rules
-
-- Slice subfolders appear only when an aggregate accumulates 10+ files  
-- `test/` mirrors `src/` exactly  
-- Shared infrastructure lives in `lib/api`, `lib/hooks`, `lib/components`  
+- Contain business logic  
+- Access Infrastructure directly  
+- Return domain entities  
+- Read identity from request bodies
 
 ---
 
-# 14. Summary
+# 6. Application Architecture
 
-This document codifies:
+Application orchestrates use cases.
 
-- Layered architecture implementation  
-- Dependency injection architecture  
-- CQRS implementation  
-- Domain modeling conventions  
-- Repository and EF Core conventions  
-- Frank usage  
-- Hosting provider architecture  
-- Authentication/session architecture  
-- Endpoint architecture  
-- Test seam architecture  
-- Frontend architectural structure  
+Responsibilities:
 
-All code must follow these conventions.
+- CQRS handlers  
+- Validation  
+- Domain interaction  
+- Transaction boundaries via Unit of Work  
+- Publishing domain events
+
+Application must not:
+
+- Access HttpContext  
+- Access Infrastructure directly  
+- Perform persistence logic  
+- Contain business rules
+
+---
+
+# 7. Domain Architecture
+
+Domain contains:
+
+- Aggregates  
+- Entities  
+- Value objects  
+- Domain events  
+- Invariants  
+- Business rules
+
+Domain must not depend on:
+
+- Application  
+- Infrastructure  
+- Api  
+- Frank
+
+---
+
+# 8. Infrastructure Architecture
+
+Infrastructure provides:
+
+- EF Core persistence  
+- Repositories  
+- Unit of Work  
+- External integrations  
+- Hosting provider implementations  
+- Environment access via Frank abstractions
+
+Infrastructure must not:
+
+- Expose EF Core types to Application  
+- Contain business logic  
+- Depend on Api
+
+---
+
+# 9. Security Architecture
+
+Security headers are mandatory.
+
+Api must apply:
+
+- `AddSecurityHeaders()`  
+- `SecurityHeadersMiddleware`
+
+Headers include:
+
+- X‑Content‑Type‑Options  
+- X‑Frame‑Options  
+- X‑XSS‑Protection  
+- Referrer‑Policy  
+- Permissions‑Policy  
+- COOP / COEP / CORP  
+- CSP (strict baseline)
+
+Guardrails enforce presence.
+
+---
+
+# Summary
+
+The architecture ensures:
+
+- Strict layering  
+- Deterministic hosting behavior  
+- Testable, composable providers  
+- Strong security posture  
+- Clear cross‑cutting boundaries  
+- Frank as the backbone of shared behavior  
+- PR Preview safety  
+- Predictable CI/CD behavior
+
+All contributors must follow these conventions.

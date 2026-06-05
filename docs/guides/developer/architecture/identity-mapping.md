@@ -5,8 +5,10 @@ It documents the *runtime behavior* and *developer workflow* for mapping an exte
 
 This guide does **not** define rules, boundaries, or architectural decisions — those live in:
 
-- Governance (process + enforcement)  
-- Conventions (how we implement)  
+- Architecture Governance  
+- Security Governance  
+- Operations Governance  
+- Conventions  
 - ADR‑0013 (Server‑Side Identity Resolution)
 
 This guide focuses solely on **how identity mapping works in the current system**.
@@ -28,7 +30,7 @@ US‑110 implements the first half of the identity lifecycle:
 - Return the internal `OwnerId`  
 - Pass the `OwnerId` to the session creation step  
 
-This guide documents the behavior that exists today.
+Identity mapping ensures that **every authenticated user has a valid internal domain identity**.
 
 ---
 
@@ -49,7 +51,7 @@ High‑level flow:
 6. If not → create a new Owner  
 7. Pass the `OwnerId` to session creation  
 
-This ensures that **every login results in a valid internal Owner identity**.
+Identity mapping is deterministic, pure, and isolated from Infrastructure except through abstractions.
 
 ---
 
@@ -73,6 +75,8 @@ It is the **only** external identifier used for identity mapping.
 
 Email is **not** used for identity resolution.
 
+This aligns with **Security Governance** and **Identity Mapping Governance**.
+
 ---
 
 # Internal Identity Format
@@ -90,6 +94,9 @@ This ID:
 - Is used across all domain operations  
 - Is stored in the session record  
 - Is never exposed to Auth0  
+- Is never derived from email  
+
+This aligns with **Domain Purity** and **Security Governance**.
 
 ---
 
@@ -108,7 +115,11 @@ This step:
 3. Calls the identity resolver  
 4. Returns the internal `OwnerId`  
 
-The identity resolver is injected via DI and follows purity and boundary conventions.
+The identity resolver is injected via DI and follows:
+
+- Dispatcher pipeline purity  
+- Architecture Governance dependency rules  
+- Security Governance identity rules  
 
 ---
 
@@ -141,6 +152,12 @@ This operation:
 
 This ensures that **first‑time logins automatically create an Owner**.
 
+Owner creation follows:
+
+- Domain invariants  
+- Application purity rules  
+- Infrastructure repository boundaries  
+
 ---
 
 # Data Stored During Owner Creation
@@ -157,6 +174,8 @@ When a new Owner is created, the following fields are populated:
 Only the **external ID** is used for identity resolution.
 
 Email is treated as **profile data**, not identity.
+
+This aligns with **Security Governance** and **Identity Mapping Governance**.
 
 ---
 
@@ -176,7 +195,13 @@ Identity mapping may fail for several reasons:
 ### Invalid profile data
 - Missing required fields for Owner creation (rare)  
 
-All failures are surfaced through the callback endpoint’s ProblemDetails mapping.
+All failures are surfaced through:
+
+- Frank error boundary  
+- ProblemDetails JSON  
+- Logged exceptions  
+
+No cookies are issued on failure.
 
 ---
 
@@ -194,11 +219,13 @@ Identity mapping is tested in three layers:
 - Full callback flow  
 - Owner creation on first login  
 - Owner reuse on subsequent logins  
+- Session creation after identity resolution  
 
 ## 3. Guardrail Tests  
 - Email is never used for identity  
 - External ID is required  
 - Identity mapping step is pure  
+- No Infrastructure leakage into Application  
 
 ---
 
@@ -217,14 +244,45 @@ Identity mapping is tested in three layers:
 ### Callback returning 500  
 - Usually caused by missing Auth0 secrets  
 - Check `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_DOMAIN`  
+- Check hosting provider configuration (Render/Vercel)  
+
+---
+
+# Architectural Boundaries
+
+Identity mapping spans:
+
+## API Layer
+- Does not perform identity resolution  
+- Only orchestrates the pipeline  
+- Never reads identity from headers or body  
+
+## Application Layer
+- Contains `ResolveIdentityStep`  
+- Contains identity resolver logic  
+- Contains no Infrastructure references  
+
+## Domain Layer
+- Owns Owner aggregate  
+- Owns invariants  
+- Owns identity semantics  
+
+## Infrastructure Layer
+- Implements Owner repository  
+- Implements identity persistence  
+- Implements audit logging  
+
+All boundaries follow **Architecture Governance** and **Security Governance**.
 
 ---
 
 # Related Documents
 
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
-- **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Authentication Testing](ca://s?q=Generate_Authentication_Testing_Guide)**  
-- **[Authentication Operations](ca://s?q=Generate_Authentication_Operations_Guide)**  
-- **[Create Account Form](ca://s?q=Generate_Create_Account_Form_Guide)**  
-- **[Create Account Feature Slice](ca://s?q=Generate_Create_Account_Slice_Guide)**  
+- **Session Management Guide**  
+- **Authentication Architecture Guide**  
+- **Authentication Testing Guide**  
+- **Authentication Operations Guide**  
+- **Create Account Form Guide**  
+- **Create Account Feature Slice Guide**  
+- **Architecture Governance**  
+- **Security Governance**  

@@ -35,8 +35,8 @@ Ensures:
 - Targeted test execution  
 - Full test coverage on `main` and nightly runs  
 - Deterministic execution of backend, frontend, and Frank tests  
-- Integration tests run as part of the backend job (current behavior)  
-- Frank auto‑registration and EF Core configuration scanning are validated in CI  
+- Integration tests run as part of the backend job  
+- Frank auto‑registration, endpoint discovery, and EF Core configuration scanning are validated in CI  
 
 ---
 
@@ -57,7 +57,7 @@ Uses `dorny/paths-filter` to compute:
 
 - `backend`  
 - `frontend`  
-- `shared-kernel`  
+- `frank`  
 - `infra`  
 - `docs-only`
 
@@ -72,7 +72,7 @@ Ensures workflow dependency graph remains correct.
 
 ---
 
-### `shared-kernel`
+### `frank`
 
 Runs when:
 
@@ -88,10 +88,12 @@ Projects:
 
 Validates:
 
-- Auto‑registration engine  
+- DI auto‑registration engine  
 - `[AutoRegister]` attribute behavior  
+- Endpoint discovery  
+- Validator scanning  
 - EF Core configuration scanning  
-- Endpoint discovery infrastructure  
+- Hosting provider abstractions (environment, PR parser, artifact client, config writer)  
 
 ---
 
@@ -110,7 +112,7 @@ Projects:
 - `tests/CampFitFurDogs.Application.Tests`  
 - `tests/CampFitFurDogs.Domain.Tests`  
 - `tests/CampFitFurDogs.Infrastructure.Tests`  
-- **Integration tests (added here; no separate job yet)**
+- **Integration tests (colocated with backend tests)**
 
 Integration tests rely on:
 
@@ -118,7 +120,9 @@ Integration tests rely on:
 - Repository auto‑registration  
 - Handler auto‑registration  
 - Reader auto‑registration  
+- Endpoint discovery  
 - EF Core configuration scanning  
+- Hosting provider seams  
 
 ---
 
@@ -149,8 +153,8 @@ Steps:
 - Fail‑fast behavior  
 - Nightly full runs  
 - Script‑first logic (no complex inline shell)  
-- Integration tests colocated with backend tests until a dedicated job is introduced  
-- Frank tests validate DI auto‑registration and EF Core scanning  
+- Integration tests colocated with backend tests  
+- Frank tests validate DI auto‑registration, endpoint discovery, and EF Core scanning  
 
 ---
 
@@ -172,7 +176,7 @@ The CI pipeline uses a **path‑based, dependency‑aware test selection model**
 |-------------|---------------------------------------------|--------------------------------------------|
 | Backend     | `src/**`, `tests/**`                        | Backend tests + frontend tests             |
 | Frontend    | `frontend/**`                               | Frontend tests, lint, build                |
-| Frank| `src/Frank/**`, `tests/Frank/**` | Frank tests + backend + frontend |
+| Frank       | `src/Frank/**`, `tests/Frank/**`            | Frank tests + backend + frontend           |
 | Governance  | `product/stories/**`, `scripts/**`, `catalog.csv` | Catalog + frontmatter checks          |
 | Infra       | `docker-compose.yml`, `infrastructure/**`   | Compose validation + infra tests           |
 
@@ -199,7 +203,7 @@ Provisions a **full ephemeral environment per PR**, including:
 - Vercel frontend deployment  
 - Health checks  
 - Integration tests  
-- Artifact publication
+- Artifact publication  
 
 Also destroys stale preview resources.
 
@@ -245,7 +249,8 @@ Executed when `should_destroy == true`.
 
 - Remove `render-preview` label  
 - Sleep 300 seconds  
-- Confirm teardown via `wait-for-endpoint` (`/api/health` → `404`)
+- Confirm teardown via `wait-for-endpoint` (`/api/health` → `404`)  
+- Ensures Render has fully torn down the old environment
 
 ### `destroy_stale_db_artifact`  
 ### `destroy_stale_frontend_artifact`  
@@ -284,7 +289,10 @@ Executed when `should_deploy == true`.
 
 - Add `render-preview` label  
 - Poll `/api/dogs` until healthy  
-- Run API integration tests
+- Run API integration tests  
+- Validate security headers  
+- Validate hosting provider configuration  
+- Validate endpoint discovery  
 
 ---
 
@@ -311,7 +319,12 @@ These values must remain aligned with `architecture.md`.
 - `db-conn.txt` — Npgsql connection string  
 - `frontend-url.txt` — Vercel preview URL  
 
-Artifacts must be deterministic and sensitive.
+Artifacts must be:
+
+- Deterministic  
+- UTF‑8 (no BOM)  
+- Preview‑safe  
+- Consumed only by hosting providers  
 
 ---
 
@@ -359,7 +372,7 @@ API integration tests
 - Deterministic artifacts  
 - Reproducibility via scripts and documented env vars  
 - Integration tests remain inside the backend job until a dedicated job is introduced  
-- Frank tests validate DI auto‑registration and EF Core scanning  
+- Frank tests validate DI auto‑registration, endpoint discovery, and EF Core scanning  
 
 ---
 

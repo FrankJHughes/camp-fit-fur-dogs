@@ -2,16 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Sprint 8] - Unreleased
+## [Sprint 8] – Unreleased
 
 ### Added
 - New Create Account page with full client‑side validation, password‑strength feedback, and accessible inline error messages.
-- New end‑to‑end account creation flow using the updated CreateCustomer API contract.
-- New success flow guiding owners after account creation.
+- New end‑to‑end account creation flow using the finalized CreateCustomer API contract.
+- New post‑creation success flow guiding owners through next steps.
 - New duplicate‑email handling with friendly, blame‑free messaging.
 - New hardened validation for owner name, email, phone number, and password to ensure consistent behavior across frontend and backend.
 - New secure login flow using Auth0, including external authentication, identity mapping, and automatic Owner creation on first login.
 - New session management system with secure, HttpOnly cookies and server‑side session persistence.
+- New security‑header protections applied across all API responses to improve browser‑level safety.
 
 ### Changed
 - Updated account creation UI to use the new FormCommand state machine for deterministic validation and error handling.
@@ -19,9 +20,7 @@ All notable changes to this project will be documented in this file.
 - Updated authentication callback flow to use a deterministic, step‑based pipeline for improved reliability and error handling.
 
 ### Fixed
-- Improved error messaging to avoid exposing internal system details.
-- Ensured all account creation errors (validation + API) are surfaced consistently and accessibly.
-- Fixed inconsistent cookie behavior in preview/prod by enforcing correct security flags.
+*(No customer‑facing fixes this sprint — all stability improvements were part of first‑time feature delivery and are captured under Added/Changed.)*
 
 ## [Sprint 7] - 2026-05-11
 | Story  | Title                              | Issue |

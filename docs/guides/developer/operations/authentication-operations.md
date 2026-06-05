@@ -15,13 +15,14 @@ Authentication operations involve:
 - Auth0 tenant configuration  
 - Environment variable setup  
 - Callback URL configuration  
-- Allowed origins configuration  
+- Logout URL configuration  
+- Web origin + CORS configuration  
 - Local development setup  
 - Preview environment setup  
 - Production environment setup  
 - Troubleshooting common issues  
 
-This guide covers each environment separately and highlights the differences.
+Each environment has different requirements based on hosting provider behavior, cookie security rules, and redirect constraints.
 
 ---
 
@@ -33,8 +34,8 @@ Authentication relies on a correctly configured Auth0 application.
 
 | Setting | Value |
 |--------|--------|
-| Application Type | Single Page Application |
-| Token Endpoint Auth Method | None |
+| Application Type | **Single Page Application** |
+| Token Endpoint Auth Method | **None** |
 | Allowed Callback URLs | Must include API callback URLs |
 | Allowed Logout URLs | Must include frontend URLs |
 | Allowed Web Origins | Must include frontend URLs |
@@ -42,15 +43,19 @@ Authentication relies on a correctly configured Auth0 application.
 
 These settings ensure the OIDC login flow can complete successfully across local, preview, and production environments.
 
+Auth0 must always be configured with **HTTPS** URLs for preview and production.
+
 ---
 
 # Callback, Logout, and Web Origin Configuration
+
+These values must stay synchronized with Render preview URLs and production hosting.
 
 ## Required Callback URLs
 
 ```
 http://localhost:5000/api/auth/callback
-https://<preview>.onrender.com/api/auth/callback
+https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
 https://campfitfurdogsapi.onrender.com/api/auth/callback
 ```
 
@@ -58,7 +63,7 @@ https://campfitfurdogsapi.onrender.com/api/auth/callback
 
 ```
 http://localhost:3000
-https://<preview>.onrender.com
+https://campfitfurdogsapi-pr-<number>.onrender.com
 https://campfitfurdogs.com
 ```
 
@@ -66,11 +71,11 @@ https://campfitfurdogs.com
 
 ```
 http://localhost:3000
-https://<preview>.onrender.com
+https://campfitfurdogsapi-pr-<number>.onrender.com
 https://campfitfurdogs.com
 ```
 
-These must be kept in sync with Render preview URLs and production hosting.
+These must be updated whenever Render preview URLs change.
 
 ---
 
@@ -83,11 +88,15 @@ Authentication requires the following environment variables:
 | `AUTH0_DOMAIN` | Auth0 tenant domain |
 | `AUTH0_CLIENT_ID` | Auth0 application client ID |
 | `AUTH0_CLIENT_SECRET` | Auth0 application client secret |
-| `AUTH0_AUDIENCE` | API audience (if used) |
+| `AUTH0_AUDIENCE` | API audience (optional) |
 | `AUTH0_REDIRECT_URI` | Callback URL for the API |
 | `AUTH0_LOGOUT_REDIRECT_URI` | Logout redirect URL |
 
-## Local Development Values
+These values are consumed through **Frank hosting abstractions**, not `Environment.GetEnvironmentVariable`.
+
+---
+
+# Local Development Values
 
 ```
 AUTH0_DOMAIN=dev-xxxxx.us.auth0.com
@@ -97,19 +106,47 @@ AUTH0_REDIRECT_URI=http://localhost:5000/api/auth/callback
 AUTH0_LOGOUT_REDIRECT_URI=http://localhost:3000
 ```
 
-## Preview Environment Values
+Local development uses **HTTP**, so cookies are issued with:
+
+- `Secure=false`  
+- `SameSite=Lax`  
+- `HttpOnly=true`  
+
+This is the only environment where insecure cookies are allowed.
+
+---
+
+# Preview Environment Values
 
 ```
-AUTH0_REDIRECT_URI=https://<preview>.onrender.com/api/auth/callback
-AUTH0_LOGOUT_REDIRECT_URI=https://<preview>.onrender.com
+AUTH0_REDIRECT_URI=https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
+AUTH0_LOGOUT_REDIRECT_URI=https://campfitfurdogsapi-pr-<number>.onrender.com
 ```
 
-## Production Values
+Preview environments require:
+
+- HTTPS  
+- `Secure=true` cookie flag  
+- Correct callback URLs  
+- Correct logout URLs  
+- Correct CORS origins  
+- Correct web origins  
+
+---
+
+# Production Values
 
 ```
 AUTH0_REDIRECT_URI=https://campfitfurdogsapi.onrender.com/api/auth/callback
 AUTH0_LOGOUT_REDIRECT_URI=https://campfitfurdogs.com
 ```
+
+Production requires:
+
+- HTTPS  
+- `Secure=true`  
+- Domain-scoped cookies  
+- Correct callback + logout URLs  
 
 ---
 
@@ -118,7 +155,7 @@ AUTH0_LOGOUT_REDIRECT_URI=https://campfitfurdogs.com
 ## 1. Start the API
 
 ```
-dotnet run --project src/Api
+dotnet run --project src/CampFitFurDogs.Api
 ```
 
 ## 2. Start the frontend
@@ -132,6 +169,7 @@ npm run dev
 - Frontend calls `/api/auth/login`  
 - Browser redirects to Auth0  
 - Auth0 redirects back to `/api/auth/callback`  
+- Callback pipeline resolves identity + creates session  
 - API issues session cookie  
 - Browser stores cookie  
 - Frontend redirects to dashboard  
@@ -141,9 +179,9 @@ npm run dev
 - `Secure=false`  
 - `SameSite=Lax`  
 - `HttpOnly=true`  
-- Cookie works over HTTP  
+- Works over HTTP  
 
-This is the only environment where insecure cookies are allowed.
+This matches **Security Governance** for local development.
 
 ---
 
@@ -158,17 +196,18 @@ Preview environments run on Render.
 - Correct callback URLs  
 - Correct logout URLs  
 - Correct CORS origins  
+- Correct web origins  
 
 ## Preview Callback URL
 
 ```
-https://<preview>.onrender.com/api/auth/callback
+https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
 ```
 
 ## Preview Frontend URL
 
 ```
-https://<preview>.onrender.com
+https://campfitfurdogsapi-pr-<number>.onrender.com
 ```
 
 ## Common Preview Issues
@@ -237,7 +276,7 @@ Authentication logs include:
 
 - Callback start/end  
 - Token exchange failures  
-- Profile fetch failures  
+- Userinfo failures  
 - Identity mapping failures  
 - Session creation failures  
 
@@ -280,16 +319,16 @@ Logs are emitted through the standard logging pipeline.
 - Identity mapping fails  
 
 **Fix:**  
-- Check `sub` in ID token  
+- Check `sub` in userinfo  
 - Check Owner repository  
 
 ---
 
 # Related Documents
 
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
-- **[Identity Mapping](ca://s?q=Generate_Identity_Mapping_Guide)**  
-- **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Authentication Testing](ca://s?q=Generate_Authentication_Testing_Guide)**  
-- **[Create Account Form](ca://s?q=Generate_Create_Account_Form_Guide)**  
-- **[Create Account Feature Slice](ca://s?q=Generate_Create_Account_Slice_Guide)**
+- **Session Management Guide**  
+- **Identity Mapping Guide**  
+- **Authentication Architecture Guide**  
+- **Authentication Testing Guide**  
+- **Create Account Form Guide**  
+- **Create Account Feature Slice Guide**  
