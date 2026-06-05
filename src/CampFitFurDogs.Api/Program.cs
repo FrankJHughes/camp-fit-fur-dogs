@@ -5,7 +5,9 @@ using CampFitFurDogs.Infrastructure;
 using FluentValidation;
 using Frank.Api;
 using Frank.Api.Hosting;
+using Frank.Api.SecurityHeaders;
 using Frank.DependencyInjection;
+using Frank.Infrastructure.Environment;
 
 // AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
 // {
@@ -17,8 +19,19 @@ var builder = WebApplication.CreateBuilder(args);
 // ── Hosting-provider overrides (pluggable) ───────────────────────
 // Add new providers here in priority order.  The first whose
 // IsActive() returns true wins; the rest are skipped.
+// Manually construct hosting provider dependencies
+var env = new SystemEnvironment();
+var prParser = new RenderPrParser();
+
+// Wire HttpClient override into GitHubArtifactClient if tests use it
+IGitHubArtifactClient artifacts = RenderHostingProvider.HttpClientFactoryOverride is null
+    ? new GitHubArtifactClient()
+    : new GitHubArtifactClient(RenderHostingProvider.HttpClientFactoryOverride);
+
+var configWriter = new RenderConfigurationWriter();
+
 await builder.UseHostingProviders(
-    new RenderHostingProvider());
+    new RenderHostingProvider(env, prParser, artifacts, configWriter));
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.ConfigureKestrel(options =>
@@ -62,6 +75,8 @@ builder.Services.AddFrank([
     typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly // request dto validators
 ]);
 
+builder.Services.AddSecurityHeaders();
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -77,6 +92,8 @@ var app = builder.Build();
 // ────────────────────────────────────────────────────────────────
 // Middleware pipeline
 // ────────────────────────────────────────────────────────────────
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
 app.UseExceptionHandler(ExceptionHandlingMiddleware.Configure);
 
 app.UseCors();

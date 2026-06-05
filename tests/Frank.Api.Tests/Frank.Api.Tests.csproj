@@ -22,6 +22,7 @@
     <!-- Reference the Frank project under test -->
     <ProjectReference Include="..\..\src\Frank.Api\Frank.Api.csproj" />
     <ProjectReference Include="..\..\src\Frank\Frank.csproj" />
+    <ProjectReference Include="..\Frank.TestUtilities\Frank.TestUtilities.csproj" />
   </ItemGroup>
 
 </Project>

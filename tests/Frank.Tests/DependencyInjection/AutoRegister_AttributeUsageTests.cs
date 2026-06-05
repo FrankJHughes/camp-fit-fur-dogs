@@ -21,7 +21,9 @@ public class AutoRegister_AttributeUsageTests
         typeof(Frank.Abstractions.ICurrentUserService),
         typeof(Frank.Abstractions.IQueryDispatcher),
         typeof(Frank.Abstractions.IQueryHandler<,>),
-        typeof(Frank.Abstractions.IUnitOfWork)
+        typeof(Frank.Abstractions.IUnitOfWork),
+        typeof(Frank.Abstractions.Time.IClock),
+        typeof(Frank.Abstractions.Environment.IEnvironment)
     ];
 
     [Fact]

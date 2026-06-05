@@ -24,6 +24,7 @@
     <Project Path="tests/CampFitFurDogs.TestUtilities/CampFitFurDogs.TestUtilities.csproj" />
     <Project Path="tests/Frank.Api.Tests/Frank.Api.Tests.csproj" />
     <Project Path="tests/CampFitFurDogs.Integration.Tests/CampFitFurDogs.Integration.Tests.csproj" />
+    <Project Path="tests/Frank.TestUtilities/Frank.TestUtilities.csproj" />
   </Folder>
   <Folder Name="/integration-tests/">
     <Project Path="integration-tests/CampFitFurDogs.Api.IntegrationTests/CampFitFurDogs.Api.IntegrationTests.csproj" />

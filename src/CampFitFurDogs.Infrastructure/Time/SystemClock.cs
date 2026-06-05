@@ -1,9 +1,9 @@
 
-using CampFitFurDogs.Application.Abstractions.Time;
+using Frank.Abstractions.Time;
 
 namespace CampFitFurDogs.Infrastructure.Time;
 
-public sealed class SystemClock : ISystemClock
+public sealed class SystemClock : IClock
 {
     public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
 }

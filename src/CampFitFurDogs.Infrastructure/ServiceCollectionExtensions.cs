@@ -1,11 +1,9 @@
 using CampFitFurDogs.Application.Abstractions.Audit;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Identity;
-using CampFitFurDogs.Application.Abstractions.Time;
 using CampFitFurDogs.Infrastructure.Audit;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Infrastructure.Identity.Oidc;
-using CampFitFurDogs.Infrastructure.Time;
 using Frank.Infrastructure.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -36,9 +34,6 @@ public static class ServiceCollectionExtensions
 
         // ⭐ NEW: Audit logging (required for US‑110)
         services.AddSingleton<IAuditLogger, AuditLogger>();
-
-        services.AddSingleton<ISystemClock, SystemClock>();
-
 
         return services;
     }

@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Application.Abstractions.Time;
 using CampFitFurDogs.Domain.Customers;
+using Frank.Abstractions.Time;
 
 namespace CampFitFurDogs.Application.Authentication;
 
@@ -11,14 +11,9 @@ namespace CampFitFurDogs.Application.Authentication;
 public sealed class AuthCallbackService : IAuthCallbackService
 {
     private readonly AuthCallbackExecutor _executor;
-    private readonly ISystemClock _clock;
+    private readonly IClock _clock;
 
-    public AuthCallbackService(AuthCallbackExecutor executor)
-        : this(executor, new DefaultSystemClock())
-    {
-    }
-
-    public AuthCallbackService(AuthCallbackExecutor executor, ISystemClock clock)
+    public AuthCallbackService(AuthCallbackExecutor executor, IClock clock)
     {
         _executor = executor;
         _clock = clock;
@@ -46,8 +41,4 @@ public sealed class AuthCallbackService : IAuthCallbackService
 
     }
 
-    private sealed class DefaultSystemClock : ISystemClock
-    {
-        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
-    }
 }

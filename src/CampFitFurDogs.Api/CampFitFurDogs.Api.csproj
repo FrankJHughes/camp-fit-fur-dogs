@@ -20,6 +20,7 @@
     <ProjectReference Include="..\CampFitFurDogs.Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
     <ProjectReference Include="..\Frank\Frank.csproj" />
     <ProjectReference Include="..\Frank.Api\Frank.Api.csproj" />
+    <ProjectReference Include="..\Frank.Infrastructure\Frank.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Net;
 using CampFitFurDogs.Api.Hosting;
+using CampFitFurDogs.TestUtilities.Fakes;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 
@@ -8,51 +9,6 @@ namespace CampFitFurDogs.Api.Tests.Hosting;
 
 public sealed class RenderHostingProviderTests
 {
-    // ------------------------------------------------------------
-    // Fake HTTP handler for GitHub API responses
-    // ------------------------------------------------------------
-    private sealed class FakeHttpHandler : HttpMessageHandler
-    {
-        public Dictionary<string, HttpResponseMessage> Map { get; } = new();
-
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            if (Map.TryGetValue(request.RequestUri!.ToString(), out var response))
-                return Task.FromResult(response);
-
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
-        }
-    }
-
-    // ------------------------------------------------------------
-    // Environment variable helper
-    // ------------------------------------------------------------
-    private IDisposable SetEnv(string key, string? value)
-    {
-        var original = Environment.GetEnvironmentVariable(key);
-        Environment.SetEnvironmentVariable(key, value);
-        return new EnvReset(key, original);
-    }
-
-    private sealed class EnvReset : IDisposable
-    {
-        private readonly string _key;
-        private readonly string? _value;
-
-        public EnvReset(string key, string? value)
-        {
-            _key = key;
-            _value = value;
-        }
-
-        public void Dispose()
-        {
-            Environment.SetEnvironmentVariable(_key, _value);
-        }
-    }
-
     // ------------------------------------------------------------
     // ZIP builder helper
     // ------------------------------------------------------------
@@ -73,16 +29,31 @@ public sealed class RenderHostingProviderTests
     }
 
     // ------------------------------------------------------------
+    // Provider builder
+    // ------------------------------------------------------------
+    private static RenderHostingProvider CreateProvider(
+        FakeEnvironment env,
+        FakeHttpMessageHandler handler)
+    {
+        var parser = new FakeRenderPrParser();
+        var artifacts = new FakeGitHubArtifactClient(handler);
+        var config = new FakeRenderConfigurationWriter();
+
+        return new RenderHostingProvider(env, parser, artifacts, config);
+    }
+
+    // ------------------------------------------------------------
     // TESTS
     // ------------------------------------------------------------
 
     [Fact]
     public async Task Missing_required_env_var_throws()
     {
-        using var _1 = SetEnv("IS_PULL_REQUEST", "true");
-        using var _2 = SetEnv("RENDER_GIT_REPO_SLUG", null); // missing
+        var env = new FakeEnvironment();
+        env.Set("IS_PULL_REQUEST", "true");
+        env.Set("RENDER_GIT_REPO_SLUG", null);
 
-        var provider = new RenderHostingProvider();
+        var provider = CreateProvider(env, new FakeHttpMessageHandler());
         var builder = WebApplication.CreateBuilder();
 
         Func<Task> act = () => provider.ConfigureAsync(builder);
@@ -94,12 +65,13 @@ public sealed class RenderHostingProviderTests
     [Fact]
     public async Task Missing_pr_number_throws()
     {
-        using var _1 = SetEnv("IS_PULL_REQUEST", "true");
-        using var _2 = SetEnv("RENDER_GIT_REPO_SLUG", "owner/repo");
-        using var _3 = SetEnv("RENDER_SERVICE_NAME", "api"); // no PR suffix
-        using var _4 = SetEnv("GITHUB_PAT", "token");
+        var env = new FakeEnvironment();
+        env.Set("IS_PULL_REQUEST", "true");
+        env.Set("RENDER_GIT_REPO_SLUG", "owner/repo");
+        env.Set("RENDER_SERVICE_NAME", "api");
+        env.Set("GITHUB_PAT", "token");
 
-        var provider = new RenderHostingProvider();
+        var provider = CreateProvider(env, new FakeHttpMessageHandler());
         var builder = WebApplication.CreateBuilder();
 
         Func<Task> act = () => provider.ConfigureAsync(builder);
@@ -111,44 +83,42 @@ public sealed class RenderHostingProviderTests
     [Fact]
     public async Task Missing_db_artifact_throws()
     {
-        using var _1 = SetEnv("IS_PULL_REQUEST", "true");
-        using var _2 = SetEnv("RENDER_GIT_REPO_SLUG", "owner/repo");
-        using var _3 = SetEnv("RENDER_SERVICE_NAME", "api-pr-123");
-        using var _4 = SetEnv("GITHUB_PAT", "token");
+        var env = new FakeEnvironment();
+        env.Set("IS_PULL_REQUEST", "true");
+        env.Set("RENDER_GIT_REPO_SLUG", "owner/repo");
+        env.Set("RENDER_SERVICE_NAME", "api-pr-123");
+        env.Set("GITHUB_PAT", "token");
 
-        var handler = new FakeHttpHandler();
-
-        handler.Map["https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-db"] =
+        var handler = new FakeHttpMessageHandler();
+        handler.Add(
+            "https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-db",
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("""{"artifacts": []}""")
-            };
+            });
 
-        RenderHostingProvider.HttpClientFactoryOverride = _ => new HttpClient(handler);
-
-        var provider = new RenderHostingProvider();
+        var provider = CreateProvider(env, handler);
         var builder = WebApplication.CreateBuilder();
 
         Func<Task> act = () => provider.ConfigureAsync(builder);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*database connection string*");
-
-        RenderHostingProvider.HttpClientFactoryOverride = null;
     }
 
     [Fact]
     public async Task Missing_frontend_artifact_throws()
     {
-        using var _1 = SetEnv("IS_PULL_REQUEST", "true");
-        using var _2 = SetEnv("RENDER_GIT_REPO_SLUG", "owner/repo");
-        using var _3 = SetEnv("RENDER_SERVICE_NAME", "api-pr-123");
-        using var _4 = SetEnv("GITHUB_PAT", "token");
+        var env = new FakeEnvironment();
+        env.Set("IS_PULL_REQUEST", "true");
+        env.Set("RENDER_GIT_REPO_SLUG", "owner/repo");
+        env.Set("RENDER_SERVICE_NAME", "api-pr-123");
+        env.Set("GITHUB_PAT", "token");
 
-        var handler = new FakeHttpHandler();
+        var handler = new FakeHttpMessageHandler();
 
-        // DB artifact exists
-        handler.Map["https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-db"] =
+        handler.Add(
+            "https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-db",
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("""
@@ -162,42 +132,39 @@ public sealed class RenderHostingProviderTests
                     ]
                 }
                 """)
-            };
+            });
 
-        handler.Map["https://download/db"] = ZipWith("db-conn.txt", "Server=Test;");
+        handler.Add("https://download/db", ZipWith("db-conn.txt", "Server=Test;"));
 
-        // Frontend artifact missing
-        handler.Map["https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-frontend"] =
+        handler.Add(
+            "https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-frontend",
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("""{"artifacts": []}""")
-            };
+            });
 
-        RenderHostingProvider.HttpClientFactoryOverride = _ => new HttpClient(handler);
-
-        var provider = new RenderHostingProvider();
+        var provider = CreateProvider(env, handler);
         var builder = WebApplication.CreateBuilder();
 
         Func<Task> act = () => provider.ConfigureAsync(builder);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*frontend base URL*");
-
-        RenderHostingProvider.HttpClientFactoryOverride = null;
     }
 
     [Fact]
     public async Task Successful_configuration_sets_values()
     {
-        using var _1 = SetEnv("IS_PULL_REQUEST", "true");
-        using var _2 = SetEnv("RENDER_GIT_REPO_SLUG", "owner/repo");
-        using var _3 = SetEnv("RENDER_SERVICE_NAME", "api-pr-123");
-        using var _4 = SetEnv("GITHUB_PAT", "token");
+        var env = new FakeEnvironment();
+        env.Set("IS_PULL_REQUEST", "true");
+        env.Set("RENDER_GIT_REPO_SLUG", "owner/repo");
+        env.Set("RENDER_SERVICE_NAME", "api-pr-123");
+        env.Set("GITHUB_PAT", "token");
 
-        var handler = new FakeHttpHandler();
+        var handler = new FakeHttpMessageHandler();
 
-        // DB artifact
-        handler.Map["https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-db"] =
+        handler.Add(
+            "https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-db",
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("""
@@ -211,12 +178,12 @@ public sealed class RenderHostingProviderTests
                     ]
                 }
                 """)
-            };
+            });
 
-        handler.Map["https://download/db"] = ZipWith("db-conn.txt", "Server=Test;");
+        handler.Add("https://download/db", ZipWith("db-conn.txt", "Server=Test;"));
 
-        // Frontend artifact
-        handler.Map["https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-frontend"] =
+        handler.Add(
+            "https://api.github.com/repos/owner/repo/actions/artifacts?per_page=100&name=pr-123-frontend",
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("""
@@ -230,14 +197,12 @@ public sealed class RenderHostingProviderTests
                     ]
                 }
                 """)
-            };
+            });
 
-        handler.Map["https://download/frontend"] =
-            ZipWith("frontend-url.txt", "https://preview.example.com");
+        handler.Add("https://download/frontend",
+            ZipWith("frontend-url.txt", "https://preview.example.com"));
 
-        RenderHostingProvider.HttpClientFactoryOverride = _ => new HttpClient(handler);
-
-        var provider = new RenderHostingProvider();
+        var provider = CreateProvider(env, handler);
         var builder = WebApplication.CreateBuilder();
 
         await provider.ConfigureAsync(builder);
@@ -247,7 +212,5 @@ public sealed class RenderHostingProviderTests
 
         builder.Configuration["Frontend__BaseUrl"]
             .Should().Be("https://preview.example.com");
-
-        RenderHostingProvider.HttpClientFactoryOverride = null;
     }
 }
