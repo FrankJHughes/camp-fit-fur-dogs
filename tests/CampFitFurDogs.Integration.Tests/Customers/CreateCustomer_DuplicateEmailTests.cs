@@ -1,29 +1,23 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.Integration.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-public class CreateCustomer_DuplicateEmailTests : IClassFixture<PostgresFixture>, IDisposable
+[Collection("API Collection")]
+public class CreateCustomer_DuplicateEmailTests
 {
     private readonly CampFitFurDogsApiFactory _factory;
     private readonly HttpClient _client;
 
-    public CreateCustomer_DuplicateEmailTests(PostgresFixture db)
+    public CreateCustomer_DuplicateEmailTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
     {
-        _factory = new CampFitFurDogsApiFactory();
-        _factory.UseContainer(db.Container);
-
+        _factory = factoryFixture.Factory;
+        _factory.UseContainer(postgresFixture.Container);
         _client = _factory.CreateClient();
-    }
-
-    public void Dispose()
-    {
-        _factory.Dispose();
-        _client.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     [Fact]

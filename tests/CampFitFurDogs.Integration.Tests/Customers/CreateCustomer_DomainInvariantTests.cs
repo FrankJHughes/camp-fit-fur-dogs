@@ -1,19 +1,21 @@
-using CampFitFurDogs.Integration.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-public class CreateCustomer_DomainInvariantTests : IClassFixture<PostgresFixture>, IDisposable
+[Collection("API Collection")]
+public class CreateCustomer_DomainInvariantTests : IDisposable
 {
     private readonly CampFitFurDogsApiFactory _factory;
     private readonly HttpClient _client;
     private readonly PostgresFixture _db;
 
-    public CreateCustomer_DomainInvariantTests(PostgresFixture db)
+    public CreateCustomer_DomainInvariantTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
     {
-        _db = db;
+        _db = postgresFixture;
 
-        _factory = new CampFitFurDogsApiFactory();
-        _factory.UseContainer(db.Container);
+        _factory = factoryFixture.Factory;
+        _factory.UseContainer(postgresFixture.Container);
 
         _client = _factory.CreateClient();
     }

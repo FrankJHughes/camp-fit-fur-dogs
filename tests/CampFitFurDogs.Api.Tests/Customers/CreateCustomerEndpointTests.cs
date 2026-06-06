@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.Api.Tests.Fixtures;
 using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 
@@ -28,7 +29,14 @@ public class CreateCustomerEndpointTests : ApiTestBase
     {
         var request = ApiRequestFixtures.Customer();
 
+        var healthResponse = await _client.GetAsync("/api/health");
+        Console.WriteLine("Health status: " + healthResponse.StatusCode);
+        Console.WriteLine("Health body: " + await healthResponse.Content.ReadAsStringAsync());
+
         var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("Response body: " + responseBody);
+
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var body = await response.Content.ReadFromJsonAsync<CreateCustomerResponse>();

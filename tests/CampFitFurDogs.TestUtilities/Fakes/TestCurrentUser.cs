@@ -1,6 +1,6 @@
 using Frank.Abstractions;
 
-namespace CampFitFurDogs.Api.Tests;
+namespace CampFitFurDogs.TestUtilities.Fakes;
 
 public sealed class TestCurrentUser : ICurrentUserService
 {

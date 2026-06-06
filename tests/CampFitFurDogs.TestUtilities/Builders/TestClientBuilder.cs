@@ -4,7 +4,6 @@ using CampFitFurDogs.Application.Abstractions.Identity;
 using CampFitFurDogs.Infrastructure.Identity.Oidc;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fakes;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,7 +12,7 @@ namespace CampFitFurDogs.TestUtilities.Builders;
 
 public class TestClientBuilder
 {
-    private readonly TestWebApplicationFactory _factory;
+    private readonly CampFitFurDogsApiFactory _factory;
 
     private Action<IConfigurationBuilder>? _configOverrides;
     private Dictionary<string, HttpResponseMessage>? _fakeOidcResponses;
@@ -22,7 +21,7 @@ public class TestClientBuilder
     private IAuthCallbackService? _authCallbackService;
     private string? _environment;
 
-    public TestClientBuilder(TestWebApplicationFactory factory)
+    public TestClientBuilder(CampFitFurDogsApiFactory factory)
     {
         _factory = factory;
     }
@@ -65,19 +64,17 @@ public class TestClientBuilder
 
     public HttpClient BuildClient()
     {
+        //
+        // ⭐ Apply config overrides BEFORE Program.cs runs
+        //
+        if (_configOverrides is not null)
+            _factory.WithConfigOverrides(_configOverrides);
+
+        if (_environment is not null)
+            _factory.WithEnvironment(_environment);
+
         var factory = _factory.WithWebHostBuilder(builder =>
         {
-            if (_environment is not null)
-                builder.UseEnvironment(_environment);
-
-            if (_configOverrides is not null)
-            {
-                builder.ConfigureAppConfiguration((_, cfg) =>
-                {
-                    _configOverrides(cfg);
-                });
-            }
-
             builder.ConfigureServices(services =>
             {
                 // Fake OIDC HTTP responses
@@ -94,9 +91,6 @@ public class TestClientBuilder
                 if (_auditLogger is not null)
                     services.AddSingleton<IAuditLogger>(_auditLogger);
 
-                // ------------------------------------------------------------
-                // OVERRIDE AUTH CALLBACK SERVICE FOR TESTS
-                // ------------------------------------------------------------
                 if (_authCallbackService is not null)
                 {
                     services.RemoveAll<IAuthCallbackService>();

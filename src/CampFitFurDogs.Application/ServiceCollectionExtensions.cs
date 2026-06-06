@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
 using CampFitFurDogs.Application.Authentication;
+using Frank.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application;
@@ -17,7 +18,7 @@ public static class ServiceCollectionExtensions
                 .ValidateOnStart();
 
         // ⭐ Pipeline service
-        services.AddAuthCallbackPipeline();
+        services.AddAuthCallbackExecutor();
         services.AddScoped<IAuthCallbackService, AuthCallbackService>();
 
         return services;

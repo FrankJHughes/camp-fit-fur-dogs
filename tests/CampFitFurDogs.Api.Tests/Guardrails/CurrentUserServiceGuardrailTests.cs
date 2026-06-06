@@ -1,4 +1,7 @@
 using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fakes;
+using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Frank.Abstractions;
 

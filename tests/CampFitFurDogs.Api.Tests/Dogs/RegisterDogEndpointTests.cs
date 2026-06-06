@@ -1,6 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fakes;
+using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using static CampFitFurDogs.Api.Tests.ApiTestHelpers;

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 public static class AuthCallbackServiceCollectionExtensions
 {
-    public static IServiceCollection AddAuthCallbackPipeline(this IServiceCollection services)
+    public static IServiceCollection AddAuthCallbackExecutor(this IServiceCollection services)
     {
 
         // Register concrete steps
