@@ -19,7 +19,6 @@ projects:
         generation: manual
       envVars:
         - key: ConnectionStrings__DefaultConnection
-          value: "secret"
           sync: false
 
         - key: GITHUB_PAT
@@ -30,5 +29,4 @@ projects:
           previewValue: Preview
 
         - key: Frontend__BaseUrl
-          value: "secret"
           sync: false
