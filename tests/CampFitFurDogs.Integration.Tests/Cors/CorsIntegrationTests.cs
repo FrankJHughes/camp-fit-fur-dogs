@@ -19,7 +19,7 @@ public class CorsIntegrationTests
         _factory = factoryFixture.Factory;
         _factory.UseContainer(postgresFixture.Container);
 
-        // Sets Frontend__BaseUrl → used by CorsConfigurator
+        // Sets Frontend__BaseUrl → used by CorsStartupModule
         _factory.WithFrontendBaseUrl(AllowedOrigin);
 
         _client = _factory.CreateClient();
@@ -101,7 +101,7 @@ public class CorsIntegrationTests
             .And.Contain("Content-Type");
 
         response.Headers.TryGetValues("Access-Control-Max-Age", out var maxAge)
-            .Should().BeTrue("CorsConfigurator sets preflight caching");
+            .Should().BeTrue("CorsStartupModule sets preflight caching");
     }
 
     // ---------------------------------------------------------------------

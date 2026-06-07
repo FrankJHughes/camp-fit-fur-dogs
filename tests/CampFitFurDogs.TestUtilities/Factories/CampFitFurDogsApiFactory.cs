@@ -43,10 +43,10 @@ public class CampFitFurDogsApiFactory : WebApplicationFactory<Program>
             //
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                // Required by CorsConfigurator
+                // Required by CorsStartupModule
                 ["Frontend__BaseUrl"] = "http://localhost:3000",
 
-                // Required by AuthenticationConfigurator
+                // Required by AuthenticationStartupModule
                 ["Authentication:Oidc:Authority"] = "https://test.example.com",
                 ["Authentication:Oidc:ClientId"] = "test-client-id",
                 ["Authentication:Oidc:ClientSecret"] = "test-secret",

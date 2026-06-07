@@ -97,7 +97,7 @@ These guides evolve as the system evolves.
 - **[Security Headers Architecture](../security-headers-architecture.md)**  
   How security headers are applied and enforced across environments.
 
-- **[Configurator Engine Architecture](../configurator-engine.md)**  
+- **[StartupModule Engine Architecture](../configurator-engine.md)**  
   How configurators run during startup to assemble environment‑specific configuration.
 
 ---

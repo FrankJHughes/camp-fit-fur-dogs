@@ -1,6 +1,6 @@
 using System.IO.Compression;
 using System.Net;
-using CampFitFurDogs.Api.Hosting;
+using CampFitFurDogs.Api.Horizontals.Hosting;
 using CampFitFurDogs.TestUtilities.Fakes;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;

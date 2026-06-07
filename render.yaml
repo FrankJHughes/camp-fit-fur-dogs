@@ -18,15 +18,16 @@ projects:
       previews:
         generation: manual
       envVars:
-        - key: ConnectionStrings__DefaultConnection
-          sync: false
-
-        - key: GITHUB_PAT
-          value: "secret"
-
         - key: ASPNETCORE_ENVIRONMENT
           value: "Production"
           previewValue: "Preview"
 
+        - key: ConnectionStrings__DefaultConnection
+          sync: false # do not copy to preview environment
+
         - key: Frontend__BaseUrl
-          sync: false
+          sync: false # do not copy to preview environment
+
+        - key: GITHUB_PAT
+          value: "secret" # access to the GitHub Artifacts hosting the preview environment variable overrides
+

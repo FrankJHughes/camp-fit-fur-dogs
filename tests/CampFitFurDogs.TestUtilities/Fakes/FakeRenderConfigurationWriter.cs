@@ -1,4 +1,4 @@
-using CampFitFurDogs.Api.Hosting;
+using CampFitFurDogs.Api.Horizontals.Hosting;
 using Microsoft.AspNetCore.Builder;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
