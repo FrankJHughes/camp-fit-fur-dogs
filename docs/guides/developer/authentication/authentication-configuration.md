@@ -1,7 +1,13 @@
 # Authentication Configuration
 
 The following configuration keys are required for OIDC authentication.  
-These values must be provided in environment variables for all environments (local, preview, production).
+These values must be provided as **environment variables** in all environments:
+
+- Local development  
+- Preview  
+- Production  
+
+Missing or malformed configuration results in a **startup failure** or a **500 Bad Configuration** error during the callback pipeline.
 
 ---
 
@@ -14,31 +20,110 @@ Oidc:
   ClientSecret: "<client-secret>"
   Audience: "<optional>"
   CallbackUrl: "https://<host>/api/auth/callback"
+  PostLoginRedirectUrl: "https://<frontend-host>/"
 ```
+
+### Field meanings
+
+| Key | Purpose |
+|-----|---------|
+| `Domain` | Auth0 tenant domain (issuer + userinfo base) |
+| `ClientId` | Public identifier for the Auth0 application |
+| `ClientSecret` | Secret used during code exchange |
+| `Audience` | Optional API audience for Auth0 access tokens |
+| `CallbackUrl` | Redirect target for Auth0 after login |
+| `PostLoginRedirectUrl` | Final redirect after session creation |
+
+All values must be **non‑empty** except `Audience`.
 
 ---
 
 # Usage
 
 ## `/api/auth/login` uses:
+
 - Domain  
 - ClientId  
 - Audience  
 - CallbackUrl  
 
+Used to construct the authorization URL and initiate the OIDC flow.
+
 ## `/api/auth/callback` uses:
+
 - Domain  
 - ClientId  
 - ClientSecret  
 - CallbackUrl  
+- PostLoginRedirectUrl  
+
+Used by the authentication pipeline to:
+
+- Exchange the authorization code  
+- Fetch userinfo  
+- Resolve identity  
+- Issue session cookie  
+- Redirect the browser  
+
+---
+
+# Validation Behavior
+
+Configuration is validated in the **first step** of the callback pipeline:
+
+### `ValidateConfigurationStep`
+
+- Ensures all required keys are present  
+- Ensures no value is empty  
+- Ensures callback URL matches the Auth0 application configuration  
+- Ensures redirect URL is valid  
+
+### Failure Mode
+
+- Missing or invalid configuration → `BadConfigurationException`  
+- Mapped to **500 Internal Server Error**  
+- No cookies are issued  
+- No session is created  
+
+This aligns with **Security Governance** and **Operations Governance**.
+
+---
+
+# Environment‑Specific Notes
+
+## Local Development
+
+Example:
+
+```
+Oidc__Domain=dev-tenant.us.auth0.com
+Oidc__ClientId=abc123
+Oidc__ClientSecret=xyz789
+Oidc__CallbackUrl=http://localhost:5000/api/auth/callback
+Oidc__PostLoginRedirectUrl=http://localhost:3000/
+```
+
+- `Secure=false` cookies  
+- `SameSite=Lax`  
+- Callback URL must match the Auth0 dev application  
+
+## Preview / Production
+
+- `Secure=true`  
+- `HttpOnly=true`  
+- `SameSite=Lax`  
+- Callback URL must match the deployed API host  
+- Redirect URL must match the deployed frontend host  
 
 ---
 
 # Notes
 
 - No identity provider tokens are persisted  
-- Callback URL must match the Auth0 application configuration  
+- Callback URL must match the Auth0 application configuration exactly  
 - Missing configuration triggers `BadConfigurationException` → 500  
+- All configuration is consumed through strongly typed `OidcOptions`  
+- Configuration is immutable at runtime  
 
 ---
 
@@ -47,3 +132,5 @@ Oidc:
 - **[Authentication Overview](ca://s?q=Show_authentication_overview)**  
 - **[Login Endpoint](ca://s?q=Show_login_endpoint_doc)**  
 - **[Callback Endpoint](ca://s?q=Show_callback_endpoint_doc)**  
+- **[Authentication Architecture Guide](ca://s?q=Generate_Authentication_Architecture_Guide)**  
+- **[Session Management Guide](ca://s?q=Generate_Session_Management_Guide)**  

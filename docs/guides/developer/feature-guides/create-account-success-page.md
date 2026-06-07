@@ -27,9 +27,9 @@ This page is intentionally simple and static.
 
 The page is located at:
 
-````  
+```
 app/account/created/page.tsx
-````
+```
 
 This route is the target of the redirect from the Create Account form.
 
@@ -66,7 +66,7 @@ The page typically includes:
 
 Example structure:
 
-````  
+```
 export default function AccountCreatedPage() {
   return (
     <div className="success-container">
@@ -78,7 +78,7 @@ export default function AccountCreatedPage() {
     </div>
   );
 }
-````
+```
 
 ---
 
@@ -113,17 +113,23 @@ It is a static confirmation page.
 
 The success page is tested at two levels:
 
-### 1. Rendering Tests  
+---
+
+## 1. Rendering Tests
+
 - Page renders without crashing  
 - Headline is visible  
 - CTA button is visible  
 
-### 2. Navigation Tests  
+---
+
+## 2. Navigation Tests
+
 - Clicking the CTA navigates to the correct route  
 
 Example:
 
-````  
+```
 it("navigates to login when Continue is clicked", async () => {
   render(<AccountCreatedPage />);
 
@@ -131,7 +137,7 @@ it("navigates to login when Continue is clicked", async () => {
 
   expect(mockRouter.push).toHaveBeenCalledWith("/login");
 });
-````
+```
 
 ---
 
@@ -154,4 +160,4 @@ it("navigates to login when Continue is clicked", async () => {
 - **[Create Account Form](ca://s?q=Generate_Create_Account_Form_Guide)**  
 - **[Create Account Feature Slice](ca://s?q=Generate_Create_Account_Slice_Guide)**  
 - **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
+- **[Session Management](ca://s?q=Show_session_management_guide)**  

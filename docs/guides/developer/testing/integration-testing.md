@@ -32,22 +32,27 @@ Integration tests focus on **backend correctness under real conditions**.
 
 On every pull request targeting `main`, the CI workflow performs the following sequence:
 
-1. **Create a Neon branch database**  
-   - Named `pr-<number>`  
-   - Expires automatically after 14 days  
+## 1. Create a Neon branch database
+- Named `pr-<number>`  
+- Expires automatically after 14 days  
+- Created via Neon API  
+- Connection string converted from PostgreSQL URI → Npgsql format  
 
-2. **Apply EF Core migrations**  
-   - Uses the same migration pipeline as production  
-   - Ensures schema correctness before tests run  
+## 2. Apply EF Core migrations
+- Uses the same migration pipeline as production  
+- Ensures schema correctness before tests run  
+- Fails fast if migrations are invalid  
 
-3. **Run the integration test suite**  
-   - Executes `CampFitFurDogs.IntegrationTests`  
-   - Uses the Neon branch connection string  
-   - Validates repository, reader, and API behavior  
+## 3. Run the integration test suite
+- Executes `CampFitFurDogs.IntegrationTests`  
+- Uses the Neon branch connection string  
+- Validates repository, reader, and API behavior  
+- Exercises real DI container + middleware  
 
-4. **Delete the Neon branch database**  
-   - Ensures no leftover resources  
-   - Keeps Neon clean and cost‑efficient  
+## 4. Delete the Neon branch database
+- Ensures no leftover resources  
+- Keeps Neon clean and cost‑efficient  
+- Enforced by CI teardown step  
 
 This ensures every PR is validated against a **real database**, not mocks or in‑memory substitutes.
 
@@ -61,7 +66,7 @@ You can run integration tests locally using the same script CI uses:
 .\scripts\integration\Run-IntegrationTests.ps1 -ConnectionString "<your connection string>"
 ```
 
-### Local workflow options
+## Local workflow options
 
 - Use a **local Postgres container**  
 - Use a **Neon preview branch** (download `db-conn.txt` from CI)  

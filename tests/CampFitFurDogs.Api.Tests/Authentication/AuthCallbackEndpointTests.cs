@@ -1,22 +1,42 @@
 using System.Net;
 using System.Text.Json;
+using CampFitFurDogs.Api.Tests.Fixtures;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fakes;
+using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
 public class AuthCallbackEndpointTests
-    : IClassFixture<TestWebApplicationFactory>
+    : IClassFixture<PostgresFixture>, IClassFixture<TestUtilities.Factories.CampFitFurDogsApiFactory>
 {
-    private readonly TestWebApplicationFactory _factory;
+    private readonly TestUtilities.Factories.CampFitFurDogsApiFactory _factory;
 
-    public AuthCallbackEndpointTests(TestWebApplicationFactory factory)
+    public AuthCallbackEndpointTests(PostgresFixture db, TestUtilities.Factories.CampFitFurDogsApiFactory factory)
     {
         _factory = factory;
+
+        //
+        // ⭐ REQUIRED: initialize Postgres for this factory instance
+        //
+        _factory.UseContainer(db.Container);
+
+        //
+        // ⭐ REQUIRED: ensure Frontend__BaseUrl is always present
+        //
+        _factory.WithFrontendBaseUrl("http://localhost:3000");
+
+        //
+        // ⭐ REQUIRED: ensure OIDC config is always present unless overridden
+        //
+        _factory.WithConfigOverrides(cfg =>
+        {
+            cfg.AddInMemoryCollection(ValidOidcConfig);
+        });
     }
 
     private static Dictionary<string, string?> ValidOidcConfig => new()
@@ -127,7 +147,6 @@ public class AuthCallbackEndpointTests
         };
 
         var client = new TestClientBuilder(_factory)
-            .WithConfigOverrides(cfg => cfg.AddInMemoryCollection(ValidOidcConfig))
             .WithFakeOidcResponses(fakeResponses)
             .BuildClient();
 
@@ -153,7 +172,6 @@ public class AuthCallbackEndpointTests
         };
 
         var client = new TestClientBuilder(_factory)
-            .WithConfigOverrides(cfg => cfg.AddInMemoryCollection(ValidOidcConfig))
             .WithFakeOidcResponses(fakeResponses)
             .BuildClient();
 
@@ -188,7 +206,6 @@ public class AuthCallbackEndpointTests
         };
 
         var client = new TestClientBuilder(_factory)
-            .WithConfigOverrides(cfg => cfg.AddInMemoryCollection(ValidOidcConfig))
             .WithFakeOidcResponses(fakeResponses)
             .BuildClient();
 

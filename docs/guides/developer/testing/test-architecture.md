@@ -1,23 +1,24 @@
 # Test Architecture & Guardrails
 
-This guide describes the testing strategy for Camp Fit Fur Dogs, including how architectural guardrails are enforced, how test projects are structured, and how contributors should write and organize tests. The goal is to ensure the architecture remains clean, predictable, and self‑defending as the system grows.
+This guide describes the testing strategy for Camp Fit Fur Dogs, including how architectural guardrails are enforced, how test projects are structured, and how contributors should write and organize tests.  
+The goal is to ensure the architecture remains clean, predictable, and self‑defending as the system grows.
 
 ---
 
-## 1. Goals
+# 1. Goals
 
-- Enforce architectural rules automatically.
-- Keep layers pure and well-separated.
-- Catch regressions early.
-- Ensure vertical slices remain consistent.
-- Make tests reflect architecture, not just behavior.
-- Provide contributors with clear patterns for writing new tests.
+- Enforce architectural rules automatically  
+- Keep layers pure and well‑separated  
+- Catch regressions early  
+- Ensure vertical slices remain consistent  
+- Make tests reflect architecture, not just behavior  
+- Provide contributors with clear patterns for writing new tests  
 
 ---
 
-## 2. Test Project Structure
+# 2. Test Project Structure
 
-The solution uses one test project per layer, plus a dedicated project for pure-reflection architectural guardrails:
+The solution uses one test project per layer, plus a dedicated project for pure‑reflection architectural guardrails:
 
 ```
 tests/
@@ -28,62 +29,88 @@ tests/
     CampFitFurDogs.Infrastructure.Tests/
 ```
 
-Each project tests only its corresponding layer, except `Architecture.Tests` which validates cross-cutting structural rules via pure reflection.
-
-### 2.1 Api.Tests
-
-- Endpoint tests (full request → response flow)
-- Request/response mapping tests
-- **DI-dependent guardrails** — tests that need the real DI container via `GuardrailTestBase` (see §3.1)
-- Authentication callback tests (see **Authentication Testing**)
-
-### 2.2 Application.Tests
-
-- Handler tests (command and query)
-- Validator tests
-- Dispatcher pipeline tests
-- Domain event dispatch tests
-- Fake test doubles for slice dependencies (e.g., `FakeGetDogProfileReader` for query handlers, fake repositories for command handlers)
-
-### 2.3 Architecture.Tests
-
-- **Pure-reflection guardrails** — tests that inspect assemblies without a running host (see §3.2)
-- `ReferenceScanner.cs` utility for assembly-reference validation
-- No dependency on `Microsoft.AspNetCore.Mvc.Testing` or Testcontainers
-
-### 2.4 Domain.Tests
-
-- Entity behavior tests
-- Value object tests
-- Domain event tests
-- Invariant enforcement tests
-
-### 2.5 Infrastructure.Tests
-
-- Repository tests (command-side persistence)
-- Reader tests (query-side data retrieval)
-- Persistence tests
-- External system integration tests
-- Infrastructure guardrails (e.g., no domain logic)
+Each project tests only its corresponding layer, except `Architecture.Tests`, which validates cross‑cutting structural rules via pure reflection.
 
 ---
 
-## 3. Guardrail Tests
+## 2.1 Api.Tests
 
-Guardrail tests enforce architectural purity and prevent regressions. They fall into two categories based on their runtime needs.
+- Endpoint tests (full request → response flow)  
+- Request/response mapping tests  
+- **DI‑dependent guardrails** — tests requiring the real DI container via `GuardrailTestBase`  
+- Authentication callback tests (see Authentication Testing Guide)  
 
-### 3.1 DI-Dependent Guardrails (Api.Tests/Guardrails/)
+---
 
-These tests need the real DI container to resolve services. They inherit from `GuardrailTestBase`, which boots the test server via `CampFitFurDogsApiFactory` and exposes `Get<T>()` / `GetAll<T>()` helpers.
+## 2.2 Application.Tests
+
+- Handler tests (command and query)  
+- Validator tests  
+- Dispatcher pipeline tests  
+- Domain event dispatch tests  
+- Fake test doubles for slice dependencies  
+  - Fake readers for query handlers  
+  - Fake repositories for command handlers  
+
+---
+
+## 2.3 Architecture.Tests
+
+- **Pure‑reflection guardrails** — assembly‑level rules  
+- `ReferenceScanner.cs` for dependency graph validation  
+- No dependency on ASP.NET test host or Testcontainers  
+
+Examples:
+
+- Domain must not reference Application or Infrastructure  
+- Application must not reference API or Infrastructure  
+- Handlers must follow naming conventions  
+- DTOs must not reference domain entities  
+- Endpoints must not bypass the dispatcher pipeline  
+- Query handlers must not depend on repositories (ADR‑0021)  
+- Frank must have no upstream dependencies  
+
+---
+
+## 2.4 Domain.Tests
+
+- Entity behavior tests  
+- Value object tests  
+- Domain event tests  
+- Invariant enforcement tests  
+
+---
+
+## 2.5 Infrastructure.Tests
+
+- Repository tests (command‑side persistence)  
+- Reader tests (query‑side data retrieval)  
+- Persistence tests  
+- External system integration tests  
+- Infrastructure guardrails (e.g., no domain logic)  
+
+---
+
+# 3. Guardrail Tests
+
+Guardrail tests enforce architectural purity and prevent regressions.  
+They fall into two categories based on runtime needs.
+
+---
+
+## 3.1 DI‑Dependent Guardrails (Api.Tests/Guardrails)
+
+These tests require the real DI container.  
+They inherit from `GuardrailTestBase`, which boots the test server via `CampFitFurDogsApiFactory` and exposes `Get<T>()` / `GetAll<T>()`.
 
 **Files (14):**
 
 | File | Purpose |
 |------|---------|
-| `GuardrailTestBase.cs` | Abstract base — DI scope helpers |
-| `DiRegistrationScanner.cs` | Static scanner — assembly + DI resolution |
-| `InfrastructureRegistrationGuardrailTests.cs` | `[Theory]` — Repository/Service/Provider registered |
-| `ReaderRegistrationGuardrailTests.cs` | `[Theory]` — Reader types registered via Scrutor |
+| `GuardrailTestBase.cs` | DI scope helpers |
+| `DiRegistrationScanner.cs` | Assembly + DI resolution scanner |
+| `InfrastructureRegistrationGuardrailTests.cs` | Repository/Service/Provider registration |
+| `ReaderRegistrationGuardrailTests.cs` | Reader types registered via Scrutor |
 | `DispatcherRegistrationGuardrailTests.cs` | Command + DomainEvent dispatchers registered |
 | `NoManualHandlerRegistrationGuardrailTests.cs` | Handlers registered via Scrutor only |
 | `NoManualInfrastructureRegistrationGuardrailTests.cs` | Infra types registered via Scrutor only |
@@ -91,144 +118,174 @@ These tests need the real DI container to resolve services. They inherit from `G
 | `DomainEventHandlerRegistrationGuardrailTests.cs` | Domain event handlers registered |
 | `CurrentUserServiceGuardrailTests.cs` | TestCurrentUserService wiring |
 | `DbContextGuardrailTests.cs` | Npgsql + single DbContext registration |
-| `EndpointConventionGuardrailTests.cs` | Every `*Endpoint` class implements `IEndpoint`; at least one exists |
+| `EndpointConventionGuardrailTests.cs` | Every `*Endpoint` implements `IEndpoint` |
 | `RouteMappingGuardrailTests.cs` | Route smoke test |
 | `TestcontainersGuardrailTests.cs` | Database connectivity smoke test |
 
-### 3.2 Pure-Reflection Guardrails (Architecture.Tests/)
+---
 
-These tests use only `System.Reflection` and `ReferenceScanner` to inspect assemblies. They do **not** need a running host, DI container, or database — making them fast and isolated.
+## 3.2 Pure‑Reflection Guardrails (Architecture.Tests)
+
+These tests use only `System.Reflection` and `ReferenceScanner`.  
+They do **not** require:
+
+- A running host  
+- A DI container  
+- A database  
+
+They are fast, isolated, and enforce structural purity.
 
 Examples:
 
-- Domain must not reference Application or Infrastructure.
-- Application must not reference API or Infrastructure.
-- Handlers must follow naming conventions.
-- DTOs must not reference domain entities.
-- Endpoints must not bypass the dispatcher pipeline.
-- Frank must have no upstream dependencies.
-- Query handlers must not depend on repository interfaces (ADR‑0021).
-
-### 3.3 When to Use Which
-
-| Need the DI container or test server? | Project |
-|---------------------------------------|---------|
-| **No** — inspecting types, references, naming | Architecture.Tests |
-| **Yes** — resolving services, hitting endpoints | Api.Tests/Guardrails/ |
-
-**Rule of thumb:** if the test can run with just assembly reflection, it belongs in Architecture.Tests. If it calls `Get<T>()`, `GetAll<T>()`, or `Factory.CreateClient()`, it belongs in Api.Tests/Guardrails/.
+- Domain → no references to Application or Infrastructure  
+- Application → no references to API or Infrastructure  
+- DTOs → no domain entities  
+- Endpoints → must use dispatcher pipeline  
+- Query handlers → must depend on readers, not repositories  
+- Frank → must have no upstream dependencies  
 
 ---
 
-## 4. Test Patterns
+## 3.3 When to Use Which
 
-### 4.1 Black-Box Testing for Guardrails
+| Need DI container or test server? | Project |
+|-----------------------------------|---------|
+| **No** — type inspection only | Architecture.Tests |
+| **Yes** — DI resolution or endpoint calls | Api.Tests/Guardrails |
+
+**Rule of thumb:**  
+If the test can run with only reflection, it belongs in **Architecture.Tests**.  
+If it calls `Get<T>()`, `GetAll<T>()`, or `Factory.CreateClient()`, it belongs in **Api.Tests/Guardrails**.
+
+---
+
+# 4. Test Patterns
+
+## 4.1 Black‑Box Testing for Guardrails
 
 Guardrail tests should:
 
-- Assert on public behavior, not implementation details.
-- Avoid mocking internal types.
-- Use reflection only when necessary to inspect assemblies.
-
-### 4.2 Handler Tests
-
-**Command handler tests** should:
-
-- Test business logic in isolation.
-- Mock repositories or external services.
-- Avoid testing validation (that belongs to validator tests).
-- Inject `FakeUnitOfWork` alongside fake repositories.  
-  Assert `Committed` is `true` and verify `CommitCount` for commit behavior.
-
-**Query handler tests** should:
-
-- Inject a fake reader (e.g., `FakeGetDogProfileReader`) — never a repository.
-- Assert the handler maps reader output to the correct result DTO.
-- Do not inject `FakeUnitOfWork` — queries have no side effects.
-
-### 4.3 Validator Tests
-
-Validator tests should:
-
-- Test validation rules explicitly.
-- Cover both valid and invalid cases.
-
-### 4.4 Domain Tests
-
-Domain tests should:
-
-- Test invariants.
-- Test domain event raising.
-- Test value object equality and behavior.
-
-### 4.5 API Tests
-
-API tests should:
-
-- Use the test server factory.
-- Test full request → response flow.
-- Assert status codes and response shapes.
+- Assert public behavior, not implementation details  
+- Avoid mocking internal types  
+- Use reflection only when necessary  
 
 ---
 
-## 5. Test Data & Fixtures
+## 4.2 Handler Tests
+
+### Command Handler Tests
+
+- Test business logic in isolation  
+- Mock repositories or external services  
+- Do **not** test validation (belongs to validator tests)  
+- Inject `FakeUnitOfWork`  
+- Assert:  
+  - `Committed == true`  
+  - `CommitCount` matches expected behavior  
+
+### Query Handler Tests
+
+- Inject fake readers (never repositories)  
+- Assert mapping to result DTO  
+- Do **not** inject `FakeUnitOfWork` — queries have no side effects  
+
+---
+
+## 4.3 Validator Tests
+
+Validator tests should:
+
+- Test validation rules explicitly  
+- Cover valid + invalid cases  
+
+---
+
+## 4.4 Domain Tests
+
+Domain tests should:
+
+- Test invariants  
+- Test domain event raising  
+- Test value object equality + behavior  
+
+---
+
+## 4.5 API Tests
+
+API tests should:
+
+- Use the test server factory  
+- Test full request → response flow  
+- Assert status codes + response shapes  
+
+---
+
+# 5. Test Data & Fixtures
 
 Tests may use:
 
 - Builders  
 - Factory methods  
-- Test doubles (fake repositories for commands, fake readers for queries)  
-- In-memory repositories (for Infrastructure tests)  
+- Test doubles  
+  - Fake repositories (commands)  
+  - Fake readers (queries)  
+- In‑memory repositories (Infrastructure tests)  
 
 Avoid:
 
-- Sharing mutable state across tests  
+- Sharing mutable state  
 - Overusing mocks (especially in guardrails)  
 
 ---
 
-## 6. Contributor Guidelines
+# 6. Contributor Guidelines
 
-When adding new architecture:
+## When adding new architecture
 
-- Add or update guardrail tests.
-- Pure-reflection guardrails → `Architecture.Tests`.
-- DI-dependent guardrails → `Api.Tests/Guardrails/`.
-- Ensure purity rules are enforced.
-- Update documentation (e.g., `purity-rules.md`).
+- Add or update guardrail tests  
+- Pure‑reflection guardrails → `Architecture.Tests`  
+- DI‑dependent guardrails → `Api.Tests/Guardrails`  
+- Ensure purity rules remain enforced  
+- Update documentation (e.g., `purity-rules.md`)  
 
-When adding new features:
+## When adding new features
 
-- Add handler tests (with fake readers for query slices, fake repositories for command slices).
-- Add validator tests.
-- Add domain tests.
-- Add endpoint tests.
-- Ensure existing guardrails still pass.
-- Command handler tests must verify `IUnitOfWork.CommitAsync` is called on the happy path and not called on validation/guard failures.
-- Query handler tests must **not** use `FakeUnitOfWork` — queries have no side effects.
+- Add handler tests  
+  - Fake readers for queries  
+  - Fake repositories for commands  
+- Add validator tests  
+- Add domain tests  
+- Add endpoint tests  
+- Ensure guardrails still pass  
+- Command handler tests must verify:  
+  - `IUnitOfWork.CommitAsync()` is called on success  
+  - Not called on validation/guard failures  
+- Query handler tests must **not** use `FakeUnitOfWork`  
 
-When modifying existing architecture:
+## When modifying existing architecture
 
-- Update guardrails accordingly.
-- Ensure the dependency graph remains clean.
-- Update folder structure tests if needed.
-
----
-
-## 7. Philosophy
-
-Tests are not just for correctness — they are **architectural enforcement tools**. They ensure:
-
-- The architecture stays clean.
-- Conventions remain consistent.
-- Contributors cannot accidentally break layering.
-- The system remains maintainable as it grows.
-
-Guardrails turn architecture into something the system *defends*, not something developers must remember.
+- Update guardrails accordingly  
+- Ensure dependency graph remains clean  
+- Update folder structure tests if needed  
 
 ---
 
-## Related Documentation
+# 7. Philosophy
+
+Tests are not just for correctness — they are **architectural enforcement tools**.
+
+They ensure:
+
+- Architecture stays clean  
+- Conventions remain consistent  
+- Contributors cannot accidentally break layering  
+- The system remains maintainable as it grows  
+
+Guardrails turn architecture into something the system **defends**, not something developers must remember.
+
+---
+
+# Related Documentation
 
 - **[Authentication Testing](../authentication-testing.md)**  
 - **[Integration Testing](../integration-testing.md)**  

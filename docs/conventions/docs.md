@@ -35,9 +35,9 @@ Governance lives in:
 
 The repository uses four canonical convention documents. These are the single source of truth for repository rules and must remain synchronized:
 
-- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, cross‑cutting primitives  
+- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, cross‑cutting primitives, Configurator Engine lifecycle  
 - **Workflow** — CI/CD structure, composite actions, PR Preview lifecycle, script‑first rules  
-- **Code** — backend, frontend, CQRS, endpoints, EF Core, Frank usage, DI usage  
+- **Code** — backend, frontend, CQRS, endpoints, EF Core, Frank usage, DI usage, Configurator patterns  
 - **Docs** — documentation rules, patching rules, fencing rules, ownership  
 
 Other documents (ADRs, guides, READMEs) may reference these conventions but must not redefine them.
@@ -51,6 +51,19 @@ docs/conventions/
   code.md
   docs.md   ← this file
 ```
+
+## 2.2 Allowed Document Types
+
+Documentation may take the following forms:
+
+- **Conventions** — the four canonical files  
+- **Governance** — rules and boundaries  
+- **Guides** — how‑to documents  
+- **ADRs** — architectural decisions  
+- **Reference docs** — slice‑specific or feature‑specific explanations  
+- **Examples** — safe, minimal patterns  
+
+Documentation must not introduce new categories.
 
 ---
 
@@ -83,6 +96,9 @@ Conventions define:
 - Test seams  
 - Folder structure  
 - Dependency injection usage (Frank auto‑registration)  
+- Configurator Engine usage and ordering  
+- Hosting provider integration rules  
+- Middleware ordering rules  
 
 Conventions must **never** redefine governance.
 
@@ -96,6 +112,7 @@ Guides define:
 - How to test endpoints  
 - How to run migrations  
 - How Frank auto‑registration works (reference only; rules live in conventions)  
+- How to write configurators (reference only; rules live in conventions)  
 
 Guides must **never** define rules or boundaries.
 
@@ -225,6 +242,7 @@ If an example cannot be shown safely, describe the pattern in prose.
 - `docs/conventions/` is the canonical hub  
 - Each file must have clear headings and stable anchors  
 - Cross‑references must be explicit and correct  
+- Guides must link back to conventions when referencing rules  
 
 ## 10.2 Ownership
 
@@ -270,6 +288,7 @@ Documentation must:
   - **GitHub artifact client abstraction**  
   - **PR parser abstraction**  
   - **Configuration writer abstraction**  
+  - **Configurator Engine primitives**  
   - Guardrail enforcement  
   - Test seams  
 
@@ -324,7 +343,7 @@ Documentation must include:
 
 # 16. Enforcement and Tests
 
-- Guardrail tests validate layering, dependency rules, hosting provider behavior, and security headers  
+- Guardrail tests validate layering, dependency rules, hosting provider behavior, Configurator Engine ordering, and security headers  
 - Documentation must describe which guardrail tests exist and where they run  
 - When a convention is enforced by tests, document the test name and location  
 

@@ -1,6 +1,7 @@
 using Testcontainers.PostgreSql;
+using Xunit;
 
-namespace CampFitFurDogs.Api.Tests.Fixtures;
+namespace CampFitFurDogs.TestUtilities.Fixtures;
 
 public class PostgresFixture : IAsyncLifetime
 {
@@ -8,5 +9,6 @@ public class PostgresFixture : IAsyncLifetime
         new PostgreSqlBuilder("postgres:17-alpine").Build();
 
     public Task InitializeAsync() => Container.StartAsync();
+
     public Task DisposeAsync() => Container.DisposeAsync().AsTask();
 }

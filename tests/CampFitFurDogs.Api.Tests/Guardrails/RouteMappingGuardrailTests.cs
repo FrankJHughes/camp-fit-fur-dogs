@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;

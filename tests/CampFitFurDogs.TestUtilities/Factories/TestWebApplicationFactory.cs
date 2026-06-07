@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace CampFitFurDogs.TestUtilities.Factories;
 
-public class TestWebApplicationFactory : WebApplicationFactory<Program>
+public class TestWebApplicationFactory : CampFitFurDogsApiFactory
 {
     // Intentionally empty.
     // All customization is done via WithWebHostBuilder in TestClientBuilder.

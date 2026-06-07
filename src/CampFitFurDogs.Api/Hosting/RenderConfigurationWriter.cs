@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-
 namespace CampFitFurDogs.Api.Hosting;
 
 public sealed class RenderConfigurationWriter : IRenderConfigurationWriter

@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Sprint 8] – Unreleased
+## [Sprint 8] – 2026-06-06
+
+### Stories Completed
+
+| Story ID | Title | Notes |
+|----------|--------|--------|
+| US‑126 | Create Account Page | Full Create Account flow, validation, UX, and success path |
+| US‑110 | Authentication: Owner Login | External Auth0 login initiation and identity mapping |
+| US‑111 | Authentication: Session Management | Secure session cookies, persistence, and validation |
+| US‑135 | CORS Policy | Hardened CORS rules, explicit allow‑lists, environment‑aware origins |
+| US‑134 | Security Headers | Security‑header protections applied across all API responses |
+
+---
 
 ### Added
 - New Create Account page with full client‑side validation, password‑strength feedback, and accessible inline error messages.
@@ -13,14 +25,20 @@ All notable changes to this project will be documented in this file.
 - New secure login flow using Auth0, including external authentication, identity mapping, and automatic Owner creation on first login.
 - New session management system with secure, HttpOnly cookies and server‑side session persistence.
 - New security‑header protections applied across all API responses to improve browser‑level safety.
+- New hardened CORS policy with explicit allow‑lists for origins, methods, and headers across all environments.
+- New structured logging for blocked CORS origins to improve observability and security posture.
 
 ### Changed
 - Updated account creation UI to use the new FormCommand state machine for deterministic validation and error handling.
 - Updated account creation API client to match the finalized CreateCustomer backend contract.
 - Updated authentication callback flow to use a deterministic, step‑based pipeline for improved reliability and error handling.
+- Updated CORS middleware to remove wildcard allowances and use deterministic, environment‑driven origin resolution (including PR Preview URLs).
+- Updated preflight request handling and caching behavior for improved performance and consistency.
 
 ### Fixed
-*(No customer‑facing fixes this sprint — all stability improvements were part of first‑time feature delivery and are captured under Added/Changed.)*
+- Fixed inconsistent CORS behavior between local, preview, and production environments.
+- Fixed missing or incorrect CORS headers on some error responses by ensuring CORS executes before authentication and authorization.
+- *(No additional customer‑facing fixes this sprint — all stability improvements were part of first‑time feature delivery and are captured under Added/Changed.)*
 
 ## [Sprint 7] - 2026-05-11
 | Story  | Title                              | Issue |

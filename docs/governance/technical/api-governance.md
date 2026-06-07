@@ -47,6 +47,8 @@ The API layer is responsible for:
 - Using dispatchers (`ICommandDispatcher`, `IQueryDispatcher`)  
 - Using Frank endpoint discovery  
 - Applying Frank security headers middleware  
+- Integrating with Frank’s correlation ID middleware  
+- Integrating with Frank’s error boundary middleware  
 
 The API layer must not:
 

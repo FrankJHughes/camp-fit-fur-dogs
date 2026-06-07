@@ -24,6 +24,13 @@ Authentication operations involve:
 
 Each environment has different requirements based on hosting provider behavior, cookie security rules, and redirect constraints.
 
+All behavior follows:
+
+- Security Governance  
+- Operations Governance  
+- Hosting Provider Abstraction Rules  
+- Frank Hosting Abstractions  
+
 ---
 
 # Auth0 Configuration
@@ -295,6 +302,8 @@ Logs are emitted through the standard logging pipeline.
 - Set `AUTH0_CLIENT_SECRET`  
 - Redeploy  
 
+---
+
 ## 2. Wrong Callback URL  
 **Symptoms:**  
 - Auth0 error page  
@@ -302,6 +311,8 @@ Logs are emitted through the standard logging pipeline.
 
 **Fix:**  
 - Update Auth0 Allowed Callback URLs  
+
+---
 
 ## 3. Cookie Not Set  
 **Symptoms:**  
@@ -312,6 +323,8 @@ Logs are emitted through the standard logging pipeline.
 - Ensure HTTPS  
 - Ensure correct domain  
 - Ensure `Secure=true` in preview/prod  
+
+---
 
 ## 4. Owner Not Created  
 **Symptoms:**  
@@ -331,4 +344,4 @@ Logs are emitted through the standard logging pipeline.
 - **Authentication Architecture Guide**  
 - **Authentication Testing Guide**  
 - **Create Account Form Guide**  
-- **Create Account Feature Slice Guide**  
+- **Create Account Feature Slice Guide**

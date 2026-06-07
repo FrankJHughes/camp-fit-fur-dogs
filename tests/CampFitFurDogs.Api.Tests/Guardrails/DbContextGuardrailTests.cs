@@ -1,4 +1,6 @@
 using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fixtures;
 using CampFitFurDogs.Infrastructure.Data;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

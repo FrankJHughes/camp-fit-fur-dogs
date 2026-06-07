@@ -1,8 +1,10 @@
+using CampFitFurDogs.TestUtilities.Fixtures;
+
 namespace CampFitFurDogs.Integration.Tests.Fixtures;
 
-[CollectionDefinition("api")]
+[CollectionDefinition("API Collection")]
 public class ApiCollection :
-    ICollectionFixture<CampFitFurDogsApiFactory>,
+    ICollectionFixture<ApiFactoryFixture>,
     ICollectionFixture<PostgresFixture>
 {
 }

@@ -4,6 +4,7 @@ using CampFitFurDogs.Application.Abstractions.Identity;
 using CampFitFurDogs.Infrastructure.Audit;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Infrastructure.Identity.Oidc;
+using Frank.DependencyInjection;
 using Frank.Infrastructure.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

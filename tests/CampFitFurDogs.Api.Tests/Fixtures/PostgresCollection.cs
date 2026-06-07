@@ -1,3 +1,5 @@
+using CampFitFurDogs.TestUtilities.Fixtures;
+
 namespace CampFitFurDogs.Api.Tests.Fixtures;
 
 [CollectionDefinition("postgres")]

@@ -227,7 +227,18 @@ cancel-in-progress: true
 
 ---
 
-## Job Structure
+# 2.1 Job Structure
+
+Two phases:
+
+1. **Destroy Phase** — remove stale preview resources  
+2. **Deploy Phase** — provision fresh preview resources  
+
+---
+
+# Destroy Phase (conditional)
+
+Executed when `should_destroy == true`.
 
 ### `preview_context`
 
@@ -241,10 +252,6 @@ Computes:
 
 ---
 
-# Destroy Phase (conditional)
-
-Executed when `should_destroy == true`.
-
 ### `destroy_stale_api`
 
 - Remove `render-preview` label  
@@ -252,15 +259,27 @@ Executed when `should_destroy == true`.
 - Confirm teardown via `wait-for-endpoint` (`/api/health` → `404`)  
 - Ensures Render has fully torn down the old environment
 
+---
+
 ### `destroy_stale_db_artifact`  
-### `destroy_stale_frontend_artifact`  
+### `destroy_stale_frontend_artifact`
+
+Deletes stale GitHub artifacts.
+
+---
+
 ### `destroy_stale_db`
 
-- Delete Neon branch
+Deletes Neon branch:
+
+- Idempotent  
+- Safe when branch does not exist  
+
+---
 
 ### `destroy_stale_frontend`
 
-- Remove Vercel preview deployments
+Deletes Vercel preview deployments.
 
 ---
 
@@ -277,6 +296,8 @@ Executed when `should_deploy == true`.
 - `vercel deploy --prebuilt --target=preview`  
 - Publish `frontend-url.txt`
 
+---
+
 ### `deploy_fresh_db`
 
 - Create Neon branch  
@@ -284,6 +305,8 @@ Executed when `should_deploy == true`.
 - Apply EF Core migrations  
 - Run infrastructure integration tests  
 - Publish `db-conn.txt`
+
+---
 
 ### `deploy_fresh_api`
 
@@ -335,7 +358,12 @@ Artifacts must be:
 | `postgres-uri-to-npgsql-connection-string` | Convert Neon URI → Npgsql |
 | `wait-for-endpoint` | Poll API health |
 
-These must remain stable and script‑first compatible.
+Composite actions must:
+
+- Remain script‑first compatible  
+- Avoid inline logic  
+- Use explicit inputs/outputs  
+- Avoid environment‑specific branching  
 
 ---
 
@@ -373,6 +401,12 @@ API integration tests
 - Reproducibility via scripts and documented env vars  
 - Integration tests remain inside the backend job until a dedicated job is introduced  
 - Frank tests validate DI auto‑registration, endpoint discovery, and EF Core scanning  
+- No environment‑specific branching in workflows  
+- All logic must live in scripts under `scripts/`  
+- Workflows must call scripts, not inline shell  
+- Scripts must be idempotent and preview‑safe  
+- Workflows must not leak secrets in logs  
+- Workflows must not depend on GitHub UI state  
 
 ---
 

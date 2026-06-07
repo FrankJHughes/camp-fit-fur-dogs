@@ -2,34 +2,29 @@ using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Infrastructure.Data;
-using CampFitFurDogs.Integration.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-public class CreateCustomer_SuccessTests : IClassFixture<PostgresFixture>, IDisposable
+[Collection("API Collection")]
+public class CreateCustomer_SuccessTests
 {
     private readonly CampFitFurDogsApiFactory _factory;
     private readonly HttpClient _client;
     private readonly PostgresFixture _db;
 
-    public CreateCustomer_SuccessTests(PostgresFixture db)
+    public CreateCustomer_SuccessTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
     {
-        _db = db;
+        _db = postgresFixture;
 
-        _factory = new CampFitFurDogsApiFactory();
-        _factory.UseContainer(db.Container);
+        _factory = factoryFixture.Factory;
+        _factory.UseContainer(postgresFixture.Container);
 
         _client = _factory.CreateClient();
-    }
-
-    public void Dispose()
-    {
-        _factory.Dispose();
-        _client.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     [Fact]

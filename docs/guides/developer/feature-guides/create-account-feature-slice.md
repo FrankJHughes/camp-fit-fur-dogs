@@ -21,20 +21,21 @@ The Create Account slice includes:
 
 This slice follows the standard vertical‑slice pattern:
 
-````  
+```
 UI → Validation → API Client → Backend Endpoint → Domain → Persistence
-````
+```
 
 ---
 
 # Frontend Components
 
-### 1. Page Component  
+## 1. Page Component
+
 Located at:
 
-````  
+```
 app/create-account/page.tsx
-````
+```
 
 Responsibilities:
 
@@ -43,12 +44,15 @@ Responsibilities:
 - Display errors  
 - Redirect on success  
 
-### 2. Form Component  
+---
+
+## 2. Form Component
+
 Located at:
 
-````  
+```
 components/forms/CreateAccountForm.tsx
-````
+```
 
 Responsibilities:
 
@@ -64,7 +68,7 @@ Responsibilities:
 
 Validation is performed using a Zod schema:
 
-````  
+```
 const CreateAccountSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -73,7 +77,7 @@ const CreateAccountSchema = z.object({
   message: "Passwords must match",
   path: ["confirmPassword"],
 });
-````
+```
 
 Validation occurs:
 
@@ -89,9 +93,9 @@ Errors are displayed inline using shared UI components.
 
 The form calls the API client method:
 
-````  
+```
 api.createAccount({ email, password })
-````
+```
 
 The API client:
 
@@ -102,13 +106,13 @@ The API client:
 
 Example:
 
-````  
+```
 const result = await api.createAccount(data);
 
 if (!result.ok) {
   setError("root", { message: result.error });
 }
-````
+```
 
 ---
 
@@ -116,9 +120,9 @@ if (!result.ok) {
 
 The backend exposes:
 
-````  
+```
 POST /api/account
-````
+```
 
 Responsibilities:
 
@@ -127,6 +131,13 @@ Responsibilities:
 - Return success or validation errors  
 
 The endpoint does **not** log the user in — that is handled by US‑110.
+
+This endpoint follows **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**:
+
+- No domain logic  
+- No Infrastructure references  
+- No session logic  
+- No identity logic  
 
 ---
 
@@ -139,7 +150,13 @@ The domain layer:
 - Persists the Owner  
 - Returns the new `OwnerId`  
 
-No session is created here.
+No session is created here.  
+No identity mapping occurs here.
+
+This behavior aligns with:
+
+- **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**  
+- **[Architecture Governance](ca://s?q=Open_architecture_governance)**  
 
 ---
 
@@ -155,16 +172,19 @@ On success:
 
 # Error Handling
 
-### Client‑Side Errors  
+## Client‑Side Errors
+
 - Invalid email  
 - Weak password  
 - Password mismatch  
 
-### API Validation Errors  
+## API Validation Errors
+
 - Email already exists  
 - Invalid input  
 
-### System Errors  
+## System Errors
+
 - Network failure  
 - Server error  
 
@@ -174,12 +194,14 @@ System errors appear as a root‑level message.
 
 # Testing the Feature Slice
 
-### 1. Unit Tests  
+## 1. Unit Tests
+
 - Zod schema  
 - Password mismatch  
 - Required fields  
 
-### 2. Integration Tests  
+## 2. Integration Tests
+
 - Successful submission  
 - API validation errors  
 - Network errors  
@@ -187,7 +209,7 @@ System errors appear as a root‑level message.
 
 Example:
 
-````  
+```
 it("redirects on successful account creation", async () => {
   mockApi.createAccount.mockResolvedValue({ ok: true });
 
@@ -195,7 +217,7 @@ it("redirects on successful account creation", async () => {
 
   expect(mockRouter.push).toHaveBeenCalledWith("/account/created");
 });
-````
+```
 
 ---
 
@@ -218,5 +240,6 @@ it("redirects on successful account creation", async () => {
 
 - **[Create Account Form](ca://s?q=Generate_Create_Account_Form_Guide)**  
 - **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
-- **[Identity Mapping](ca://s?q=Generate_Identity_Mapping_Guide)**  
+- **[Session Management](ca://s?q=Show_session_management_guide)**  
+- **[Identity Mapping](ca://s?q=Show_identity_mapping_guide)**  
+- **[Abstractions Contract](ca://s?q=Show_abstractions_contract)**  

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Fakes;
 using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests;

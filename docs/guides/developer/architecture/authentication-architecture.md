@@ -13,7 +13,8 @@ Those live in:
 - Architecture Governance  
 - Security Governance  
 - Operations Governance  
-- Conventions  
+- API Governance  
+- Code Conventions  
 - ADRs  
 
 This guide focuses solely on **how authentication works today**.
@@ -86,7 +87,7 @@ Each step:
 - Uses Infrastructure only through abstractions  
 - Never touches hosting providers, environment variables, or configuration directly  
 
-This makes the authentication flow deterministic, testable, and composable.
+This makes the authentication flow deterministic, testable, and composposable.
 
 ---
 
@@ -464,4 +465,4 @@ Preview/prod:
 - **Create Account Feature Slice Guide**  
 - **Architecture Governance**  
 - **Security Governance**  
-- **Operations Governance**  
+- **Operations Governance**
