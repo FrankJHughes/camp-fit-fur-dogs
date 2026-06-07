@@ -25,8 +25,8 @@ projects:
           value: "secret"
 
         - key: ASPNETCORE_ENVIRONMENT
-          value: Production
-          previewValue: Preview
+          value: "Production"
+          previewValue: "Preview"
 
         - key: Frontend__BaseUrl
           sync: false

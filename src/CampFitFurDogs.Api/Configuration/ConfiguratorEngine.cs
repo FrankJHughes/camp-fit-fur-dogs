@@ -58,14 +58,16 @@ public static class ConfiguratorEngine
 
     public static void RunConfigureServices(WebApplicationBuilder builder, IEnumerable<Type> configurators)
     {
-        // Phase 0 — run hosting provider (if registered and active) BEFORE configurators
-        RunHostingProviderIfPresent(builder);
-
         // Phase 1 — run configurators' ConfigureServices in order
         foreach (var type in configurators)
         {
             var method = type.GetMethod("ConfigureServices", BindingFlags.Public | BindingFlags.Static);
             method?.Invoke(null, new object[] { builder.Services, builder.Configuration });
+            if (type == typeof(HostingProviderConfigurator))
+            {
+                // Configurator 0 - run hosting provider (if registered and active)
+                RunHostingProviderIfPresent(builder);
+            }
         }
     }
 
