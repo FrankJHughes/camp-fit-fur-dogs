@@ -62,7 +62,7 @@ This checklist defines **how governance is verified**.
 
 # 4. Multi‑Product Governance Enforcement
 
-- Camp Fit Fur Dogs must not depend on Frank (Frank) internals  
+- Camp Fit Fur Dogs must not depend on Frank internals  
 - Frank must not depend on product code  
 - Product boundaries are respected in code, stories, and CI  
 - Milestones remain independent  
@@ -105,6 +105,7 @@ This checklist defines **how governance is verified**.
 - No sensitive data in error messages  
 - Dependency scanning passes  
 - Security headers are present  
+- CORS policy is enforced  
 - Hosting provider hardening rules enforced  
 - Incident response rules followed  
 - Security governance overrides conventions when needed  

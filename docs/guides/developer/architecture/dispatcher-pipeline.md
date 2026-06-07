@@ -1,57 +1,68 @@
 # Dispatcher Pipeline Guide
 
-This guide describes the **command and query dispatcher pipeline** in Camp Fit Fur Dogs: how requests flow, where validation happens, and how handlers are invoked.  
-It belongs to the **architecture** category because it governs cross‑cutting behavior across all vertical slices.
+This guide explains how the **command and query dispatcher pipeline** works in Camp Fit Fur Dogs.  
+It describes the runtime flow, how handlers are invoked, how validation works, and how domain events are dispatched.  
+This is a **developer guide**, not governance or conventions.
 
 ---
 
-# 1. Goals
+# 1. Purpose of the Dispatcher Pipeline
+
+The dispatcher pipeline exists to:
 
 - Centralize command and query execution  
-- Apply cross‑cutting concerns consistently (validation, domain events, audit logging)  
-- Keep API endpoints thin and free of business logic  
-- Make handlers easy to test in isolation  
-- Enforce strict layering and dependency direction  
-- Ensure all business logic flows through the dispatcher pipeline  
+- Apply cross‑cutting concerns consistently  
+- Keep API endpoints thin  
+- Make handlers easy to test  
+- Ensure all business logic flows through a single mechanism  
+- Provide a predictable, uniform execution model across all slices  
+
+The dispatcher is the backbone of the application layer.
 
 ---
 
-# 2. Abstractions
+# 2. Core Abstractions
 
 ## 2.1 ICommandDispatcher
 
-````  
+```csharp
 public interface ICommandDispatcher
 {
-    Task<TResult> DispatchAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default);
+    Task<TResult> DispatchAsync<TCommand, TResult>(
+        TCommand command,
+        CancellationToken cancellationToken = default);
 }
-````
+```
 
 ## 2.2 IQueryDispatcher
 
-````  
+```csharp
 public interface IQueryDispatcher
 {
-    Task<TResult> DispatchAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default);
+    Task<TResult> DispatchAsync<TQuery, TResult>(
+        TQuery query,
+        CancellationToken cancellationToken = default);
 }
-````
+```
 
-These abstractions live in Application and are consumed by API endpoints and other application services.
+API endpoints call these dispatchers — never handlers directly.
 
-Handlers, validators, and dispatchers are registered via Frank’s **[Auto‑Registration](ca://s?q=Open_dependency_injection_architecture)** system.
+Handlers, validators, and dispatchers are auto‑registered.
 
 ---
 
-# 3. Command Pipeline
+# 3. Command Pipeline (Deep‑Dive)
 
-The command pipeline performs the following steps in strict order:
+The command pipeline executes in the following strict order:
+
+---
 
 ## 3.1 Validation
 
-- Resolve all `IValidator<TCommand>` via auto‑registration  
-- Execute validation  
-- Fail fast on validation errors  
-- Validation errors are shaped by API error boundary rules  
+- All `IValidator<TCommand>` instances are resolved  
+- Validation runs before the handler  
+- Validation failures stop the pipeline immediately  
+- Errors are returned to the API boundary for shaping  
 
 Validation is a pipeline concern — not a handler concern.
 
@@ -59,64 +70,73 @@ Validation is a pipeline concern — not a handler concern.
 
 ## 3.2 Handler Resolution
 
-- Resolve `ICommandHandler<TCommand, TResult>` via `[AutoRegister]`  
-- Ensure exactly one handler exists (enforced by Frank guardrails)  
-- Handlers must not be invoked directly by endpoints  
+- Exactly one `ICommandHandler<TCommand, TResult>` must exist  
+- Resolved via auto‑registration  
+- Handlers are never invoked directly by endpoints  
 
 ---
 
 ## 3.3 Handler Execution
 
-- Invoke `HandleAsync`  
+- `HandleAsync` is invoked  
 - Handlers orchestrate domain behavior  
-- Handlers must not contain HTTP, Infrastructure, or UI logic  
-- Handlers must not raise domain events directly  
+- Handlers may call repositories, domain services, and aggregates  
+- Handlers do not raise domain events directly — aggregates do  
 
 ---
 
 ## 3.4 Persistence (Unit of Work)
 
-- Handlers inject `IUnitOfWork`  
-- Repositories stage changes on the DbContext change tracker  
-- Handlers call `CommitAsync` after domain mutations  
-- DbContext is never flushed directly  
-- Unit of Work dispatches domain events after commit  
-- See **ADR‑0017** for full persistence semantics  
+The Unit of Work coordinates:
 
-This enforces **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
+- Change tracking  
+- Commit  
+- Domain event dispatch  
+
+Flow:
+
+1. Handler performs repository operations  
+2. Handler calls `CommitAsync()`  
+3. Commit persists changes  
+4. Commit triggers domain event dispatch  
+
+The handler never flushes DbContext directly.
 
 ---
 
 ## 3.5 Domain Events
 
-- Aggregates raise domain events internally  
-- Unit of Work collects domain events  
-- `IDomainEventDispatcher` dispatches them after commit  
-- Domain event handlers are auto‑registered via `[AutoRegister]`  
-- Domain events must not cross the API boundary  
+Domain events flow as follows:
 
-This enforces **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**.
+1. Aggregates raise events internally  
+2. Unit of Work collects them  
+3. After commit, `IDomainEventDispatcher` dispatches them  
+4. Domain event handlers run in sequence  
+
+Domain events never cross the API boundary.
 
 ---
 
 ## 3.6 Result
 
-- The handler returns a DTO or primitive  
-- The dispatcher returns it to the API endpoint  
-- Endpoints shape the HTTP response  
+- Handler returns a DTO or primitive  
+- Dispatcher returns it to the endpoint  
+- Endpoint shapes the HTTP response  
 
-Commands must not return domain entities.
+Commands never return domain entities.
 
 ---
 
-# 4. Query Pipeline
+# 4. Query Pipeline (Deep‑Dive)
 
-The query pipeline performs:
+Queries follow a simplified pipeline:
+
+---
 
 ## 4.1 Validation
 
-- Resolve all `IValidator<TQuery>`  
-- Execute validation  
+- All `IValidator<TQuery>` instances are resolved  
+- Validation runs before the handler  
 
 Queries must not mutate state.
 
@@ -124,26 +144,26 @@ Queries must not mutate state.
 
 ## 4.2 Handler Execution
 
-- Resolve `IQueryHandler<TQuery, TResult>` via `[AutoRegister]`  
-- Invoke `HandleAsync`  
-- Queries may use read‑only repositories or readers  
+- Exactly one `IQueryHandler<TQuery, TResult>` must exist  
+- Handler executes read‑only logic  
+- Queries may use readers or read‑only repositories  
 
 ---
 
 ## 4.3 Result
 
-- Return DTO or primitive  
-- Queries must not return domain entities  
+- Handler returns a DTO or primitive  
+- Dispatcher returns it to the endpoint  
 
-Queries generally do not raise domain events.
+Queries do not raise domain events.
 
 ---
 
-# 5. Handlers
+# 5. Handler Overview
 
 Handlers implement:
 
-````  
+```csharp
 public interface ICommandHandler<in TCommand, TResult>
 {
     Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
@@ -153,109 +173,104 @@ public interface IQueryHandler<in TQuery, TResult>
 {
     Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken = default);
 }
-````
+```
 
-## Handler Conventions
+Handlers are:
 
-- Class names end with `Handler`  
-- Handlers live in Application slice folders  
-- Handlers are auto‑registered via `[AutoRegister]`  
-- Handlers must not depend on Infrastructure types  
-- Handlers must not depend on API types  
-- Handlers must not perform validation manually  
-- Handlers must not raise domain events directly  
-
-This enforces **[Code Conventions](ca://s?q=Open_code_conventions)**.
+- Slice‑local  
+- Auto‑registered  
+- Stateless  
+- Focused on orchestration  
 
 ---
 
-# 6. Validation
+# 6. Validation Overview
 
 Validators implement:
 
-````  
+```csharp
 public interface IValidator<in T>
 {
     Task ValidateAsync(T instance, CancellationToken cancellationToken = default);
 }
-````
+```
 
-## Validator Conventions
+Validators:
 
-- Class names end with `Validator`  
-- Validators live in Application slice folders  
-- Validators are auto‑registered via `[AutoRegister]`  
-- Validators must not contain business logic  
-- Validators must not depend on Infrastructure  
-
-Validation is part of the dispatcher pipeline — not the handler.
+- Run before handlers  
+- Are auto‑registered  
+- Live in the same slice as the handler  
+- Contain no business logic  
 
 ---
 
-# 7. Purity Rules
+# 7. Execution Flow Summary
 
-## 7.1 API Endpoint Purity
+### Command Flow
 
-Endpoints must:
+```
+API Endpoint
+    ↓
+Command DTO
+    ↓
+Command Dispatcher
+    ↓
+Validators
+    ↓
+Handler
+    ↓
+Repositories / Domain Services
+    ↓
+Unit of Work Commit
+    ↓
+Domain Events Dispatched
+    ↓
+Result Returned
+```
 
-- Call dispatchers, not handlers  
-- Map DTOs only  
-- Perform shape validation only  
-- Never contain business logic  
+### Query Flow
 
-See **[API Endpoint Purity Guide](ca://s?q=Generate_API_Endpoint_Purity_Guide)**.
+```
+API Endpoint
+    ↓
+Query DTO
+    ↓
+Query Dispatcher
+    ↓
+Validators
+    ↓
+Handler
+    ↓
+Readers / Read‑Only Repositories
+    ↓
+Result Returned
+```
 
 ---
 
-## 7.2 Handler Purity
-
-Handlers must:
-
-- Contain no HTTP logic  
-- Contain no Infrastructure logic  
-- Contain no UI logic  
-- Contain no domain event dispatching logic  
-- Use repositories and domain services only  
-
----
-
-## 7.3 Domain Purity
-
-Domain must:
-
-- Raise domain events internally  
-- Contain business rules  
-- Contain invariants  
-- Never depend on Application or Infrastructure  
-
-See **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
-
----
-
-# 8. Contributor Guidelines
+# 8. Contributor Guidance
 
 When adding a new command or query:
 
-1. Define the request type in Application Abstractions  
-2. Implement a handler in the corresponding slice  
-3. Add validators if needed  
-4. Inject `IUnitOfWork` into command handlers  
-5. Call `CommitAsync` after repository operations  
-6. Use `ICommandDispatcher` / `IQueryDispatcher` from API endpoints  
-7. Do not bypass the dispatcher pipeline  
-8. Do not reference Infrastructure or API types  
-9. Ensure domain events are raised inside aggregates only  
-10. Ensure the handler is auto‑registered via `[AutoRegister]`  
+1. Create the request type  
+2. Add validators if needed  
+3. Implement the handler  
+4. Inject repositories or readers  
+5. For commands, call `CommitAsync`  
+6. Use dispatchers in endpoints  
+7. Keep handlers small and focused  
+8. Ensure domain events are raised inside aggregates  
+9. Test handlers in isolation  
+10. Test the slice end‑to‑end via API tests  
 
 If a handler grows beyond ~30 lines, logic is leaking into the wrong layer.
 
 ---
 
-# Related Documents
+# Related Guides
 
-- **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**  
-- **[Identity Mapping](ca://s?q=Generate_Identity_Mapping_Guide)**  
-- **[Authentication Architecture](ca://s?q=Generate_Authentication_Architecture_Guide)**  
-- **[Session Management](ca://s?q=Generate_Session_Management_Guide)**  
-- **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**  
-- **[Architecture Governance](ca://s?q=Open_architecture_governance)**  
+- API Endpoint Guide  
+- Domain Events Guide  
+- Authentication Architecture Guide  
+- Session Management Guide  
+- Vertical Slice Guide  

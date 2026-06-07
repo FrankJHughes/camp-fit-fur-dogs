@@ -37,14 +37,14 @@ Frank is the **only layer** that performs assembly scanning.
 
 In `Program.cs`:
 
-````  
+```csharp
 builder.Services.AddFrank([
     typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
     typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly // request dto validators
 ]);
-````
+```
 
 ---
 
@@ -52,12 +52,12 @@ builder.Services.AddFrank([
 
 Interfaces that should be automatically registered must be decorated with:
 
-````  
+```csharp
 [AutoRegister(ServiceLifetime.Scoped)]
 public interface IMyService
 {
 }
-````
+```
 
 The attribute controls:
 
@@ -100,9 +100,9 @@ Registers:
 ## 4.5 FluentValidation Integration  
 Frank also registers validators via:
 
-````  
+```csharp
 services.AddValidatorsFromAssembly(assembly);
-````
+```
 
 ---
 
@@ -204,10 +204,10 @@ When adding a new service:
 
 Example:
 
-````  
+```csharp
 [AutoRegister(ServiceLifetime.Scoped, MinRegistrationCount = 1, MaxRegistrationCount = 1)]
 public interface IRegisterDogService { }
-````
+```
 
 ## 9.2 Use explicit registration when:
 - The service is part of a pipeline (e.g., `IAuthCallbackStep`)  
@@ -256,4 +256,4 @@ Frank must not depend on:
 - **[Shared Kernel](ca://s?q=Generate_Shared_Kernel_Guide)**  
 - **[Domain Events Architecture](ca://s?q=Generate_Domain_Events_Architecture_Guide)**  
 - **[Dispatcher Pipeline](ca://s?q=Generate_Dispatcher_Pipeline_Guide)**  
-- **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**  
+- **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**

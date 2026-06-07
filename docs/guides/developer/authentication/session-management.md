@@ -216,17 +216,23 @@ https://campfitfurdogsapi.onrender.com/api/auth/callback
 
 Session behavior is tested in three layers:
 
+---
+
 ## 1. Unit Tests  
 - Token generation  
 - Token hashing  
 - Cookie creation  
 - Session creation  
 
+---
+
 ## 2. Integration Tests  
 - Full callback flow  
 - Cookie issuance  
 - Session persistence  
 - Redirect behavior  
+
+---
 
 ## 3. Guardrail Tests  
 - Cookie flags  
@@ -264,9 +270,9 @@ tests/Api.Tests/Guardrails
 
 # Related Documents
 
-- **Identity Mapping Guide**  
-- **Authentication Architecture Guide**  
-- **Authentication Testing Guide**  
-- **Authentication Operations Guide**  
-- **Create Account Form Guide**  
-- **Create Account Feature Slice Guide**  
+- **[Identity Mapping Guide](ca://s?q=Show_identity_mapping_guide)**  
+- **[Authentication Architecture Guide](ca://s?q=Show_authentication_architecture_doc)**  
+- **[Authentication Testing Guide](ca://s?q=Show_authentication_testing_guide)**  
+- **[Authentication Operations Guide](ca://s?q=Show_authentication_operations_guide)**  
+- **[Create Account Form Guide](ca://s?q=Show_create_account_form_guide)**  
+- **[Create Account Feature Slice Guide](ca://s?q=Show_create_account_feature_slice_guide)**  

@@ -31,80 +31,102 @@ Identity, authorization, and session logic are handled exclusively inside the pi
 
 The callback endpoint executes a strict, ordered **authentication pipeline**:
 
-1. **Validate configuration**  
-   - Ensures all required OIDC settings are present  
-   - Missing values → 500 Internal Server Error  
-   - Enforces Security + Operations Governance  
-   - No environment access inside steps (uses abstractions only)
+---
 
-2. **Validate that `code` is present**  
-   - Missing or empty → 400 Bad Request  
-   - Shape validation only (no business logic)
+### 1. Validate configuration  
+- Ensures all required OIDC settings are present  
+- Missing values → **500 Internal Server Error**  
+- Enforces Security + Operations Governance  
+- No environment access inside steps (uses abstractions only)
 
-3. **Exchange authorization code**  
-   - Calls Auth0 `/oauth/token` via Infrastructure abstraction  
-   - Retrieves an access token  
-   - No tokens are persisted  
-   - No Infrastructure types leak into Application
+---
 
-4. **Fetch userinfo**  
-   - Calls Auth0 `/userinfo`  
-   - Retrieves:
-     - `sub` (external ID)
-     - `email`
-     - `given_name`
-     - `family_name`  
-   - Uses Infrastructure only through abstractions  
-   - No identity logic here
+### 2. Validate that `code` is present  
+- Missing or empty → **400 Bad Request**  
+- Shape validation only (no business logic)
 
-5. **Validate userinfo**  
-   - Ensures `sub` is present  
-   - Missing `sub` → 502 Bad Gateway  
-   - Enforces Identity Mapping Governance  
-   - Email is never used for identity
+---
 
-6. **Resolve identity**  
-   - Maps external identity to internal `CustomerId`  
-   - Creates Owner if needed  
-   - Uses `IIdentityResolver` (Application abstraction)  
-   - Never exposes internal IDs to Auth0  
-   - Never uses email for identity  
-   - Pure, deterministic, invariant‑checked
+### 3. Exchange authorization code  
+- Calls Auth0 `/oauth/token` via Infrastructure abstraction  
+- Retrieves an access token  
+- No tokens are persisted  
+- No Infrastructure types leak into Application
 
-7. **Audit login**  
-   - Logs successful login with `CustomerId` + external ID  
-   - Runs **before** session creation  
-   - Uses Infrastructure via abstractions  
-   - Does not mutate context
+---
 
-8. **Issue session cookie**  
-   - Generates a 256‑bit session token  
-   - Hashes it using SHA‑256  
-   - Creates a `SessionCookie` value object  
-   - Does **not** persist anything  
-   - Cookie issuance happens in the API layer  
-   - Enforces Session Token Governance
+### 4. Fetch userinfo  
+- Calls Auth0 `/userinfo`  
+- Retrieves:
+  - `sub` (external ID)  
+  - `email`  
+  - `given_name`  
+  - `family_name`  
+- Uses Infrastructure only through abstractions  
+- No identity logic here
 
-9. **Create session**  
-   - Persists the session with the hashed token  
-   - Associates it with the Owner  
-   - Uses `IUnitOfWork`  
-   - Enforces Session Management Governance  
-   - No Infrastructure leakage into Domain
+---
 
-10. **Build redirect**  
-    - Produces the final redirect URL for the frontend  
-    - Uses configured `PostLoginRedirectUrl`  
-    - Pure string construction (no environment access)
+### 5. Validate userinfo  
+- Ensures `sub` is present  
+- Missing `sub` → **502 Bad Gateway**  
+- Enforces Identity Mapping Governance  
+- Email is never used for identity
 
-11. **Return redirect response**  
-    - API layer issues the session cookie  
-    - API layer returns `302 Found`  
-    - API layer relies on:
-      - Frank security headers  
-      - Frank CORS  
-      - Frank error boundary  
-    - No business logic in the endpoint
+---
+
+### 6. Resolve identity  
+- Maps external identity to internal `CustomerId`  
+- Creates Owner if needed  
+- Uses `IIdentityResolver` (Application abstraction)  
+- Never exposes internal IDs to Auth0  
+- Never uses email for identity  
+- Pure, deterministic, invariant‑checked
+
+---
+
+### 7. Audit login  
+- Logs successful login with `CustomerId` + external ID  
+- Runs **before** session creation  
+- Uses Infrastructure via abstractions  
+- Does not mutate context
+
+---
+
+### 8. Issue session cookie  
+- Generates a 256‑bit session token  
+- Hashes it using SHA‑256  
+- Creates a `SessionCookie` value object  
+- Does **not** persist anything  
+- Cookie issuance happens in the API layer  
+- Enforces Session Token Governance
+
+---
+
+### 9. Create session  
+- Persists the session with the hashed token  
+- Associates it with the Owner  
+- Uses `IUnitOfWork`  
+- Enforces Session Management Governance  
+- No Infrastructure leakage into Domain
+
+---
+
+### 10. Build redirect  
+- Produces the final redirect URL for the frontend  
+- Uses configured `PostLoginRedirectUrl`  
+- Pure string construction (no environment access)
+
+---
+
+### 11. Return redirect response  
+- API layer issues the session cookie  
+- API layer returns **302 Found**  
+- API layer relies on:
+  - Frank security headers  
+  - Frank CORS  
+  - Frank error boundary  
+- No business logic in the endpoint
 
 ---
 

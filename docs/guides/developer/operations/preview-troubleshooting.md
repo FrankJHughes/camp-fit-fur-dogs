@@ -36,7 +36,7 @@ This guide helps you identify *where* the failure happened and *what to do next*
 - Neon API key missing or invalid  
 - Neon rate limiting  
 - Branch name collision  
-- Neon service outage
+- Neon service outage  
 
 ### How to Fix
 - Verify Neon API key in GitHub Secrets  
@@ -71,7 +71,7 @@ This guide helps you identify *where* the failure happened and *what to do next*
 - EF Core migration errors in CI  
 - `dotnet ef database update` fails  
 - Infrastructure tests never run  
-- API preview never deploys
+- API preview never deploys  
 
 ### Likely Causes
 - Breaking schema change  
@@ -136,7 +136,7 @@ This guide helps you identify *where* the failure happened and *what to do next*
 - CI stuck waiting for readiness  
 - `wait-for-endpoint` repeatedly fails  
 - `/api/dogs` never returns 200/400/401  
-- Render dashboard shows no preview instance
+- Render dashboard shows no preview instance  
 
 ### Likely Causes
 - `render-preview` label missing  
@@ -158,7 +158,7 @@ This guide helps you identify *where* the failure happened and *what to do next*
 ### Symptoms
 - CI stuck waiting for teardown  
 - `/health` never returns 404  
-- Old preview still visible in Render dashboard
+- Old preview still visible in Render dashboard  
 
 ### Likely Causes
 - Render delayed teardown  
@@ -197,7 +197,7 @@ This guide helps you identify *where* the failure happened and *what to do next*
 ### Symptoms
 - `db-conn.txt` missing  
 - `frontend-url.txt` missing  
-- CI fails early
+- CI fails early  
 
 ### Likely Causes
 - Upstream job failed  

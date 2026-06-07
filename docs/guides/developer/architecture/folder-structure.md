@@ -35,7 +35,7 @@ Each project has a clear responsibility:
 - **Infrastructure** — persistence, external systems, repository + reader implementations  
 - **Frank** — cross‑cutting primitives, DI auto‑registration, endpoint discovery, guardrails  
 
-Frank is a **product** (Frank), not a folder — see **[Multi‑Product Governance](ca://s?q=Open_multi_product_governance)**.
+Frank is a **product**, not a folder — see **[Multi‑Product Governance](ca://s?q=Open_multi_product_governance)**.
 
 ---
 
@@ -158,7 +158,7 @@ Frank provides:
 - Hosting provider infrastructure  
 - Architecture guardrails  
 
-Frank must not depend on any product code.
+Frank must not depend on any product layer.
 
 ---
 

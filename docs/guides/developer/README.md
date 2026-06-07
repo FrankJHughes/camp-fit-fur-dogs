@@ -56,6 +56,8 @@ Vertical slice walkthroughs and slice‑level abstractions
 3. Understand the PR Preview lifecycle via the Workflow Conventions.
 4. Review the Architecture Conventions to understand the system’s DDD layering.
 5. Understand the Story → Task → PR workflow described below.
+6. Explore the Architecture Guides to understand vertical slices, CQRS, and Frank primitives.
+7. Run the system locally using the Operations Guides.
 
 ---
 
@@ -109,6 +111,7 @@ PRs (one per Task)
 - Contain acceptance criteria
 - Are durable product artifacts
 - Are never created as GitHub Issues
+- Must follow Story Grammar and Story Governance
 
 ## Tasks
 
@@ -122,6 +125,7 @@ PRs (one per Task)
   - `task`
   - `sprint:N`
   - domain labels (`backend`, `frontend`, `infra`, etc.)
+- Must be independently mergeable and testable
 
 ## Pull Requests
 
@@ -133,6 +137,7 @@ PRs (one per Task)
 - Follow the PR template
 - Pass CI
 - Follow architecture and code conventions
+- Include only changes relevant to the Task
 
 ---
 
@@ -189,6 +194,7 @@ A PR should:
 - be reviewable in under 20 minutes  
 - touch only one vertical slice  
 - avoid unrelated changes  
+- avoid refactors unless explicitly part of the Task  
 
 ---
 
@@ -202,6 +208,8 @@ A PR should:
   - Have minimal surface area
   - Include clear inputs, outputs, and failure modes
   - Be testable in isolation
+  - Avoid inline shell logic
+  - Follow script‑first patterns
 
 ---
 
@@ -216,6 +224,9 @@ Workflows must follow:
 - Correct teardown/readiness rules  
 - Correct use of composite actions  
 - UTF‑8 without BOM  
+- Script‑first execution  
+- Minimal permissions  
+- Stable artifact naming  
 
 ---
 
@@ -226,12 +237,18 @@ Backend code must respect:
 - Domain purity  
 - CQRS pipelines  
 - Frank primitives  
+- Repository and reader boundaries  
+- Handler purity  
+- Endpoint purity  
 
 Frontend code must follow:
 
 - Layer + aggregate structure  
 - Purity rules  
 - Architecture conventions  
+- Form architecture  
+- Query architecture  
+- API client conventions  
 
 See the [Architecture Guides](ca://s?q=Open_Architecture_Guides) for deeper explanations.
 
@@ -244,6 +261,8 @@ All documentation must follow Documentation Conventions:
 - UTF‑8 without BOM  
 - Universal Patch Rule  
 - No drift between guides and conventions  
+- Clear separation between governance, conventions, and guides  
+- Script‑safe fencing and quoting rules  
 
 ---
 
@@ -251,6 +270,9 @@ All documentation must follow Documentation Conventions:
 
 - [Preview Troubleshooting](ca://s?q=Open_Preview_Troubleshooting)
 - [CI Dependency Graph](ca://s?q=Open_CI_Dependency_Graph)
+- [Frank Architecture](ca://s?q=Open_Frank_Architecture)
+- [Vertical Slice Index](ca://s?q=Open_Vertical_Slice_Index)
+- [Dispatcher Pipeline Guide](ca://s?q=Open_Dispatcher_Pipeline_Guide)
 
 ---
 
@@ -265,3 +287,5 @@ All development work follows:
 - Workflow and automation conventions  
 - Composite action standards  
 - Documentation and patching rules  
+
+The developer documentation, conventions, and governance together ensure a stable, predictable, and maintainable system.

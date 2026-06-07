@@ -21,6 +21,8 @@ Use these guides to understand:
 - How validation boundaries are enforced  
 - How authentication and session flows integrate with the architecture  
 - How tests map to architectural layers  
+- How Infrastructure integrates with Application and Domain  
+- How Frank provides cross‑cutting primitives and discovery mechanisms  
 
 These guides evolve as the system evolves.
 
@@ -46,13 +48,19 @@ These guides evolve as the system evolves.
   Cross-layer architectural purity constraints.
 
 - **[Shared Kernel](../shared-kernel.md)**  
-  What belongs in the Frank and why.
+  What belongs in Frank and why.
 
 - **[Validation Boundaries](validation-boundaries.md)**  
   Clear separation of API, Application, and Domain validation responsibilities.
 
 - **[Test Architecture](../test-architecture.md)**  
   How to structure tests across layers (API, Application, Domain).
+
+- **[Infrastructure Architecture](../infrastructure-architecture.md)**  
+  How EF Core, repositories, readers, and hosting providers integrate with the system.
+
+- **[Vertical Slice Architecture](../vertical-slice-architecture.md)**  
+  How slices encapsulate API, Application, Domain, and Infrastructure behavior.
 
 ---
 
@@ -70,18 +78,42 @@ These guides evolve as the system evolves.
 - **[Authentication Configuration](../authentication/configuration.md)**  
   Required Auth0 configuration keys and environment variables.
 
+- **[Identity Mapping](../authentication/identity-mapping.md)**  
+  How external identities map to internal Owner identities.
+
+- **[Session Management](../authentication/session-management.md)**  
+  How session cookies are created, stored, and validated.
+
+---
+
+## Cross‑Cutting Architecture
+
+- **[Hosting Provider Architecture](../hosting-provider-architecture.md)**  
+  How hosting providers (Render, Neon, Vercel) integrate with Frank abstractions.
+
+- **[Environment Abstraction](../environment-abstraction.md)**  
+  How environment variables are accessed safely and deterministically.
+
+- **[Security Headers Architecture](../security-headers-architecture.md)**  
+  How security headers are applied and enforced across environments.
+
+- **[Configurator Engine Architecture](../configurator-engine.md)**  
+  How configurators run during startup to assemble environment‑specific configuration.
+
 ---
 
 # When to Update These Guides
 
 Update or add new architecture guides when:
 
-- A new subsystem is introduced (e.g., messaging, workflows, caching)
-- A new architectural pattern is adopted
-- A purity rule changes
-- A new pipeline or cross-cutting concern is added
-- A feature introduces a reusable architectural concept
-- A developer needs clarification that applies across slices
+- A new subsystem is introduced (e.g., messaging, workflows, caching)  
+- A new architectural pattern is adopted  
+- A purity rule changes  
+- A new pipeline or cross-cutting concern is added  
+- A feature introduces a reusable architectural concept  
+- A developer needs clarification that applies across slices  
+- A hosting provider abstraction changes  
+- A new environment or preview behavior is introduced  
 
 Do **not** update these guides for:
 
@@ -90,6 +122,7 @@ Do **not** update these guides for:
 - Story-specific behavior  
 - Temporary constraints  
 - Decisions that belong in ADRs  
+- Conventions or governance rules  
 
 ---
 
@@ -98,4 +131,6 @@ Do **not** update these guides for:
 - `docs/guides/developer/` — Developer handbook  
 - `docs/conventions/` — Architectural and coding rules  
 - `product/adrs/` — Architectural decision records  
-- `docs/guides/developer/authentication/` — Authentication subsystem guides
+- `docs/guides/developer/authentication/` — Authentication subsystem guides  
+- `docs/guides/developer/testing/` — Testing architecture and patterns  
+- `docs/guides/developer/operations/` — Operational behavior and hosting details

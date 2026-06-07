@@ -24,9 +24,10 @@ Governance provides:
 - A consistent framework for contributions  
 - A shared understanding of expectations  
 - A mechanism for preventing drift  
-- A contract between contributors, reviewers, and the Product Owner  
+- A contract between contributors, reviewers, CI, automation, and the Product Owner  
 
-Governance is the highest‑level rule system in the repository.
+Governance is the highest‑level rule system in the repository.  
+All conventions, workflows, and scripts must align with it.
 
 ---
 
@@ -40,20 +41,22 @@ Governance applies to:
 - CI  
 - Security  
 - Operations  
+- Architecture boundaries  
 - Multi‑product boundaries  
 - Contributor behavior  
 - Repository hygiene  
+- Enforcement roles and responsibilities  
 
 Governance does **not** define:
 
 - Code style  
-- Architecture patterns  
+- Architecture implementation patterns  
 - Testing techniques  
 - Documentation formatting  
 
 Those live in conventions.
 
-Governance defines **process**, not implementation.
+Governance defines **process, boundaries, responsibilities, and enforcement**, not implementation.
 
 ---
 
@@ -68,10 +71,14 @@ The governance system consists of:
 - Multi‑product governance  
 - CI governance  
 - Security governance  
-- Contributor governance  
 - Operations governance  
+- Contributor governance  
+- Architecture governance  
+- Governance Enforcement Checklist  
+- Governance Enforcement Matrix  
 
-These files form the canonical governance corpus.
+These files form the canonical governance corpus.  
+They must remain internally consistent and drift‑free.
 
 ---
 
@@ -83,31 +90,38 @@ Governance changes must follow this process:
    - A gap, conflict, or ambiguity is discovered  
    - A new product requirement emerges  
    - A convention or workflow evolves  
+   - A governance rule becomes obsolete or redundant  
 
 2. **Draft the change**  
-   - Create a PR modifying the relevant governance file  
+   - Create a PR modifying the relevant governance file(s)  
    - Include rationale, consequences, and alternatives  
    - Reference any related stories or ADRs  
+   - Apply the Universal Patch Rule (full‑file regeneration)  
 
 3. **Review**  
    - Reviewers evaluate clarity, consistency, and impact  
    - Product Owner evaluates alignment with product direction  
-   - CI ensures formatting and structural correctness  
+   - CI validates structure, metadata, and hygiene  
+   - Scripts validate deterministic formatting  
 
 4. **Approval**  
    - Product Owner must approve all governance changes  
    - Reviewers must confirm no conflicts with existing rules  
+   - CI must pass all governance validations  
 
 5. **Merge**  
    - Governance changes must not be merged without full review  
    - Governance changes must not be merged during active incidents  
+   - Governance changes must not be merged with failing CI  
 
 6. **Propagation**  
    - Update conventions if needed  
    - Update scripts if needed  
+   - Update workflows if needed  
    - Update documentation if needed  
+   - Update the Governance Enforcement Matrix if roles change  
 
-Governance changes must be intentional and traceable.
+Governance changes must be intentional, traceable, and consistent.
 
 ---
 
@@ -120,6 +134,7 @@ Governance must remain:
 - **Consistent** — no contradictions across files  
 - **Minimal** — only rules that matter  
 - **Explicit** — no implicit or tribal knowledge  
+- **Aligned** — consistent with architecture, CI, security, and operations  
 
 Governance must not:
 
@@ -127,6 +142,7 @@ Governance must not:
 - Duplicate conventions  
 - Contain implementation details  
 - Change without Product Owner approval  
+- Conflict with the Governance Enforcement Matrix  
 
 ---
 
@@ -134,10 +150,12 @@ Governance must not:
 
 Governance is enforced by:
 
-- **Reviewers** — correctness and consistency  
-- **Product Owner** — alignment and intent  
+- **Product Owner** — alignment, intent, approval  
+- **Reviewers** — correctness, consistency, boundaries  
 - **CI** — structural and metadata validation  
-- **Scripts** — deterministic file generation  
+- **Scripts** — deterministic file generation and hygiene  
+- **Frank Guardrails** — architectural boundaries, DI, EF Core, hosting provider rules  
+- **Operations** — hosting provider hardening and configuration safety  
 
 A PR must not merge if it violates governance.
 
@@ -155,6 +173,9 @@ A governance violation occurs when:
 - Security posture is weakened  
 - Operational rules are ignored  
 - Repository hygiene is broken  
+- DI auto‑registration or EF Core scanning fails  
+- Hosting provider hardening rules are bypassed  
+- Governance documents become inconsistent  
 
 Violations must be corrected before merge.
 
@@ -169,9 +190,10 @@ Governance changes may require an ADR when:
 - Hosting or deployment changes  
 - Security posture changes  
 - CI strategy changes  
+- Operational model changes  
+- Frank guardrail behavior changes  
 
-ADRs document **why** governance changed.
-
+ADRs document **why** governance changed.  
 Governance documents **what** changed.
 
 ---
@@ -191,8 +213,10 @@ Conventions define:
 - How tests are structured  
 - How documentation is formatted  
 - How architecture is implemented  
+- How workflows operate  
 
-Governance overrides conventions when they conflict.
+Governance overrides conventions when they conflict.  
+Conventions must be updated when governance changes.
 
 ---
 
@@ -205,8 +229,10 @@ Governance must be reviewed:
 - After significant incidents  
 - When new product surfaces are added  
 - When conventions evolve  
+- When CI or operational models change  
+- When Frank guardrails expand  
 
-Reviews must be documented in PRs.
+Reviews must be documented in PRs and must follow the Universal Patch Rule.
 
 ---
 
@@ -218,14 +244,16 @@ A governance rule may be retired when:
 - It has been replaced by a convention  
 - It has been superseded by architecture  
 - It is redundant or obsolete  
+- It conflicts with updated guardrails or workflows  
 
 Retirement requires:
 
 - A PR removing the rule  
 - Product Owner approval  
 - Updated references across the repo  
+- Updated enforcement matrix if roles change  
 
-Governance must remain lean and relevant.
+Governance must remain lean, intentional, and relevant.
 
 ---
 
@@ -237,6 +265,7 @@ Governance is:
 - A safety net  
 - A quality mechanism  
 - A long‑term investment  
+- A shared responsibility across roles  
 
 It evolves with the product — but only with intention, clarity, and discipline.
 

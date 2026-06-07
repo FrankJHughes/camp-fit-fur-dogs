@@ -1,19 +1,19 @@
 # Purity Rules
 
 > Architectural purity rules for Camp Fit Fur Dogs.  
-> Authoritative companion to [ADR‑0002](../adr/0002-ddd-layered-architecture.md).  
+> Authoritative companion to ADR‑0002 (DDD Layered Architecture).  
 > Violations are bugs — treat them with the same urgency as a failing test.
 
 ---
 
-## Table of Contents
+# Table of Contents
 
 - [Dependency Direction](#dependency-direction)
 - [Domain Purity](#domain-purity)
 - [Application Purity](#application-purity)
 - [Infrastructure Purity](#infrastructure-purity)
 - [API Purity](#api-purity)
-- [Frank Purity](#Frank-purity)
+- [Frank Purity](#frank-purity)
 - [DI Purity](#di-purity)
 - [DTO Purity](#dto-purity)
 - [Handler Purity](#handler-purity)
@@ -26,7 +26,7 @@
 
 ---
 
-## Dependency Direction
+# Dependency Direction
 
 The compiler is the first line of defense. Project references encode the dependency rules — if the `.csproj` doesn't allow it, the code can't compile.
 
@@ -41,15 +41,15 @@ API → Application → Domain
 | **Domain** | Nothing | Application, Infrastructure, Api |
 | **Application** | Domain | Infrastructure, Api |
 | **Infrastructure** | Application, Domain | Api |
-| **Api** | Application, Infrastructure | Domain (direct use of entities — see [API Purity](#api-purity)) |
-| **Frank** | Nothing | All four layers |
+| **Api** | Application, Infrastructure | Domain (direct use of entities — see API Purity) |
+| **Frank** | Nothing | All product layers |
 
 **Golden rule:** dependencies point inward.  
 No layer may reference a layer above it.
 
 ---
 
-## Domain Purity
+# Domain Purity
 
 The Domain project is the innermost layer. It has **zero** project references and **zero** NuGet dependencies beyond the base SDK.
 
@@ -88,7 +88,7 @@ dog.Name = "Buddy";
 
 ---
 
-## Application Purity
+# Application Purity
 
 The Application layer orchestrates use cases. It references **Domain only**.
 
@@ -122,7 +122,7 @@ Application/Abstractions/
 
 ---
 
-## Infrastructure Purity
+# Infrastructure Purity
 
 Infrastructure implements interfaces from Application and Domain.
 
@@ -149,7 +149,7 @@ Repositories return **Domain entities**, not DTOs or IQueryable.
 
 ---
 
-## API Purity
+# API Purity
 
 The API layer is the outermost shell.
 
@@ -180,7 +180,7 @@ app.MapPost("/dogs", async (
     ICommandDispatcher dispatcher) =>
 {
     var command = new RegisterDogCommand(
-        currentUser.UserId,  // Server-resolved, not from request body
+        currentUser.UserId,
         request.Name,
         request.Breed);
 
@@ -191,55 +191,73 @@ app.MapPost("/dogs", async (
 // ❌ Violation — identity accepted from the client
 app.MapPost("/dogs", async (RegisterDogCommand command, ICommandDispatcher dispatcher) =>
 {
-    await dispatcher.DispatchAsync(command);  // OwnerId came from the request!
+    await dispatcher.DispatchAsync(command);
     return Results.Created();
 });
 ```
 
 ---
 
-## Frank Purity
+# Frank Purity
 
-Frank contains cross-cutting building blocks reused by multiple layers. It has **zero** project references.
+Frank is the **shared kernel** and **cross‑cutting backbone** of the entire system.  
+It must remain **pure, minimal, and product‑agnostic**.
 
 ### Allowed
 
-- Base entity class (e.g., `Entity<TId>`)
-- Value object base class
-- Domain event base interface/class
-- Common result/error types
-- Guard clause utilities
+- Base entity class (`Entity<TId>`)  
+- Base value object class  
+- Domain event base interface/class  
+- Common result/error primitives  
+- Guard clause utilities  
+- Endpoint discovery primitives  
+- DI auto‑registration engine  
+- EF Core configuration scanning  
+- Hosting provider abstractions  
+- Security header + CORS middleware  
+- Validation pipeline primitives  
 
 ### Forbidden
 
-- **No layer-specific logic**  
+- **No layer‑specific logic**  
+- **No product‑specific logic**  
 - **No NuGet packages** beyond the base SDK  
+- **No references to Domain, Application, Infrastructure, or Api**  
 - **No “everything drawer” drift**  
+- **No business rules**  
+- **No persistence logic**  
+- **No HTTP/JSON/ZIP operations**  
+
+Frank is the **lowest‑level dependency** in the system.
 
 ---
 
-## DI Purity
+# DI Purity
 
-Dependency injection wiring happens **exclusively** in the API layer's composition root.
+Dependency injection wiring happens **exclusively** in the API layer’s composition root.
 
 ### Rules
 
 1. **Registration lives in Api**  
-2. **Handlers and validators are auto‑registered**  
+2. **Handlers and validators are auto‑registered** via Frank  
 3. **Lifetime defaults:**  
    - Handlers → Scoped  
    - Validators → Scoped  
    - Repositories → Scoped  
    - DbContext → Scoped  
-   - ICurrentUserService → Scoped  
+   - `ICurrentUserService` → Scoped  
 4. **No service locator**  
 5. **No DI attributes in Domain**  
+6. **No manual DI registration of slice services**  
+7. **No Scrutor or suffix‑based scanning**  
+8. **No DI logic in slices**  
+9. **Frank owns all auto‑registration**  
 
 ---
 
-## DTO Purity
+# DTO Purity
 
-DTOs are transport shapes — nothing more.
+DTOs are **transport shapes only**.
 
 ### Rules
 
@@ -247,12 +265,14 @@ DTOs are transport shapes — nothing more.
 2. No behavior  
 3. Request and response DTOs are separate  
 4. Domain entities never cross the API boundary  
-5. Mapping is explicit  
+5. Mapping is explicit and mechanical  
 6. DTOs never contain identity fields like `OwnerId`  
+7. DTOs never contain domain invariants  
+8. DTOs never contain domain events  
 
 ---
 
-## Handler Purity
+# Handler Purity
 
 Handlers execute exactly one use case.
 
@@ -264,12 +284,16 @@ Handlers execute exactly one use case.
 4. No exception‑based flow control  
 5. Handlers are stateless  
 6. Handlers propagate `CancellationToken`  
+7. Handlers do not raise domain events directly  
+8. Handlers do not perform validation  
+9. Handlers do not perform HTTP, I/O, or persistence directly  
+10. Handlers do not reference Infrastructure types  
 
 ---
 
-## Validator Purity
+# Validator Purity
 
-Validators enforce structural correctness.
+Validators enforce **shape correctness**, not business rules.
 
 ### Rules
 
@@ -278,12 +302,15 @@ Validators enforce structural correctness.
 3. Use FluentValidation  
 4. No database access  
 5. One validator per command/query  
+6. No Infrastructure references  
+7. No domain logic  
+8. No cross‑validator dependencies  
 
 ---
 
-## Repository Purity
+# Repository Purity
 
-Repositories are the persistence gateway.
+Repositories are the **persistence gateway**.
 
 ### Rules
 
@@ -293,10 +320,13 @@ Repositories are the persistence gateway.
 4. One repository per aggregate root  
 5. Accept `CancellationToken`  
 6. No `SaveChangesAsync()` inside repository methods  
+7. No IQueryable exposure  
+8. No DTOs returned  
+9. No domain events raised  
 
 ---
 
-## Cross-Layer Dependency Rules
+# Cross‑Layer Dependency Rules
 
 | From → To | What Crosses | Form |
 |-----------|--------------|------|
@@ -312,10 +342,12 @@ Repositories are the persistence gateway.
 - DbContext never leaves Infrastructure  
 - HTTP types never enter Application or Domain  
 - Configuration objects never enter Domain or Application  
+- Domain events never cross the API boundary  
+- Identity never comes from the client  
 
 ---
 
-## Circular Dependency Rules
+# Circular Dependency Rules
 
 Circular dependencies are architectural defects.
 
@@ -325,16 +357,17 @@ Circular dependencies are architectural defects.
 2. No circular namespaces  
 3. No circular handler invocations  
 4. No bidirectional entity navigation across aggregates  
+5. No cross‑aggregate domain mutations  
 
 ### Detection
 
 - Compiler prevents circular `.csproj` references  
 - Code review catches namespace/handler cycles  
-- Future: architecture tests (NetArchTest, ArchUnitNET)  
+- Architecture tests (future) will enforce this  
 
 ---
 
-## Guardrail Enforcement
+# Guardrail Enforcement
 
 Purity rules are enforced through multiple layers.
 
@@ -348,10 +381,9 @@ Purity rules are enforced through multiple layers.
 - Build & Test runs on every PR  
 - Future: architecture tests  
 
-### Layer 3: Pre-Push Hook
+### Layer 3: Pre‑Push Hook
 
 - Local `pre-push` runs `make test`  
-- Not foolproof but catches early issues  
 
 ### Layer 4: Code Review
 
@@ -368,12 +400,12 @@ Purity rules are enforced through multiple layers.
 | Guardrail | Status | Purpose |
 |-----------|--------|---------|
 | NetArchTest suite | Planned | Automated purity checks |
-| Roslyn analyzer | Considered | Compile-time warnings |
+| Roslyn analyzer | Considered | Compile‑time warnings |
 | `dotnet format` | Active | Style consistency |
 
 ---
 
-## Contributor Guidance
+# Contributor Guidance
 
 ### Before You Write Code
 
@@ -439,3 +471,4 @@ If a test requires violating purity, the design is wrong.
 - Convention‑changing PRs update this file  
 - Reviewed during retrospectives  
 - “We got burned” moments update immediately  
+

@@ -50,7 +50,7 @@ This flow is deterministic, invariant‑checked, and enforced by the dispatcher 
 - No endpoint performs identity parsing or authorization logic  
 - No pipeline step accesses hosting providers or environment directly  
 
-These principles align with **Security Governance**, **Architecture Governance**, and **Session Management Governance**.
+These principles align with **[Architecture Governance](ca://s?q=Open_architecture_governance)**, **Security Governance**, and **Session Management Governance**.
 
 ---
 

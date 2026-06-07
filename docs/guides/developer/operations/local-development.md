@@ -1,11 +1,11 @@
-## Running the API Locally vs Hosted (US‑140)
+# Running the API Locally vs Hosted (US‑140)
 
 This guide explains how the API behaves in **local development** versus when **hosted on Render**, including configuration sources, runtime differences, and operational expectations.  
 It reflects the current hosting architecture, Frank hosting abstractions, and all updated governance rules.
 
 ---
 
-## Local Development
+# Local Development
 
 The API can be run locally using:
 
@@ -17,10 +17,10 @@ Local configuration is loaded from:
 
 - `appsettings.json`
 - `appsettings.Development.json`
-- User secrets (if configured)
+- User secrets (optional)
 - Frank hosting abstractions (never direct environment access)
 
-### Local Environment Characteristics
+## Local Environment Characteristics
 
 - Runs on **HTTP** (no TLS)  
 - Uses **local PostgreSQL** or a Neon preview branch  
@@ -30,17 +30,27 @@ Local configuration is loaded from:
   - `HttpOnly = true`  
 - Hot reload and fast iteration  
 - No cold starts  
-- CORS allows `http://localhost:3000`  
-- Auth0 callback URL uses `http://localhost:5000`  
+- CORS allows:  
+  ```
+  http://localhost:3000
+  ```
+- Auth0 callback URL uses:  
+  ```
+  http://localhost:5000/api/auth/callback
+  ```
 - Environment variables may be set via user secrets or shell  
 
 Local development mirrors production **code paths**, but not production **hosting constraints**.
 
-All behavior follows **API Endpoint Purity**, **Security Governance**, and **Hosting Abstraction Rules**.
+All behavior follows:
+
+- API Endpoint Purity  
+- Security Governance  
+- Hosting Abstraction Rules  
 
 ---
 
-## Hosted Environment (Render)
+# Hosted Environment (Render)
 
 The hosted API runs inside a **Dockerized .NET 10 container** built from:
 
@@ -48,7 +58,7 @@ The hosted API runs inside a **Dockerized .NET 10 container** built from:
 src/CampFitFurDogs.Api/Dockerfile
 ```
 
-### Hosted Environment Characteristics
+## Hosted Environment Characteristics
 
 - Environment variables injected by Render  
 - Neon PostgreSQL as the backing database  
@@ -61,7 +71,7 @@ src/CampFitFurDogs.Api/Dockerfile
 - CORS allows the deployed frontend host (US‑139)  
 - Frank hosting abstractions resolve configuration (no direct environment access)
 
-### Behavioral Differences
+## Behavioral Differences
 
 - **Cold starts** occur on Render’s free tier after ~15 minutes of inactivity  
   (20–60 seconds typical)
@@ -77,7 +87,7 @@ Hosted environments enforce the same **code paths** and **EF Core configuration*
 
 ---
 
-## Summary
+# Summary
 
 Local and hosted environments share:
 

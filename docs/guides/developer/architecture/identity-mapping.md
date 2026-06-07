@@ -75,7 +75,7 @@ It is the **only** external identifier used for identity mapping.
 
 Email is **not** used for identity resolution.
 
-This aligns with **Security Governance** and **Identity Mapping Governance**.
+This aligns with **[Security Governance](ca://s?q=Open_security_governance)** and Identity Mapping Governance.
 
 ---
 
@@ -127,6 +127,8 @@ The identity resolver is injected via DI and follows:
 
 The identity resolver performs two operations:
 
+---
+
 ## 1. Lookup by External ID
 
 ```
@@ -134,6 +136,8 @@ GetOwnerByExternalId(externalId)
 ```
 
 If an Owner exists, return it.
+
+---
 
 ## 2. Create Owner if Missing
 
@@ -175,7 +179,7 @@ Only the **external ID** is used for identity resolution.
 
 Email is treated as **profile data**, not identity.
 
-This aligns with **Security Governance** and **Identity Mapping Governance**.
+This aligns with **[Security Governance](ca://s?q=Open_security_governance)**.
 
 ---
 
@@ -209,17 +213,23 @@ No cookies are issued on failure.
 
 Identity mapping is tested in three layers:
 
+---
+
 ## 1. Unit Tests  
 - Lookup existing Owner  
 - Create new Owner  
 - Reject missing `sub`  
 - Reject invalid external IDs  
 
+---
+
 ## 2. Integration Tests  
 - Full callback flow  
 - Owner creation on first login  
 - Owner reuse on subsequent logins  
 - Session creation after identity resolution  
+
+---
 
 ## 3. Guardrail Tests  
 - Email is never used for identity  
@@ -252,27 +262,35 @@ Identity mapping is tested in three layers:
 
 Identity mapping spans:
 
+---
+
 ## API Layer
 - Does not perform identity resolution  
 - Only orchestrates the pipeline  
 - Never reads identity from headers or body  
+
+---
 
 ## Application Layer
 - Contains `ResolveIdentityStep`  
 - Contains identity resolver logic  
 - Contains no Infrastructure references  
 
+---
+
 ## Domain Layer
 - Owns Owner aggregate  
 - Owns invariants  
 - Owns identity semantics  
+
+---
 
 ## Infrastructure Layer
 - Implements Owner repository  
 - Implements identity persistence  
 - Implements audit logging  
 
-All boundaries follow **Architecture Governance** and **Security Governance**.
+All boundaries follow **[Architecture Governance](ca://s?q=Open_architecture_governance)** and **[Security Governance](ca://s?q=Open_security_governance)**.
 
 ---
 
@@ -285,4 +303,4 @@ All boundaries follow **Architecture Governance** and **Security Governance**.
 - **Create Account Form Guide**  
 - **Create Account Feature Slice Guide**  
 - **Architecture Governance**  
-- **Security Governance**  
+- **Security Governance**

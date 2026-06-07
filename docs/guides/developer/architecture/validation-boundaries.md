@@ -4,7 +4,11 @@
 This document defines the validation responsibilities across the three backend layers: **API**, **Application**, and **Domain**.  
 It ensures contributors understand *where* validation belongs, *why*, and *how* each layer interacts with the others.
 
-This is a foundational architecture guide and complements the existing API Endpoint Purity and Dispatcher Pipeline guides.
+This is a foundational architecture guide and complements:
+
+- [API Endpoint Purity Guide](ca://s?q=Show_API_endpoint_purity_guide)  
+- [Dispatcher Pipeline Guide](ca://s?q=Show_dispatcher_pipeline_guide)  
+- [Architecture Governance](ca://s?q=Open_architecture_governance)
 
 ---
 
@@ -25,10 +29,24 @@ This guide ensures the system remains **predictable**, **pure**, and **maintaina
 
 # Layer Responsibilities Overview
 
-## 1. API Layer — **Syntactic Validation**
+Validation is divided into three categories:
+
+1. **API Layer — Syntactic Validation**  
+2. **Application Layer — Semantic Validation**  
+3. **Domain Layer — Invariant Validation**
+
+Each layer has a distinct purpose and must not leak into the others.
+
+---
+
+# 1. API Layer — **Syntactic Validation**
+
 The API layer validates **shape**, **format**, and **presence** of incoming data.
 
+This is the “Is the request well‑formed?” layer.
+
 ### Responsibilities
+
 - Required fields  
 - Basic type checks  
 - Length constraints  
@@ -39,27 +57,37 @@ The API layer validates **shape**, **format**, and **presence** of incoming data
 - Route parameter validation  
 
 ### What the API layer must *not* do
+
 - No business rules  
 - No cross‑field logic  
 - No repository access  
 - No domain invariants  
 - No entity creation  
 - No persistence  
+- No identity resolution  
 
 ### Error Type
+
 - `ValidationError` → **400 Bad Request**
 
-### Example
+### Examples
+
 - `"email" must be a valid email format`  
 - `"firstName" is required`  
 - `"page" must be a positive integer`
 
+API validation ensures the request is **syntactically correct**, nothing more.
+
 ---
 
-## 2. Application Layer — **Semantic Validation**
+# 2. Application Layer — **Semantic Validation**
+
 The Application layer validates **business meaning** and **cross‑field rules**.
 
+This is the “Does this make sense for the business?” layer.
+
 ### Responsibilities
+
 - Rules requiring repository access  
 - Rules requiring current user context  
 - Cross‑field business rules  
@@ -69,25 +97,35 @@ The Application layer validates **business meaning** and **cross‑field rules**
 - Workflow rules  
 
 ### What the Application layer must *not* do
+
 - No syntactic validation  
-- No domain invariant enforcement (that’s domain)  
+- No domain invariant enforcement (that’s Domain)  
 - No persistence logic outside use cases  
+- No HTTP or API concerns  
 
 ### Error Type
+
 - `ValidationError` → **400 Bad Request**  
 - `DomainError` → **400 Bad Request** (if domain throws)
 
-### Example
-- `"email" must be unique`  
+### Examples
+
+- `"email" must be unique"`  
 - `"owner must exist before creating a pet"`  
 - `"cannot delete a customer with active bookings"`
 
+Application validation ensures the request is **semantically valid**.
+
 ---
 
-## 3. Domain Layer — **Invariant Validation**
+# 3. Domain Layer — **Invariant Validation**
+
 The Domain layer enforces **rules that must always be true**, regardless of context.
 
+This is the “What must always be true in the business universe?” layer.
+
 ### Responsibilities
+
 - Value object invariants  
 - Entity invariants  
 - Aggregate invariants  
@@ -96,20 +134,26 @@ The Domain layer enforces **rules that must always be true**, regardless of cont
 - Rules that must hold *forever*  
 
 ### What the Domain layer must *not* do
+
 - No external calls  
 - No repository access  
 - No environment access  
 - No HTTP calls  
 - No configuration access  
+- No user context logic  
 
 ### Error Type
+
 - `DomainError` → **400 Bad Request**
 
-### Example
+### Examples
+
 - `"Email" value object requires a valid email format`  
-- `"Name" cannot be empty`  
-- `"BookingDate" must be in the future`  
-- `"PasswordHash" must be a valid hash format`
+- `"Name" cannot be empty"`  
+- `"BookingDate" must be in the future"`  
+- `"PasswordHash" must be a valid hash format"`
+
+Domain validation ensures the **business invariants** are upheld.
 
 ---
 
@@ -125,29 +169,51 @@ The Domain layer enforces **rules that must always be true**, regardless of cont
 | Configuration | `BadConfiguration` | 500 | Missing config keys |
 | Unexpected | `Unexpected` | 500 | Catch‑all |
 
+This table is consistent with **Security Governance**, **Operations Governance**, and Frank’s error boundary.
+
 ---
 
 # Testing Strategy
 
-## API Tests
-Validate **syntactic** rules:
+Validation must be tested at the correct layer.
+
+---
+
+## API Tests — **Syntactic**
+
+Validate:
+
 - Missing fields  
 - Invalid formats  
 - Bad query parameters  
 - Bad route parameters  
 
-## Application Tests
-Validate **semantic** rules:
+These tests ensure the API rejects malformed requests.
+
+---
+
+## Application Tests — **Semantic**
+
+Validate:
+
 - Uniqueness  
 - Existence  
 - Authorization  
 - Workflow rules  
 
-## Domain Tests
-Validate **invariants**:
+These tests ensure business rules are enforced.
+
+---
+
+## Domain Tests — **Invariants**
+
+Validate:
+
 - Value object construction  
 - Entity creation  
 - Aggregate rules  
+
+These tests ensure domain invariants cannot be violated.
 
 ---
 
@@ -185,7 +251,9 @@ Following these boundaries keeps the system pure, testable, and maintainable.
 
 ---
 
-See also:  
+# Related Documents
+
 - [API Endpoint Purity Guide](ca://s?q=Show_API_endpoint_purity_guide)  
 - [Dispatcher Pipeline](ca://s?q=Show_dispatcher_pipeline_guide)  
-- [Authentication Overview](ca://s?q=Show_authentication_overview)
+- [Authentication Overview](ca://s?q=Show_authentication_overview)  
+- [Architecture Governance](ca://s?q=Open_architecture_governance)

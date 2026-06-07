@@ -5,7 +5,7 @@ They complement the architecture, workflow, and documentation conventions and en
 
 These conventions describe **implementation‑level rules**, not architectural governance.
 
-Frank provides cross‑cutting primitives, DI auto‑registration for attributed interfaces, endpoint discovery, validator scanning, hosting provider abstractions, and security headers.  
+Frank provides cross‑cutting primitives, DI auto‑registration for attributed interfaces, endpoint discovery, validator scanning, hosting provider abstractions, security headers, and environment seams.  
 Application, Infrastructure, and Api remain responsible for their own slice‑specific DI.
 
 ---
@@ -84,6 +84,8 @@ Commands and queries:
 - Represent use‑case intent  
 - Must be immutable  
 - Must have validators when input exists  
+- Must not contain behavior  
+- Must not reference Infrastructure or Api  
 
 ## 2.2 Handlers
 
@@ -102,6 +104,7 @@ Handlers must not:
 - Access HttpContext  
 - Invoke other handlers directly  
 - Return domain entities  
+- Perform cross‑slice logic  
 
 Handlers return DTOs or primitives.
 
@@ -111,7 +114,7 @@ Handlers are auto‑registered via Frank’s DI engine:
 
 - Interfaces marked with `[AutoRegister]` are discovered  
 - Handlers must not be manually registered  
-- Handlers must not bypass the dispatcher pipeline
+- Handlers must not bypass the dispatcher pipeline  
 
 ---
 
@@ -138,13 +141,16 @@ Endpoints must not:
 - Return domain entities  
 - Read identity from request bodies  
 - Invoke handlers directly  
+- Construct aggregates  
+- Perform persistence logic  
 
 ## 3.3 Routing Rules
 
 - One endpoint per command/query  
 - No attribute routing  
 - No monolithic endpoint files  
-- Use explicit mapping inside the endpoint class
+- Use explicit mapping inside the endpoint class  
+- Route patterns must be stable and predictable  
 
 ---
 
@@ -182,25 +188,39 @@ Guardrails enforce presence.
 - Value objects mapped as owned types  
 - Domain events ignored by EF Core  
 - Configurations live in Infrastructure  
+- Navigation properties must be explicit  
+- No lazy loading  
 
 ## 5.2 Unit of Work
 
 - Coordinates SaveChangesAsync  
 - Dispatches domain events  
 - Contains no business logic  
+- Must be injected into command handlers only  
 
 ## 5.3 Repositories
 
 - Auto‑registered via `[AutoRegister]`  
 - Must not expose EF Core types  
 - Must not contain business logic  
+- Must not return domain entities to Api  
+- Must not perform read‑model queries  
 
-## 5.4 Migrations
+## 5.4 Readers
+
+- Return DTOs only  
+- Must not return domain entities  
+- Must not mutate state  
+- Must use AsNoTracking  
+- Must not depend on repositories  
+
+## 5.5 Migrations
 
 - Applied by CI only  
 - Must be idempotent  
 - Must tolerate empty databases  
 - Must be preview‑safe  
+- Must not contain environment‑specific logic  
 
 ---
 
@@ -307,6 +327,23 @@ frontend/
 - Components must be pure and testable  
 - No business logic in components  
 - Tests must not hit real APIs  
+- All API clients return CommandResult or QueryState  
+- No direct use of fetch in components or hooks  
+
+## 8.3 Form Conventions
+
+- Forms use `FormCommand.run`  
+- Validation uses Zod schemas  
+- Form state managed via `useFormStateMachine`  
+- Errors displayed via `ErrorSummary`  
+- No business logic in form components  
+
+## 8.4 Query Conventions
+
+- Queries use `useApiQuery`  
+- Query functions must be pure  
+- Query state must be explicit (`loading`, `error`, `success`)  
+- No implicit fetches  
 
 ---
 

@@ -26,7 +26,10 @@ It exists to prevent duplication, enforce consistency, and provide a stable foun
 
 The Shared Kernel may contain both **domain primitives** and **cross‑cutting technical infrastructure**.
 
-## 2.1 Domain Primitives  
+---
+
+## 2.1 Domain Primitives
+
 Types that represent core domain concepts shared across multiple aggregates:
 
 - `DogId`  
@@ -36,7 +39,10 @@ Types that represent core domain concepts shared across multiple aggregates:
 
 These are **value objects** with invariants and validation.
 
-## 2.2 Base Domain Types  
+---
+
+## 2.2 Base Domain Types
+
 If shared across aggregates:
 
 - `Entity`  
@@ -45,7 +51,10 @@ If shared across aggregates:
 
 These types enforce consistent domain modeling across slices.
 
-## 2.3 Cross‑Cutting Domain Interfaces  
+---
+
+## 2.3 Cross‑Cutting Domain Interfaces
+
 Interfaces that represent domain‑level behavior used across multiple aggregates:
 
 - `IDomainEvent`  
@@ -53,7 +62,10 @@ Interfaces that represent domain‑level behavior used across multiple aggregate
 
 Handlers, dispatchers, and pipelines belong in **Application**, not Shared Kernel.
 
-## 2.4 Domain Events (Sometimes)  
+---
+
+## 2.4 Domain Events (Sometimes)
+
 If an event is used across multiple aggregates or contexts, it may live here.
 
 Example:
@@ -64,7 +76,7 @@ If an event is specific to a single aggregate, it belongs in that aggregate’s 
 
 ---
 
-# 2.5 Cross‑Cutting Technical Infrastructure
+## 2.5 Cross‑Cutting Technical Infrastructure
 
 The Shared Kernel also contains **technical infrastructure** that is:
 
@@ -75,7 +87,10 @@ The Shared Kernel also contains **technical infrastructure** that is:
 
 This includes the Frank infrastructure that enforces architectural guardrails.
 
-## Auto‑Registration System  
+---
+
+### Auto‑Registration System
+
 Frank provides the DI architecture used across the entire application:
 
 - `[AutoRegister]` attribute  
@@ -92,7 +107,10 @@ This system ensures:
 - Strict enforcement of architectural rules  
 - No Scrutor or suffix scanning  
 
-## FluentValidation Integration  
+---
+
+### FluentValidation Integration
+
 Frank registers validators from all participating assemblies:
 
 ```
@@ -101,7 +119,10 @@ services.AddValidatorsFromAssembly(assembly);
 
 Validators remain in Application, but the integration lives in Shared Kernel.
 
-## EF Core Configuration Auto‑Discovery  
+---
+
+### EF Core Configuration Auto‑Discovery
+
 Frank provides helpers for:
 
 - Applying all `IEntityTypeConfiguration<T>` implementations  
@@ -109,7 +130,10 @@ Frank provides helpers for:
 - Ensuring consistent EF Core configuration across slices  
 - Preventing Infrastructure leakage into Domain or Application  
 
-## Hosting Abstractions  
+---
+
+### Hosting Abstractions
+
 Frank includes:
 
 - Hosting provider interfaces  
@@ -130,7 +154,10 @@ These abstractions:
 
 The Shared Kernel must **never** contain anything that introduces upward or lateral dependencies.
 
-## 3.1 Application Concerns  
+---
+
+## 3.1 Application Concerns
+
 - Handlers  
 - Validators  
 - Dispatchers  
@@ -139,7 +166,10 @@ The Shared Kernel must **never** contain anything that introduces upward or late
 - DTOs  
 - Pipeline behaviors  
 
-## 3.2 Infrastructure Concerns  
+---
+
+## 3.2 Infrastructure Concerns
+
 - EF Core DbContexts  
 - Repositories  
 - Migrations  
@@ -149,14 +179,20 @@ The Shared Kernel must **never** contain anything that introduces upward or late
 - External service integrations  
 - Hosting provider implementations  
 
-## 3.3 API Concerns  
+---
+
+## 3.3 API Concerns
+
 - Endpoints  
 - Request/response DTOs  
 - Routing  
 - Authorization attributes  
 - Middleware  
 
-## 3.4 “Common” Utilities  
+---
+
+## 3.4 “Common” Utilities
+
 Avoid dumping:
 
 - String helpers  
@@ -177,6 +213,8 @@ The Shared Kernel is **not** a junk drawer.
 
 # 4. Dependency Rules
 
+---
+
 ## 4.1 Allowed Dependencies
 
 | Layer | May depend on Shared Kernel? |
@@ -187,6 +225,8 @@ The Shared Kernel is **not** a junk drawer.
 | API | ⚠️ Yes — only for domain primitives + Frank infrastructure |
 | Shared Kernel | ❌ Must not depend on any other layer |
 
+---
+
 ## 4.2 Forbidden Dependencies
 
 Shared Kernel must **never** depend on:
@@ -196,7 +236,7 @@ Shared Kernel must **never** depend on:
 - Infrastructure  
 - API  
 
-This keeps the dependency graph **acyclic** and enforces **Architecture Governance**.
+This keeps the dependency graph **acyclic** and enforces **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
 
 ---
 
@@ -248,20 +288,29 @@ Shared Kernel is **referenced by Application**, not extended by it.
 
 When adding a new type:
 
+---
+
 ## Put it in **Domain** if:
+
 - It belongs to a single aggregate  
 - It is part of a single bounded context  
 - It expresses domain rules or invariants  
 - It is not used outside that context  
 
+---
+
 ## Put it in **Shared Kernel** if:
+
 - It is used across multiple aggregates  
 - It is used across multiple bounded contexts  
 - It is stable and domain‑specific  
 - It is a domain primitive or cross‑cutting domain abstraction  
 - It is cross‑cutting technical infrastructure (DI, EF Core config, hosting)  
 
+---
+
 ## Do NOT put it in Shared Kernel if:
+
 - It is technical (Infrastructure)  
 - It is HTTP‑related (API)  
 - It is a use‑case abstraction (Application)  
@@ -274,10 +323,10 @@ If you’re unsure, default to **Domain**, not Shared Kernel.
 
 # Related Documents
 
-- **Dependency Injection Architecture**  
-- **Domain Events Architecture**  
-- **Dispatcher Pipeline**  
-- **API Endpoint Purity**  
-- **Architecture Governance**  
-- **Security Governance**  
-- **Operations Governance**  
+- **[Dependency Injection Architecture](ca://s?q=Open_dependency_injection_architecture)**  
+- **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**  
+- **[Dispatcher Pipeline](ca://s?q=Open_dispatcher_pipeline_guide)**  
+- **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**  
+- **[Architecture Governance](ca://s?q=Open_architecture_governance)**  
+- **[Security Governance](ca://s?q=Open_security_governance)**  
+- **[Operations Governance](ca://s?q=Open_operations_governance)**  

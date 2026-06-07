@@ -56,6 +56,134 @@ Rules that define **how governance is enforced**, who enforces it, and how gover
 
 ---
 
+# Governance Scope
+
+Governance applies to:
+
+- All products in the repository  
+- All contributors  
+- All CI/CD workflows  
+- All documentation  
+- All architectural boundaries  
+- All story and changelog processes  
+- All operational and security requirements  
+
+Governance is **binding** and overrides conventions when conflicts arise.
+
+---
+
+# Governance Hierarchy
+
+Governance follows a strict hierarchy:
+
+1. **Product Governance** — story lifecycle, contributor rules, changelog rules  
+2. **Technical Governance** — architecture, API, CI, security, operations  
+3. **Enforcement Governance** — how governance is applied and evolved  
+4. **Conventions** — implementation rules  
+5. **Guides** — how‑to documents  
+
+Higher levels override lower levels.
+
+---
+
+# Governance Invariants
+
+All governance documents must remain:
+
+- **Stable** — changes are rare and intentional  
+- **Minimal** — only rules, no implementation details  
+- **Enforceable** — must be testable or reviewable  
+- **Non‑overlapping** — no duplication across governance files  
+- **Cross‑product** — rules apply to all products unless explicitly scoped  
+
+Governance must never contain:
+
+- Code conventions  
+- Workflow implementation details  
+- How‑to instructions  
+- Examples or tutorials  
+- ADR‑style rationale  
+
+Governance defines **rules**, not explanations.
+
+---
+
+# Governance Drift Detection
+
+Governance drift is any mismatch between:
+
+- Governance rules  
+- Conventions  
+- CI behavior  
+- Documentation  
+- Product code  
+- Story lifecycle behavior  
+
+Drift must be:
+
+- Detected by CI guardrails  
+- Corrected immediately  
+- Documented in the PR  
+- Reviewed by governance owners  
+
+---
+
+# Governance Review Cadence
+
+Governance must be reviewed:
+
+- At major milestones  
+- After architectural changes  
+- After CI/CD model changes  
+- After security incidents  
+- After new product surfaces  
+- After convention evolution  
+- When guardrails detect drift  
+
+Reviews must follow the governance process.
+
+---
+
+# Governance Change Lifecycle
+
+Governance changes require:
+
+1. A PR modifying the relevant governance file  
+2. Clear rationale and consequences  
+3. Full reviewer discussion  
+4. Product Owner approval  
+5. Updates to conventions, guides, or scripts if required  
+6. Guardrail updates if enforcement changes  
+
+Governance changes must be:
+
+- Intentional  
+- Minimal  
+- Backwards‑compatible unless explicitly breaking  
+- Fully documented  
+
+---
+
+# Governance Retirement Rules
+
+A governance rule may be retired when:
+
+- It is no longer applicable  
+- It is replaced by a convention  
+- It is superseded by architecture  
+- It becomes redundant  
+- It conflicts with updated guardrails  
+- It conflicts with updated workflows  
+
+Retirement requires:
+
+- A PR removing the rule  
+- Product Owner approval  
+- Updated references  
+- Updated enforcement matrix  
+
+---
+
 # Relationship to Conventions
 
 Governance defines:
