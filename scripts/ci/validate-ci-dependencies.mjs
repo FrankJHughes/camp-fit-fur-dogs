@@ -90,7 +90,7 @@ if (!hasPathsFilter) {
 // ------------------------------------------------------------
 // 4. Validate nightly schedule
 // ------------------------------------------------------------
-// const onSection = workflow.on;
+const onSection = workflow.on;
 // if (!onSection || !onSection.schedule) {
 //   fail("Workflow missing nightly schedule trigger.");
 // }
