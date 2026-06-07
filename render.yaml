@@ -19,16 +19,16 @@ projects:
         generation: manual
       envVars:
         - key: ConnectionStrings__DefaultConnection
-          value: "placeholder"
+          value: "secret"
           sync: false
 
         - key: GITHUB_PAT
-          value: "placeholder"
+          value: "secret"
 
         - key: ASPNETCORE_ENVIRONMENT
           value: Production
+          previewValue: Preview
 
         - key: Frontend__BaseUrl
-          value: "placeholder"
-          previewValue: "placeholder"
+          value: "secret"
           sync: false
