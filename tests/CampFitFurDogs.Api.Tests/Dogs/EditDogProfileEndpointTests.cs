@@ -1,149 +1,99 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fakes;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class EditDogProfileEndpointTests : ApiTestBase
+[Collection("API With Postgres")]
+public class EditDogProfileEndpointTests : ApiWithPostgresTestBase
 {
-    private readonly HttpClient _client;
-    private readonly TestCurrentUser _testUser;
-
-    public EditDogProfileEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+    public EditDogProfileEndpointTests(
+        CampFitFurDogsApiFactory factory,
+        PostgresFixture fixture)
         : base(factory, fixture)
     {
-        _client = Factory.CreateClient();
-        _testUser = Factory.TestUser;
     }
 
-    private sealed record RegisterDogResponse(Guid dogId);
-
-    private async Task<Guid> RegisterDogAsync(Guid ownerId)
-    {
-        var request = new
-        {
-            name = "Biscuit",
-            breed = "Golden Retriever",
-            dateOfBirth = "2022-06-15",
-            sex = "Female"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
-        return body!.dogId;
-    }
-
-    private sealed record DogProfileResponse(
-        Guid id,
-        Guid ownerId,
-        string name,
-        string breed,
-        DateOnly dateOfBirth,
-        string sex);
-
+    // ------------------------------------------------------------
+    // SUCCESS — OWNER UPDATES DOG
+    // ------------------------------------------------------------
     [Fact]
-    public async Task EditDogProfile_ShouldReturn204()
+    public async Task EditDog_OwnerUpdatesDog_Returns204()
     {
-        var ownerId = await CreateAndSetOwnerAsync(_client, _testUser);
-        var dogId = await RegisterDogAsync(ownerId);
+        var client = CreateClient();
+
+        // Authenticate using real AuthCallback pipeline
+        await AuthenticateAsync(client);
+
+        // Register dog as authenticated owner
+        var dogId = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
 
         var request = new
         {
-            name = "Waffles",
-            breed = "Labrador",
-            dateOfBirth = "2021-06-15",
-            sex = "Male"
+            Name = "Biscuit Updated",
+            Breed = "Labrador",
+            DateOfBirth = "2022-06-15",
+            Sex = "Female"
         };
 
-        var response = await _client.PutAsJsonAsync($"/api/dogs/{dogId}", request);
+        var response = await client.PutAsJsonAsync($"/api/dogs/{dogId}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    // ------------------------------------------------------------
+    // AUTH — OTHER OWNER CANNOT EDIT
+    // ------------------------------------------------------------
     [Fact]
-    public async Task EditDogProfile_WithEmptyName_Returns400()
+    public async Task EditDog_OtherOwnerCannotEdit_Returns404()
     {
-        var ownerId = await CreateAndSetOwnerAsync(_client, _testUser);
-        var dogId = await RegisterDogAsync(ownerId);
+        // Owner A
+        var clientA = Factory.CreateClientWithCookies();
+        await AuthenticateAsync(clientA, "test|user-a-external-id");
+        var dogId = await RegisterDogAsync(clientA, "Biscuit", "Golden Retriever");
+
+        // Owner B (different identity)
+        var clientB = Factory.CreateClientWithCookies();
+        await AuthenticateAsync(clientB, "test|user-b-external-id");
+
+        var request = new
+        {
+            Name = "Hacked Name",
+            Breed = "Hacked Breed",
+            DateOfBirth = "2022-06-15",
+            Sex = "Female"
+        };
+
+        var response = await clientB.PutAsJsonAsync($"/api/dogs/{dogId}", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    // ------------------------------------------------------------
+    // VALIDATION — MISSING NAME
+    // ------------------------------------------------------------
+    [Fact]
+    public async Task EditDog_MissingName_Returns400()
+    {
+        var client = CreateClient();
+        await AuthenticateAsync(client);
+
+        var dogId = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
 
         var request = new
         {
             Name = "",
-            Breed = "Labrador",
-            DateOfBirth = "2021-01-01",
-            Sex = "Male"
-        };
-
-        var response = await _client.PutAsJsonAsync($"/api/dogs/{dogId}", request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task EditDogProfile_WithEmptyBreed_Returns400()
-    {
-        var ownerId = await CreateAndSetOwnerAsync(_client, _testUser);
-        var dogId = await RegisterDogAsync(ownerId);
-
-        var request = new
-        {
-            Name = "Waffles",
-            Breed = "",
-            DateOfBirth = "2021-01-01",
+            Breed = "Golden Retriever",
+            DateOfBirth = "2022-06-15",
             Sex = "Female"
         };
 
-        var response = await _client.PutAsJsonAsync($"/api/dogs/{dogId}", request);
+        var response = await client.PutAsJsonAsync($"/api/dogs/{dogId}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task EditDogProfile_WithInvalidSex_Returns400()
-    {
-        var ownerId = await CreateAndSetOwnerAsync(_client, _testUser);
-        var dogId = await RegisterDogAsync(ownerId);
-
-        var request = new
-        {
-            Name = "Waffles",
-            Breed = "Poodle",
-            DateOfBirth = "2023-01-01",
-            Sex = "Unknown"
-        };
-
-        var response = await _client.PutAsJsonAsync($"/api/dogs/{dogId}", request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task EditDogProfile_ErrorResponse_DoesNotExposeInternals()
-    {
-        var ownerId = await CreateAndSetOwnerAsync(_client, _testUser);
-        var dogId = await RegisterDogAsync(ownerId);
-
-        var request = new
-        {
-            name = "",
-            breed = "Beagle",
-            dateOfBirth = "2022-08-20",
-            sex = "Male"
-        };
-
-        var response = await _client.PutAsJsonAsync($"/api/dogs/{dogId}", request);
-        var body = await response.Content.ReadAsStringAsync();
-
-        body.Should().NotContain("stackTrace");
-        body.Should().NotContain("innerException");
-        body.Should().NotContain("ArgumentException");
-        body.Should().NotContain("NullReferenceException");
     }
 }

@@ -8,8 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
+[Collection("API With Postgres")]
 public class DbContextGuardrailTests
-    : ApiTestBase
+    : ApiWithPostgresTestBase
 {
     public DbContextGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture) { }

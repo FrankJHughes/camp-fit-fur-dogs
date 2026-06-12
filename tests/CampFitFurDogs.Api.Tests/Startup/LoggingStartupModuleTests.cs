@@ -1,107 +1,74 @@
 using System.Net;
 using FluentAssertions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
-using CampFitFurDogs.Api.Horizontals.Startup;
-using Microsoft.Extensions.FileProviders;
+using CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
 namespace CampFitFurDogs.Api.Tests.Startup;
 
 public class LoggingStartupModuleTests
 {
-    // ---------------------------------------------------------------------
-    // 1. ADD() REGISTERS REQUIRED SERVICES
-    // ---------------------------------------------------------------------
-
+    // ------------------------------------------------------------
+    // ADD() REGISTRATION
+    // ------------------------------------------------------------
     [Fact]
-    public void Add_registers_HttpLogging_services()
+    public async Task Add_registers_HttpLogging_services()
     {
-        var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        var config = new Dictionary<string, string?>
+        {
+            ["ASPNETCORE_ENVIRONMENT"] = "Development"
+        };
 
-        LoggingStartupModule.Add(services, config);
+        var app = await StartupModuleTestHostWebApp.CreateAsync<LoggingStartupModule>(config);
 
-        // HttpLogging registers IConfigureOptions<HttpLoggingOptions>
-        services.Should().Contain(s =>
-            s.ServiceType == typeof(IConfigureOptions<HttpLoggingOptions>));
+        var options = app.Services.GetService<IConfigureOptions<HttpLoggingOptions>>();
+
+        options.Should().NotBeNull();
     }
 
-    // ---------------------------------------------------------------------
-    // 2. USE() DOES NOT THROW WHEN SERVICES ARE REGISTERED
-    // ---------------------------------------------------------------------
-
+    // ------------------------------------------------------------
+    // USE() EXECUTION
+    // ------------------------------------------------------------
     [Fact]
-    public void Use_does_not_throw_when_services_are_registered()
+    public async Task Use_does_not_throw()
     {
-        var services = new ServiceCollection();
-        services.AddLogging();
+        var config = new Dictionary<string, string?>
+        {
+            ["ASPNETCORE_ENVIRONMENT"] = "Development"
+        };
 
-        // Required for LoggingStartupModule.Use()
-        services.AddSingleton<IWebHostEnvironment>(new FakeEnv("Development"));
+        var app = await StartupModuleTestHostWebApp.CreateAsync<LoggingStartupModule>(config);
 
-        // Register HttpLogging services
-        LoggingStartupModule.Add(services, new ConfigurationBuilder().Build());
+        var module = new LoggingStartupModule();
 
-        var provider = services.BuildServiceProvider();
-        var app = new ApplicationBuilder(provider);
-
-        var act = () => LoggingStartupModule.Use(app);
+        Action act = () => module.Use(app);
 
         act.Should().NotThrow();
     }
 
-    // ---------------------------------------------------------------------
-    // 3. INTEGRATION TEST — HTTP LOGGING ENABLED IN DEVELOPMENT
-    // ---------------------------------------------------------------------
-
+    // ------------------------------------------------------------
+    // PIPELINE VALIDATION
+    // ------------------------------------------------------------
     [Fact]
-    public async Task HttpLogging_is_enabled_in_development()
+    public async Task Pipeline_runs_successfully()
     {
-        using var host = await new HostBuilder()
-            .ConfigureWebHost(web =>
-            {
-                web.UseTestServer();
-                web.UseEnvironment("Development");
+        var config = new Dictionary<string, string?>
+        {
+            ["ASPNETCORE_ENVIRONMENT"] = "Development"
+        };
 
-                web.ConfigureServices((ctx, services) =>
-                {
-                    LoggingStartupModule.Add(services, ctx.Configuration);
-                });
+        var app = await StartupModuleTestHostWebApp.CreateAsync<LoggingStartupModule>(
+            config,
+            app => app.MapGet("/", () => "ok")
+        );
 
-                web.Configure(app =>
-                {
-                    LoggingStartupModule.Use(app);
-                    app.Run(_ => Task.CompletedTask);
-                });
-            })
-            .StartAsync();
-
-        var client = host.GetTestClient();
+        var client = app.GetTestClient();
 
         var response = await client.GetAsync("/");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    // ---------------------------------------------------------------------
-    // SUPPORTING TEST DOUBLE
-    // ---------------------------------------------------------------------
-
-    private sealed class FakeEnv : IWebHostEnvironment
-    {
-        public FakeEnv(string env) => EnvironmentName = env;
-
-        public string EnvironmentName { get; set; }
-        public string ApplicationName { get; set; } = "TestApp";
-        public string WebRootPath { get; set; } = "";
-        public IFileProvider WebRootFileProvider { get; set; } = new NullFileProvider();
-        public string ContentRootPath { get; set; } = "";
-        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
     }
 }

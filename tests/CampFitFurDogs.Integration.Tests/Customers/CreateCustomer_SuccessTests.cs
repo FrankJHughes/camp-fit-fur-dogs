@@ -10,26 +10,23 @@ using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_SuccessTests
+[Collection("API With Postgres")]
+public class CreateCustomer_SuccessTests : ApiWithPostgresTestBase
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
-    private readonly PostgresFixture _db;
-
-    public CreateCustomer_SuccessTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    public CreateCustomer_SuccessTests(
+        CampFitFurDogsApiFactory factory,
+        PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _db = postgresFixture;
-
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
-
-        _client = _factory.CreateClient();
     }
+
+    private sealed record CreateCustomerResponse(Guid CustomerId);
 
     [Fact]
     public async Task CreateCustomer_SuccessfullyPersistsCustomer_AndReturns201()
     {
+        var client = CreateClient();
+
         // Arrange
         var email = $"success-{Guid.NewGuid()}@Example.COM"; // test normalization
         var request = new
@@ -45,7 +42,7 @@ public class CreateCustomer_SuccessTests
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
 
         // Assert — HTTP
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -59,7 +56,7 @@ public class CreateCustomer_SuccessTests
             .Should().Be($"/api/customers/{body.CustomerId}");
 
         // Assert — Database
-        await using var scope = _factory.Services.CreateAsyncScope();
+        await using var scope = Factory.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var customer = await db.Set<Customer>()
@@ -81,6 +78,4 @@ public class CreateCustomer_SuccessTests
         customer.PasswordHash!.Value.Should().NotBe(request.Password);
         customer.PasswordHash.Verify(request.Password).Should().BeTrue();
     }
-
-    private sealed record CreateCustomerResponse(Guid CustomerId);
 }

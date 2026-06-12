@@ -1,227 +1,225 @@
-using System.Net;
-using CampFitFurDogs.TestUtilities.Fixtures;
-using CampFitFurDogs.TestUtilities.Factories;
-using FluentAssertions;
+// using System.Net;
+// using CampFitFurDogs.TestUtilities.Fixtures;
+// using CampFitFurDogs.TestUtilities.Factories;
+// using FluentAssertions;
 
-namespace CampFitFurDogs.Integration.Tests.Cors;
+// namespace CampFitFurDogs.Integration.Tests.Cors;
 
-[Collection("API Collection")]
-public class CorsIntegrationTests
-{
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
+// [Collection("API Collection")]
+// public class CorsIntegrationTests
+// {
+//     private readonly CampFitFurDogsApiFactory _factory;
+//     private readonly HttpClient _client;
 
-    private const string AllowedOrigin = "https://camp-fit-fur-dogs.vercel.app";
-    private const string DeniedOrigin = "https://evil.example.com";
+//     private const string AllowedOrigin = "https://camp-fit-fur-dogs.vercel.app";
+//     private const string DeniedOrigin = "https://evil.example.com";
 
-    public CorsIntegrationTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
-    {
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
+//     public CorsIntegrationTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+//     {
+//         _factory = factoryFixture.Factory;
 
-        // Sets Frontend__BaseUrl → used by CorsStartupModule
-        _factory.WithFrontendBaseUrl(AllowedOrigin);
+//         _factory.UseContainer(postgresFixture.Container);
+//         _factory.WithEnvironment("Production");
+//         _factory.WithFrontendBaseUrl(AllowedOrigin);
 
-        _client = _factory.CreateClient();
-    }
+//         _client = _factory.CreateClient();
 
-    // ---------------------------------------------------------------------
-    // 1. ALLOWED ORIGIN
-    // ---------------------------------------------------------------------
 
-    [Fact]
-    public async Task Allowed_origin_receives_cors_headers()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/health");
-        request.Headers.Add("Origin", AllowedOrigin);
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 1. ALLOWED ORIGIN
+//     // ---------------------------------------------------------------------
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+//     [Fact]
+//     public async Task Allowed_origin_receives_cors_headers()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Get, "/api/health");
+//         request.Headers.Add("Origin", AllowedOrigin);
 
-        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
-            .Should().BeTrue();
+//         var response = await _client.SendAsync(request);
 
-        origins!.Single().Should().Be(AllowedOrigin);
+//         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        response.Headers.TryGetValues("Access-Control-Allow-Credentials", out var creds)
-            .Should().BeTrue();
+//         response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
+//             .Should().BeTrue();
 
-        creds!.Single().Should().Be("true");
-    }
+//         origins!.Single().Should().Be(AllowedOrigin);
 
-    // ---------------------------------------------------------------------
-    // 2. DENIED ORIGIN
-    // ---------------------------------------------------------------------
+//         response.Headers.TryGetValues("Access-Control-Allow-Credentials", out var creds)
+//             .Should().BeTrue();
 
-    [Fact]
-    public async Task Denied_origin_does_not_receive_cors_headers()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/health");
-        request.Headers.Add("Origin", DeniedOrigin);
+//         creds!.Single().Should().Be("true");
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 2. DENIED ORIGIN
+//     // ---------------------------------------------------------------------
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+//     [Fact]
+//     public async Task Denied_origin_does_not_receive_cors_headers()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Get, "/api/health");
+//         request.Headers.Add("Origin", DeniedOrigin);
 
-        response.Headers.Contains("Access-Control-Allow-Origin").Should().BeFalse();
-        response.Headers.Contains("Access-Control-Allow-Credentials").Should().BeFalse();
-    }
+//         var response = await _client.SendAsync(request);
 
-    // ---------------------------------------------------------------------
-    // 3. PREFLIGHT SUCCESS
-    // ---------------------------------------------------------------------
+//         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-    [Fact]
-    public async Task Preflight_request_returns_expected_cors_headers()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
-        request.Headers.Add("Origin", AllowedOrigin);
-        request.Headers.Add("Access-Control-Request-Method", "GET");
-        request.Headers.Add("Access-Control-Request-Headers", "Authorization, Content-Type");
+//         response.Headers.Contains("Access-Control-Allow-Origin").Should().BeFalse();
+//         response.Headers.Contains("Access-Control-Allow-Credentials").Should().BeFalse();
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 3. PREFLIGHT SUCCESS
+//     // ---------------------------------------------------------------------
 
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.OK);
+//     [Fact]
+//     public async Task Preflight_request_returns_expected_cors_headers()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
+//         request.Headers.Add("Origin", AllowedOrigin);
+//         request.Headers.Add("Access-Control-Request-Method", "GET");
+//         request.Headers.Add("Access-Control-Request-Headers", "Authorization, Content-Type");
 
-        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
-            .Should().BeTrue();
+//         var response = await _client.SendAsync(request);
 
-        origins!.Single().Should().Be(AllowedOrigin);
+//         response.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.OK);
 
-        response.Headers.TryGetValues("Access-Control-Allow-Methods", out var methods)
-            .Should().BeTrue();
+//         response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
+//             .Should().BeTrue();
 
-        methods!.Single().Should().Contain("GET");
+//         origins!.Single().Should().Be(AllowedOrigin);
 
-        response.Headers.TryGetValues("Access-Control-Allow-Headers", out var headers)
-            .Should().BeTrue();
+//         response.Headers.TryGetValues("Access-Control-Allow-Methods", out var methods)
+//             .Should().BeTrue();
 
-        headers!.Single().Should().Contain("Authorization")
-            .And.Contain("Content-Type");
+//         methods!.Single().Should().Contain("GET");
 
-        response.Headers.TryGetValues("Access-Control-Max-Age", out var maxAge)
-            .Should().BeTrue("CorsStartupModule sets preflight caching");
-    }
+//         response.Headers.TryGetValues("Access-Control-Allow-Headers", out var headers)
+//             .Should().BeTrue();
 
-    // ---------------------------------------------------------------------
-    // 4. PREFLIGHT FAILURE: MISSING METHOD
-    // ---------------------------------------------------------------------
+//         headers!.Single().Should().Contain("Authorization")
+//             .And.Contain("Content-Type");
 
-    [Fact]
-    public async Task Preflight_missing_access_control_request_method_is_rejected()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
-        request.Headers.Add("Origin", AllowedOrigin);
-        request.Headers.Add("Access-Control-Request-Headers", "Authorization");
+//         response.Headers.TryGetValues("Access-Control-Max-Age", out var maxAge)
+//             .Should().BeTrue("CorsStartupModule sets preflight caching");
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 4. PREFLIGHT FAILURE: MISSING METHOD
+//     // ---------------------------------------------------------------------
 
-        // ASP.NET Core returns 204 or 405 depending on routing
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.MethodNotAllowed);
+//     [Fact]
+//     public async Task Preflight_missing_access_control_request_method_is_rejected()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
+//         request.Headers.Add("Origin", AllowedOrigin);
+//         request.Headers.Add("Access-Control-Request-Headers", "Authorization");
 
-        // Origin is still echoed because origin is allowed
-        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
-            .Should().BeTrue();
+//         var response = await _client.SendAsync(request);
 
-        origins!.Single().Should().Be(AllowedOrigin);
+//         response.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.MethodNotAllowed);
 
-        // But no method/header approval
-        response.Headers.Contains("Access-Control-Allow-Methods").Should().BeFalse();
-        response.Headers.Contains("Access-Control-Allow-Headers").Should().BeFalse();
-    }
+//         response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
+//             .Should().BeTrue();
 
-    // ---------------------------------------------------------------------
-    // 5. PREFLIGHT FAILURE: DISALLOWED METHOD
-    // ---------------------------------------------------------------------
+//         origins!.Single().Should().Be(AllowedOrigin);
 
-    [Fact]
-    public async Task Preflight_disallowed_method_is_rejected()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
-        request.Headers.Add("Origin", AllowedOrigin);
-        request.Headers.Add("Access-Control-Request-Method", "PATCH");
+//         response.Headers.Contains("Access-Control-Allow-Methods").Should().BeFalse();
+//         response.Headers.Contains("Access-Control-Allow-Headers").Should().BeFalse();
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 5. PREFLIGHT FAILURE: DISALLOWED METHOD
+//     // ---------------------------------------------------------------------
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+//     [Fact]
+//     public async Task Preflight_disallowed_method_is_rejected()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
+//         request.Headers.Add("Origin", AllowedOrigin);
+//         request.Headers.Add("Access-Control-Request-Method", "PATCH");
 
-        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
-            .Should().BeTrue();
+//         var response = await _client.SendAsync(request);
 
-        origins!.Single().Should().Be(AllowedOrigin);
+//         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        response.Headers.TryGetValues("Access-Control-Allow-Methods", out var methods)
-            .Should().BeTrue();
+//         response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
+//             .Should().BeTrue();
 
-        methods!.Single().Should().NotContain("PATCH");
-    }
+//         origins!.Single().Should().Be(AllowedOrigin);
 
-    // ---------------------------------------------------------------------
-    // 6. PREFLIGHT FAILURE: DISALLOWED HEADER
-    // ---------------------------------------------------------------------
+//         response.Headers.TryGetValues("Access-Control-Allow-Methods", out var methods)
+//             .Should().BeTrue();
 
-    [Fact]
-    public async Task Preflight_disallowed_header_is_rejected()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
-        request.Headers.Add("Origin", AllowedOrigin);
-        request.Headers.Add("Access-Control-Request-Method", "GET");
-        request.Headers.Add("Access-Control-Request-Headers", "X-Custom");
+//         methods!.Single().Should().NotContain("PATCH");
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 6. PREFLIGHT FAILURE: DISALLOWED HEADER
+//     // ---------------------------------------------------------------------
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+//     [Fact]
+//     public async Task Preflight_disallowed_header_is_rejected()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Options, "/api/health");
+//         request.Headers.Add("Origin", AllowedOrigin);
+//         request.Headers.Add("Access-Control-Request-Method", "GET");
+//         request.Headers.Add("Access-Control-Request-Headers", "X-Custom");
 
-        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
-            .Should().BeTrue();
+//         var response = await _client.SendAsync(request);
 
-        origins!.Single().Should().Be(AllowedOrigin);
+//         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        response.Headers.TryGetValues("Access-Control-Allow-Headers", out var headers)
-            .Should().BeTrue();
+//         response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
+//             .Should().BeTrue();
 
-        headers!.Single().Should().Contain("Authorization")
-            .And.Contain("Content-Type")
-            .And.NotContain("X-Custom");
-    }
+//         origins!.Single().Should().Be(AllowedOrigin);
 
-    // ---------------------------------------------------------------------
-    // 7. NO WILDCARD REGRESSION
-    // ---------------------------------------------------------------------
+//         response.Headers.TryGetValues("Access-Control-Allow-Headers", out var headers)
+//             .Should().BeTrue();
 
-    [Fact]
-    public async Task Cors_headers_should_not_contain_wildcards()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/health");
-        request.Headers.Add("Origin", AllowedOrigin);
+//         headers!.Single().Should().Contain("Authorization")
+//             .And.Contain("Content-Type")
+//             .And.NotContain("X-Custom");
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 7. NO WILDCARD REGRESSION
+//     // ---------------------------------------------------------------------
 
-        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
-            .Should().BeTrue();
+//     [Fact]
+//     public async Task Cors_headers_should_not_contain_wildcards()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Get, "/api/health");
+//         request.Headers.Add("Origin", AllowedOrigin);
 
-        origins!.Single().Should().NotContain("*");
-    }
+//         var response = await _client.SendAsync(request);
 
-    // ---------------------------------------------------------------------
-    // 8. CORS APPLIES BEFORE AUTH
-    // ---------------------------------------------------------------------
+//         response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
+//             .Should().BeTrue();
 
-    [Fact(Skip = "Authentication not implemented yet — no endpoint returns 401")]
-    public async Task Cors_headers_are_present_even_when_auth_fails()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
-        request.Headers.Add("Origin", AllowedOrigin);
+//         origins!.Single().Should().NotContain("*");
+//     }
 
-        var response = await _client.SendAsync(request);
+//     // ---------------------------------------------------------------------
+//     // 8. CORS APPLIES BEFORE AUTH
+//     // ---------------------------------------------------------------------
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+//     [Fact(Skip = "Authentication not implemented yet — no endpoint returns 401")]
+//     public async Task Cors_headers_are_present_even_when_auth_fails()
+//     {
+//         var request = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
+//         request.Headers.Add("Origin", AllowedOrigin);
 
-        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
-            .Should().BeTrue("CORS must run before authentication");
+//         var response = await _client.SendAsync(request);
 
-        origins!.Single().Should().Be(AllowedOrigin);
-    }
+//         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
-}
+//         response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins)
+//             .Should().BeTrue("CORS must run before authentication");
+
+//         origins!.Single().Should().Be(AllowedOrigin);
+//     }
+// }

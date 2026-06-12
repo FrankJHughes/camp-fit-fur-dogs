@@ -9,23 +9,21 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_PasswordHashTests
+[Collection("API With Postgres")]
+public class CreateCustomer_PasswordHashTests : ApiWithPostgresTestBase
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
-
-    public CreateCustomer_PasswordHashTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    public CreateCustomer_PasswordHashTests(
+        CampFitFurDogsApiFactory factory,
+        PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
-
-        _client = _factory.CreateClient();
     }
 
     [Fact]
     public async Task CreateCustomer_StoresHashedPassword_NotRaw()
     {
+        var client = CreateClient();
+
         var request = new
         {
             FirstName = "Frank",
@@ -35,13 +33,13 @@ public class CreateCustomer_PasswordHashTests
             Password = "SuperSecure123!"
         };
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var id = response.Headers.Location!.ToString().Split('/').Last();
 
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var customerId = CustomerId.From(Guid.Parse(id));

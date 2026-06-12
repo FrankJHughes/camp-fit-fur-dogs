@@ -17,7 +17,7 @@ public sealed class AuthCallbackExecutor
         _trace = trace;
     }
 
-    public async Task ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
+    public async Task<AuthCallbackContext> ExecuteAsync(AuthCallbackContext ctx, CancellationToken ct)
     {
         var remaining = new HashSet<IAuthCallbackStep>(_steps);
 
@@ -35,7 +35,10 @@ public sealed class AuthCallbackExecutor
             AssertValidTransition(step!, before, ctx);
 
             remaining.Remove(step!);
+
         }
+
+        return ctx;
     }
 
     // ------------------------------------------------------------

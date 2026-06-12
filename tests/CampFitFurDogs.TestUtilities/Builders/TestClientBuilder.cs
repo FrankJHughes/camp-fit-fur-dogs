@@ -1,9 +1,13 @@
+using System.Net;
+using System.Net.Http;
 using CampFitFurDogs.Application.Abstractions.Audit;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Identity;
 using CampFitFurDogs.Infrastructure.Identity.Oidc;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fakes;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -19,7 +23,7 @@ public class TestClientBuilder
     private IIdentityResolver? _identityResolver;
     private IAuditLogger? _auditLogger;
     private IAuthCallbackService? _authCallbackService;
-    private string? _environment;
+    private Dictionary<string, string>? _fakeClaims;
 
     public TestClientBuilder(CampFitFurDogsApiFactory factory)
     {
@@ -50,59 +54,113 @@ public class TestClientBuilder
         return this;
     }
 
-    public TestClientBuilder WithEnvironment(string env)
-    {
-        _environment = env;
-        return this;
-    }
-
     public TestClientBuilder WithAuthCallbackService(IAuthCallbackService service)
     {
         _authCallbackService = service;
         return this;
     }
 
+    public TestClientBuilder WithFakeClaims(Dictionary<string, string> claims)
+    {
+        _fakeClaims = claims;
+        return this;
+    }
+
     public HttpClient BuildClient()
     {
-        //
-        // ⭐ Apply config overrides BEFORE Program.cs runs
-        //
+        var workingFactory = _factory;
+
         if (_configOverrides is not null)
-            _factory.WithConfigOverrides(_configOverrides);
+            workingFactory = workingFactory.WithConfigOverrides(_configOverrides);
 
-        if (_environment is not null)
-            _factory.WithEnvironment(_environment);
+        var cookieContainer = new CookieContainer();
 
-        var factory = _factory.WithWebHostBuilder(builder =>
+        var configuredFactory = workingFactory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices(services =>
             {
-                // Fake OIDC HTTP responses
+                //
+                // Replace IAuthClient
+                //
+                services.RemoveAll<IAuthClient>();
+
                 if (_fakeOidcResponses is not null)
                 {
                     services.AddHttpClient<IAuthClient, OidcAuthClient>()
                         .ConfigurePrimaryHttpMessageHandler(() =>
                             new FakeHttpMessageHandler(_fakeOidcResponses));
                 }
+                else
+                {
+                    var guid = Guid.NewGuid();
+                    services.AddSingleton<IAuthClient>(new FakeAuthClient
+                    {
+                        TokenToReturn = new AuthToken("fake-token"),
+                        UserToReturn = new AuthUser(
+                            ExternalId: $"test-auth0|{guid}",
+                            GivenName: "Test",
+                            FamilyName: "User",
+                            Email: $"test-{guid}@example.com"
+                        )
+                    });
+                }
 
+                //
+                // Identity resolver override
+                //
                 if (_identityResolver is not null)
                     services.AddSingleton<IIdentityResolver>(_identityResolver);
 
+                //
+                // Audit logger override
+                //
                 if (_auditLogger is not null)
                     services.AddSingleton<IAuditLogger>(_auditLogger);
 
+                //
+                // Auth callback override
+                //
                 if (_authCallbackService is not null)
                 {
                     services.RemoveAll<IAuthCallbackService>();
                     services.AddSingleton<IAuthCallbackService>(_authCallbackService);
                 }
+
+                //
+                // FakeAuthHandler claim overrides
+                // Only apply if FakeAuthHandler is active
+                //
+                if (_fakeClaims is not null && !_factory.UsesCookieAuthOnly)
+                {
+                    services.RemoveAll<FakeAuthHandlerClaims>();
+                    services.AddSingleton(new FakeAuthHandlerClaims(_fakeClaims));
+                }
+            });
+
+            //
+            // Attach CookieContainer for CookieAuth mode
+            //
+            builder.ConfigureTestServices(services =>
+            {
+                services.AddTransient<HttpMessageHandler>(_ =>
+                    new HttpClientHandler
+                    {
+                        AllowAutoRedirect = false,
+                        UseCookies = true,
+                        CookieContainer = cookieContainer
+                    });
             });
         });
 
-        return factory.CreateClient(new()
+        var scheme = _factory.UsesCookieAuthOnly ? "https" : "http";
+
+        var client = configuredFactory.CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false,
-            BaseAddress = new Uri("https://localhost")
+            HandleCookies = true,
+            BaseAddress = new Uri($"{scheme}://localhost")
         });
+
+        return client;
     }
 }

@@ -1,28 +1,25 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using FluentAssertions;
+using Frank.Abstractions.ExceptionHandling;
 
-namespace CampFitFurDogs.Integration.Tests.Customers;
-
-[Collection("API Collection")]
-public class CreateCustomer_DuplicateEmailTests
+[Collection("API With Postgres")]
+public class CreateCustomer_DuplicateEmailTests : ApiWithPostgresTestBase
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
-
-    public CreateCustomer_DuplicateEmailTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    public CreateCustomer_DuplicateEmailTests(
+        CampFitFurDogsApiFactory factory,
+        PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
-        _client = _factory.CreateClient();
     }
 
     [Fact]
     public async Task CreateCustomer_Fails_WhenEmailAlreadyExists()
     {
+        var client = CreateClient();
+
         var email = $"dup-{Guid.NewGuid()}@example.com";
 
         var request = new
@@ -34,16 +31,10 @@ public class CreateCustomer_DuplicateEmailTests
             Password = "SuperSecure123!"
         };
 
-        //
-        // 1. First request succeeds
-        //
-        var first = await _client.PostAsJsonAsync("/api/customers", request);
+        var first = await client.PostAsJsonAsync("/api/customers", request);
         first.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        //
-        // 2. Second request fails with 409 + ProblemDetails
-        //
-        var second = await _client.PostAsJsonAsync("/api/customers", request);
+        var second = await client.PostAsJsonAsync("/api/customers", request);
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
 
         var problem = await second.Content.ReadFromJsonAsync<ProblemDetails>();

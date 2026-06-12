@@ -33,7 +33,7 @@ public static class CampFitFurDogsApiFactoryExtensions
         this CampFitFurDogsApiFactory factory,
         string environment)
     {
-        factory.InternalSetEnvironment(environment);
+        factory.SetEnvironment(environment);
 
         factory.WithConfigOverrides(cfg =>
         {

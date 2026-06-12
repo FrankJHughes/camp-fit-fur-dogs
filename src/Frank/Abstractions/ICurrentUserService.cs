@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Frank.Abstractions;
 
 [AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MinRegistrationCount = 1, MaxRegistrationCount = 1)]
-public interface ICurrentUserService
+public interface ICurrentUser
 {
-    Guid CurrentUserId { get; }
+    Guid Id { get; }
 }

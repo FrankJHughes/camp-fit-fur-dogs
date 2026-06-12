@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Errors;
 using Frank.Api;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication;
@@ -23,25 +25,25 @@ public class AuthCallbackEndpoint : IEndpoint
 
         var result = await service.HandleAsync(code, CancellationToken.None);
 
-        IssueSessionCookie(http, result.CustomerId.Value, env);
+        await IssueAuthenticationCookie(http, result.CustomerId.Value, env.EnvironmentName);
 
         return Results.Redirect(result.RedirectUrl);
     }
 
-    private static void IssueSessionCookie(
+    private static async Task IssueAuthenticationCookie(
         HttpContext http,
         Guid customerId,
-        IHostEnvironment env)
+        string externalSub)
     {
-        http.Response.Cookies.Append(
-            "cfd.session",
-            customerId.ToString(),
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = env.IsProduction(),
-                SameSite = SameSiteMode.Lax,
-                Path = "/"
-            });
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, customerId.ToString()),
+            new("sub", externalSub)
+        };
+
+        var identity = new ClaimsIdentity(claims, "cfd.session");
+        var principal = new ClaimsPrincipal(identity);
+
+        await http.SignInAsync("cfd.session", principal);
     }
 }

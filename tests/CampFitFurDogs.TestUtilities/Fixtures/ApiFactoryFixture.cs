@@ -1,5 +1,5 @@
-
 using CampFitFurDogs.TestUtilities.Factories;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.TestUtilities.Fixtures;
 
@@ -10,8 +10,7 @@ public class ApiFactoryFixture : IDisposable
     public ApiFactoryFixture()
     {
         Factory = new CampFitFurDogsApiFactory()
-            .WithFrontendBaseUrl("https://camp-fit-fur-dogs.vercel.app")
-            .WithEnvironment("Development");
+            .WithFrontendBaseUrl("https://camp-fit-fur-dogs.vercel.app");
     }
 
     public void Dispose()

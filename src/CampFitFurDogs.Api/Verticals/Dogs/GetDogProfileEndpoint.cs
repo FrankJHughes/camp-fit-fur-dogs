@@ -10,10 +10,10 @@ public class GetDogProfileEndpoint : IEndpoint
     {
         app.MapGet("/api/dogs/{id}", async (
             Guid id,
-            ICurrentUserService currentUser,
+            ICurrentUser currentUser,
             IQueryDispatcher dispatcher) =>
         {
-            var query = new GetDogProfileQuery(id, currentUser.CurrentUserId);
+            var query = new GetDogProfileQuery(id, currentUser.Id);
             var result = await dispatcher.DispatchAsync(query, CancellationToken.None);
 
             return result is null

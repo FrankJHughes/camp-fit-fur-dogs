@@ -5,8 +5,9 @@ using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
+[Collection("API With Postgres")]
 public class NoManualInfrastructureRegistrationGuardrailTests
-    : ApiTestBase
+    : ApiWithPostgresTestBase
 {
     public NoManualInfrastructureRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture) { }

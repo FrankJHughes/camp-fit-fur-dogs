@@ -6,10 +6,10 @@ namespace CampFitFurDogs.Application.Dogs.GetDogProfile;
 
 public class GetDogProfileQueryValidator : AbstractValidator<GetDogProfileQuery>
 {
-    public GetDogProfileQueryValidator(ICurrentUserService currentUserService)
+    public GetDogProfileQueryValidator(ICurrentUser currentUserService)
     {
         RuleFor(x => x.CustomerId).NotEmpty();
-        RuleFor(x => x.CustomerId).Equal(currentUserService.CurrentUserId);
+        RuleFor(x => x.CustomerId).Equal(currentUserService.Id);
         RuleFor(x => x.DogId).NotEmpty();
     }
 }

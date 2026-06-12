@@ -7,18 +7,14 @@ using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_ValidationTests
+[Collection("API With Postgres")]
+public class CreateCustomer_ValidationTests : ApiWithPostgresTestBase
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
-
-    public CreateCustomer_ValidationTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    public CreateCustomer_ValidationTests(
+        CampFitFurDogsApiFactory factory,
+        PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
-
-        _client = _factory.CreateClient();
     }
 
     // ------------------------------------------------------------
@@ -27,6 +23,8 @@ public class CreateCustomer_ValidationTests
     [Fact]
     public async Task CreateCustomer_Fails_WhenEmailIsInvalid()
     {
+        var client = CreateClient();
+
         var request = new
         {
             FirstName = "Frank",
@@ -36,7 +34,7 @@ public class CreateCustomer_ValidationTests
             Password = "SuperSecure123!"
         };
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -54,6 +52,8 @@ public class CreateCustomer_ValidationTests
     [Fact]
     public async Task CreateCustomer_Fails_WhenPasswordIsTooShort()
     {
+        var client = CreateClient();
+
         var request = new
         {
             FirstName = "Frank",
@@ -63,7 +63,7 @@ public class CreateCustomer_ValidationTests
             Password = "123" // too short
         };
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -81,6 +81,8 @@ public class CreateCustomer_ValidationTests
     [Fact]
     public async Task CreateCustomer_Fails_WhenRequiredFieldsAreMissing()
     {
+        var client = CreateClient();
+
         var request = new
         {
             FirstName = "",
@@ -90,7 +92,7 @@ public class CreateCustomer_ValidationTests
             Password = "" // optional, so no error expected
         };
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 

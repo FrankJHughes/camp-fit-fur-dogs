@@ -6,8 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
+[Collection("API With Postgres")]
 public class NoDuplicateServiceRegistrationGuardrailTests
-    : ApiTestBase
+    : ApiWithPostgresTestBase
 {
     public NoDuplicateServiceRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture) { }

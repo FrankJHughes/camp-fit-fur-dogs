@@ -1,4 +1,4 @@
-using CampFitFurDogs.Api.Horizontals.Hosting;
+using CampFitFurDogs.Api.Horizontals.Hosting.Modules;
 using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests.Hosting;

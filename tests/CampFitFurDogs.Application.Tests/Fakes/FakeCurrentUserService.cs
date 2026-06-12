@@ -2,7 +2,7 @@ using Frank.Abstractions;
 
 namespace CampFitFurDogs.Application.Tests.Fakes;
 
-public class FakeCurrentUserService(Guid currentUserId) : ICurrentUserService
+public class FakeCurrentUserService(Guid currentUserId) : ICurrentUser
 {
-    public Guid CurrentUserId { get; } = currentUserId;
+    public Guid Id { get; } = currentUserId;
 }

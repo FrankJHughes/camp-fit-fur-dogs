@@ -1,3 +1,4 @@
+using Frank.Abstractions.Events;
 using Frank.DependencyInjection;
 using Frank.Events;
 

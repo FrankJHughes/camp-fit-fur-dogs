@@ -9,10 +9,10 @@ public class ListDogsByCurrentUserEndpoint : IEndpoint
     public void Map(IEndpointRouteBuilder app)
     {
         app.MapGet("/api/dogs", async (
-            ICurrentUserService currentUser,
+            ICurrentUser currentUser,
             IQueryDispatcher dispatcher) =>
         {
-            var query = new ListDogsByOwnerQuery(currentUser.CurrentUserId);
+            var query = new ListDogsByOwnerQuery(currentUser.Id);
             var result = await dispatcher.DispatchAsync(query, CancellationToken.None);
             return Results.Ok(result);
         });

@@ -7,7 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-public class TestcontainersGuardrailTests : ApiTestBase
+[Collection("API With Postgres")]
+public class TestcontainersGuardrailTests : ApiWithPostgresTestBase
 {
     public TestcontainersGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture) { }

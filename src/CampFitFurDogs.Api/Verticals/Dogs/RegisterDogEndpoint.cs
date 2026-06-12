@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Abstractions;
 using Frank.Api;
@@ -10,12 +11,16 @@ public class RegisterDogEndpoint : IEndpoint
     {
         app.MapPost("/api/dogs", async (
             RegisterDogRequest request,
-            ICurrentUserService currentUserService,
-            ICommandDispatcher dispatcher) =>
+            ICurrentUser currentUserService,
+            ICommandDispatcher dispatcher,
+            HttpContext httpContext) =>
         {
-            Console.WriteLine($"Received RegisterDogRequest from user {currentUserService.CurrentUserId}");
+            Debug.WriteLine("IsAuthenticated = {Auth}", httpContext.User.Identity?.IsAuthenticated.ToString());
+            Debug.WriteLine("Name = {Name}", httpContext.User.Identity?.Name);
+
+            Console.WriteLine($"Received RegisterDogRequest from user {currentUserService.Id}");
             var command = new RegisterDogCommand(
-                currentUserService.CurrentUserId,
+                currentUserService.Id,
                 request.Name,
                 request.Breed,
                 DateOnly.Parse(request.DateOfBirth),

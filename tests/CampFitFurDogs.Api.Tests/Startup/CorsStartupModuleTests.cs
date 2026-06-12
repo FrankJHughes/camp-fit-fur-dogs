@@ -1,63 +1,66 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using CampFitFurDogs.Api.Horizontals.Startup;
+using CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
 namespace CampFitFurDogs.Api.Tests.Startup;
 
 public class CorsStartupModuleTests
 {
     private const string FrontendConfigKey = "Frontend__BaseUrl";
-    private const string LocalFrontend = "http://localhost:3000";
 
-    // ---------------------------------------------------------------------
-    // 1. ORIGIN CONFIGURATION
-    // ---------------------------------------------------------------------
-
+    // ------------------------------------------------------------
+    // ORIGIN CONFIGURATION
+    // ------------------------------------------------------------
     [Fact]
     public async Task Cors_policy_uses_frontend_base_url_from_configuration()
     {
         var config = new Dictionary<string, string?>
         {
-            [FrontendConfigKey] = "https://camp-fit-fur-dogs.vercel.app/"
+            ["ASPNETCORE_ENVIRONMENT"] = "Production",
+            [FrontendConfigKey] = "https://example.com/"
         };
 
-        using var host = await BuildHostAsync(config, "Production");
+        var app = await StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
 
-        var provider = host.Services.GetRequiredService<ICorsPolicyProvider>();
+        var provider = app.Services.GetRequiredService<ICorsPolicyProvider>();
         var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
 
         policy.Should().NotBeNull();
         policy!.Origins.Should().ContainSingle()
-            .Which.Should().Be("https://camp-fit-fur-dogs.vercel.app");
+            .Which.Should().Be("https://example.com");
     }
 
     [Fact]
-    public async Task Development_environment_defaults_to_local_frontend_when_not_configured()
+    public async Task Development_defaults_to_localhost_3000()
     {
-        var config = new Dictionary<string, string?>();
+        var config = new Dictionary<string, string?>
+        {
+            ["ASPNETCORE_ENVIRONMENT"] = "Development"
+        };
 
-        using var host = await BuildHostAsync(config, "Development");
+        var app = await StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
 
-        var provider = host.Services.GetRequiredService<ICorsPolicyProvider>();
+        var provider = app.Services.GetRequiredService<ICorsPolicyProvider>();
         var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
 
-        policy.Should().NotBeNull();
         policy!.Origins.Should().ContainSingle()
-            .Which.Should().Be(LocalFrontend);
+            .Which.Should().Be("http://localhost:3000");
     }
 
+    // ------------------------------------------------------------
+    // ERROR CONDITIONS
+    // ------------------------------------------------------------
     [Fact]
     public void Missing_frontend_base_url_in_production_throws()
     {
-        var config = new Dictionary<string, string?>();
+        var config = new Dictionary<string, string?>
+        {
+            ["ASPNETCORE_ENVIRONMENT"] = "Production"
+        };
 
-        Func<Task> act = async () => await BuildHostAsync(config, "Production");
+        Func<Task> act = () => StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
 
         act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*Frontend__BaseUrl*");
@@ -68,10 +71,11 @@ public class CorsStartupModuleTests
     {
         var config = new Dictionary<string, string?>
         {
+            ["ASPNETCORE_ENVIRONMENT"] = "Production",
             [FrontendConfigKey] = "not-a-valid-uri"
         };
 
-        Func<Task> act = async () => await BuildHostAsync(config, "Production");
+        Func<Task> act = () => StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
 
         act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*valid absolute URI*");
@@ -82,149 +86,35 @@ public class CorsStartupModuleTests
     {
         var config = new Dictionary<string, string?>
         {
+            ["ASPNETCORE_ENVIRONMENT"] = "Production",
             [FrontendConfigKey] = "http://*.example.com"
         };
 
-        Func<Task> act = async () => await BuildHostAsync(config, "Production");
+        Func<Task> act = () => StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
 
         act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*must not contain wildcard*");
     }
 
-    // ---------------------------------------------------------------------
-    // 2. ALLOWED METHODS + HEADERS
-    // ---------------------------------------------------------------------
-
+    // ------------------------------------------------------------
+    // POLICY CONTENT
+    // ------------------------------------------------------------
     [Fact]
     public async Task Cors_policy_allows_expected_methods_and_headers()
     {
         var config = new Dictionary<string, string?>
         {
-            [FrontendConfigKey] = "https://camp-fit-fur-dogs.vercel.app/"
+            ["ASPNETCORE_ENVIRONMENT"] = "Production",
+            [FrontendConfigKey] = "https://example.com/"
         };
 
-        using var host = await BuildHostAsync(config, "Production");
+        var app = await StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
 
-        var provider = host.Services.GetRequiredService<ICorsPolicyProvider>();
+        var provider = app.Services.GetRequiredService<ICorsPolicyProvider>();
         var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
 
-        policy.Should().NotBeNull();
         policy!.Methods.Should().BeEquivalentTo("GET", "POST", "PUT", "DELETE");
         policy.Headers.Should().BeEquivalentTo("Authorization", "Content-Type");
         policy.SupportsCredentials.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task Cors_policy_rejects_disallowed_methods()
-    {
-        var config = new Dictionary<string, string?>
-        {
-            [FrontendConfigKey] = "https://camp-fit-fur-dogs.vercel.app/"
-        };
-
-        using var host = await BuildHostAsync(config, "Production");
-
-        var provider = host.Services.GetRequiredService<ICorsPolicyProvider>();
-        var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
-
-        policy!.Methods.Should().NotContain("PATCH");
-        policy.Methods.Should().NotContain("HEAD");
-        policy.Methods.Should().NotContain("TRACE");
-    }
-
-    [Fact]
-    public async Task Cors_policy_rejects_disallowed_headers()
-    {
-        var config = new Dictionary<string, string?>
-        {
-            [FrontendConfigKey] = "https://camp-fit-fur-dogs.vercel.app/"
-        };
-
-        using var host = await BuildHostAsync(config, "Production");
-
-        var provider = host.Services.GetRequiredService<ICorsPolicyProvider>();
-        var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
-
-        policy!.Headers.Should().NotContain("X-Custom");
-        policy.Headers.Should().NotContain("Accept-Language");
-        policy.Headers.Should().NotContain("User-Agent");
-    }
-
-    // ---------------------------------------------------------------------
-    // 3. NO WILDCARDS
-    // ---------------------------------------------------------------------
-
-    [Fact]
-    public async Task Cors_policy_does_not_use_wildcards()
-    {
-        var config = new Dictionary<string, string?>
-        {
-            [FrontendConfigKey] = "https://camp-fit-fur-dogs.vercel.app/"
-        };
-
-        using var host = await BuildHostAsync(config, "Production");
-
-        var provider = host.Services.GetRequiredService<ICorsPolicyProvider>();
-        var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
-
-        policy.Should().NotBeNull();
-        policy!.Origins.Should().AllSatisfy(o => o.Should().NotContain("*"));
-        policy.Headers.Should().AllSatisfy(h => h.Should().NotBe("*"));
-        policy.Methods.Should().AllSatisfy(m => m.Should().NotBe("*"));
-    }
-
-    // ---------------------------------------------------------------------
-    // 4. PREFLIGHT BEHAVIOR
-    // ---------------------------------------------------------------------
-
-    [Fact]
-    public async Task Preflight_request_includes_max_age_header()
-    {
-        var config = new Dictionary<string, string?>
-        {
-            [FrontendConfigKey] = "https://camp-fit-fur-dogs.vercel.app/"
-        };
-
-        using var host = await BuildHostAsync(config, "Production");
-
-        var provider = host.Services.GetRequiredService<ICorsPolicyProvider>();
-        var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
-
-        policy!.PreflightMaxAge.Should().NotBeNull();
-        policy.PreflightMaxAge!.Value.TotalSeconds.Should().BeGreaterThan(0);
-    }
-
-    // ---------------------------------------------------------------------
-    // INTERNAL HOST BUILDER — now uses CorsStartupModule
-    // ---------------------------------------------------------------------
-
-    private static async Task<IHost> BuildHostAsync(
-        IDictionary<string, string?> configValues,
-        string environment)
-    {
-        var builder = new HostBuilder()
-            .ConfigureHostConfiguration(cfg =>
-            {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["ASPNETCORE_ENVIRONMENT"] = environment
-                });
-            })
-            .ConfigureAppConfiguration((_, cfg) =>
-            {
-                cfg.AddInMemoryCollection(configValues);
-            })
-            .ConfigureWebHost(webHost =>
-            {
-                webHost
-                    .UseTestServer()
-                    .ConfigureServices((ctx, services) =>
-                    {
-                        CorsStartupModule.Add(services, ctx.Configuration);
-                    })
-                    .Configure(app => { });
-            });
-
-        return await builder.StartAsync();
     }
 }

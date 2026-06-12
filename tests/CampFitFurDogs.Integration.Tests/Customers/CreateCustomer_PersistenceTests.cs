@@ -9,23 +9,21 @@ using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_PersistenceTests
+[Collection("API With Postgres")]
+public class CreateCustomer_PersistenceTests : ApiWithPostgresTestBase
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
-
-    public CreateCustomer_PersistenceTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    public CreateCustomer_PersistenceTests(
+        CampFitFurDogsApiFactory factory,
+        PostgresFixture fixture)
+        : base(factory, fixture)
     {
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
-
-        _client = _factory.CreateClient();
     }
 
     [Fact]
     public async Task CreateCustomer_PersistsCustomerInDatabase()
     {
+        var client = CreateClient();
+
         var request = new
         {
             FirstName = "Frank",
@@ -38,7 +36,7 @@ public class CreateCustomer_PersistenceTests
         //
         // 1. Send request
         //
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         //
@@ -50,7 +48,7 @@ public class CreateCustomer_PersistenceTests
         //
         // 3. Load persisted entity
         //
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var customer = await db.Set<Customer>().FindAsync(customerId);

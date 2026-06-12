@@ -3,12 +3,14 @@ using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Frank.Abstractions;
+using Frank.Abstractions.Events;
 using Frank.Events;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
+[Collection("API With Postgres")]
 public class DispatcherRegistrationGuardrailTests
-    : ApiTestBase
+    : ApiWithPostgresTestBase
 {
     public DispatcherRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture) { }

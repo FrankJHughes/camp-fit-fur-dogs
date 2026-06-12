@@ -117,9 +117,6 @@ namespace CampFitFurDogs.Infrastructure.Migrations
 
                             b1.HasKey("CustomerId");
 
-                            b1.HasIndex("Value")
-                                .IsUnique();
-
                             b1.ToTable("customers");
 
                             b1.WithOwner()

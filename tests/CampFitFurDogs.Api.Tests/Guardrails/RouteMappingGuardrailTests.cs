@@ -1,13 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.Api.Tests.Fixtures;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-public class RouteMappingGuardrailTests : ApiTestBase
+[Collection("API With Postgres")]
+public class RouteMappingGuardrailTests : ApiWithPostgresTestBase
 {
     public RouteMappingGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture) { }

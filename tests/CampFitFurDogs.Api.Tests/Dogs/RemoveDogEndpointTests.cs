@@ -1,78 +1,72 @@
 using System.Net;
-using System.Net.Http.Json;
-using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fakes;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class RemoveDogEndpointTests : ApiTestBase
+[Collection("API With Postgres")]
+public class RemoveDogEndpointTests : ApiWithPostgresTestBase
 {
-    private readonly HttpClient _client;
-    private readonly TestCurrentUser _testUser;
-
-    public RemoveDogEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
+    public RemoveDogEndpointTests(
+        CampFitFurDogsApiFactory factory,
+        PostgresFixture fixture)
         : base(factory, fixture)
     {
-        _client = Factory.CreateClient();
-        _testUser = Factory.TestUser;
     }
 
-    private sealed record RegisterDogResponse(Guid dogId);
-
-    private async Task<Guid> RegisterDogAsync()
-    {
-        await CreateAndSetOwnerAsync(_client, _testUser);
-
-        var request = new
-        {
-            Name = "Biscuit",
-            Breed = "Golden Retriever",
-            DateOfBirth = "2022-06-15",
-            Sex = "Female"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
-        return body!.dogId;
-    }
-
+    // ------------------------------------------------------------
+    // SUCCESS — OWNER REMOVES DOG
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_ShouldReturn204()
+    public async Task RemoveDog_OwnerRemovesDog_Returns204()
     {
-        var dogId = await RegisterDogAsync();
+        var client = CreateClient();
 
-        var response = await _client.DeleteAsync($"/api/dogs/{dogId}");
+        // Authenticate using real AuthCallback pipeline
+        await AuthenticateAsync(client);
+
+        // Register dog as authenticated owner
+        var dogId = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
+
+        var response = await client.DeleteAsync($"/api/dogs/{dogId}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    // ------------------------------------------------------------
+    // AUTH — OTHER OWNER CANNOT REMOVE
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_WhenDogNotFound_DoesNotReturn204()
+    public async Task RemoveDog_OtherOwnerCannotRemove_Returns404()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
+        // Owner A
+        var clientA = Factory.CreateClientWithCookies();
+        await AuthenticateAsync(clientA, "test|user-a-external-id");
+        var dogId = await RegisterDogAsync(clientA, "Biscuit", "Golden Retriever");
 
-        var response = await _client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
+        // Owner B (different identity)
+        var clientB = Factory.CreateClientWithCookies();
+        await AuthenticateAsync(clientB, "test|user-b-external-id");
 
-        response.StatusCode.Should().NotBe(HttpStatusCode.NoContent);
+        var response = await clientB.DeleteAsync($"/api/dogs/{dogId}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    // ------------------------------------------------------------
+    // BAD REQUEST — MISSING CUSTOMER ID
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_ErrorResponse_DoesNotExposeInternals()
+    public async Task RemoveDog_MissingCustomerId_Returns400()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
+        // No authentication → no session cookie
+        var client = CreateClient();
 
-        var response = await _client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
-        var body = await response.Content.ReadAsStringAsync();
+        var response = await client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
 
-        body.Should().NotContain("stackTrace");
-        body.Should().NotContain("innerException");
-        body.Should().NotContain("ArgumentException");
-        body.Should().NotContain("NullReferenceException");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

@@ -2,12 +2,14 @@ using CampFitFurDogs.Api.Tests.Fixtures;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
+using Frank.Abstractions.Events;
 using Frank.Events;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
+[Collection("API With Postgres")]
 public class DomainEventHandlerRegistrationGuardrailTests
-    : ApiTestBase
+    : ApiWithPostgresTestBase
 {
     public DomainEventHandlerRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
         : base(factory, fixture) { }
