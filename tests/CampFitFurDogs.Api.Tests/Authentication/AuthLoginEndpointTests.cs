@@ -1,17 +1,42 @@
 using System.Net;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
-using Microsoft.AspNetCore.Mvc.Testing;
+using FluentAssertions;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
-[Collection("Auth Login Endpoint Tests")]
-public class AuthLoginEndpointTests : ApiWithoutDatabaseTestBase
+public class AuthLoginEndpointTests : IAsyncLifetime
 {
-    public AuthLoginEndpointTests(CampFitFurDogsApiFactory factory)
-        : base(factory)
+    private ApiFactory _api = default!;
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public Task InitializeAsync()
     {
+        var ctx = new ApiContext()
+            .WithDatabase(false) // Login endpoint does not use DB
+            .WithCookieAuthOnly(false);
+
+        _api = new ApiFactory(ctx);
+
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    // Helper: create client with config overrides
+    private HttpClient CreateClientWithOverrides(Action<IConfigurationBuilder> apply)
+    {
+        var ctx = new ApiContext()
+            .WithDatabase(false)
+            .WithCookieAuthOnly(false)
+            .WithConfigOverride(apply);
+
+        var api = new ApiFactory(ctx);
+        return api.CreateClient(new ApiClientContext());
     }
 
     // ------------------------------------------------------------
@@ -35,18 +60,18 @@ public class AuthLoginEndpointTests : ApiWithoutDatabaseTestBase
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
         var location = response.Headers.Location!.ToString();
-        Assert.StartsWith("https://dev-fake.auth0.com/authorize?", location);
+        location.Should().StartWith("https://dev-fake.auth0.com/authorize?");
 
         var uri = new Uri(location);
-        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        var query = QueryHelpers.ParseQuery(uri.Query);
 
-        Assert.Equal("openid profile email", query["scope"]);
-        Assert.Equal("code", query["response_type"]);
-        Assert.Equal("client123", query["client_id"]);
-        Assert.Equal("http://localhost/api/auth/callback", query["redirect_uri"]);
+        query["scope"].ToString().Should().Be("openid profile email");
+        query["response_type"].ToString().Should().Be("code");
+        query["client_id"].ToString().Should().Be("client123");
+        query["redirect_uri"].ToString().Should().Be("http://localhost/api/auth/callback");
     }
 
     // ------------------------------------------------------------
@@ -67,10 +92,10 @@ public class AuthLoginEndpointTests : ApiWithoutDatabaseTestBase
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
 
     [Fact]
@@ -88,10 +113,10 @@ public class AuthLoginEndpointTests : ApiWithoutDatabaseTestBase
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
 
     [Fact]
@@ -109,10 +134,10 @@ public class AuthLoginEndpointTests : ApiWithoutDatabaseTestBase
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
 
     [Fact]
@@ -130,9 +155,9 @@ public class AuthLoginEndpointTests : ApiWithoutDatabaseTestBase
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
 }

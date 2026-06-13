@@ -1,20 +1,52 @@
 using System.Net;
-using CampFitFurDogs.TestUtilities.Builders;
+using System.Net.Http.Json;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
-using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
+using Testcontainers.PostgreSql;
+using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-[Collection("API With Postgres")]
-public class RemoveDogEndpointTests : ApiWithPostgresTestBase
+public class RemoveDogEndpointTests : IAsyncLifetime
 {
-    public RemoveDogEndpointTests(
-        CampFitFurDogsApiFactory factory,
-        PostgresFixture fixture)
-        : base(factory, fixture)
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+
+    private sealed record DogResponse(Guid DogId);
+    private sealed record WhoAmIResponse(string UserId);
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
+        // 1. Start Postgres
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        // 2. Build ApiContext
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true);
+
+        // 3. Create ApiFactory
+        _api = new ApiFactory(ctx);
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    // Helper: create an authenticated client
+    private HttpClient CreateAuthenticatedClient(string sub)
+    {
+        var clientCtx = new ApiClientContext()
+            .WithAuthenticatedUser(sub);
+
+        return _api.CreateClient(clientCtx);
     }
 
     // ------------------------------------------------------------
@@ -23,12 +55,8 @@ public class RemoveDogEndpointTests : ApiWithPostgresTestBase
     [Fact]
     public async Task RemoveDog_OwnerRemovesDog_Returns204()
     {
-        var client = CreateClient();
+        var client = CreateAuthenticatedClient("test|owner-a");
 
-        // Authenticate using real AuthCallback pipeline
-        await AuthenticateAsync(client);
-
-        // Register dog as authenticated owner
         var dogId = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
 
         var response = await client.DeleteAsync($"/api/dogs/{dogId}");
@@ -43,13 +71,11 @@ public class RemoveDogEndpointTests : ApiWithPostgresTestBase
     public async Task RemoveDog_OtherOwnerCannotRemove_Returns404()
     {
         // Owner A
-        var clientA = Factory.CreateClientWithCookies();
-        await AuthenticateAsync(clientA, "test|user-a-external-id");
+        var clientA = CreateAuthenticatedClient("test|owner-a");
         var dogId = await RegisterDogAsync(clientA, "Biscuit", "Golden Retriever");
 
-        // Owner B (different identity)
-        var clientB = Factory.CreateClientWithCookies();
-        await AuthenticateAsync(clientB, "test|user-b-external-id");
+        // Owner B
+        var clientB = CreateAuthenticatedClient("test|owner-b");
 
         var response = await clientB.DeleteAsync($"/api/dogs/{dogId}");
 
@@ -57,15 +83,14 @@ public class RemoveDogEndpointTests : ApiWithPostgresTestBase
     }
 
     // ------------------------------------------------------------
-    // BAD REQUEST — MISSING CUSTOMER ID
+    // AUTH — MISSING CUSTOMER ID
     // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_MissingCustomerId_Returns400()
+    public async Task RemoveDog_MissingCustomerId_Returns401()
     {
-        // No authentication → no session cookie
-        var client = CreateClient();
+        var anon = _api.CreateClient(new ApiClientContext());
 
-        var response = await client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
+        var response = await anon.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

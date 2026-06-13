@@ -1,26 +1,43 @@
 using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Testcontainers.PostgreSql;
 
 namespace CampFitFurDogs.Api.Tests.Customers;
 
-[Collection("API With Postgres")]
-public class CreateCustomerEndpointTests : ApiWithPostgresTestBase
+public class CreateCustomerEndpointTests : IAsyncLifetime
 {
-    public CreateCustomerEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture)
+    private PostgreSqlContainer _postgres = default!;
+
+    public async Task InitializeAsync()
     {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
     }
 
     private HttpClient CreateClientWith(Action<IConfigurationBuilder>? overrides = null)
-        => Factory
-            .WithDefaultApiConfig()
-            .WithConfigOverrides(cfg => overrides?.Invoke(cfg))
-            .CreateClient();
+    {
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false);
+
+        if (overrides is not null)
+            ctx = ctx.WithConfigOverride(overrides);
+
+        var api = new ApiFactory(ctx);
+        return api.CreateClient(new ApiClientContext());
+    }
 
     public sealed record CreateCustomerResponse(Guid CustomerId);
 

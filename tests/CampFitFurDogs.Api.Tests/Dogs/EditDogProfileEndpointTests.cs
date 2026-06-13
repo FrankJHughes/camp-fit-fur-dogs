@@ -1,22 +1,49 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
-using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
+using Testcontainers.PostgreSql;
+using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-[Collection("API With Postgres")]
-public class EditDogProfileEndpointTests : ApiWithPostgresTestBase
+public class EditDogProfileEndpointTests : IAsyncLifetime
 {
-    public EditDogProfileEndpointTests(
-        CampFitFurDogsApiFactory factory,
-        PostgresFixture fixture)
-        : base(factory, fixture)
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true);
+
+        _api = new ApiFactory(ctx);
     }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    // Helper: create authenticated client
+    private HttpClient CreateAuthenticatedClient(string sub)
+    {
+        var clientCtx = new ApiClientContext()
+            .WithAuthenticatedUser(sub);
+
+        return _api.CreateClient(clientCtx);
+    }
+
+    private sealed record DogProfileDto(Guid Id, string Name, string Breed);
 
     // ------------------------------------------------------------
     // SUCCESS — OWNER UPDATES DOG
@@ -24,12 +51,8 @@ public class EditDogProfileEndpointTests : ApiWithPostgresTestBase
     [Fact]
     public async Task EditDog_OwnerUpdatesDog_Returns204()
     {
-        var client = CreateClient();
+        var client = CreateAuthenticatedClient("test|owner-a");
 
-        // Authenticate using real AuthCallback pipeline
-        await AuthenticateAsync(client);
-
-        // Register dog as authenticated owner
         var dogId = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
 
         var request = new
@@ -52,13 +75,11 @@ public class EditDogProfileEndpointTests : ApiWithPostgresTestBase
     public async Task EditDog_OtherOwnerCannotEdit_Returns404()
     {
         // Owner A
-        var clientA = Factory.CreateClientWithCookies();
-        await AuthenticateAsync(clientA, "test|user-a-external-id");
+        var clientA = CreateAuthenticatedClient("test|owner-a");
         var dogId = await RegisterDogAsync(clientA, "Biscuit", "Golden Retriever");
 
-        // Owner B (different identity)
-        var clientB = Factory.CreateClientWithCookies();
-        await AuthenticateAsync(clientB, "test|user-b-external-id");
+        // Owner B
+        var clientB = CreateAuthenticatedClient("test|owner-b");
 
         var request = new
         {
@@ -79,8 +100,7 @@ public class EditDogProfileEndpointTests : ApiWithPostgresTestBase
     [Fact]
     public async Task EditDog_MissingName_Returns400()
     {
-        var client = CreateClient();
-        await AuthenticateAsync(client);
+        var client = CreateAuthenticatedClient("test|owner-a");
 
         var dogId = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
 

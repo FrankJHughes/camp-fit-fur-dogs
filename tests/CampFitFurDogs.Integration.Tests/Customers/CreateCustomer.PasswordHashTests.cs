@@ -2,28 +2,51 @@ using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Infrastructure.Data;
+using CampFitFurDogs.TestUtilities;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API With Postgres")]
-public class CreateCustomer_PasswordHashTests : ApiWithPostgresTestBase
+public class CreateCustomer_PasswordHashTests : IAsyncLifetime
 {
-    public CreateCustomer_PasswordHashTests(
-        CampFitFurDogsApiFactory factory,
-        PostgresFixture fixture)
-        : base(factory, fixture)
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+    private HttpClient _client = default!;
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false); // CreateCustomer is anonymous
+
+        _api = new ApiFactory(ctx);
+
+        _client = _api.CreateClient(new ApiClientContext());
     }
 
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    // ------------------------------------------------------------
+    // TEST: PASSWORD IS HASHED, NOT RAW
+    // ------------------------------------------------------------
     [Fact]
     public async Task CreateCustomer_StoresHashedPassword_NotRaw()
     {
-        var client = CreateClient();
-
         var request = new
         {
             FirstName = "Frank",
@@ -33,13 +56,15 @@ public class CreateCustomer_PasswordHashTests : ApiWithPostgresTestBase
             Password = "SuperSecure123!"
         };
 
-        var response = await client.PostAsJsonAsync("/api/customers", request);
+        var response = await _client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
+        // Extract ID from Location header
         var id = response.Headers.Location!.ToString().Split('/').Last();
 
-        using var scope = Factory.Services.CreateScope();
+        // Resolve DB context from test host
+        using var scope = _api.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var customerId = CustomerId.From(Guid.Parse(id));
@@ -47,6 +72,7 @@ public class CreateCustomer_PasswordHashTests : ApiWithPostgresTestBase
 
         customer.Should().NotBeNull();
 
+        // Assert password is hashed
         customer!.PasswordHash!.Value.Should().NotBe("SuperSecure123!");
         customer.PasswordHash.Value.Should().MatchRegex(@"^\$2[aby]\$");
     }

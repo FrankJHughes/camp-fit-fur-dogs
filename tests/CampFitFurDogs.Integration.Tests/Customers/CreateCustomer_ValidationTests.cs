@@ -2,19 +2,41 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using CampFitFurDogs.TestUtilities;
+using Testcontainers.PostgreSql;
+using Xunit;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
+using CampFitFurDogs.TestUtilities.Contexts;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API With Postgres")]
-public class CreateCustomer_ValidationTests : ApiWithPostgresTestBase
+public class CreateCustomer_ValidationTests : IAsyncLifetime
 {
-    public CreateCustomer_ValidationTests(
-        CampFitFurDogsApiFactory factory,
-        PostgresFixture fixture)
-        : base(factory, fixture)
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+    private HttpClient _client = default!;
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false); // CreateCustomer is anonymous
+
+        _api = new ApiFactory(ctx);
+
+        _client = _api.CreateClient(new ApiClientContext());
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
     }
 
     // ------------------------------------------------------------
@@ -23,8 +45,6 @@ public class CreateCustomer_ValidationTests : ApiWithPostgresTestBase
     [Fact]
     public async Task CreateCustomer_Fails_WhenEmailIsInvalid()
     {
-        var client = CreateClient();
-
         var request = new
         {
             FirstName = "Frank",
@@ -34,7 +54,7 @@ public class CreateCustomer_ValidationTests : ApiWithPostgresTestBase
             Password = "SuperSecure123!"
         };
 
-        var response = await client.PostAsJsonAsync("/api/customers", request);
+        var response = await _client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -52,8 +72,6 @@ public class CreateCustomer_ValidationTests : ApiWithPostgresTestBase
     [Fact]
     public async Task CreateCustomer_Fails_WhenPasswordIsTooShort()
     {
-        var client = CreateClient();
-
         var request = new
         {
             FirstName = "Frank",
@@ -63,7 +81,7 @@ public class CreateCustomer_ValidationTests : ApiWithPostgresTestBase
             Password = "123" // too short
         };
 
-        var response = await client.PostAsJsonAsync("/api/customers", request);
+        var response = await _client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -81,18 +99,16 @@ public class CreateCustomer_ValidationTests : ApiWithPostgresTestBase
     [Fact]
     public async Task CreateCustomer_Fails_WhenRequiredFieldsAreMissing()
     {
-        var client = CreateClient();
-
         var request = new
         {
             FirstName = "",
             LastName = "",
             Email = "",
             Phone = "",
-            Password = "" // optional, so no error expected
+            Password = "" // optional → should NOT trigger validation error
         };
 
-        var response = await client.PostAsJsonAsync("/api/customers", request);
+        var response = await _client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 

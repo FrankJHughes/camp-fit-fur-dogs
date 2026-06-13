@@ -1,25 +1,50 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
-using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
+using Testcontainers.PostgreSql;
+using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-[Collection("API With Postgres")]
-public class ListDogsByCurrentUserEndpointTests : ApiWithPostgresTestBase
+public class ListDogsByCurrentUserEndpointTests : IAsyncLifetime
 {
-    public ListDogsByCurrentUserEndpointTests(
-        CampFitFurDogsApiFactory factory,
-        PostgresFixture fixture)
-        : base(factory, fixture)
-    {
-    }
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
 
     private sealed record DogSummaryDto(Guid Id, string Name, string Breed);
     private sealed record ListDogsResponseDto(List<DogSummaryDto> Dogs);
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
+    {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true);
+
+        _api = new ApiFactory(ctx);
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    // Helper: create authenticated client
+    private HttpClient CreateAuthenticatedClient(string sub)
+    {
+        var clientCtx = new ApiClientContext()
+            .WithAuthenticatedUser(sub);
+
+        return _api.CreateClient(clientCtx);
+    }
 
     // ------------------------------------------------------------
     // SUCCESS — MULTIPLE DOGS
@@ -27,12 +52,8 @@ public class ListDogsByCurrentUserEndpointTests : ApiWithPostgresTestBase
     [Fact]
     public async Task ListDogs_OwnerHasMultipleDogs_Returns200WithAll()
     {
-        var client = CreateClient();
+        var client = CreateAuthenticatedClient("test|owner-a");
 
-        // Authenticate using real AuthCallback pipeline
-        await AuthenticateAsync(client);
-
-        // Register dogs as authenticated owner
         var dog1Id = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
         var dog2Id = await RegisterDogAsync(client, "Maple", "Beagle");
 
@@ -61,9 +82,7 @@ public class ListDogsByCurrentUserEndpointTests : ApiWithPostgresTestBase
     [Fact]
     public async Task ListDogs_OwnerHasNoDogs_Returns200WithEmptyList()
     {
-        var client = CreateClient();
-
-        await AuthenticateAsync(client);
+        var client = CreateAuthenticatedClient("test|owner-a");
 
         var response = await client.GetAsync("/api/dogs");
 
@@ -81,13 +100,11 @@ public class ListDogsByCurrentUserEndpointTests : ApiWithPostgresTestBase
     public async Task ListDogs_OnlyReturnsDogsForCurrentUser()
     {
         // Owner A
-        var clientA = CreateClient();
-        await AuthenticateAsync(clientA);
+        var clientA = CreateAuthenticatedClient("test|owner-a");
         await RegisterDogAsync(clientA, "Biscuit", "Golden Retriever");
 
         // Owner B
-        var clientB = CreateClient();
-        await AuthenticateAsync(clientB);
+        var clientB = CreateAuthenticatedClient("test|owner-b");
         await RegisterDogAsync(clientB, "Maple", "Beagle");
 
         // Query as Owner A
@@ -103,15 +120,14 @@ public class ListDogsByCurrentUserEndpointTests : ApiWithPostgresTestBase
     }
 
     // ------------------------------------------------------------
-    // BAD REQUEST — MISSING CUSTOMER ID
+    // AUTH — MISSING CUSTOMER ID
     // ------------------------------------------------------------
     [Fact]
-    public async Task ListDogs_MissingCustomerId_Returns400()
+    public async Task ListDogs_MissingCustomerId_Returns401()
     {
-        // No authentication → no session cookie
-        var client = CreateClient();
+        var anon = _api.CreateClient(new ApiClientContext());
 
-        var response = await client.GetAsync("/api/dogs");
+        var response = await anon.GetAsync("/api/dogs");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

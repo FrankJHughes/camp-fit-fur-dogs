@@ -2,49 +2,73 @@ using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Infrastructure.Data;
+using CampFitFurDogs.TestUtilities;
+using CampFitFurDogs.TestUtilities.Contexts;
+using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API With Postgres")]
-public class CreateCustomer_SuccessTests : ApiWithPostgresTestBase
+public class CreateCustomer_SuccessTests : IAsyncLifetime
 {
-    public CreateCustomer_SuccessTests(
-        CampFitFurDogsApiFactory factory,
-        PostgresFixture fixture)
-        : base(factory, fixture)
-    {
-    }
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+    private HttpClient _client = default!;
 
     private sealed record CreateCustomerResponse(Guid CustomerId);
 
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
+    {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false); // CreateCustomer is anonymous
+
+        _api = new ApiFactory(ctx);
+
+        _client = _api.CreateClient(new ApiClientContext());
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    // ------------------------------------------------------------
+    // TEST: SUCCESSFUL CUSTOMER CREATION
+    // ------------------------------------------------------------
     [Fact]
     public async Task CreateCustomer_SuccessfullyPersistsCustomer_AndReturns201()
     {
-        var client = CreateClient();
-
-        // Arrange
         var email = $"success-{Guid.NewGuid()}@Example.COM"; // test normalization
+
         var request = new
         {
             FirstName = "Frank",
             LastName = "Hughes",
             Email = email,
-
-            // FIXED: must be a valid phone number, still tests trimming
-            Phone = " 916-555-1234 ",
-
+            Phone = " 916-555-1234 ", // tests trimming + normalization
             Password = "SuperSecure123!"
         };
 
-        // Act
-        var response = await client.PostAsJsonAsync("/api/customers", request);
+        //
+        // 1. Send request
+        //
+        var response = await _client.PostAsJsonAsync("/api/customers", request);
 
-        // Assert — HTTP
+        //
+        // 2. Assert HTTP response
+        //
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var body = await response.Content.ReadFromJsonAsync<CreateCustomerResponse>();
@@ -55,8 +79,10 @@ public class CreateCustomer_SuccessTests : ApiWithPostgresTestBase
         response.Headers.Location!.ToString()
             .Should().Be($"/api/customers/{body.CustomerId}");
 
-        // Assert — Database
-        await using var scope = Factory.Services.CreateAsyncScope();
+        //
+        // 3. Load persisted entity
+        //
+        await using var scope = _api.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var customer = await db.Set<Customer>()
@@ -64,7 +90,9 @@ public class CreateCustomer_SuccessTests : ApiWithPostgresTestBase
 
         customer.Should().NotBeNull();
 
-        // Domain-level assertions
+        //
+        // 4. Domain-level assertions
+        //
         customer!.FirstName.Value.Should().Be("Frank");
         customer.LastName.Value.Should().Be("Hughes");
 
