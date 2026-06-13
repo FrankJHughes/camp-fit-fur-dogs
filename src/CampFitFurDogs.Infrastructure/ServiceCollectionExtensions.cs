@@ -27,6 +27,8 @@ public static class ServiceCollectionExtensions
             [typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly]
         );
 
+        services.AddHttpContextAccessor();
+
         // External identity resolver
         services.AddScoped<IIdentityResolver, OidcIdentityResolver>();
 
