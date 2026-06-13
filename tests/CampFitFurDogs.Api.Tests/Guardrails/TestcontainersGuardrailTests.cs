@@ -1,24 +1,46 @@
-using CampFitFurDogs.Api.Tests.Fixtures;
 using CampFitFurDogs.Infrastructure.Data;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.PostgreSql;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-[Collection("API With Postgres")]
-public class TestcontainersGuardrailTests : ApiWithPostgresTestBase
+public class TestcontainersGuardrailTests : IAsyncLifetime
 {
-    public TestcontainersGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture) { }
+    private PostgreSqlContainer _postgres = default!;
 
+    public async Task InitializeAsync()
+    {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    private ApiFactory CreateFactory()
+    {
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false);
+
+        return new ApiFactory(ctx);
+    }
+
+    // ------------------------------------------------------------
+    // GUARDRAIL — Testcontainers database must be reachable
+    // ------------------------------------------------------------
     [Fact]
     public async Task Database_ShouldBeReachable()
     {
-        using var scope = Factory.Server.Services
-            .GetRequiredService<IServiceScopeFactory>()
-            .CreateScope();
+        var factory = CreateFactory();
+
+        using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var canConnect = await db.Database.CanConnectAsync();

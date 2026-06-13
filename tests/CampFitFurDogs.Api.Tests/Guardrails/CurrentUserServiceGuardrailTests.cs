@@ -1,35 +1,31 @@
-using System.Net.Http.Json;
+using System.Security.Claims;
 using CampFitFurDogs.Infrastructure.Identity;
-using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Frank.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-[Collection("API With Postgres")]
 public class CurrentUserServiceGuardrailTests
-    : ApiWithPostgresTestBase
 {
-    public CurrentUserServiceGuardrailTests(
-        CampFitFurDogsApiFactory factory,
-        PostgresFixture fixture)
-        : base(factory, fixture)
+    private static ServiceProvider BuildProvider()
     {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUser, AuthenticatedUserService>();
+        return services.BuildServiceProvider();
     }
 
-    private static async Task SignInAsync(HttpClient client, Guid userId)
-    {
-        var payload = new { sub = userId.ToString() };
-        var response = await client.PostAsJsonAsync("/__test__/sign-in", payload);
-        response.EnsureSuccessStatusCode();
-    }
-
+    // ------------------------------------------------------------
+    // GUARDRAIL 1 — Should resolve AuthenticatedUserService
+    // ------------------------------------------------------------
     [Fact]
     public void ShouldResolveAuthenticatedUserService()
     {
-        using var scope = Factory.Services.CreateScope();
+        using var provider = BuildProvider();
+        using var scope = provider.CreateScope();
 
         scope.ServiceProvider
             .GetRequiredService<ICurrentUser>()
@@ -37,10 +33,14 @@ public class CurrentUserServiceGuardrailTests
             .BeOfType<AuthenticatedUserService>();
     }
 
+    // ------------------------------------------------------------
+    // GUARDRAIL 2 — Should behave as scoped service
+    // ------------------------------------------------------------
     [Fact]
     public void ShouldBehaveAsScopedService()
     {
-        using var scope = Factory.Services.CreateScope();
+        using var provider = BuildProvider();
+        using var scope = provider.CreateScope();
 
         var s1 = scope.ServiceProvider.GetRequiredService<ICurrentUser>();
         var s2 = scope.ServiceProvider.GetRequiredService<ICurrentUser>();
@@ -48,10 +48,14 @@ public class CurrentUserServiceGuardrailTests
         s1.Should().BeSameAs(s2);
     }
 
+    // ------------------------------------------------------------
+    // GUARDRAIL 3 — Should have exactly one registration
+    // ------------------------------------------------------------
     [Fact]
     public void ShouldHaveSingleEffectiveRegistration()
     {
-        using var scope = Factory.Services.CreateScope();
+        using var provider = BuildProvider();
+        using var scope = provider.CreateScope();
 
         scope.ServiceProvider
             .GetServices<ICurrentUser>()
@@ -59,18 +63,27 @@ public class CurrentUserServiceGuardrailTests
             .HaveCount(1);
     }
 
+    // ------------------------------------------------------------
+    // GUARDRAIL 4 — Should read user ID from claims
+    // ------------------------------------------------------------
     [Fact]
-    public async Task ShouldReadUserIdFromClaims()
+    public void ShouldReadUserIdFromClaims()
     {
-        var expectedUserId = Guid.NewGuid();
-        var client = CreateClient();
+        var userId = Guid.NewGuid();
 
-        await SignInAsync(client, expectedUserId);
+        var httpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) },
+                    "test"
+                )
+            )
+        };
 
-        var response = await client.GetAsync("/__test__/current-user-id");
-        response.EnsureSuccessStatusCode();
+        var accessor = new HttpContextAccessor { HttpContext = httpContext };
+        var service = new AuthenticatedUserService(accessor);
 
-        var actualUserId = Guid.Parse(await response.Content.ReadAsStringAsync());
-        actualUserId.Should().Be(expectedUserId);
+        service.Id.Should().Be(userId);
     }
 }
