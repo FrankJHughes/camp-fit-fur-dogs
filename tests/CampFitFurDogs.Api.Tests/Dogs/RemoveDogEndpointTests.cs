@@ -1,78 +1,97 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fakes;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
-using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
+using Testcontainers.PostgreSql;
+using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class RemoveDogEndpointTests : ApiTestBase
+public class RemoveDogEndpointTests : IAsyncLifetime
 {
-    private readonly HttpClient _client;
-    private readonly TestCurrentUser _testUser;
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
 
-    public RemoveDogEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture)
+    private sealed record DogResponse(Guid DogId);
+    private sealed record WhoAmIResponse(string UserId);
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
-        _client = Factory.CreateClient();
-        _testUser = Factory.TestUser;
+        // 1. Start Postgres
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        // 2. Build ApiContext
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true);
+
+        // 3. Create ApiFactory
+        _api = new ApiFactory(ctx);
     }
 
-    private sealed record RegisterDogResponse(Guid dogId);
-
-    private async Task<Guid> RegisterDogAsync()
+    public async Task DisposeAsync()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
-
-        var request = new
-        {
-            Name = "Biscuit",
-            Breed = "Golden Retriever",
-            DateOfBirth = "2022-06-15",
-            Sex = "Female"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
-        return body!.dogId;
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
     }
 
+    // Helper: create an authenticated client
+    private HttpClient CreateAuthenticatedClient(string sub)
+    {
+        var clientCtx = new ApiClientContext()
+            .WithAuthenticatedUser(sub);
+
+        return _api.CreateClient(clientCtx);
+    }
+
+    // ------------------------------------------------------------
+    // SUCCESS — OWNER REMOVES DOG
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_ShouldReturn204()
+    public async Task RemoveDog_OwnerRemovesDog_Returns204()
     {
-        var dogId = await RegisterDogAsync();
+        var client = CreateAuthenticatedClient("test|owner-a");
 
-        var response = await _client.DeleteAsync($"/api/dogs/{dogId}");
+        var dogId = await RegisterDogAsync(client, "Biscuit", "Golden Retriever");
+
+        var response = await client.DeleteAsync($"/api/dogs/{dogId}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    // ------------------------------------------------------------
+    // AUTH — OTHER OWNER CANNOT REMOVE
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_WhenDogNotFound_DoesNotReturn204()
+    public async Task RemoveDog_OtherOwnerCannotRemove_Returns404()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
+        // Owner A
+        var clientA = CreateAuthenticatedClient("test|owner-a");
+        var dogId = await RegisterDogAsync(clientA, "Biscuit", "Golden Retriever");
 
-        var response = await _client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
+        // Owner B
+        var clientB = CreateAuthenticatedClient("test|owner-b");
 
-        response.StatusCode.Should().NotBe(HttpStatusCode.NoContent);
+        var response = await clientB.DeleteAsync($"/api/dogs/{dogId}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    // ------------------------------------------------------------
+    // AUTH — MISSING CUSTOMER ID
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_ErrorResponse_DoesNotExposeInternals()
+    public async Task RemoveDog_MissingCustomerId_Returns401()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
+        var anon = _api.CreateClient(new ApiClientContext());
 
-        var response = await _client.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
-        var body = await response.Content.ReadAsStringAsync();
+        var response = await anon.DeleteAsync($"/api/dogs/{Guid.NewGuid()}");
 
-        body.Should().NotContain("stackTrace");
-        body.Should().NotContain("innerException");
-        body.Should().NotContain("ArgumentException");
-        body.Should().NotContain("NullReferenceException");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

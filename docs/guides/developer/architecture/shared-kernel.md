@@ -1,10 +1,12 @@
-# Shared Kernel
+# Shared Kernel (Aligned With Recent Changes)
 
 This guide explains what belongs in the Shared Kernel, how it interacts with Domain and Application, and how to avoid misusing it.  
 The Shared Kernel is a critical part of maintaining clean boundaries and predictable dependencies across the system.
 
 The Shared Kernel is **not** a “common utilities” folder.  
 It is a **strategic domain + technical foundation** shared across all slices.
+
+This version is aligned with the **current DI architecture**, **Frank’s auto‑registration engine**, **StartupEngine + HostingEngine**, and **recent refactors**.
 
 ---
 
@@ -24,7 +26,7 @@ It exists to prevent duplication, enforce consistency, and provide a stable foun
 
 # 2. Typical Contents
 
-The Shared Kernel may contain both **domain primitives** and **cross‑cutting technical infrastructure**.
+The Shared Kernel contains both **domain primitives** and **cross‑cutting technical infrastructure**.
 
 ---
 
@@ -76,7 +78,7 @@ If an event is specific to a single aggregate, it belongs in that aggregate’s 
 
 ---
 
-## 2.5 Cross‑Cutting Technical Infrastructure
+# 3. Cross‑Cutting Technical Infrastructure (Aligned)
 
 The Shared Kernel also contains **technical infrastructure** that is:
 
@@ -85,11 +87,87 @@ The Shared Kernel also contains **technical infrastructure** that is:
 - Stable  
 - Safe for Domain and Application to reference  
 
-This includes the Frank infrastructure that enforces architectural guardrails.
+This includes **Frank**, which provides:
+
+- The DI auto‑registration engine  
+- The hosting engine  
+- The startup engine  
+- EF Core configuration helpers  
+- Validator scanning  
+- Hosting abstractions  
+- Environment abstractions  
+- Guardrail enforcement primitives  
+
+CampFitFurDogs **does not implement these engines** — it **uses** them.
+
+CampFitFurDogs **implements modules**, and **invokes** the engines with those modules.
 
 ---
 
-### Auto‑Registration System
+# 3.1 StartupEngine (Corrected)
+
+**Provided by Frank. Implemented in Shared Kernel.**
+
+StartupEngine is a **generic startup orchestrator** that:
+
+- Accepts a list of **startup modules** (implemented by CampFitFurDogs)  
+- Invokes each module’s `ConfigureServices` and `Configure`  
+- Ensures consistent startup ordering  
+- Ensures all modules run under the same DI + hosting context  
+- Performs startup validation  
+
+CampFitFurDogs provides modules such as:
+
+- `ApiStartupModule`  
+- `ApplicationStartupModule`  
+- `InfrastructureStartupModule`  
+
+CampFitFurDogs then **invokes** StartupEngine in `Program.cs`:
+
+```csharp
+StartupEngine.Run(builder, [
+    new ApiStartupModule(),
+    new ApplicationStartupModule(),
+    new InfrastructureStartupModule()
+]);
+```
+
+StartupEngine is **not** extended or modified by CampFitFurDogs.
+
+---
+
+# 3.2 HostingEngine (Corrected)
+
+**Provided by Frank. Implemented in Shared Kernel.**
+
+HostingEngine is responsible for:
+
+- Selecting the active hosting provider  
+- Applying hosting‑specific configuration  
+- Providing environment abstractions  
+- Ensuring consistent hosting behavior across environments  
+
+CampFitFurDogs provides hosting modules such as:
+
+- `DevelopmentHostingModule`  
+- `RenderHostingModule`  
+- `TestHostingModule`  
+
+CampFitFurDogs then **invokes** HostingEngine:
+
+```csharp
+var hosting = HostingEngine.Select([
+    new DevelopmentHostingModule(),
+    new RenderHostingModule(),
+    new TestHostingModule()
+]);
+```
+
+HostingEngine is **not** extended or modified by CampFitFurDogs.
+
+---
+
+# 3.3 Auto‑Registration System
 
 Frank provides the DI architecture used across the entire application:
 
@@ -109,7 +187,7 @@ This system ensures:
 
 ---
 
-### FluentValidation Integration
+# 3.4 FluentValidation Integration
 
 Frank registers validators from all participating assemblies:
 
@@ -121,7 +199,7 @@ Validators remain in Application, but the integration lives in Shared Kernel.
 
 ---
 
-### EF Core Configuration Auto‑Discovery
+# 3.5 EF Core Configuration Auto‑Discovery
 
 Frank provides helpers for:
 
@@ -132,7 +210,7 @@ Frank provides helpers for:
 
 ---
 
-### Hosting Abstractions
+# 3.6 Hosting Abstractions
 
 Frank includes:
 
@@ -150,13 +228,13 @@ These abstractions:
 
 ---
 
-# 3. What Does NOT Belong in Shared Kernel
+# 4. What Does NOT Belong in Shared Kernel
 
 The Shared Kernel must **never** contain anything that introduces upward or lateral dependencies.
 
 ---
 
-## 3.1 Application Concerns
+## 4.1 Application Concerns
 
 - Handlers  
 - Validators  
@@ -168,10 +246,11 @@ The Shared Kernel must **never** contain anything that introduces upward or late
 
 ---
 
-## 3.2 Infrastructure Concerns
+## 4.2 Infrastructure Concerns
 
 - EF Core DbContexts  
 - Repositories  
+- Readers  
 - Migrations  
 - HTTP clients  
 - Logging  
@@ -181,7 +260,7 @@ The Shared Kernel must **never** contain anything that introduces upward or late
 
 ---
 
-## 3.3 API Concerns
+## 4.3 API Concerns
 
 - Endpoints  
 - Request/response DTOs  
@@ -191,7 +270,7 @@ The Shared Kernel must **never** contain anything that introduces upward or late
 
 ---
 
-## 3.4 “Common” Utilities
+## 4.4 “Common” Utilities
 
 Avoid dumping:
 
@@ -211,11 +290,11 @@ The Shared Kernel is **not** a junk drawer.
 
 ---
 
-# 4. Dependency Rules
+# 5. Dependency Rules (Aligned)
 
 ---
 
-## 4.1 Allowed Dependencies
+## 5.1 Allowed Dependencies
 
 | Layer | May depend on Shared Kernel? |
 |-------|------------------------------|
@@ -227,7 +306,7 @@ The Shared Kernel is **not** a junk drawer.
 
 ---
 
-## 4.2 Forbidden Dependencies
+## 5.2 Forbidden Dependencies
 
 Shared Kernel must **never** depend on:
 
@@ -236,11 +315,11 @@ Shared Kernel must **never** depend on:
 - Infrastructure  
 - API  
 
-This keeps the dependency graph **acyclic** and enforces **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
+This keeps the dependency graph **acyclic** and enforces **Architecture Governance**.
 
 ---
 
-# 5. Relationship to Domain
+# 6. Relationship to Domain
 
 The Shared Kernel is a **peer** to Domain, not a parent or child.
 
@@ -262,7 +341,7 @@ Domain types may evolve rapidly.
 
 ---
 
-# 6. Relationship to Application
+# 7. Relationship to Application
 
 Application may reference Shared Kernel types:
 
@@ -284,7 +363,7 @@ Shared Kernel is **referenced by Application**, not extended by it.
 
 ---
 
-# 7. Contributor Guidelines
+# 8. Contributor Guidelines
 
 When adding a new type:
 
@@ -323,10 +402,10 @@ If you’re unsure, default to **Domain**, not Shared Kernel.
 
 # Related Documents
 
-- **[Dependency Injection Architecture](ca://s?q=Open_dependency_injection_architecture)**  
-- **[Domain Events Architecture](ca://s?q=Open_domain_events_guide)**  
-- **[Dispatcher Pipeline](ca://s?q=Open_dispatcher_pipeline_guide)**  
-- **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**  
-- **[Architecture Governance](ca://s?q=Open_architecture_governance)**  
-- **[Security Governance](ca://s?q=Open_security_governance)**  
-- **[Operations Governance](ca://s?q=Open_operations_governance)**  
+- **Dependency Injection Architecture**  
+- **Domain Events Architecture**  
+- **Dispatcher Pipeline Guide**  
+- **API Endpoint Purity Guide**  
+- **Architecture Governance**  
+- **Security Governance**  
+- **Operations Governance**

@@ -12,18 +12,19 @@ public class AutoRegister_AttributeUsageTests
 
     private static readonly Type[] Known =
     [
-        typeof(Frank.IRepository<>),
-        typeof(Frank.Events.IDomainEventDispatcher),
-        typeof(Frank.Events.IDomainEventHandler<>),
         typeof(Frank.Abstractions.ICommandDispatcher),
         typeof(Frank.Abstractions.ICommandHandler<>),
         typeof(Frank.Abstractions.ICommandHandler<,>),
-        typeof(Frank.Abstractions.ICurrentUserService),
+        typeof(Frank.Abstractions.ICurrentUser),
         typeof(Frank.Abstractions.IQueryDispatcher),
         typeof(Frank.Abstractions.IQueryHandler<,>),
         typeof(Frank.Abstractions.IUnitOfWork),
+        typeof(Frank.Abstractions.Environment.IEnvironment),
+        typeof(Frank.Abstractions.Events.IDomainEventDispatcher),
+        typeof(Frank.Abstractions.Events.IDomainEventHandler<>),
+        typeof(Frank.Abstractions.ExceptionHandling.IExceptionHandler),
         typeof(Frank.Abstractions.Time.IClock),
-        typeof(Frank.Abstractions.Environment.IEnvironment)
+        typeof(Frank.IRepository<>)
     ];
 
     [Fact]

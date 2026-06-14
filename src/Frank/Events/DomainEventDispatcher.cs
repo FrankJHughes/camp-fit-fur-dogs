@@ -1,3 +1,4 @@
+using Frank.Abstractions.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Events;

@@ -35,9 +35,9 @@ Governance lives in:
 
 The repository uses four canonical convention documents. These are the single source of truth for repository rules and must remain synchronized:
 
-- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, cross‑cutting primitives, Configurator Engine lifecycle  
+- **Architecture** — layering, boundaries, hosting model, PR Preview architecture, cross‑cutting primitives, StartupModule Engine lifecycle  
 - **Workflow** — CI/CD structure, composite actions, PR Preview lifecycle, script‑first rules  
-- **Code** — backend, frontend, CQRS, endpoints, EF Core, Frank usage, DI usage, Configurator patterns  
+- **Code** — backend, frontend, CQRS, endpoints, EF Core, Frank usage, DI usage, StartupModule patterns  
 - **Docs** — documentation rules, patching rules, fencing rules, ownership  
 
 Other documents (ADRs, guides, READMEs) may reference these conventions but must not redefine them.
@@ -96,7 +96,7 @@ Conventions define:
 - Test seams  
 - Folder structure  
 - Dependency injection usage (Frank auto‑registration)  
-- Configurator Engine usage and ordering  
+- StartupModule Engine usage and ordering  
 - Hosting provider integration rules  
 - Middleware ordering rules  
 
@@ -288,7 +288,7 @@ Documentation must:
   - **GitHub artifact client abstraction**  
   - **PR parser abstraction**  
   - **Configuration writer abstraction**  
-  - **Configurator Engine primitives**  
+  - **StartupModule Engine primitives**  
   - Guardrail enforcement  
   - Test seams  
 
@@ -343,7 +343,7 @@ Documentation must include:
 
 # 16. Enforcement and Tests
 
-- Guardrail tests validate layering, dependency rules, hosting provider behavior, Configurator Engine ordering, and security headers  
+- Guardrail tests validate layering, dependency rules, hosting provider behavior, StartupModule Engine ordering, and security headers  
 - Documentation must describe which guardrail tests exist and where they run  
 - When a convention is enforced by tests, document the test name and location  
 

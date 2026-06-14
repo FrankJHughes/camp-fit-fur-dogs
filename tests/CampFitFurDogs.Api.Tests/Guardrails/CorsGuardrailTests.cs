@@ -11,16 +11,16 @@ public class CorsGuardrailTests
     private const string CanonicalConfigKey = "Frontend__BaseUrl";
 
     // ---------------------------------------------------------------------
-    // 1. ONLY CorsConfigurator may configure CORS
+    // 1. ONLY CorsStartupModule may configure CORS
     // ---------------------------------------------------------------------
 
     [Fact]
-    public void Api_should_only_configure_cors_in_CorsConfigurator()
+    public void Api_should_only_configure_cors_in_CorsStartupModule()
     {
         var offenders = ApiAssembly
             .GetTypes()
             .Where(t =>
-                t.FullName != "CampFitFurDogs.Api.Configuration.CorsConfigurator" &&
+                t.FullName != "CampFitFurDogs.Api.Horizontals.Startup.CorsStartupModule" &&
                 t.FullName != "Program")
             .SelectMany(t => t.GetMethods(
                 BindingFlags.Public |
@@ -35,7 +35,7 @@ public class CorsGuardrailTests
             .ToList();
 
         offenders.Should().BeEmpty(
-            "All CORS configuration must be centralized in CorsConfigurator to prevent drift.");
+            "All CORS configuration must be centralized in CorsStartupModule to prevent drift.");
     }
 
     // ---------------------------------------------------------------------

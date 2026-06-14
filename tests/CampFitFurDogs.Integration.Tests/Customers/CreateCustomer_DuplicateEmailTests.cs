@@ -1,25 +1,47 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
+using CampFitFurDogs.TestUtilities;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
+using FluentAssertions;
+using Frank.Abstractions.ExceptionHandling;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_DuplicateEmailTests
+public class CreateCustomer_DuplicateEmailTests : IAsyncLifetime
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+    private HttpClient _client = default!;
 
-    public CreateCustomer_DuplicateEmailTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
-        _client = _factory.CreateClient();
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false); // This endpoint is anonymous
+
+        _api = new ApiFactory(ctx);
+
+        _client = _api.CreateClient(new ApiClientContext());
     }
 
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    // ------------------------------------------------------------
+    // TEST: DUPLICATE EMAIL RETURNS 409 + PROBLEM DETAILS
+    // ------------------------------------------------------------
     [Fact]
     public async Task CreateCustomer_Fails_WhenEmailAlreadyExists()
     {
@@ -34,15 +56,11 @@ public class CreateCustomer_DuplicateEmailTests
             Password = "SuperSecure123!"
         };
 
-        //
-        // 1. First request succeeds
-        //
+        // First request succeeds
         var first = await _client.PostAsJsonAsync("/api/customers", request);
         first.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        //
-        // 2. Second request fails with 409 + ProblemDetails
-        //
+        // Second request fails with 409
         var second = await _client.PostAsJsonAsync("/api/customers", request);
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
 

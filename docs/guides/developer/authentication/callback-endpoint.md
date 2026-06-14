@@ -8,7 +8,7 @@ It simply orchestrates the dispatcher pipeline.
 
 All authentication behavior is implemented inside the pipeline steps and governed by:
 
-- Architecture Governance  
+- [Architecture Governance](ca://s?q=Open_architecture_governance)  
 - Security Governance  
 - Session Management Governance  
 - Identity Mapping Governance  
@@ -37,13 +37,15 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
 - Ensures all required OIDC settings are present  
 - Missing values → **500 Internal Server Error**  
 - Enforces Security + Operations Governance  
-- No environment access inside steps (uses abstractions only)
+- Uses only Frank’s configuration binding + environment seams  
+- No direct environment access inside steps  
 
 ---
 
 ### 2. Validate that `code` is present  
 - Missing or empty → **400 Bad Request**  
-- Shape validation only (no business logic)
+- Shape validation only (no business logic)  
+- No identity or Infrastructure access  
 
 ---
 
@@ -51,7 +53,8 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
 - Calls Auth0 `/oauth/token` via Infrastructure abstraction  
 - Retrieves an access token  
 - No tokens are persisted  
-- No Infrastructure types leak into Application
+- No Infrastructure types leak into Application  
+- No direct HTTP calls (uses named HttpClient via abstraction)  
 
 ---
 
@@ -63,7 +66,8 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
   - `given_name`  
   - `family_name`  
 - Uses Infrastructure only through abstractions  
-- No identity logic here
+- No identity logic here  
+- No domain logic  
 
 ---
 
@@ -71,7 +75,8 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
 - Ensures `sub` is present  
 - Missing `sub` → **502 Bad Gateway**  
 - Enforces Identity Mapping Governance  
-- Email is never used for identity
+- Email is never used for identity  
+- No persistence  
 
 ---
 
@@ -81,7 +86,8 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
 - Uses `IIdentityResolver` (Application abstraction)  
 - Never exposes internal IDs to Auth0  
 - Never uses email for identity  
-- Pure, deterministic, invariant‑checked
+- Pure, deterministic, invariant‑checked  
+- No Infrastructure leakage into Domain  
 
 ---
 
@@ -89,7 +95,8 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
 - Logs successful login with `CustomerId` + external ID  
 - Runs **before** session creation  
 - Uses Infrastructure via abstractions  
-- Does not mutate context
+- Does not mutate context  
+- No domain logic  
 
 ---
 
@@ -99,7 +106,8 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
 - Creates a `SessionCookie` value object  
 - Does **not** persist anything  
 - Cookie issuance happens in the API layer  
-- Enforces Session Token Governance
+- Enforces Session Token Governance  
+- Uses Frank’s cookie helpers + security headers  
 
 ---
 
@@ -108,14 +116,17 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
 - Associates it with the Owner  
 - Uses `IUnitOfWork`  
 - Enforces Session Management Governance  
-- No Infrastructure leakage into Domain
+- No Infrastructure leakage into Domain  
+- No direct EF Core access  
 
 ---
 
 ### 10. Build redirect  
 - Produces the final redirect URL for the frontend  
 - Uses configured `PostLoginRedirectUrl`  
-- Pure string construction (no environment access)
+- Pure string construction  
+- No environment access  
+- No Infrastructure access  
 
 ---
 
@@ -126,7 +137,8 @@ The callback endpoint executes a strict, ordered **authentication pipeline**:
   - Frank security headers  
   - Frank CORS  
   - Frank error boundary  
-- No business logic in the endpoint
+- No business logic in the endpoint  
+- No domain logic  
 
 ---
 
@@ -174,6 +186,7 @@ Additional guarantees:
 - All failures are logged  
 - All responses are shaped by Frank’s error boundary  
 - No Infrastructure types leak into API or Application  
+- No domain logic runs on failure paths  
 
 ---
 

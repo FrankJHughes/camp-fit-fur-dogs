@@ -2,52 +2,73 @@ using System.Net;
 using System.Net.Http.Json;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Infrastructure.Data;
+using CampFitFurDogs.TestUtilities;
+using CampFitFurDogs.TestUtilities.Contexts;
+using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_SuccessTests
+public class CreateCustomer_SuccessTests : IAsyncLifetime
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
-    private readonly PostgresFixture _db;
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+    private HttpClient _client = default!;
 
-    public CreateCustomer_SuccessTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    private sealed record CreateCustomerResponse(Guid CustomerId);
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
-        _db = postgresFixture;
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
 
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false); // CreateCustomer is anonymous
 
-        _client = _factory.CreateClient();
+        _api = new ApiFactory(ctx);
+
+        _client = _api.CreateClient(new ApiClientContext());
     }
 
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    // ------------------------------------------------------------
+    // TEST: SUCCESSFUL CUSTOMER CREATION
+    // ------------------------------------------------------------
     [Fact]
     public async Task CreateCustomer_SuccessfullyPersistsCustomer_AndReturns201()
     {
-        // Arrange
         var email = $"success-{Guid.NewGuid()}@Example.COM"; // test normalization
+
         var request = new
         {
             FirstName = "Frank",
             LastName = "Hughes",
             Email = email,
-
-            // FIXED: must be a valid phone number, still tests trimming
-            Phone = " 916-555-1234 ",
-
+            Phone = " 916-555-1234 ", // tests trimming + normalization
             Password = "SuperSecure123!"
         };
 
-        // Act
+        //
+        // 1. Send request
+        //
         var response = await _client.PostAsJsonAsync("/api/customers", request);
 
-        // Assert — HTTP
+        //
+        // 2. Assert HTTP response
+        //
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var body = await response.Content.ReadFromJsonAsync<CreateCustomerResponse>();
@@ -58,8 +79,10 @@ public class CreateCustomer_SuccessTests
         response.Headers.Location!.ToString()
             .Should().Be($"/api/customers/{body.CustomerId}");
 
-        // Assert — Database
-        await using var scope = _factory.Services.CreateAsyncScope();
+        //
+        // 3. Load persisted entity
+        //
+        await using var scope = _api.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var customer = await db.Set<Customer>()
@@ -67,7 +90,9 @@ public class CreateCustomer_SuccessTests
 
         customer.Should().NotBeNull();
 
-        // Domain-level assertions
+        //
+        // 4. Domain-level assertions
+        //
         customer!.FirstName.Value.Should().Be("Frank");
         customer.LastName.Value.Should().Be("Hughes");
 
@@ -81,6 +106,4 @@ public class CreateCustomer_SuccessTests
         customer.PasswordHash!.Value.Should().NotBe(request.Password);
         customer.PasswordHash.Verify(request.Password).Should().BeTrue();
     }
-
-    private sealed record CreateCustomerResponse(Guid CustomerId);
 }

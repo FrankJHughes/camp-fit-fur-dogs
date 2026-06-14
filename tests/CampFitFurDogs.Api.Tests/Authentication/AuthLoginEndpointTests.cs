@@ -1,162 +1,163 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
+using CampFitFurDogs.TestUtilities.Contexts;
+using CampFitFurDogs.TestUtilities.Factories;
+using FluentAssertions;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
-public class AuthLoginEndpointTests
-    : IClassFixture<WebApplicationFactory<Program>>
+public class AuthLoginEndpointTests : IAsyncLifetime
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private ApiFactory _api = default!;
 
-    public AuthLoginEndpointTests(WebApplicationFactory<Program> factory)
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public Task InitializeAsync()
     {
-        _factory = factory;
+        var ctx = new ApiContext()
+            .WithDatabase(false) // Login endpoint does not use DB
+            .WithCookieAuthOnly(false);
+
+        _api = new ApiFactory(ctx);
+
+        return Task.CompletedTask;
     }
 
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    // Helper: create client with config overrides
+    private HttpClient CreateClientWithOverrides(Action<IConfigurationBuilder> apply)
+    {
+        var ctx = new ApiContext()
+            .WithDatabase(false)
+            .WithCookieAuthOnly(false)
+            .WithConfigOverride(apply);
+
+        var api = new ApiFactory(ctx);
+        return api.CreateClient(new ApiClientContext());
+    }
+
+    // ------------------------------------------------------------
+    // SUCCESS PATH
+    // ------------------------------------------------------------
     [Fact]
     public async Task Login_redirects_to_auth0_authorize_url()
     {
-        // Arrange
-        var client = _factory.WithWebHostBuilder(builder =>
+        var client = CreateClientWithOverrides(cfg =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
-                    ["Authentication:Oidc:ClientId"] = "client123",
-                    ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
-                });
+                ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
+                ["Authentication:Oidc:ClientId"] = "client123",
+                ["Authentication:Oidc:ClientSecret"] = "secret123",
+                ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
+                ["Authentication:Oidc:PostLoginRedirectUrl"] = "http://localhost:5173/",
+                ["Authentication:Oidc:Disabled"] = "false"
             });
-        })
-        .CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
         });
 
-        // Act
         var response = await client.GetAsync("/api/auth/login");
 
-        // Assert
-        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
         var location = response.Headers.Location!.ToString();
-        Assert.StartsWith("https://dev-fake.auth0.com/authorize?", location);
+        location.Should().StartWith("https://dev-fake.auth0.com/authorize?");
 
         var uri = new Uri(location);
-        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        var query = QueryHelpers.ParseQuery(uri.Query);
 
-        Assert.Equal("openid profile email", query["scope"]);
-        Assert.Equal("code", query["response_type"]);
-        Assert.Equal("client123", query["client_id"]);
-        Assert.Equal("http://localhost/api/auth/callback", query["redirect_uri"]);
+        query["scope"].ToString().Should().Be("openid profile email");
+        query["response_type"].ToString().Should().Be("code");
+        query["client_id"].ToString().Should().Be("client123");
+        query["redirect_uri"].ToString().Should().Be("http://localhost/api/auth/callback");
     }
 
+    // ------------------------------------------------------------
+    // ERROR PATHS
+    // ------------------------------------------------------------
     [Fact]
     public async Task Missing_configuration_returns_internal_server_error()
     {
-        // Arrange: no Auth0 config provided
-        var client = _factory.WithWebHostBuilder(builder =>
+        var client = CreateClientWithOverrides(cfg =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Authentication:Oidc:Authority"] = "",
-                    ["Authentication:Oidc:ClientId"] = "",
-                    ["Authentication:Oidc:CallbackUrl"] = ""
-                });
+                ["Authentication:Oidc:Authority"] = "",
+                ["Authentication:Oidc:ClientId"] = "",
+                ["Authentication:Oidc:CallbackUrl"] = ""
             });
-        })
-        .CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
         });
 
-        // Act
         var response = await client.GetAsync("/api/auth/login");
 
-        // Assert
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
 
     [Fact]
     public async Task Missing_domain_returns_internal_server_error()
     {
-        var client = _factory.WithWebHostBuilder(builder =>
+        var client = CreateClientWithOverrides(cfg =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Authentication:Oidc:Authority"] = "",
-                    ["Authentication:Oidc:ClientId"] = "client123",
-                    ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
-                });
+                ["Authentication:Oidc:Authority"] = "",
+                ["Authentication:Oidc:ClientId"] = "client123",
+                ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
             });
-        })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        });
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
 
     [Fact]
     public async Task Missing_client_id_returns_internal_server_error()
     {
-        var client = _factory.WithWebHostBuilder(builder =>
+        var client = CreateClientWithOverrides(cfg =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
-                    ["Authentication:Oidc:ClientId"] = "",
-                    ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
-                });
+                ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
+                ["Authentication:Oidc:ClientId"] = "",
+                ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
             });
-        })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        });
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
 
     [Fact]
     public async Task Missing_callback_url_returns_internal_server_error()
     {
-        var client = _factory.WithWebHostBuilder(builder =>
+        var client = CreateClientWithOverrides(cfg =>
         {
-            builder.ConfigureAppConfiguration((context, cfg) =>
+            cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                cfg.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
-                    ["Authentication:Oidc:ClientId"] = "client123",
-                    ["Authentication:Oidc:CallbackUrl"] = ""
-                });
+                ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
+                ["Authentication:Oidc:ClientId"] = "client123",
+                ["Authentication:Oidc:CallbackUrl"] = ""
             });
-        })
-        .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        });
 
         var response = await client.GetAsync("/api/auth/login");
 
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Auth0 configuration is missing or incomplete", json);
+        json.Should().Contain("Auth0 configuration is missing or incomplete");
     }
-
 }

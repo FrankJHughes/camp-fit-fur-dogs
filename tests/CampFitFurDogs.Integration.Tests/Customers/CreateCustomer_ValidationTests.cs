@@ -2,23 +2,41 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using CampFitFurDogs.TestUtilities;
+using Testcontainers.PostgreSql;
+using Xunit;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
+using CampFitFurDogs.TestUtilities.Contexts;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_ValidationTests
+public class CreateCustomer_ValidationTests : IAsyncLifetime
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+    private HttpClient _client = default!;
 
-    public CreateCustomer_ValidationTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
 
-        _client = _factory.CreateClient();
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false); // CreateCustomer is anonymous
+
+        _api = new ApiFactory(ctx);
+
+        _client = _api.CreateClient(new ApiClientContext());
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
     }
 
     // ------------------------------------------------------------
@@ -87,7 +105,7 @@ public class CreateCustomer_ValidationTests
             LastName = "",
             Email = "",
             Phone = "",
-            Password = "" // optional, so no error expected
+            Password = "" // optional → should NOT trigger validation error
         };
 
         var response = await _client.PostAsJsonAsync("/api/customers", request);

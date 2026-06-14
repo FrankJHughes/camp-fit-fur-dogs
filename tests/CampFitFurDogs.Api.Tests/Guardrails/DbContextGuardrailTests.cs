@@ -1,37 +1,63 @@
-using CampFitFurDogs.Api.Tests.Fixtures;
-using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using CampFitFurDogs.Infrastructure.Data;
+using CampFitFurDogs.TestUtilities;
+using CampFitFurDogs.TestUtilities.Contexts;
+using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-public class DbContextGuardrailTests
-    : ApiTestBase
+public class DbContextGuardrailTests : IAsyncLifetime
 {
-    public DbContextGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture) { }
+    private PostgreSqlContainer _postgres = default!;
 
+    public async Task InitializeAsync()
+    {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    private ApiFactory CreateFactory()
+    {
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false);
+
+        return new ApiFactory(ctx);
+    }
+
+    // ------------------------------------------------------------
+    // GUARDRAIL 1 — Should use Npgsql provider
+    // ------------------------------------------------------------
     [Fact]
     public void ShouldUseNpgsqlProvider()
     {
-        using var scope = Factory.Services
-            .GetRequiredService<IServiceScopeFactory>()
-            .CreateScope();
+        var factory = CreateFactory();
 
+        using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         db.Database.ProviderName.Should().Contain("Npgsql");
     }
 
+    // ------------------------------------------------------------
+    // GUARDRAIL 2 — Should have exactly one DbContextOptions registration
+    // ------------------------------------------------------------
     [Fact]
     public void ShouldHaveSingleEffectiveRegistration()
     {
-        using var scope = Factory.Services
-            .GetRequiredService<IServiceScopeFactory>()
-            .CreateScope();
+        var factory = CreateFactory();
+
+        using var scope = factory.Services.CreateScope();
 
         var all = scope.ServiceProvider
             .GetServices<DbContextOptions<AppDbContext>>()

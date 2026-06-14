@@ -79,7 +79,7 @@ Deployments must:
 - Validate hosting provider configuration before application startup  
 - Validate DI auto‑registration and EF Core configuration scanning at startup  
 - Validate security headers middleware is active  
-- Validate Configurator Engine ordering and startup behavior  
+- Validate StartupModule Engine ordering and startup behavior  
 
 Pull requests must generate preview deployments when supported by the platform.
 
@@ -160,7 +160,7 @@ Operational logs must include:
 - DI auto‑registration validation failures  
 - EF Core configuration scanning failures  
 - Security header validation failures  
-- Configurator Engine ordering and execution logs  
+- StartupModule Engine ordering and execution logs  
 
 ---
 
@@ -231,7 +231,7 @@ PR preview environments must:
 - Publish deterministic artifacts (`db-conn.txt`, `frontend-url.txt`)  
 - Use Frank hosting provider abstractions for configuration  
 - Use Frank security headers and error boundary middleware  
-- Use Configurator Engine for startup ordering and validation  
+- Use StartupModule Engine for startup ordering and validation  
 
 Preview environments must be fully reproducible.
 

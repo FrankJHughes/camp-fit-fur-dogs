@@ -1,24 +1,17 @@
-using CampFitFurDogs.Api.Configuration;
+using CampFitFurDogs.Api.Horizontals.Hosting;
+using CampFitFurDogs.Api.Horizontals.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ────────────────────────────────────────────────────────────────
-// Configurator Engine — Phase 1 (ConfigureServices)
-// ────────────────────────────────────────────────────────────────
+await Hosting.AdaptToHostingEnvironment(builder);
 
-var configurators = ConfiguratorEngine.Discover(builder.Configuration);
-ConfiguratorEngine.Validate(configurators);
-ConfiguratorEngine.RunConfigureServices(builder, configurators);
+Startup.AddAllServices(builder);
 
-// Build the app AFTER hosting providers + configurators have run
 var app = builder.Build();
 
-// ────────────────────────────────────────────────────────────────
-// Configurator Engine — Phase 2 (Configure)
-// ────────────────────────────────────────────────────────────────
-
-ConfiguratorEngine.RunConfigure(app, configurators);
+Startup.UseAllServices(app);
 
 app.Run();
 
-public partial class Program { }
+
+

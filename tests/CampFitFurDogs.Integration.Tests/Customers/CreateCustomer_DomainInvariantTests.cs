@@ -1,30 +1,44 @@
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
+using FluentAssertions;
+using Testcontainers.PostgreSql;
 
 namespace CampFitFurDogs.Integration.Tests.Customers;
 
-[Collection("API Collection")]
-public class CreateCustomer_DomainInvariantTests : IDisposable
+public class CreateCustomer_DomainInvariantTests : IAsyncLifetime
 {
-    private readonly CampFitFurDogsApiFactory _factory;
-    private readonly HttpClient _client;
-    private readonly PostgresFixture _db;
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
 
-    public CreateCustomer_DomainInvariantTests(ApiFactoryFixture factoryFixture, PostgresFixture postgresFixture)
+    public async Task InitializeAsync()
     {
-        _db = postgresFixture;
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
 
-        _factory = factoryFixture.Factory;
-        _factory.UseContainer(postgresFixture.Container);
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false);
 
-        _client = _factory.CreateClient();
+        _api = new ApiFactory(ctx);
     }
 
-    public void Dispose()
+    public async Task DisposeAsync()
     {
-        _factory.Dispose();
-        _client.Dispose();
-        GC.SuppressFinalize(this);
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
     }
 
+    private HttpClient CreateClient()
+        => _api.CreateClient(new ApiClientContext());
+
+    // ------------------------------------------------------------
+    // Add domain invariant tests here...
+    // ------------------------------------------------------------
+
+    // Example placeholder (remove when adding real tests)
+    [Fact(Skip = "Add real domain invariant tests for CreateCustomer")]
+    public void Placeholder()
+    {
+        true.Should().BeTrue();
+    }
 }

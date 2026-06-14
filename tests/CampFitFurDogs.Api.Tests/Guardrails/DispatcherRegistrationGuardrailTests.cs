@@ -1,31 +1,82 @@
-using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Frank.Abstractions;
-using Frank.Events;
+using Frank.Abstractions.Events;
+using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.PostgreSql;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-public class DispatcherRegistrationGuardrailTests
-    : ApiTestBase
+public class DispatcherRegistrationGuardrailTests : IAsyncLifetime
 {
-    public DispatcherRegistrationGuardrailTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture) { }
+    private PostgreSqlContainer _postgres = default!;
+
+    public async Task InitializeAsync()
+    {
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    private ApiFactory CreateFactory()
+    {
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false);
+
+        return new ApiFactory(ctx);
+    }
+
+    private T Get<T>(ApiFactory factory)
+        where T : notnull
+    {
+        using var scope = factory.Services.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<T>();
+    }
+
+    private IEnumerable<T> GetAll<T>(ApiFactory factory)
+    {
+        using var scope = factory.Services.CreateScope();
+        return scope.ServiceProvider.GetServices<T>();
+    }
+
+    // ------------------------------------------------------------
+    // COMMAND DISPATCHER
+    // ------------------------------------------------------------
+    [Fact]
+    public void CommandDispatcher_ShouldBeRegistered()
+    {
+        var factory = CreateFactory();
+        Get<ICommandDispatcher>(factory).Should().NotBeNull();
+    }
 
     [Fact]
-    public void CommandDispatcher_ShouldBeRegistered() =>
-        Get<ICommandDispatcher>().Should().NotBeNull();
+    public void CommandDispatcher_ShouldHaveSingleRegistration()
+    {
+        var factory = CreateFactory();
+        GetAll<ICommandDispatcher>(factory).Should().HaveCount(1);
+    }
+
+    // ------------------------------------------------------------
+    // DOMAIN EVENT DISPATCHER
+    // ------------------------------------------------------------
+    [Fact]
+    public void DomainEventDispatcher_ShouldBeRegistered()
+    {
+        var factory = CreateFactory();
+        Get<IDomainEventDispatcher>(factory).Should().NotBeNull();
+    }
 
     [Fact]
-    public void CommandDispatcher_ShouldHaveSingleRegistration() =>
-        GetAll<ICommandDispatcher>().Should().HaveCount(1);
-
-    [Fact]
-    public void DomainEventDispatcher_ShouldBeRegistered() =>
-        Get<IDomainEventDispatcher>().Should().NotBeNull();
-
-    [Fact]
-    public void DomainEventDispatcher_ShouldHaveSingleRegistration() =>
-        GetAll<IDomainEventDispatcher>().Should().HaveCount(1);
+    public void DomainEventDispatcher_ShouldHaveSingleRegistration()
+    {
+        var factory = CreateFactory();
+        GetAll<IDomainEventDispatcher>(factory).Should().HaveCount(1);
+    }
 }

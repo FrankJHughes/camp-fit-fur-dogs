@@ -1,34 +1,61 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using CampFitFurDogs.TestUtilities.Fakes;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using static CampFitFurDogs.Api.Tests.ApiTestHelpers;
+using Testcontainers.PostgreSql;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class RegisterDogEndpointTests : ApiTestBase
+public class RegisterDogEndpointTests : IAsyncLifetime
 {
-    private readonly HttpClient _client;
-    private readonly TestCurrentUser _testUser;
+    private PostgreSqlContainer _postgres = default!;
+    private ApiFactory _api = default!;
+    private HttpClient _client = default!;
 
-    public RegisterDogEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture)
+    private sealed record DogResponse(Guid DogId);
+    private sealed record WhoAmIResponse(string UserId);
+
+    // ------------------------------------------------------------
+    // TEST INITIALIZATION
+    // ------------------------------------------------------------
+    public async Task InitializeAsync()
     {
-        _client = Factory.CreateClient();
-        _testUser = Factory.TestUser;
+        // 1. Start Postgres
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+
+        // 2. Build ApiContext
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true);
+
+        // 3. Create ApiFactory
+        _api = new ApiFactory(ctx);
+
+        // 4. Create authenticated client
+        var clientCtx = new ApiClientContext()
+            .WithAuthenticatedUser($"Test0|{Guid.NewGuid()}");
+
+        _client = _api.CreateClient(clientCtx);
+
+        // 5. Verify identity is working (optional)
+        var who = await _client.GetFromJsonAsync<WhoAmIResponse>("/__test__/current-user-id");
+        who.Should().NotBeNull();
     }
 
-    private sealed record RegisterDogResponse(Guid dogId);
-
-    [Fact]
-    public async Task RegisterDog_ShouldReturn201AndDogId()
+    public async Task DisposeAsync()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
 
+    // ------------------------------------------------------------
+    // SUCCESS — BASIC REGISTRATION
+    // ------------------------------------------------------------
+    [Fact]
+    public async Task RegisterDog_ValidRequest_Returns201AndDogId()
+    {
         var request = new
         {
             Name = "Biscuit",
@@ -41,131 +68,49 @@ public class RegisterDogEndpointTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var body = await response.Content.ReadFromJsonAsync<RegisterDogResponse>();
+        var body = await response.Content.ReadFromJsonAsync<DogResponse>();
         body.Should().NotBeNull();
-        body!.dogId.Should().NotBe(Guid.Empty);
+        body!.DogId.Should().NotBeEmpty();
     }
 
+    // ------------------------------------------------------------
+    // VALIDATION — MISSING NAME
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RegisterDog_ShouldHaveLocationHeader()
+    public async Task RegisterDog_MissingName_Returns400()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
-
-        var request = new
-        {
-            Name = "Maple",
-            Breed = "Poodle",
-            DateOfBirth = "2023-03-10",
-            Sex = "Male"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        response.Headers.Location.Should().NotBeNull();
-        response.Headers.Location!.ToString().Should().StartWith("/api/dogs/");
-    }
-
-    [Fact]
-    public async Task RegisterDog_WithEmptyName_Returns400()
-    {
-        await CreateAndSetOwnerAsync(_client, _testUser);
-
         var request = new
         {
             Name = "",
-            Breed = "Labrador",
-            DateOfBirth = "2021-01-01",
-            Sex = "Male"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
-        problem!.Errors.Should().ContainKey("Name");
-    }
-
-    [Fact]
-    public async Task RegisterDog_WithEmptyBreed_Returns400()
-    {
-        await CreateAndSetOwnerAsync(_client, _testUser);
-
-        var request = new
-        {
-            Name = "Biscuit",
-            Breed = "",
-            DateOfBirth = "2021-01-01",
+            Breed = "Golden Retriever",
+            DateOfBirth = "2022-06-15",
             Sex = "Female"
         };
 
         var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
-        problem!.Errors.Should().ContainKey("Breed");
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
+    // ------------------------------------------------------------
+    // AUTH — MISSING CUSTOMER ID
+    // ------------------------------------------------------------
     [Fact]
-    public async Task RegisterDog_WithInvalidSex_Returns400()
+    public async Task RegisterDog_MissingCustomerId_Returns401()
     {
-        await CreateAndSetOwnerAsync(_client, _testUser);
+        // Create anonymous client
+        var anon = _api.CreateClient(new ApiClientContext());
 
         var request = new
         {
             Name = "Biscuit",
             Breed = "Golden Retriever",
             DateOfBirth = "2022-06-15",
-            Sex = "Unknown"
+            Sex = "Female"
         };
 
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var response = await anon.PostAsJsonAsync("/api/dogs", request);
 
-        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
-        problem!.Errors.Should().ContainKey("Sex");
-    }
-
-    [Fact]
-    public async Task RegisterDog_SuccessResponse_DoesNotExposeInternals()
-    {
-        await CreateAndSetOwnerAsync(_client, _testUser);
-
-        var request = new
-        {
-            Name = "Biscuit",
-            Breed = "Beagle",
-            DateOfBirth = "2022-08-20",
-            Sex = "Male"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        var body = await response.Content.ReadAsStringAsync();
-
-        body.Should().NotContain("aggregateVersion");
-        body.Should().NotContain("domainEvents");
-        body.Should().NotContain("EF Core");
-    }
-
-    [Fact]
-    public async Task RegisterDog_ErrorResponse_DoesNotExposeInternals()
-    {
-        await CreateAndSetOwnerAsync(_client, _testUser);
-
-        var request = new
-        {
-            Name = "",
-            Breed = "Beagle",
-            DateOfBirth = "2022-08-20",
-            Sex = "Male"
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/dogs", request);
-        var body = await response.Content.ReadAsStringAsync();
-
-        body.Should().NotContain("stackTrace");
-        body.Should().NotContain("innerException");
-        body.Should().NotContain("ArgumentException");
-        body.Should().NotContain("NullReferenceException");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

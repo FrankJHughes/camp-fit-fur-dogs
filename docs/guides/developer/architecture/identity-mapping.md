@@ -1,4 +1,4 @@
-# Identity Mapping Guide
+# Identity Mapping Guide (Aligned With Recent Changes)
 
 This guide explains how **identity mapping** works today based on the implementation completed for **US‑110 (Authentication: Owner Login)** and used by **US‑111 (Session Management)**.  
 It documents the *runtime behavior* and *developer workflow* for mapping an external OIDC identity (Auth0) to an internal domain identity (Owner/Customer).
@@ -11,7 +11,7 @@ This guide does **not** define rules, boundaries, or architectural decisions —
 - Conventions  
 - ADR‑0013 (Server‑Side Identity Resolution)
 
-This guide focuses solely on **how identity mapping works in the current system**.
+This guide focuses solely on **how identity mapping works in the current system**, aligned with the **new identity model**, **new DI architecture**, and **recent authentication refactors**.
 
 ---
 
@@ -75,7 +75,7 @@ It is the **only** external identifier used for identity mapping.
 
 Email is **not** used for identity resolution.
 
-This aligns with **[Security Governance](ca://s?q=Open_security_governance)** and Identity Mapping Governance.
+This aligns with **Security Governance** and Identity Mapping Governance.
 
 ---
 
@@ -123,7 +123,7 @@ The identity resolver is injected via DI and follows:
 
 ---
 
-# Identity Resolver Behavior
+# Identity Resolver Behavior (Aligned)
 
 The identity resolver performs two operations:
 
@@ -136,6 +136,13 @@ GetOwnerByExternalId(externalId)
 ```
 
 If an Owner exists, return it.
+
+This lookup is:
+
+- Pure  
+- Deterministic  
+- Performed through Infrastructure abstractions  
+- Based solely on the external ID  
 
 ---
 
@@ -179,7 +186,7 @@ Only the **external ID** is used for identity resolution.
 
 Email is treated as **profile data**, not identity.
 
-This aligns with **[Security Governance](ca://s?q=Open_security_governance)**.
+This aligns with **Security Governance**.
 
 ---
 
@@ -209,7 +216,7 @@ No cookies are issued on failure.
 
 ---
 
-# Testing Identity Mapping
+# Testing Identity Mapping (Aligned)
 
 Identity mapping is tested in three layers:
 
@@ -229,6 +236,8 @@ Identity mapping is tested in three layers:
 - Owner reuse on subsequent logins  
 - Session creation after identity resolution  
 
+Integration tests use the **new ApiContext + ApiFactory** harness.
+
 ---
 
 ## 3. Guardrail Tests  
@@ -236,6 +245,8 @@ Identity mapping is tested in three layers:
 - External ID is required  
 - Identity mapping step is pure  
 - No Infrastructure leakage into Application  
+
+Guardrails use **minimal DI**, not Testcontainers.
 
 ---
 
@@ -258,7 +269,7 @@ Identity mapping is tested in three layers:
 
 ---
 
-# Architectural Boundaries
+# Architectural Boundaries (Aligned)
 
 Identity mapping spans:
 
@@ -290,7 +301,7 @@ Identity mapping spans:
 - Implements identity persistence  
 - Implements audit logging  
 
-All boundaries follow **[Architecture Governance](ca://s?q=Open_architecture_governance)** and **[Security Governance](ca://s?q=Open_security_governance)**.
+All boundaries follow **Architecture Governance** and **Security Governance**.
 
 ---
 

@@ -26,7 +26,7 @@ public sealed class AuthCallbackService : IAuthCallbackService
 
         var ctx = new AuthCallbackContext(code, Now: _clock.UtcNow);
 
-        await _executor.ExecuteAsync(ctx, ct);
+        ctx = await _executor.ExecuteAsync(ctx, ct);
 
         ctx.RequireCustomerId();
         ctx.RequireSession();

@@ -2,7 +2,7 @@ using Frank.Abstractions;
 
 namespace CampFitFurDogs.Integration.Tests;
 
-public sealed class TestCurrentUser : ICurrentUserService
+public sealed class TestCurrentUser : ICurrentUser
 {
-    public Guid CurrentUserId { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 }

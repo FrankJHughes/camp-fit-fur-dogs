@@ -39,9 +39,6 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
             email.Property(e => e.Value)
                 .HasColumnName("email")
                 .IsRequired();
-
-            email.HasIndex(e => e.Value)
-                 .IsUnique();
         });
 
         //

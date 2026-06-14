@@ -1,21 +1,42 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.Api.Tests.Fixtures;
 using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
+using Testcontainers.PostgreSql;
 
 namespace CampFitFurDogs.Api.Tests.Customers;
 
-public class CreateCustomerEndpointTests : ApiTestBase
+public class CreateCustomerEndpointTests : IAsyncLifetime
 {
-    private readonly HttpClient _client;
+    private PostgreSqlContainer _postgres = default!;
 
-    public CreateCustomerEndpointTests(CampFitFurDogsApiFactory factory, PostgresFixture fixture)
-        : base(factory, fixture)
+    public async Task InitializeAsync()
     {
-        _client = Factory.CreateClient();
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    private HttpClient CreateClientWith(Action<IConfigurationBuilder>? overrides = null)
+    {
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(false);
+
+        if (overrides is not null)
+            ctx = ctx.WithConfigOverride(overrides);
+
+        var api = new ApiFactory(ctx);
+        return api.CreateClient(new ApiClientContext());
     }
 
     public sealed record CreateCustomerResponse(Guid CustomerId);
@@ -27,15 +48,10 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_ShouldReturn201AndCustomerId()
     {
+        var client = CreateClientWith();
         var request = ApiRequestFixtures.Customer();
 
-        var healthResponse = await _client.GetAsync("/api/health");
-        Console.WriteLine("Health status: " + healthResponse.StatusCode);
-        Console.WriteLine("Health body: " + await healthResponse.Content.ReadAsStringAsync());
-
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
-        var responseBody = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("Response body: " + responseBody);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
@@ -47,16 +63,17 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_ShouldReturn409_WhenEmailAlreadyExists()
     {
+        var client = CreateClientWith();
         var email = EmailFixtures.Unique("duplicate").Value;
 
         var request = new CustomerBuilder()
             .WithEmail(email)
             .BuildApiRequest();
 
-        var first = await _client.PostAsJsonAsync("/api/customers", request);
+        var first = await client.PostAsJsonAsync("/api/customers", request);
         first.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var second = await _client.PostAsJsonAsync("/api/customers", request);
+        var second = await client.PostAsJsonAsync("/api/customers", request);
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
@@ -67,39 +84,37 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_WithEmptyFirstName_Returns400()
     {
-        var request = new CustomerBuilder()
-            .WithFirstName("")
-            .BuildApiRequest();
+        var client = CreateClientWith();
+        var request = new CustomerBuilder().WithFirstName("").BuildApiRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_WithEmptyLastName_Returns400()
     {
-        var request = new CustomerBuilder()
-            .WithLastName("")
-            .BuildApiRequest();
+        var client = CreateClientWith();
+        var request = new CustomerBuilder().WithLastName("").BuildApiRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_WithInvalidEmail_Returns400()
     {
-        var request = new CustomerBuilder()
-            .WithEmail("not-an-email")
-            .BuildApiRequest();
+        var client = CreateClientWith();
+        var request = new CustomerBuilder().WithEmail("not-an-email").BuildApiRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_WithEmptyPhone_Succeeds_WhenPhoneIsOptional()
     {
+        var client = CreateClientWith();
         var request = new
         {
             FirstName = "Frank",
@@ -109,30 +124,27 @@ public class CreateCustomerEndpointTests : ApiTestBase
             Password = "SuperSecure123!"
         };
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
-
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Fact]
     public async Task CreateCustomer_WithEmptyPassword_Returns400()
     {
-        var request = new CustomerBuilder()
-            .WithPassword("")
-            .BuildApiRequest();
+        var client = CreateClientWith();
+        var request = new CustomerBuilder().WithPassword("").BuildApiRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateCustomer_ValidationError_ContainsHelpfulMessage()
     {
-        var request = new CustomerBuilder()
-            .WithFirstName("")
-            .BuildApiRequest();
+        var client = CreateClientWith();
+        var request = new CustomerBuilder().WithFirstName("").BuildApiRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
 
         body.Should().ContainEquivalentOf("error");
@@ -147,9 +159,10 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_SuccessResponse_ContainsCustomerId()
     {
+        var client = CreateClientWith();
         var request = ApiRequestFixtures.Customer();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var body = await response.Content.ReadFromJsonAsync<CreateCustomerResponse>();
@@ -160,9 +173,10 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_SuccessResponse_HasLocationHeader()
     {
+        var client = CreateClientWith();
         var request = ApiRequestFixtures.Customer();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         response.Headers.Location.Should().NotBeNull();
@@ -176,9 +190,10 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_SuccessResponse_DoesNotExposeInternals()
     {
+        var client = CreateClientWith();
         var request = ApiRequestFixtures.Customer();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
 
         body.Should().NotContainEquivalentOf("aggregateVersion");
@@ -190,11 +205,10 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_ErrorResponse_DoesNotExposeInternals()
     {
-        var request = new CustomerBuilder()
-            .WithFirstName("")
-            .BuildApiRequest();
+        var client = CreateClientWith();
+        var request = new CustomerBuilder().WithFirstName("").BuildApiRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
 
         body.Should().NotContainEquivalentOf("stackTrace");
@@ -206,15 +220,14 @@ public class CreateCustomerEndpointTests : ApiTestBase
     [Fact]
     public async Task CreateCustomer_ConflictResponse_DoesNotExposeInternals()
     {
+        var client = CreateClientWith();
         var email = EmailFixtures.Unique("ac5-dup").Value;
 
-        var request = new CustomerBuilder()
-            .WithEmail(email)
-            .BuildApiRequest();
+        var request = new CustomerBuilder().WithEmail(email).BuildApiRequest();
 
-        await _client.PostAsJsonAsync("/api/customers", request);
+        await client.PostAsJsonAsync("/api/customers", request);
 
-        var response = await _client.PostAsJsonAsync("/api/customers", request);
+        var response = await client.PostAsJsonAsync("/api/customers", request);
         var body = await response.Content.ReadAsStringAsync();
 
         body.Should().NotContainEquivalentOf("stackTrace");

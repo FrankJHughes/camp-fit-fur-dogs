@@ -1,7 +1,11 @@
 # Authentication Testing Guide
 
-This guide explains how to test the authentication system implemented in **US‑110 (Authentication: Owner Login)** and **US‑111 (Authentication: Session Management)**.  
-It documents the *testing strategy*, *test layers*, *test responsibilities*, and *test patterns* used to validate:
+This guide explains how to test the authentication system implemented in:
+
+- **US‑110 — Authentication: Owner Login (OIDC)**
+- **US‑111 — Authentication: Session Management**
+
+It documents the **testing strategy**, **test layers**, **test responsibilities**, and **test patterns** used to validate:
 
 - OIDC login initiation  
 - Auth callback pipeline  
@@ -10,7 +14,7 @@ It documents the *testing strategy*, *test layers*, *test responsibilities*, and
 - Cookie issuance  
 
 This guide does **not** define rules or architectural decisions — those live in governance, conventions, and ADRs.  
-This guide focuses solely on **how to test the authentication implementation that exists today**.
+This guide focuses solely on **how to test the authentication implementation that exists today**, aligned with the **new test harness**, **new guardrail boundaries**, and **recent refactors**.
 
 ---
 
@@ -33,11 +37,12 @@ This layered approach ensures:
 
 # Test Layer 1 — Unit Tests
 
-Unit tests validate the behavior of **individual pipeline steps** in isolation.  
+Unit tests validate the behavior of **individual pipeline steps** in isolation.
+
 Each step is tested with:
 
-- A minimal context  
-- Mocked dependencies  
+- Minimal context  
+- Mocked abstractions  
 - Deterministic inputs  
 - Deterministic outputs  
 
@@ -61,10 +66,11 @@ Each step is tested with:
 - Missing `ExternalId` (`sub`) → `AuthCallbackError.MissingExternalId`
 
 ### ResolveIdentityStep
-- Maps external ID to internal `CustomerId`  
+- Maps external ID → internal `CustomerId`  
 - Creates Owner if missing  
-- Returns existing Owner if present  
-- Never uses email for identity
+- Reuses Owner if present  
+- Never uses email for identity  
+- Deterministic behavior for missing/invalid external IDs
 
 ### AuditLoginStep
 - Requires `ctx.User` + `ctx.CustomerId`  
@@ -73,7 +79,8 @@ Each step is tested with:
 
 ### IssueCookieStep
 - Always runs  
-- Generates token + hash  
+- Generates opaque token  
+- Hashes token  
 - Creates `SessionCookie` value object  
 - Stores `ctx.TokenHash` + `ctx.SessionCookie`
 
@@ -135,7 +142,11 @@ These tests run against:
 - The real DI container  
 - The real session repository  
 - The real Owner repository  
-- A fake Auth0 client (deterministic)  
+- A deterministic fake Auth0 client  
+
+**Important recent change:**  
+Integration tests **must not** use the guardrail harness.  
+They use **ApiContext + ApiFactory + ApiClientContext**, with **Testcontainers only when persistence is required**.
 
 ---
 
@@ -202,8 +213,12 @@ tests/Api.Tests/Authentication/Callback
 
 # Test Layer 3 — Guardrail Tests
 
-Guardrail tests ensure **security‑critical invariants** never regress.  
-They validate **safety**, not business logic.
+Guardrail tests ensure **security‑critical invariants** never regress.
+
+Guardrails validate **safety**, not business logic.
+
+**Important recent change:**  
+Guardrails must use **minimal DI**, not Testcontainers or ApiFactory, unless the guardrail explicitly tests routing or persistence.
 
 ---
 
@@ -261,7 +276,7 @@ tests/Api.Tests/Guardrails
 
 # Test Data Setup
 
-Authentication tests rely on:
+Authentication tests rely on deterministic fakes:
 
 ### Test Auth0 Client
 - Deterministic token exchange  
@@ -284,21 +299,27 @@ Authentication tests rely on:
 
 ---
 
-# Common Testing Pitfalls
+# Common Testing Pitfalls (Updated)
 
-### Missing `sub` in test profiles
+### ❌ Using Testcontainers in guardrails  
+Guardrails must use minimal DI unless testing persistence.
+
+### ❌ Using `/__test__/sign-in` in guardrails  
+Identity guardrails must use `DefaultHttpContext`.
+
+### ❌ Missing `sub` in test profiles  
 `ValidateUserStep` will fail with 502.
 
-### Using real Auth0 endpoints
+### ❌ Using real Auth0 endpoints  
 Never required — always mock.
 
-### Forgetting to assert cookie flags
+### ❌ Forgetting to assert cookie flags  
 Security regressions can slip through.
 
-### Not testing Owner reuse
+### ❌ Not testing Owner reuse  
 Identity mapping must be idempotent.
 
-### Not testing failure modes
+### ❌ Not testing failure modes  
 Authentication has many.
 
 ---

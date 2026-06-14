@@ -14,7 +14,7 @@ public class CurrentUserServiceGuardrailTests
         var implementations = infraAssembly
             .GetTypes()
             .Where(t =>
-                typeof(ICurrentUserService).IsAssignableFrom(t) &&
+                typeof(ICurrentUser).IsAssignableFrom(t) &&
                 !t.IsInterface &&
                 !t.IsAbstract)
             .ToList();

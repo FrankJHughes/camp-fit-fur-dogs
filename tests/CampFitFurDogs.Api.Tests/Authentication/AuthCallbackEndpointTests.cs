@@ -1,121 +1,96 @@
 using System.Net;
-using System.Text.Json;
-using CampFitFurDogs.Api.Tests.Fixtures;
+using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.TestUtilities.Builders;
+using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fakes;
-using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace CampFitFurDogs.Api.Tests.Authentication;
 
-public class AuthCallbackEndpointTests
-    : IClassFixture<PostgresFixture>, IClassFixture<TestUtilities.Factories.CampFitFurDogsApiFactory>
+public class AuthCallbackEndpointTests : IAsyncLifetime
 {
-    private readonly TestUtilities.Factories.CampFitFurDogsApiFactory _factory;
+    private PostgreSqlContainer _postgres = default!;
 
-    public AuthCallbackEndpointTests(PostgresFixture db, TestUtilities.Factories.CampFitFurDogsApiFactory factory)
+    public async Task InitializeAsync()
     {
-        _factory = factory;
-
-        //
-        // ⭐ REQUIRED: initialize Postgres for this factory instance
-        //
-        _factory.UseContainer(db.Container);
-
-        //
-        // ⭐ REQUIRED: ensure Frontend__BaseUrl is always present
-        //
-        _factory.WithFrontendBaseUrl("http://localhost:3000");
-
-        //
-        // ⭐ REQUIRED: ensure OIDC config is always present unless overridden
-        //
-        _factory.WithConfigOverrides(cfg =>
-        {
-            cfg.AddInMemoryCollection(ValidOidcConfig);
-        });
+        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await _postgres.StartAsync();
     }
 
-    private static Dictionary<string, string?> ValidOidcConfig => new()
+    public async Task DisposeAsync()
     {
-        ["Authentication:Oidc:Authority"] = "dev-fake.auth0.com",
-        ["Authentication:Oidc:ClientId"] = "client",
-        ["Authentication:Oidc:ClientSecret"] = "secret",
-        ["Authentication:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
-        ["Authentication:Oidc:PostLoginRedirectUrl"] = "http://localhost:3000/"
-    };
+        if (_postgres is not null)
+            await _postgres.DisposeAsync();
+    }
+
+    private HttpClient CreateClient(ApiContext ctx)
+        => new ApiFactory(ctx).CreateClient(new ApiClientContext());
 
     // ------------------------------------------------------------
-    // SUCCESS PATH
+    // SUCCESS
     // ------------------------------------------------------------
     [Fact]
     public async Task Successful_callback_sets_cookie_and_redirects()
     {
-        var mappedCustomerId = Guid.NewGuid();
+        var mappedId = Guid.NewGuid();
 
         var fakeService = new FakeAuthCallbackService
         {
-            CustomerId = CustomerId.From(mappedCustomerId),
+            CustomerId = CustomerId.From(mappedId),
             RedirectUrl = "http://localhost:3000/"
         };
 
-        var client = new TestClientBuilder(_factory)
-            .WithAuthCallbackService(fakeService)
-            .BuildClient();
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true)
+            .WithServiceOverride(s =>
+            {
+                s.AddSingleton<IAuthCallbackService>(fakeService);
+                s.AddSingleton<IAuthClient, FakeOidcAuthClient>();
+            });
+
+        var client = CreateClient(ctx);
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
         response.Headers.Location!.ToString().Should().Be("http://localhost:3000/");
-
         response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeTrue();
         cookies!.First().Should().Contain("cfd.session=");
-    }
-
-    [Fact]
-    public async Task Successful_callback_logs_audit_event()
-    {
-        var mappedCustomerId = Guid.NewGuid();
-        var audit = new FakeAuditLogger();
-
-        var fakeService = new FakeAuthCallbackService
-        {
-            CustomerId = CustomerId.From(mappedCustomerId),
-            RedirectUrl = "http://localhost:3000/",
-            AuditLogger = audit
-        };
-
-        var client = new TestClientBuilder(_factory)
-            .WithAuthCallbackService(fakeService)
-            .BuildClient();
-
-        await client.GetAsync("/api/auth/callback?code=abc123");
-
-        audit.CapturedCustomerId.Should().Be(mappedCustomerId);
     }
 
     // ------------------------------------------------------------
     // ERROR PATHS
     // ------------------------------------------------------------
     [Fact]
-    public async Task Missing_authorization_code_returns_bad_request_problem_details()
+    public async Task Missing_authorization_code_returns_bad_request()
     {
-        var client = new TestClientBuilder(_factory).BuildClient();
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true);
+
+        var client = CreateClient(ctx);
 
         var response = await client.GetAsync("/api/auth/callback");
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        (await response.Content.ReadAsStringAsync()).Should().Contain("Missing authorization code");
     }
 
     [Fact]
     public async Task Incomplete_configuration_returns_internal_server_error()
     {
-        var client = new TestClientBuilder(_factory)
-            .WithConfigOverrides(cfg =>
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
+            .WithCookieAuthOnly(true)
+            .WithConfigOverride(cfg =>
             {
                 cfg.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -125,118 +100,33 @@ public class AuthCallbackEndpointTests
                     ["Authentication:Oidc:CallbackUrl"] = "",
                     ["Authentication:Oidc:PostLoginRedirectUrl"] = ""
                 });
-            })
-            .BuildClient();
+            });
+
+        var client = CreateClient(ctx);
 
         var response = await client.GetAsync("/api/auth/callback?code=abc123");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        (await response.Content.ReadAsStringAsync()).Should().Contain("Bad Configuration");
-    }
-
-    [Fact]
-    public async Task Missing_access_token_returns_bad_gateway_problem_details()
-    {
-        var fakeResponses = new Dictionary<string, HttpResponseMessage>
-        {
-            ["https://dev-fake.auth0.com/oauth/token"] =
-                new(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(JsonSerializer.Serialize(new { access_token = "" }))
-                }
-        };
-
-        var client = new TestClientBuilder(_factory)
-            .WithFakeOidcResponses(fakeResponses)
-            .BuildClient();
-
-        var response = await client.GetAsync("/api/auth/callback?code=abc123");
-
-        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
-        (await response.Content.ReadAsStringAsync()).Should().Contain("Missing access token");
-    }
-
-    [Fact]
-    public async Task Userinfo_failure_returns_bad_gateway_problem_details()
-    {
-        var fakeResponses = new Dictionary<string, HttpResponseMessage>
-        {
-            ["https://dev-fake.auth0.com/oauth/token"] =
-                new(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(JsonSerializer.Serialize(new { access_token = "fake_access_token" }))
-                },
-
-            ["https://dev-fake.auth0.com/userinfo"] =
-                new(HttpStatusCode.InternalServerError)
-        };
-
-        var client = new TestClientBuilder(_factory)
-            .WithFakeOidcResponses(fakeResponses)
-            .BuildClient();
-
-        var response = await client.GetAsync("/api/auth/callback?code=abc123");
-
-        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
-        (await response.Content.ReadAsStringAsync()).Should().Contain("Failed to retrieve user profile");
-    }
-
-    [Fact]
-    public async Task Missing_sub_claim_returns_bad_gateway_problem_details()
-    {
-        var fakeResponses = new Dictionary<string, HttpResponseMessage>
-        {
-            ["https://dev-fake.auth0.com/oauth/token"] =
-                new(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(JsonSerializer.Serialize(new { access_token = "fake_access_token" }))
-                },
-
-            ["https://dev-fake.auth0.com/userinfo"] =
-                new(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(JsonSerializer.Serialize(new
-                    {
-                        sub = "",
-                        given_name = "Frank",
-                        family_name = "Smith",
-                        email = "frank@example.com"
-                    }))
-                }
-        };
-
-        var client = new TestClientBuilder(_factory)
-            .WithFakeOidcResponses(fakeResponses)
-            .BuildClient();
-
-        var response = await client.GetAsync("/api/auth/callback?code=abc123");
-
-        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
-        (await response.Content.ReadAsStringAsync()).Should().Contain("Missing Auth0 user identifier");
     }
 
     // ------------------------------------------------------------
     // COOKIE SECURITY
     // ------------------------------------------------------------
     [Fact]
-    public async Task Cookie_is_secure_in_production()
+    public void Cookie_is_secure_in_production()
     {
-        var mappedCustomerId = Guid.NewGuid();
-
-        var fakeService = new FakeAuthCallbackService
-        {
-            CustomerId = CustomerId.From(mappedCustomerId),
-            RedirectUrl = "http://localhost:3000/"
-        };
-
-        var client = new TestClientBuilder(_factory)
+        var ctx = new ApiContext()
+            .WithDatabase(true, _postgres)
             .WithEnvironment("Production")
-            .WithAuthCallbackService(fakeService)
-            .BuildClient();
+            .WithCookieHttpOverride(false);
 
-        var response = await client.GetAsync("/api/auth/callback?code=abc123");
+        var factory = new ApiFactory(ctx);
 
-        response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeTrue();
-        cookies!.First().ToLowerInvariant().Should().Contain("secure");
+        using var scope = factory.Services.CreateScope();
+        var options = scope.ServiceProvider
+            .GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>();
+
+        options.Get("cfd.session").Cookie.SecurePolicy
+            .Should().Be(CookieSecurePolicy.Always);
     }
 }

@@ -17,7 +17,7 @@ Those live in:
 - Code Conventions  
 - ADRs  
 
-This guide focuses solely on **how authentication works today**.
+This guide focuses solely on **how authentication works today**, aligned with the **current architecture and test harness**.
 
 ---
 
@@ -33,10 +33,10 @@ These components work together to produce a secure, server‑managed session coo
 
 Authentication spans:
 
-- API (endpoint orchestration + cookie issuance)  
-- Application (pipeline steps + identity resolution + session creation)  
-- Domain (Owner + Session invariants)  
-- Infrastructure (Auth0 client + repositories + audit logger)  
+- **API** — endpoint orchestration + cookie issuance  
+- **Application** — pipeline steps + identity resolution + session creation  
+- **Domain** — Owner + Session invariants  
+- **Infrastructure** — Auth0 client + repositories + audit logger  
 
 ---
 
@@ -106,8 +106,6 @@ If any are missing → **500 Internal Server Error**.
 
 Runs unconditionally.
 
-This step enforces **startup configuration safety** required by Security + Operations Governance.
-
 ---
 
 ## 2. ExchangeCodeStep
@@ -122,7 +120,7 @@ Output:
 If the code is missing → **400 Bad Request** (endpoint-level).  
 If Auth0 returns no access token → next step fails with **502 Bad Gateway**.
 
-Uses Infrastructure via abstractions (never directly).
+Uses Infrastructure via abstractions.
 
 ---
 
@@ -136,8 +134,6 @@ Output:
 - `ctx.User`
 
 If userinfo retrieval fails → **502 Bad Gateway**.
-
-This step performs no identity logic.
 
 ---
 
@@ -186,8 +182,6 @@ Output:
 
 Runs **before** session creation so login is recorded even if session creation fails.
 
-This step enforces **Audit Logging Governance**.
-
 ---
 
 ## 7. IssueCookieStep
@@ -204,8 +198,6 @@ This step:
 - Creates a `SessionCookie` value object  
 - Does **not** persist anything  
 - Does **not** issue the cookie (API layer does that)  
-
-This step enforces **Session Token Governance**.
 
 ---
 
@@ -227,8 +219,6 @@ This step:
 - Associates the session with the Customer  
 - Commits via `IUnitOfWork`  
 
-This step enforces **Session Persistence Governance**.
-
 ---
 
 ## 9. BuildRedirectStep
@@ -246,8 +236,6 @@ The API layer uses this to issue:
 - `302 Found`  
 - `Location: <redirect>`  
 - `Set-Cookie: cfd.session=...`  
-
-This step enforces **Post‑Login Redirect Governance**.
 
 ---
 
@@ -290,8 +278,6 @@ Production cookie flags:
 - `SameSite=Lax`  
 
 Local development uses `Secure=false`.
-
-This enforces **Session Security Governance**.
 
 ---
 
@@ -339,11 +325,9 @@ Authentication spans four layers:
 - Implements audit logger  
 - Implements hosting provider abstractions  
 
-Purity and dependency rules are defined in **Architecture Governance**.
-
 ---
 
-# Data Flow Diagram (Updated)
+# Data Flow Diagram
 
 ```
 Browser → /api/auth/login

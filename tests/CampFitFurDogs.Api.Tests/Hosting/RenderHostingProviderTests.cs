@@ -1,13 +1,13 @@
 using System.IO.Compression;
 using System.Net;
-using CampFitFurDogs.Api.Hosting;
+using CampFitFurDogs.Api.Horizontals.Hosting.Modules;
 using CampFitFurDogs.TestUtilities.Fakes;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 
 namespace CampFitFurDogs.Api.Tests.Hosting;
 
-public sealed class RenderHostingProviderTests
+public sealed class RenderPrPreviewHostingModuleTests
 {
     // ------------------------------------------------------------
     // ZIP builder helper
@@ -29,17 +29,16 @@ public sealed class RenderHostingProviderTests
     }
 
     // ------------------------------------------------------------
-    // Provider builder
+    // Module builder
     // ------------------------------------------------------------
-    private static RenderHostingProvider CreateProvider(
+    private static RenderPrPreviewHostingModule CreateModule(
         FakeEnvironment env,
         FakeHttpMessageHandler handler)
     {
         var parser = new FakeRenderPrParser();
         var artifacts = new FakeGitHubArtifactClient(handler);
-        var config = new FakeRenderConfigurationWriter();
 
-        return new RenderHostingProvider(env, parser, artifacts, config);
+        return new RenderPrPreviewHostingModule(env, parser, artifacts);
     }
 
     // ------------------------------------------------------------
@@ -53,10 +52,10 @@ public sealed class RenderHostingProviderTests
         env.Set("IS_PULL_REQUEST", "true");
         env.Set("RENDER_GIT_REPO_SLUG", null);
 
-        var provider = CreateProvider(env, new FakeHttpMessageHandler());
+        var module = CreateModule(env, new FakeHttpMessageHandler());
         var builder = WebApplication.CreateBuilder();
 
-        Func<Task> act = () => provider.ConfigureAsync(builder);
+        Func<Task> act = () => module.GetConfigurationOverridesAsync(builder);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*RENDER_GIT_REPO_SLUG*");
@@ -71,10 +70,10 @@ public sealed class RenderHostingProviderTests
         env.Set("RENDER_SERVICE_NAME", "api");
         env.Set("GITHUB_PAT", "token");
 
-        var provider = CreateProvider(env, new FakeHttpMessageHandler());
+        var module = CreateModule(env, new FakeHttpMessageHandler());
         var builder = WebApplication.CreateBuilder();
 
-        Func<Task> act = () => provider.ConfigureAsync(builder);
+        Func<Task> act = () => module.GetConfigurationOverridesAsync(builder);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*PR number*");
@@ -97,10 +96,10 @@ public sealed class RenderHostingProviderTests
                 Content = new StringContent("""{"artifacts": []}""")
             });
 
-        var provider = CreateProvider(env, handler);
+        var module = CreateModule(env, handler);
         var builder = WebApplication.CreateBuilder();
 
-        Func<Task> act = () => provider.ConfigureAsync(builder);
+        Func<Task> act = () => module.GetConfigurationOverridesAsync(builder);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*database connection string*");
@@ -143,17 +142,17 @@ public sealed class RenderHostingProviderTests
                 Content = new StringContent("""{"artifacts": []}""")
             });
 
-        var provider = CreateProvider(env, handler);
+        var module = CreateModule(env, handler);
         var builder = WebApplication.CreateBuilder();
 
-        Func<Task> act = () => provider.ConfigureAsync(builder);
+        Func<Task> act = () => module.GetConfigurationOverridesAsync(builder);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*frontend base URL*");
     }
 
     [Fact]
-    public async Task Successful_configuration_sets_values()
+    public async Task Successful_configuration_returns_expected_overrides()
     {
         var env = new FakeEnvironment();
         env.Set("IS_PULL_REQUEST", "true");
@@ -202,15 +201,15 @@ public sealed class RenderHostingProviderTests
         handler.Add("https://download/frontend",
             ZipWith("frontend-url.txt", "https://preview.example.com"));
 
-        var provider = CreateProvider(env, handler);
+        var module = CreateModule(env, handler);
         var builder = WebApplication.CreateBuilder();
 
-        await provider.ConfigureAsync(builder);
+        var overrides = await module.GetConfigurationOverridesAsync(builder);
 
-        builder.Configuration["ConnectionStrings:DefaultConnection"]
+        overrides["ConnectionStrings:DefaultConnection"]
             .Should().Be("Server=Test;");
 
-        builder.Configuration["Frontend__BaseUrl"]
+        overrides["Frontend__BaseUrl"]
             .Should().Be("https://preview.example.com");
     }
 }

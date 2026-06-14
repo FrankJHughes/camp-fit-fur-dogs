@@ -31,7 +31,7 @@ The system now uses a **unified environment‑aware configuration architecture**
    - `SessionOptions`  
    - `HostingOptions`  
 
-2. **Configurator engine**  
+2. **StartupModule engine**  
    - Runs during startup  
    - Applies environment‑specific configuration  
    - Ensures all required keys are present  

@@ -12,26 +12,26 @@ See: Adding a New Feature Slice Guide
 
 # 2. Running the API
 
-```
+````bash
 dotnet run --project src/CampFitFurDogs.Api
-```
+````
 
 ---
 
 # 3. Running the Frontend
 
-```
+````bash
 npm run dev
-```
+````
 
 ---
 
 # 4. Running Tests
 
-```
+````bash
 dotnet test
 npm test
-```
+````
 
 ---
 
