@@ -1,99 +1,36 @@
-# US‑175 — Frank: Auth Callback Engine Migration
-
-## Story Grammar
-
-As an **architect**, I must be able to **move the authentication callback pipeline into Frank as a governed engine** so that **all products can reuse a deterministic, invariant‑checked, secure callback orchestration model**.
-
+---
+id: US-175
+title: "Migrate Auth Callback Engine to Frank"
+epic: Infrastructure
+milestone: M1+
+status: ready
+domain: infra
+vertical_slice: false
+dependencies:
+  - US-110
+  - US-111
 ---
 
-# Intent
+# US‑175 — Migrate Auth Callback Engine to Frank
 
-The current authentication callback pipeline (`AuthCallbackExecutor`, `AuthCallbackService`, `IAuthCallbackStep`, `AuthCallbackContext`) lives inside the product.  
-It is:
+## Intent
 
-- deterministic  
-- invariant‑checked  
-- pure orchestration  
-- cross‑cutting  
-- reusable  
-- security‑critical  
+As an **admin**, I must migrate the authentication callback engine into the Frank architecture so that identity processing, token validation, and callback flows are deterministic, testable, and consistent across the platform.
 
-This makes it a **Frank Engine**, not product logic.
+## Acceptance Criteria
 
-This story migrates the entire callback pipeline into Frank under a new subsystem:
+- [ ] AC‑1: Auth callback engine is extracted into a Frank module with a single public entry point  
+- [ ] AC‑2: Callback engine validates tokens and identity payloads using Frank conventions  
+- [ ] AC‑3: Callback engine integrates cleanly with the OIDC login flow  
+- [ ] AC‑4: Callback engine exposes a deterministic API for tests via the test harness  
+- [ ] AC‑5: Legacy callback logic is removed from the API project  
+- [ ] AC‑6: Errors are surfaced with structured, testable failure modes  
 
-````text
-Frank/Authentication/AuthCallbackEngine/
-````
+## Emotional Guarantees
 
----
+- **EG‑03 — Calm Protection:** Identity callbacks must be processed safely and predictably.  
+- **EG‑05 — Clear Ownership:** The owner’s identity must always be unambiguous after callback processing.
 
-# Motivation
+## Notes
 
-- Multiple products will require OIDC callback orchestration  
-- The pipeline is pure and cross‑cutting  
-- The pipeline enforces invariants and security boundaries  
-- The pipeline is step‑driven and extensible  
-- The pipeline is not domain‑specific  
-- The pipeline must be governed, documented, and reusable  
-
----
-
-# Scope
-
-This story includes:
-
-- Moving the following types into Frank:
-  - `AuthCallbackExecutor`
-  - `AuthCallbackService`
-  - `IAuthCallbackStep`
-  - `AuthCallbackContext`
-  - `AuthCallbackDiagnosticEvent`
-- Creating a new Frank engine folder:
-  - `Frank/Authentication/AuthCallbackEngine/`
-- Creating engine‑level documentation:
-  - `AuthCallbackEngineGuide.md`
-  - `AuthCallbackErrorModel.md`
-  - `StepAuthoringGuide.md`
-- Updating DI auto‑registration rules
-- Updating namespace conventions
-- Updating product code to reference Frank instead of Application
-- Updating tests to reference Frank engine types
-
----
-
-# Acceptance Criteria
-
-- [ ] All callback engine types live in Frank  
-- [ ] Product contains **only** product‑specific steps  
-- [ ] Engine documentation exists and is complete  
-- [ ] DI auto‑registration works for steps  
-- [ ] All invariants preserved  
-- [ ] All diagnostics preserved  
-- [ ] All existing callback tests pass  
-- [ ] No product layer references Application.Authentication  
-- [ ] No breaking changes to public API  
-- [ ] Guardrail tests updated to enforce new boundaries  
-
----
-
-# Out of Scope
-
-- Session validation middleware (US‑111)  
-- Identity mapping refactor  
-- Multi‑tenant identity provider support  
-
----
-
-# Dependencies
-
-- US‑110 — Authentication: Owner Login  
-- US‑111 — Authentication: Session Management  
-
----
-
-# Notes
-
-This is a **pure migration** — no behavior changes.  
-Refactoring into a more formal engine architecture will occur in a later story.
-
+This story prepares the foundation for US‑179 (Authenticated User Service).

@@ -1,117 +1,29 @@
-# US‑176 — Frank: Unified Test Harness Engine
-
-## Story Grammar
-
-As an **architect**, I must be able to **move the unified test harness into Frank as a core testing engine** so that **all products share the same deterministic, governed, multi‑layer testing infrastructure**.
-
+---
+id: US-176
+title: "Migrate Test Harness to Frank"
+epic: Infrastructure
+milestone: M1+
+status: ready
+domain: infra
+vertical_slice: false
+dependencies: []
 ---
 
-# Intent
+# US‑176 — Migrate Test Harness to Frank
 
-The current test harness is not “just tests.”  
-It is a **cross‑cutting testing engine** that provides:
+## Intent
 
-- API test host  
-- DI override engine  
-- Fake authentication engine  
-- Fake session engine  
-- Fake clock  
-- Fake environment  
-- Testcontainers orchestration  
-- Guardrail engine  
-- Frontend harness  
-- FormCommand harness  
-- State machine harness  
+As an **admin**, I must migrate the existing test harness into the Frank architecture so that all tests execute through a unified, deterministic, and modular testing foundation.
 
-This belongs in Frank, not in the product.
+## Acceptance Criteria
 
----
+- [ ] AC‑1: Test harness is extracted into a Frank module with a single public entry point  
+- [ ] AC‑2: Harness supports module‑scoped DI overrides  
+- [ ] AC‑3: Harness provides deterministic setup/teardown  
+- [ ] AC‑4: Harness supports fake infrastructure (clock, email, outbox, ID generator)  
+- [ ] AC‑5: Harness integrates with Frank’s module loader  
+- [ ] AC‑6: Legacy harness code is removed from the test projects  
 
-# Motivation
+## Notes
 
-- Every product needs the same test harness  
-- The harness enforces architecture and purity  
-- The harness provides deterministic test environments  
-- The harness provides cross‑cutting capabilities  
-- The harness reduces boilerplate  
-- The harness ensures consistency across products  
-
----
-
-# Scope
-
-This story introduces a new Frank subsystem:
-
-````text
-Frank/Testing/
-    ApiTestHost/
-    ApplicationTestHost/
-    InfrastructureTestHost/
-    FrontendTestHost/
-    GuardrailEngine/
-    TestClock/
-    TestIdentity/
-    TestDatabase/
-    TestEnvironment/
-    TestOverrides/
-    TestCookies/
-    TestProblemDetails/
-````
-
-This story includes:
-
-- Migrating the existing test harness into Frank  
-- Creating a unified API test host  
-- Creating a unified DI override engine  
-- Creating a unified fake authentication engine  
-- Creating a unified fake session engine  
-- Creating a unified fake clock  
-- Creating a unified Testcontainers orchestration layer  
-- Creating a unified guardrail engine  
-- Creating a unified frontend testing harness  
-- Creating engine‑level documentation:
-  - `TestHarnessOverview.md`
-  - `TestHarnessArchitecture.md`
-  - `TestHarnessTroubleshooting.md`
-  - `TestHarnessReferenceExamples.md`
-
----
-
-# Acceptance Criteria
-
-- [ ] All test harness capabilities live in Frank  
-- [ ] Product test projects reference Frank.Testing  
-- [ ] API tests use Frank’s ApiTestHost  
-- [ ] Application tests use Frank’s ApplicationTestHost  
-- [ ] Infrastructure tests use Frank’s Testcontainers orchestration  
-- [ ] Frontend tests use Frank’s FrontendTestHost  
-- [ ] Guardrail tests use Frank’s GuardrailEngine  
-- [ ] DI override engine works across all layers  
-- [ ] Fake authentication works across all layers  
-- [ ] Fake session engine works across all layers  
-- [ ] Test clock works across all layers  
-- [ ] All existing tests pass without modification (except imports)  
-- [ ] Architecture tests enforce new boundaries  
-
----
-
-# Out of Scope
-
-- New guardrail rules  
-- New frontend testing patterns  
-- New FormCommand features  
-
----
-
-# Dependencies
-
-- US‑2XX — Frank: Auth Callback Engine Migration  
-- test-harness-overview.md (completed)  
-
----
-
-# Notes
-
-This is a **migration**, not a redesign.  
-A future story will formalize the Frank.Testing API surface.
-
+This story enables US‑177 (Stabilize Test Harness) and US‑178 (Refactor Tests).

@@ -1,67 +1,30 @@
+---
+id: US-178
+title: "Refactor Tests"
+epic: Infrastructure
+milestone: M1+
+status: backlog
+domain: infra
+vertical_slice: false
+dependencies:
+  - US-177
+---
+
 # US‑178 — Refactor Tests
 
-## Story Grammar  
-As a **developer**, I must **refactor the existing test suite to align with the stabilized harness** so that **tests are maintainable, consistent, and follow the new conventions**.
+## Intent
 
-## Intent  
-After stabilization, the test suite must be updated to use the correct patterns.
+As an **admin**, I must have a clean, deterministic, and maintainable test suite so that regressions are caught early, tests are easy to understand, and the system remains stable as new features are added.
 
-## Acceptance Criteria  
-- All tests use the unified test host  
-- No legacy helpers remain  
-- No duplicated patterns  
-- No brittle async patterns  
-- No direct environment manipulation  
-- All tests pass reliably  
+## Acceptance Criteria
 
----
+- [ ] AC‑1: All tests follow the Arrange‑Act‑Assert pattern with no inline setup duplication  
+- [ ] AC‑2: All tests use the unified test harness entry point (no direct handler instantiation)  
+- [ ] AC‑3: All tests run deterministically and pass when executed in parallel  
+- [ ] AC‑4: All tests use fake infrastructure provided by the harness (no real email, no real clock)  
+- [ ] AC‑5: Test names follow the convention `<Unit>_<Behavior>_<Expectation>`  
+- [ ] AC‑6: All obsolete or redundant tests are removed or consolidated  
 
-# US‑179 — Implement Authenticated User Service
+## Notes
 
-## Story Grammar  
-As an **architect**, I must **implement a unified AuthenticatedUserService** so that **all layers share a consistent identity model**.
-
-## Intent  
-Identity is currently scattered across middleware, callbacks, and test fakes. This story centralizes it.
-
-## Acceptance Criteria  
-- Single source of truth for authenticated user  
-- Works in API runtime  
-- Works in test harness  
-- Works with fake identity  
-- Works with session model  
-- No direct HttpContext access outside API layer  
-
----
-
-# US‑180 — Migrate Hosting Engine to Frank
-
-## Story Grammar  
-As an **architect**, I must **migrate the Hosting Engine into Frank** so that **hosting orchestration becomes a governed, reusable capability across products**.
-
-## Intent  
-The Hosting Engine is deterministic, cross‑cutting, and enforces invariants — it belongs in Frank.
-
-## Acceptance Criteria  
-- HostingEngine lives in Frank  
-- Product only defines modules  
-- DI auto‑registration updated  
-- Guardrail tests updated  
-- No product references to old hosting code  
-
----
-
-# US‑181 — Migrate Startup Engine to Frank
-
-## Story Grammar  
-As an **architect**, I must **migrate the Startup Engine into Frank** so that **startup orchestration is governed, reusable, and consistent across products**.
-
-## Intent  
-StartupEngine is a pure orchestration engine and should be centralized.
-
-## Acceptance Criteria  
-- StartupEngine lives in Frank  
-- Product only defines startup modules  
-- DI auto‑registration updated  
-- Guardrail tests updated  
-- No product references to old startup code  
+This story ensures the test suite reflects the Frank architecture and remains maintainable long‑term.

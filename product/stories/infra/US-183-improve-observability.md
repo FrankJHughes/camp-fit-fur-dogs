@@ -1,16 +1,31 @@
-# US‑183 — Observability Improvements
+---
+id: US-183
+title: "Improve Observability"
+epic: Infrastructure
+milestone: M1+
+status: ready
+domain: infra
+vertical_slice: false
+dependencies:
+  - US-180
+  - US-181
+---
 
-## Story Grammar  
-As an **admin**, I must be able to **observe system behavior through structured logs, traces, and diagnostics** so that **issues can be identified quickly and the system appears production‑ready**.
+# US‑183 — Improve Observability
 
-## Intent  
-Current observability is insufficient for a professional showcase. This story establishes a minimal but credible observability baseline.
+## Intent
 
-## Acceptance Criteria  
-- Structured logging across API and background processes  
-- Request correlation IDs added automatically  
-- Minimal distributed tracing enabled  
-- Startup diagnostics logged  
-- Auth pipeline diagnostics logged  
-- Health checks exposed and styled  
-- All logs consistent and machine‑parseable  
+As an **admin**, I must have unified, structured observability across the Frank hosting and startup engines so that system behavior can be monitored, debugged, and analyzed consistently across environments.
+
+## Acceptance Criteria
+
+- [ ] AC‑1: Structured logging is enabled across all Frank modules  
+- [ ] AC‑2: Hosting and startup engines emit lifecycle events (startup, shutdown, module load)  
+- [ ] AC‑3: Handler execution logs include correlation IDs and execution duration  
+- [ ] AC‑4: Errors include structured context (module, handler, payload)  
+- [ ] AC‑5: Observability is testable through the test harness  
+- [ ] AC‑6: No legacy logging remains in API or infrastructure projects  
+
+## Notes
+
+This story ensures the Frank platform is diagnosable and production‑ready.
