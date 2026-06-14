@@ -7,6 +7,9 @@ These documents are **explanatory**, not prescriptive.
 They do **not** define rules (see Conventions) and do **not** record decisions (see ADRs).  
 Instead, they explain **how the architecture works** and **how to apply it correctly**.
 
+Frank provides the system’s cross‑cutting backbone — including the DI auto‑registration engine, endpoint discovery, validator scanning, environment abstraction, hosting provider abstractions, **HostingEngine**, and **StartupEngine**.  
+Application, Domain, Infrastructure, and Api form the vertical slices of behavior.
+
 ---
 
 # Purpose of This Folder
@@ -20,8 +23,11 @@ Use these guides to understand:
 - How vertical slices are structured  
 - How validation boundaries are enforced  
 - How authentication and session flows integrate with the architecture  
-- How tests map to architectural layers  
 - How Infrastructure integrates with Application and Domain  
+- How **StartupEngine** composes startup modules  
+- How **HostingEngine** selects and configures hosting providers  
+- How environment seams and hosting seams work  
+- How tests map to architectural layers and seams  
 - How Frank provides cross‑cutting primitives and discovery mechanisms  
 
 These guides evolve as the system evolves.
@@ -54,10 +60,10 @@ These guides evolve as the system evolves.
   Clear separation of API, Application, and Domain validation responsibilities.
 
 - **[Test Architecture](../test-architecture.md)**  
-  How to structure tests across layers (API, Application, Domain).
+  How to structure tests across layers (API, Application, Domain) and how to use Frank’s seams.
 
 - **[Infrastructure Architecture](../infrastructure-architecture.md)**  
-  How EF Core, repositories, readers, and hosting providers integrate with the system.
+  How EF Core, repositories, readers, hosting providers, and environment abstractions integrate with the system.
 
 - **[Vertical Slice Architecture](../vertical-slice-architecture.md)**  
   How slices encapsulate API, Application, Domain, and Infrastructure behavior.
@@ -89,16 +95,19 @@ These guides evolve as the system evolves.
 ## Cross‑Cutting Architecture
 
 - **[Hosting Provider Architecture](../hosting-provider-architecture.md)**  
-  How hosting providers (Render, Neon, Vercel) integrate with Frank abstractions.
+  How hosting providers integrate with Frank’s hosting abstractions and how HostingEngine selects and configures them.
 
 - **[Environment Abstraction](../environment-abstraction.md)**  
-  How environment variables are accessed safely and deterministically.
+  How environment variables are accessed safely and deterministically through Frank’s seams.
 
 - **[Security Headers Architecture](../security-headers-architecture.md)**  
   How security headers are applied and enforced across environments.
 
-- **[StartupModule Engine Architecture](../configurator-engine.md)**  
-  How configurators run during startup to assemble environment‑specific configuration.
+- **[Startup Engine Architecture](../startup-engine.md)**  
+  How StartupEngine runs startup modules to assemble the application.
+
+- **[Hosting Engine Architecture](../hosting-engine.md)**  
+  How HostingEngine evaluates hosting modules and configures the environment.
 
 ---
 
@@ -114,6 +123,7 @@ Update or add new architecture guides when:
 - A developer needs clarification that applies across slices  
 - A hosting provider abstraction changes  
 - A new environment or preview behavior is introduced  
+- StartupEngine or HostingEngine behavior changes  
 
 Do **not** update these guides for:
 

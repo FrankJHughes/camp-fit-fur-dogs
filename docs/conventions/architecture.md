@@ -16,7 +16,7 @@ The system uses a strict layered architecture:
 - **Application** — use‑case orchestration, CQRS handlers, validation, domain interaction  
 - **Infrastructure** — persistence, external integrations, hosting provider implementations  
 - **Api** — endpoints, DTO binding, authorization, request/response shaping  
-- **Frank** — cross‑cutting primitives, DI auto‑registration engine, endpoint discovery, hosting provider abstractions, environment abstraction, security headers, test seams
+- **Frank** — cross‑cutting primitives, DI auto‑registration engine, endpoint discovery, hosting abstractions, environment abstraction, startup engine, hosting engine, test seams
 
 ## 1.1 Layering Rules
 
@@ -55,168 +55,219 @@ This prevents slice entanglement.
 Frank provides the system’s cross‑cutting primitives and infrastructure.  
 It is not a general DI container — it registers **core services** and **attributed interfaces**, nothing more.
 
+Frank also provides the **StartupEngine** and **HostingEngine**, which CampFitFurDogs uses to compose the application.
+
 ## 2.1 Responsibilities
 
 Frank provides:
 
-- **DI auto‑registration engine**  
-  - Registers services derived from interfaces marked with `[AutoRegister]`  
-  - Registers core CQRS services (CommandDispatcher, QueryDispatcher, DomainEventDispatcher)
+### **DI auto‑registration engine**
+- Registers interfaces marked with `[AutoRegister]`
+- Discovers implementations
+- Validates min/max implementation counts
+- Registers services with the correct lifetime
 
-- **Endpoint discovery**  
-  - Scans assemblies for `IEndpoint` implementations  
-  - Registers them automatically
+### **Endpoint discovery**
+- Scans assemblies for `IEndpoint` implementations
+- Registers them automatically
 
-- **Validator scanning**  
-  - Discovers and registers validators
+### **Validator scanning**
+- Discovers and registers validators
 
-- **Security headers**  
-  - `AddSecurityHeaders()` extension  
-  - `SecurityHeadersMiddleware` with hardened OWASP defaults  
-  - Required for all environments, including PR Previews
+### **Security headers**
+- `AddSecurityHeaders()` extension
+- `SecurityHeadersMiddleware` with hardened defaults
 
-- **Hosting provider abstractions**  
-  - `IHostingProvider`  
-  - `IEnvironment`  
-  - `IRenderPrParser`  
-  - `IGitHubArtifactClient`  
-  - `IRenderConfigurationWriter`  
-  - Deterministic, testable hosting provider pipeline
+### **Hosting provider abstractions**
+- `IHostingModule`
+- `IHostingEnvironment`
+- `IEnvironment`
+- Deterministic, testable hosting pipeline
 
-- **Environment abstraction**  
-  - `IEnvironment` for safe, testable environment variable access
+### **Startup engine**
+- Executes startup modules in two phases:
+  - `AddAll(builder)` before the host is built
+  - `UseAll(app)` after the host is built
 
-- **Test seams**  
-  - Environment seam  
-  - Hosting provider seam  
-  - Artifact client seam  
-  - PR parser seam  
-  - Configuration writer seam
+### **Environment abstraction**
+- Safe, testable environment variable access
 
-Frank does **not** register slice‑specific services or own all DI.
+### **Test seams**
+- Hosting seam  
+- Environment seam  
+- Artifact seam  
+- PR parser seam  
+- Configuration writer seam  
 
-## 2.2 Frank Conventions
-
-Frank must:
-
-- Contain **no business logic**  
-- Contain **no slice‑specific logic**  
-- Expose abstractions only — never implementations  
-- Remain stable and dependency‑free  
-- Provide deterministic seams for testing  
-
-Frank is the **only layer allowed to know about hosting providers**.
+Frank contains **no business logic** and **no slice‑specific logic**.
 
 ---
 
-# 3. Hosting Model
+# 3. Hosting Model (Aligned With Actual Implementation)
 
-The system supports pluggable hosting providers.  
-Hosting providers configure environment‑specific behavior at startup.
+CampFitFurDogs defines hosting modules; Frank provides the engine.
+
+In `Program.cs`:
+
+```csharp
+await Hosting.AdaptToHostingEnvironment(builder);
+```
+
+Where:
+
+```csharp
+var hostingModules = ConstructHostingModules();
+var hostingEngine = new HostingEngine(hostingModules);
+await hostingEngine.ApplyHostingEnvironmentConfigurationAsync(builder);
+```
 
 ## 3.1 Provider Selection
 
-- Providers are evaluated **in order**  
-- The **first provider whose `IsActive()` returns true** wins  
-- All others are skipped  
-- This rule is enforced by guardrails
+- Hosting modules are evaluated **in order**
+- The first module whose logic determines it is active is selected
+- That module configures the hosting environment via the builder
+- All other modules are skipped
+
+This is deterministic and enforced by guardrails.
 
 ## 3.2 Provider Requirements
 
-All hosting providers must:
+Hosting modules must:
 
-- Use **injected abstractions only**  
+- Use only Frank abstractions  
 - Never read environment variables directly  
 - Never perform HTTP calls directly  
-- Never parse JSON or ZIP files directly  
+- Never parse JSON/ZIP directly  
 - Never write configuration directly  
-- Be fully testable without touching real infrastructure
+- Be fully testable  
 
-## 3.3 Render Hosting Provider
+## 3.3 Hosting Provider Boundaries
 
-Render is the canonical hosting provider for PR Previews.
+Hosting modules configure:
 
-It uses:
+- URLs  
+- Connection strings  
+- Environment flags  
+- Hosting metadata  
 
-- `IEnvironment`  
-- `IRenderPrParser`  
-- `IGitHubArtifactClient`  
-- `IRenderConfigurationWriter`
-
-### Required environment variables:
-
-- `IS_PULL_REQUEST`  
-- `RENDER_GIT_REPO_SLUG`  
-- `RENDER_SERVICE_NAME`  
-- `GITHUB_PAT`
-
-### Required artifacts:
-
-- `pr-{n}-db/db-conn.txt`  
-- `pr-{n}-frontend/frontend-url.txt`
-
-### Behavior:
-
-- Extract PR number from `RENDER_SERVICE_NAME`  
-- Load DB connection string from GitHub artifacts  
-- Load frontend base URL from GitHub artifacts  
-- Apply configuration via `IRenderConfigurationWriter`  
-- Throw on missing or invalid data
-
-## 3.4 Hosting Provider Boundaries
-
-Hosting providers must not:
+They must not:
 
 - Access EF Core  
 - Access Domain or Application  
 - Access HttpContext  
 - Perform business logic  
 
-They configure **only**:
+---
 
-- URLs  
-- Connection strings  
-- Environment flags  
-- Security headers  
-- Hosting‑specific metadata  
+# 4. Startup Model (Aligned With Actual Implementation)
+
+CampFitFurDogs defines startup modules; Frank provides the engine.
+
+In `Program.cs`:
+
+```csharp
+Startup.AddAllServices(builder);
+var app = builder.Build();
+Startup.UseAllServices(app);
+```
+
+Where:
+
+```csharp
+var startupModules = ConstructStartupModules();
+var startupEngine = new StartupEngine(startupModules);
+startupEngine.AddAll(builder);
+
+builder.Services.AddStartupModules();
+builder.Services.AddStartupEngine();
+```
+
+And:
+
+```csharp
+var startupEngine = app.Services.GetRequiredService<StartupEngine>();
+startupEngine.UseAll(app);
+```
+
+## 4.1 Startup Module Responsibilities
+
+Startup modules encapsulate startup logic for a horizontal concern:
+
+Examples:
+
+- `ApiStartupModule`  
+- `ApplicationStartupModule`  
+- `AuthenticationStartupModule`  
+- `AuthorizationStartupModule`  
+- `CorsStartupModule`  
+- `ExceptionHandlingStartupModule`  
+- `InfrastructureStartupModule`  
+- `LoggingStartupModule`  
+- `SecurityHeadersStartupModule`  
+- `SwaggerStartupModule`  
+
+Modules may:
+
+- Register services  
+- Register configuration  
+- Register middleware dependencies  
+- Configure middleware  
+- Map endpoints  
+
+Modules must not:
+
+- Contain business logic  
+- Perform persistence  
+- Access HttpContext directly  
+- Depend on other modules  
+
+## 4.2 StartupEngine Responsibilities
+
+StartupEngine:
+
+- Executes modules in the order provided  
+- Runs `AddAll(builder)` before DI is built  
+- Runs `UseAll(app)` after DI is built  
+- Ensures deterministic startup  
+- Ensures consistent module ordering  
+- Provides a stable startup lifecycle  
+
+StartupEngine does **not**:
+
+- Perform DI scanning  
+- Register handlers, repositories, readers  
+- Apply EF Core configurations  
+- Select hosting providers  
 
 ---
 
-# 4. PR Preview Architecture
+# 5. Test Harness (Aligned With Actual System)
 
-PR Previews run on Render using Git‑backed deployments.
+The test harness uses:
 
-## 4.1 Lifecycle
+- Frank’s environment seam  
+- Frank’s hosting seam  
+- Frank’s startup seam  
+- ApiFactory / ApiContext pattern  
 
-1. Label removed  
-2. Teardown probe (`/health` → 404 ×3)  
-3. Database provisioning  
-4. Migrations  
-5. Infrastructure tests  
-6. Label added  
-7. Readiness probe (`/api/dogs` → 200/400/401 ×3)  
-8. API tests
+Tests simulate:
 
-## 4.2 Requirements
+- Local development  
+- Render PR Preview  
+- Production  
+- Failure modes  
 
-- Code must tolerate empty databases  
-- Migrations must be idempotent  
-- No environment‑specific branching  
-- No hardcoded URLs or secrets  
-- Security headers must be present  
-- Hosting provider must be deterministic and testable
+Tests do **not**:
 
-## 4.3 Preview Architecture Conventions
+- Touch real environment variables  
+- Touch real hosting providers  
+- Touch real external services  
 
-- Preview environments must behave identically to production except for scale  
-- No preview‑only code paths  
-- Preview URLs must be injected, never constructed  
-- Preview DBs must be ephemeral  
-- Preview failures must not block local development  
+Everything is mocked through Frank’s seams.
 
 ---
 
-# 5. Api Architecture
+# 6. Api Architecture
 
 Api is responsible for:
 
@@ -234,16 +285,9 @@ Api must not:
 - Return domain entities  
 - Read identity from request bodies
 
-## 5.1 Endpoint Discovery Conventions
-
-- Every endpoint implements `IEndpoint`  
-- Endpoints must be stateless  
-- Endpoints must not depend on other endpoints  
-- Endpoint registration is automatic — no manual mapping  
-
 ---
 
-# 6. Application Architecture
+# 7. Application Architecture
 
 Application orchestrates use cases.
 
@@ -262,17 +306,9 @@ Application must not:
 - Perform persistence logic  
 - Contain business rules
 
-## 6.1 CQRS Conventions
-
-- One handler per command/query  
-- Handlers must be small and orchestration‑focused  
-- Handlers must not return domain entities  
-- Validation always runs before handlers  
-- Domain events are raised inside aggregates, not handlers  
-
 ---
 
-# 7. Domain Architecture
+# 8. Domain Architecture
 
 Domain contains:
 
@@ -290,16 +326,9 @@ Domain must not depend on:
 - Api  
 - Frank
 
-## 7.1 Domain Modeling Conventions
-
-- Aggregates enforce invariants internally  
-- Value objects must be immutable  
-- Domain events must be simple data carriers  
-- Domain logic must not leak into handlers or repositories  
-
 ---
 
-# 8. Infrastructure Architecture
+# 9. Infrastructure Architecture
 
 Infrastructure provides:
 
@@ -316,42 +345,18 @@ Infrastructure must not:
 - Contain business logic  
 - Depend on Api
 
-## 8.1 Persistence Conventions
-
-- Repositories mutate aggregates only  
-- Readers return DTOs only  
-- Unit of Work is the only place that commits  
-- EF Core is never exposed outside Infrastructure  
-
 ---
 
-# 9. Security Architecture
+# 10. Security Architecture
 
 Security headers are mandatory.
 
 Api must apply:
 
 - `AddSecurityHeaders()`  
-- `SecurityHeadersMiddleware`
-
-Headers include:
-
-- X‑Content‑Type‑Options  
-- X‑Frame‑Options  
-- X‑XSS‑Protection  
-- Referrer‑Policy  
-- Permissions‑Policy  
-- COOP / COEP / CORP  
-- CSP (strict baseline)
+- `SecurityHeadersMiddleware`  
 
 Guardrails enforce presence.
-
-## 9.1 Security Conventions
-
-- Security headers must be applied before any endpoint  
-- No endpoint may override or weaken security headers  
-- No environment may disable security headers  
-- CSP must remain strict‑baseline unless extended intentionally  
 
 ---
 
@@ -361,11 +366,12 @@ The architecture ensures:
 
 - Strict layering  
 - Deterministic hosting behavior  
+- Deterministic startup behavior  
 - Testable, composable providers  
 - Strong security posture  
 - Clear cross‑cutting boundaries  
 - Frank as the backbone of shared behavior  
+- Predictable CI/CD behavior  
 - PR Preview safety  
-- Predictable CI/CD behavior
 
 All contributors must follow these conventions.

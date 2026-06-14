@@ -70,8 +70,6 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureServices((context, services) =>
         {
-            services.AddHttpContextAccessor();
-
             // Default fake auth client
             services.RemoveAll<IAuthClient>();
             services.AddSingleton<IAuthClient, FakeOidcAuthClient>();

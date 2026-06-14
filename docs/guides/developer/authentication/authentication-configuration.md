@@ -1,13 +1,14 @@
 # Authentication Configuration
 
-The following configuration keys are required for OIDC authentication.  
+The following configuration keys are required for **OIDC authentication**.  
 These values must be provided as **environment variables** in all environments:
 
 - Local development  
-- Preview  
+- Preview (Render PR Previews)  
 - Production  
 
-Missing or malformed configuration results in a **startup failure** or a **500 Bad Configuration** error during the callback pipeline.
+Missing or malformed configuration results in a **startup failure** or a  
+**500 Bad Configuration** error during the callback pipeline.
 
 ---
 
@@ -19,7 +20,7 @@ Oidc:
   ClientId: "<client-id>"
   ClientSecret: "<client-secret>"
   Audience: "<optional>"
-  CallbackUrl: "https://<host>/api/auth/callback"
+  CallbackUrl: "https://<api-host>/api/auth/callback"
   PostLoginRedirectUrl: "https://<frontend-host>/"
 ```
 
@@ -69,14 +70,16 @@ Used by the authentication pipeline to:
 
 # Validation Behavior
 
-Configuration is validated in the **first step** of the callback pipeline:
+Configuration is validated in the **first step** of the callback pipeline  
+via the **ValidateConfigurationStep**.
 
-### `ValidateConfigurationStep`
+### Validation ensures:
 
-- Ensures all required keys are present  
-- Ensures no value is empty  
-- Ensures callback URL matches the Auth0 application configuration  
-- Ensures redirect URL is valid  
+- All required keys are present  
+- No value is empty  
+- Callback URL matches the Auth0 application configuration  
+- Redirect URL is valid  
+- Options bind correctly into strongly typed `OidcOptions`  
 
 ### Failure Mode
 
@@ -85,7 +88,8 @@ Configuration is validated in the **first step** of the callback pipeline:
 - No cookies are issued  
 - No session is created  
 
-This aligns with **Security Governance** and **Operations Governance**.
+This aligns with **[Security Governance](ca://s?q=Show_security_governance)**  
+and **[Operations Governance](ca://s?q=Show_operations_governance)**.
 
 ---
 
@@ -115,6 +119,9 @@ Oidc__PostLoginRedirectUrl=http://localhost:3000/
 - Callback URL must match the deployed API host  
 - Redirect URL must match the deployed frontend host  
 
+In **Render PR Previews**, these values are injected via environment variables  
+and validated before any session logic runs.
+
 ---
 
 # Notes
@@ -124,6 +131,7 @@ Oidc__PostLoginRedirectUrl=http://localhost:3000/
 - Missing configuration triggers `BadConfigurationException` → 500  
 - All configuration is consumed through strongly typed `OidcOptions`  
 - Configuration is immutable at runtime  
+- HostingEngine does **not** modify OIDC configuration; it only sets environment context  
 
 ---
 

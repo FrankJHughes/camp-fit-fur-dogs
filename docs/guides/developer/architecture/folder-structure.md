@@ -11,7 +11,7 @@ This guide belongs to the **architecture** category because it governs cross‑c
 
 The solution follows a clean, layered architecture with vertical slices cutting through the layers.
 
-`````text
+````text
 src/
   CampFitFurDogs.Api/
   CampFitFurDogs.Application/
@@ -22,10 +22,10 @@ src/
 tests/
   CampFitFurDogs.Api.Tests/
   CampFitFurDogs.Application.Tests/
-    CampFitFurDogs.Architecture.Tests/
+  CampFitFurDogs.Architecture.Tests/
   CampFitFurDogs.Domain.Tests/
   CampFitFurDogs.Infrastructure.Tests/
-`````
+````
 
 Each project has a clear responsibility:
 
@@ -33,7 +33,7 @@ Each project has a clear responsibility:
 - **Application** — use cases, handlers, validators, dispatchers, domain event dispatch  
 - **Domain** — entities, value objects, domain events, invariants  
 - **Infrastructure** — persistence, external systems, repository + reader implementations  
-- **Frank** — cross‑cutting primitives, DI auto‑registration, endpoint discovery, guardrails  
+- **Frank** — cross‑cutting primitives, DI auto‑registration, endpoint discovery, guardrails, HostingEngine, StartupEngine  
 
 Frank is a **product**, not a folder — see **[Multi‑Product Governance](ca://s?q=Open_multi_product_governance)**.
 
@@ -45,7 +45,7 @@ A vertical slice spans all layers but keeps each layer pure.
 
 Example slice: **Dogs**
 
-`````text
+````text
 src/
   CampFitFurDogs.Application/
     Abstractions/
@@ -79,7 +79,7 @@ src/
     Dogs/
       RegisterDogEndpoint.cs
       GetDogProfileEndpoint.cs
-`````
+````
 
 Each slice contains:
 
@@ -156,6 +156,8 @@ Frank provides:
 - Validation pipeline  
 - EF Core configuration scanning  
 - Hosting provider infrastructure  
+- StartupEngine  
+- HostingEngine  
 - Architecture guardrails  
 
 Frank must not depend on any product layer.
@@ -166,49 +168,49 @@ Frank must not depend on any product layer.
 
 ## 4.1 Application Slice Structure
 
-`````text
+````text
 Application/<Feature>/
   <UseCase>/
     <UseCase>Handler.cs
     <UseCase>Validator.cs
     <UseCase>DomainEventHandler.cs   # if applicable
-`````
+````
 
 ## 4.2 Abstractions Structure
 
-`````text
+````text
 Application/Abstractions/<Feature>/
   <UseCase>Command.cs
   <UseCase>Result.cs
   I<UseCase>Reader.cs      # query slices only
-`````
+````
 
 ## 4.3 Domain Structure
 
-`````text
+````text
 Domain/<Feature>/
   <Entity>.cs
   <ValueObject>.cs
   <DomainEvent>.cs
-`````
+````
 
 ## 4.4 Infrastructure Structure
 
-`````text
+````text
 Infrastructure/<Feature>/
   <Entity>Repository.cs
   <Entity>Configuration.cs
   <UseCase>Reader.cs       # query slices only
-`````
+````
 
 ## 4.5 Api Structure
 
-`````text
+````text
 Api/<Feature>/
   <UseCase>Endpoint.cs
   <UseCase>Request.cs
   <UseCase>Response.cs
-`````
+````
 
 ---
 
@@ -274,7 +276,7 @@ The frontend lives in `frontend/` and follows a **layer + aggregate** convention
 
 ## 7.1 Directory Layout
 
-`````text
+````text
 frontend/src/
 ├── api/dogs/
 │   ├── getDogProfile.ts
@@ -306,7 +308,7 @@ frontend/test/
 ├── components/dogs/
 ├── lib/dogs/
 └── app/dogs/
-`````
+````
 
 ## 7.2 Convention Rules
 

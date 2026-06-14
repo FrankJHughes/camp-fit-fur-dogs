@@ -31,7 +31,7 @@ Everything in Abstractions is intentionally **stable**, **pure**, and **safe to 
 
 A typical structure looks like:
 
-```
+````text
 src/CampFitFurDogs.Application/Abstractions/
   Customers/
     CreateCustomerCommand.cs
@@ -50,7 +50,7 @@ src/CampFitFurDogs.Application/Abstractions/
   IDomainEventDispatcher.cs
   IDomainEventHandler.cs
   IUnitOfWork.cs
-```
+````
 
 Each feature has its own subfolder.
 
@@ -64,15 +64,15 @@ Commands and queries **must not** live in slice implementation folders.
 
 **Correct:**
 
-```
+````text
 Application/Abstractions/Dogs/RegisterDogCommand.cs
-```
+````
 
 **Incorrect:**
 
-```
+````text
 Application/Dogs/RegisterDog/RegisterDogCommand.cs
-```
+````
 
 Commands and queries define the **public API** of a slice — they must be stable and discoverable.
 

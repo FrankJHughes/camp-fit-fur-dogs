@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Sprint 9] – Unreleased
+
 ## [Sprint 8] – 2026-06-06
 
 ### Stories Completed

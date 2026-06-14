@@ -1,7 +1,15 @@
 # Dependency Injection Architecture
 
 This guide describes how dependency injection works across the entire Camp Fit Fur Dogs system.  
-It explains the role of Frank as the DI orchestrator, how attribute‑based auto‑registration works, and how Application and Infrastructure participate in the DI pipeline.
+It explains the role of **Frank as the DI orchestrator**, how **attribute‑based auto‑registration** works, and how **Application** and **Infrastructure** participate in the DI pipeline.
+
+This version is fully aligned with:
+
+- The **new DI boundaries**  
+- The **new auto‑registration engine**  
+- The **new guardrail rules**  
+- The **new test harness**  
+- The **recent refactors** (CurrentUser simplification, removal of Scrutor, consolidation of DI responsibilities)
 
 ---
 
@@ -32,6 +40,7 @@ It is responsible for:
 - Registering validators from all assemblies  
 - Applying EF Core configurations  
 - Providing hosting and environment abstractions  
+- Enforcing DI purity rules (no Scrutor, no suffix‑based scanning)  
 
 Frank is the **only layer** that performs assembly scanning.
 
@@ -46,6 +55,8 @@ builder.Services.AddFrank([
 ]);
 ```
 
+This ensures **all layers participate in DI**, but **only Frank performs scanning**.
+
 ---
 
 # 3. Auto‑Registration via `[AutoRegister]`
@@ -54,9 +65,7 @@ Interfaces that should be automatically registered must be decorated with:
 
 ```csharp
 [AutoRegister(ServiceLifetime.Scoped)]
-public interface IMyService
-{
-}
+public interface IMyService { }
 ```
 
 The attribute controls:
@@ -67,6 +76,12 @@ The attribute controls:
 - **RegisterConcreteType** (optional)  
 
 If the number of implementations falls outside the allowed range, startup fails with a detailed error.
+
+This replaces:
+
+- Scrutor  
+- Suffix‑based scanning  
+- Manual registration of slice services  
 
 ---
 
@@ -104,38 +119,49 @@ Frank also registers validators via:
 services.AddValidatorsFromAssembly(assembly);
 ```
 
+This ensures validators from **API**, **Application**, and **Infrastructure** are all discovered.
+
 ---
 
-# 5. Categories of Auto‑Registered Interfaces
+# 5. Categories of Auto‑Registered Interfaces (Aligned)
 
 The following interface categories participate in auto‑registration:
 
-## 5.1 Repositories (Domain)
+## 5.1 Repositories (Infrastructure)
 - `ICustomerRepository`  
 - `IDogRepository`  
 - `IRepository<T>`  
 
-## 5.2 Readers (Application Abstractions)
+Repositories are **Infrastructure**, not Domain.
+
+## 5.2 Readers (Infrastructure)
 - `IGetDogProfileReader`  
 - `IListDogsByOwnerReader`  
 - `IFindCustomerByExternalIdReader`  
+
+Readers are **Infrastructure**.  
+Application depends on abstractions; Infrastructure provides implementations.
 
 ## 5.3 Command and Query Dispatching (Frank.Abstractions)
 - `ICommandDispatcher`  
 - `IQueryDispatcher`  
 
-## 5.4 Command and Query Handlers
+## 5.4 Command and Query Handlers (Application)
 - `ICommandHandler<TCommand>`  
 - `ICommandHandler<TCommand, TResponse>`  
 - `IQueryHandler<TQuery, TResponse>`  
+
+Handlers are auto‑registered and validated.
 
 ## 5.5 Domain Event Dispatching (Frank.Events)
 - `IDomainEventDispatcher`  
 - `IDomainEventHandler<TEvent>`  
 
 ## 5.6 Cross‑Cutting Services
-- `ICurrentUserService`  
+- `ICurrentUser` (new name; replaces ICurrentUserService)  
 - `IUnitOfWork`  
+- `IClock`  
+- `IIdentityResolver`  
 
 All of these are auto‑registered via `[AutoRegister]`.
 
@@ -148,18 +174,20 @@ Frank provides EF Core helpers that:
 - Discover all `IEntityTypeConfiguration<T>` implementations  
 - Apply them automatically  
 - Enforce DbContext guardrails  
+- Ensure consistent EF Core configuration across slices  
 
-This ensures consistent EF Core configuration across slices.
+Infrastructure does **not** manually apply configurations.
 
 ---
 
-# 7. Application DI
+# 7. Application DI (Aligned)
 
 `AddApplication()` registers **application‑level services** explicitly:
 
 - Authentication pipeline steps  
 - Authentication callback service  
 - Strongly‑typed configuration (`OidcOptions`)  
+- Application‑level orchestrators  
 
 Application does **not** register:
 
@@ -167,12 +195,13 @@ Application does **not** register:
 - Validators  
 - Repositories  
 - Readers  
+- EF Core configurations  
 
 These are handled by Frank’s auto‑registration.
 
 ---
 
-# 8. Infrastructure DI
+# 8. Infrastructure DI (Aligned)
 
 `AddInfrastructure()` registers **infrastructure‑level services** explicitly:
 
@@ -181,18 +210,21 @@ These are handled by Frank’s auto‑registration.
 - External identity resolver  
 - HttpClient integrations  
 - Audit logging  
+- Hosting provider abstractions  
 
 Infrastructure does **not** register:
 
 - Repositories  
 - Readers  
 - EF Core configurations  
+- Handlers  
+- Validators  
 
 These are handled by Frank.
 
 ---
 
-# 9. Contributor Guidelines
+# 9. Contributor Guidelines (Aligned)
 
 When adding a new service:
 
@@ -220,12 +252,14 @@ public interface IRegisterDogService { }
 - Add Scrutor or suffix‑based scanning  
 - Add DI logic to Program.cs  
 - Add DI logic to slices  
+- Register handlers manually  
+- Register repositories manually  
 
 Frank owns all auto‑registration.
 
 ---
 
-# 10. Relationship to Shared Kernel
+# 10. Relationship to Shared Kernel (Aligned)
 
 Frank provides:
 
@@ -249,11 +283,13 @@ Frank must not depend on:
 - Infrastructure  
 - API  
 
+This enforces **Shared Kernel purity**.
+
 ---
 
 # 11. Related Documents
 
-- **[Shared Kernel](ca://s?q=Generate_Shared_Kernel_Guide)**  
-- **[Domain Events Architecture](ca://s?q=Generate_Domain_Events_Architecture_Guide)**  
-- **[Dispatcher Pipeline](ca://s?q=Generate_Dispatcher_Pipeline_Guide)**  
-- **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**
+- **Shared Kernel Guide**  
+- **Domain Events Architecture**  
+- **Dispatcher Pipeline Guide**  
+- **API Endpoint Purity Guide**

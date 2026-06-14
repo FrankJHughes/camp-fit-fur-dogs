@@ -8,7 +8,7 @@ Authentication is implemented as:
 - A **pure login initiation endpoint** (no domain logic, no persistence)  
 - A **deterministic callback pipeline** that performs configuration validation, token exchange, userinfo retrieval, identity resolution, audit logging, session creation, and redirect construction  
 
-All authentication behavior follows **Architecture Governance**, **Security Governance**, and **API Endpoint Purity**.
+All authentication behavior follows **[Architecture Governance](ca://s?q=Open_architecture_governance)**, **Security Governance**, and **API Endpoint Purity**.
 
 ---
 
@@ -49,8 +49,9 @@ This flow is deterministic, invariant‑checked, and enforced by the dispatcher 
 - Identity is resolved exclusively through `IIdentityResolver`  
 - No endpoint performs identity parsing or authorization logic  
 - No pipeline step accesses hosting providers or environment directly  
+- HostingEngine and StartupEngine do **not** participate in authentication logic  
 
-These principles align with **[Architecture Governance](ca://s?q=Open_architecture_governance)**, **Security Governance**, and **Session Management Governance**.
+These principles align with **[Architecture Governance](ca://s?q=Open_architecture_governance)**, Security Governance, and Session Management Governance.
 
 ---
 

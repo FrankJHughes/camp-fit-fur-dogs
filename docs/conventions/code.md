@@ -5,7 +5,7 @@ They complement the architecture, workflow, and documentation conventions and en
 
 These conventions describe **implementation‑level rules**, not architectural governance.
 
-Frank provides cross‑cutting primitives, DI auto‑registration for attributed interfaces, endpoint discovery, validator scanning, hosting provider abstractions, security headers, and environment seams.  
+Frank provides cross‑cutting primitives, DI auto‑registration for attributed interfaces, endpoint discovery, validator scanning, hosting provider abstractions, security headers, environment seams, the StartupEngine, and the HostingEngine.  
 Application, Infrastructure, and Api remain responsible for their own slice‑specific DI.
 
 ---
@@ -57,6 +57,7 @@ Infrastructure must not depend on Api.
 - Dispatching commands/queries  
 - Security headers  
 - Endpoint discovery  
+- Startup modules (executed by StartupEngine)  
 
 Api must not contain business logic.
 
@@ -68,6 +69,8 @@ Api must not contain business logic.
 - Security headers middleware  
 - Hosting provider abstractions  
 - Environment abstraction  
+- StartupEngine  
+- HostingEngine  
 - Test seams  
 
 Frank must not depend on product code.
@@ -226,7 +229,8 @@ Guardrails enforce presence.
 
 # 6. Hosting Provider Conventions
 
-Hosting providers configure environment‑specific behavior at startup.
+Hosting providers configure environment‑specific behavior at startup.  
+They are executed by **HostingEngine**, not manually.
 
 ## 6.1 Provider Rules
 
@@ -271,6 +275,8 @@ Required artifacts:
 ---
 
 # 7. Test Seam Conventions
+
+The test harness uses Frank’s seams to simulate hosting, environment, and external systems.
 
 ## 7.1 HttpClient Seam
 
