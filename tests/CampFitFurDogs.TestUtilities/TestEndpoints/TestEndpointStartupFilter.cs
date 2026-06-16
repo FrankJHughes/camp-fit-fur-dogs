@@ -1,10 +1,12 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Identity;
 using CampFitFurDogs.Infrastructure.Data;
+using Frank.Abstractions.Authentication.Callback;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using System.Collections.ObjectModel;
 using System.Security.Claims;
 
 namespace CampFitFurDogs.TestUtilities.TestEndpoints;
@@ -26,7 +28,14 @@ public sealed class TestEndpointsStartupFilter : IStartupFilter
                     IIdentityResolver identtityResolver) =>
                 {
 
-                    var authUser = new AuthUser(req.Sub, "Test", "User", "test.user@campfitfurdogs.com");
+                    var authUser = new FrankAuthCallbackResult
+                    {
+                        SubjectId = req.Sub,
+                        GivenName = "Test",
+                        FamilyName = "User",
+                        Email = "test.user@campfitfurdogs.com",
+                        Claims = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>())
+                    };
                     var userId = await identtityResolver.ResolveAsync(authUser, CancellationToken.None);
 
                     // 3. Issue cookie

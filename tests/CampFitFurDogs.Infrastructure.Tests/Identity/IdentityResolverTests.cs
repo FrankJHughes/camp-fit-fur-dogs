@@ -1,174 +1,111 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
-using CampFitFurDogs.Application.Abstractions.Identity;
-using CampFitFurDogs.Domain.Customers.Exceptions;
-using CampFitFurDogs.Infrastructure.Identity.Oidc;
-using CampFitFurDogs.Infrastructure.Tests.Fakes;
-using Frank;
+using CampFitFurDogs.Infrastructure.Identity;
 using Frank.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
+using Frank.Abstractions.Authentication.Callback;
+using FluentAssertions;
 
-namespace CampFitFurDogs.Application.Tests.Identity;
+namespace CampFitFurDogs.Infrastructure.Tests.Identity;
 
-public class IdentityResolverTests
+public sealed class IdentityResolverTests
 {
-    private static IIdentityResolver BuildResolver(
-        FakeFindCustomerByExternalIdReader? reader = null,
-        FakeCreateCustomerHandler? handler = null,
-        ICommandDispatcher? dispatcher = null)
+    private sealed class FakeReader : IFindCustomerByExternalIdReader
     {
-        var services = new ServiceCollection();
+        public string? ReceivedExternalId { get; private set; }
+        public FindCustomerByExternalIdResponse? Returned { get; set; }
 
-        services.AddSingleton<IFindCustomerByExternalIdReader>(reader ?? new FakeFindCustomerByExternalIdReader());
-        services.AddSingleton<ICommandHandler<CreateCustomerCommand, Guid>>(handler ?? new FakeCreateCustomerHandler());
-
-        if (dispatcher is null)
+        public Task<FindCustomerByExternalIdResponse?> FindByExternalIdAsync(string externalId, CancellationToken ct)
         {
-            services.AddSingleton<ICommandDispatcher>(sp => new CommandDispatcher(sp));
+            ReceivedExternalId = externalId;
+            return Task.FromResult(Returned);
         }
-        else
+    }
+
+    private sealed class FakeDispatcher : ICommandDispatcher
+    {
+        public object? ReceivedCommand { get; private set; }
+        public Guid ReturnedId { get; set; } = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+
+        public Task<TResult> DispatchAsync<TResult>(ICommand<TResult> command, CancellationToken ct)
         {
-            services.AddSingleton<ICommandDispatcher>(dispatcher);
+            ReceivedCommand = command;
+            return Task.FromResult((TResult)(object)ReturnedId);
         }
-
-        services.AddSingleton<IIdentityResolver, OidcIdentityResolver>();
-
-        return services.BuildServiceProvider().GetRequiredService<IIdentityResolver>();
-    }
-
-    private static Task<Guid> Call(IIdentityResolver resolver, string externalId)
-        => resolver.ResolveAsync(
-            new AuthUser(
-                externalId,
-                "Frank",
-                "Smith",
-                "frank@example.com"),
-            CancellationToken.None);
-
-    // ------------------------------------------------------------
-    // 1. Existing customer path
-    // ------------------------------------------------------------
-    [Fact]
-    public async Task Returns_existing_customer_when_found()
-    {
-        var existingId = Guid.NewGuid();
-
-        var reader = new FakeFindCustomerByExternalIdReader
-        {
-            Response = new FindCustomerByExternalIdResponse(existingId)
-        };
-
-        var handler = new FakeCreateCustomerHandler();
-
-        var resolver = BuildResolver(reader, handler);
-
-        var result = await Call(resolver, "auth0|abc123");
-
-        Assert.Equal(existingId, result);
-        Assert.Null(handler.LastCommand);
-    }
-
-    // ------------------------------------------------------------
-    // 2. New customer creation path
-    // ------------------------------------------------------------
-    [Fact]
-    public async Task Creates_new_customer_when_not_found()
-    {
-        var newId = Guid.NewGuid();
-
-        var reader = new FakeFindCustomerByExternalIdReader { Response = null };
-        var handler = new FakeCreateCustomerHandler { ResultToReturn = newId };
-
-        var resolver = BuildResolver(reader, handler);
-
-        var result = await Call(resolver, "auth0|newuser");
-
-        Assert.Equal(newId, result);
-        Assert.NotNull(handler.LastCommand);
-        Assert.Equal("Frank", handler.LastCommand!.FirstName);
-        Assert.Equal("Smith", handler.LastCommand!.LastName);
-        Assert.Equal("frank@example.com", handler.LastCommand!.Email);
-        Assert.Equal("auth0|newuser", handler.LastCommand!.ExternalAuthProviderId);
-    }
-
-    // ------------------------------------------------------------
-    // 3. Reader throws
-    // ------------------------------------------------------------
-    [Fact]
-    public async Task Throws_when_reader_fails()
-    {
-        var reader = new FakeFindCustomerByExternalIdReader
-        {
-            ExceptionToThrow = new InvalidOperationException("reader failed")
-        };
-
-        var resolver = BuildResolver(reader);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            Call(resolver, "auth0|abc123"));
-    }
-
-    // ------------------------------------------------------------
-    // 4. Handler throws
-    // ------------------------------------------------------------
-    [Fact]
-    public async Task Throws_when_handler_fails()
-    {
-        var reader = new FakeFindCustomerByExternalIdReader { Response = null };
-        var handler = new FakeCreateCustomerHandler
-        {
-            ExceptionToThrow = new InvalidOperationException("handler failed")
-        };
-
-        var resolver = BuildResolver(reader, handler);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            Call(resolver, "auth0|abc123"));
-    }
-
-    // ------------------------------------------------------------
-    // 5. Dispatcher throws
-    // ------------------------------------------------------------
-    private sealed class ThrowingDispatcher : ICommandDispatcher
-    {
-        public Task<TResponse> DispatchAsync<TResponse>(ICommand<TResponse> command, CancellationToken ct)
-            => throw new InvalidOperationException("dispatcher failed");
 
         public Task DispatchAsync(ICommand command, CancellationToken ct)
-            => throw new NotImplementedException();
+        {
+            ReceivedCommand = command;
+            return Task.CompletedTask;
+        }
+    }
+
+    private static FrankAuthCallbackResult External(
+        string sub = "sub-123",
+        string given = "John",
+        string family = "Doe",
+        string email = "john@example.com")
+        => new()
+        {
+            SubjectId = sub,
+            Claims = new Dictionary<string, string>(),
+            GivenName = given,
+            FamilyName = family,
+            Email = email
+        };
+
+    [Fact]
+    public async Task ResolveAsync_WhenCustomerExists_ReturnsExistingId()
+    {
+        var existingId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+
+        var reader = new FakeReader
+        {
+            Returned = new FindCustomerByExternalIdResponse(existingId)
+        };
+
+        var dispatcher = new FakeDispatcher();
+        var resolver = new IdentityResolver(reader, dispatcher);
+
+        var result = await resolver.ResolveAsync(External(), CancellationToken.None);
+
+        result.Should().Be(existingId);
+        reader.ReceivedExternalId.Should().Be("sub-123");
+        dispatcher.ReceivedCommand.Should().BeNull();
     }
 
     [Fact]
-    public async Task Throws_when_dispatcher_fails()
+    public async Task ResolveAsync_WhenCustomerDoesNotExist_CreatesCustomer()
     {
-        var reader = new FakeFindCustomerByExternalIdReader { Response = null };
-        var handler = new FakeCreateCustomerHandler { ResultToReturn = Guid.NewGuid() };
+        var reader = new FakeReader { Returned = null };
+        var dispatcher = new FakeDispatcher();
 
-        var resolver = BuildResolver(reader, handler, new ThrowingDispatcher());
+        var resolver = new IdentityResolver(reader, dispatcher);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            Call(resolver, "auth0|abc123"));
+        var result = await resolver.ResolveAsync(External(), CancellationToken.None);
+
+        result.Should().Be(dispatcher.ReturnedId);
+
+        dispatcher.ReceivedCommand.Should().BeOfType<CreateCustomerCommand>();
+
+        var cmd = (CreateCustomerCommand)dispatcher.ReceivedCommand!;
+        cmd.ExternalAuthProviderId.Should().Be("sub-123");
+        cmd.FirstName.Should().Be("John");
+        cmd.LastName.Should().Be("Doe");
+        cmd.Email.Should().Be("john@example.com");
     }
 
-    // ------------------------------------------------------------
-    // 7. Invalid externalId
-    // ------------------------------------------------------------
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public async Task Throws_when_external_id_is_invalid(string? externalId)
+    [Fact]
+    public async Task ResolveAsync_Throws_WhenCancellationRequested()
     {
-        var resolver = BuildResolver();
+        var reader = new FakeReader();
+        var dispatcher = new FakeDispatcher();
+        var resolver = new IdentityResolver(reader, dispatcher);
 
-        await Assert.ThrowsAsync<MissingIdentitySourceException>(() =>
-            resolver.ResolveAsync(
-                new AuthUser(
-                    externalId!,
-                    "Frank",
-                    "Smith",
-                    "frank@example.com"),
-                CancellationToken.None));
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        var act = async () => await resolver.ResolveAsync(External(), cts.Token);
+
+        await act.Should().ThrowAsync<OperationCanceledException>();
     }
 }

@@ -1,7 +1,13 @@
 # ADR‑0041 — Authentication Callback Pipeline Architecture
 
-## Status  
-Accepted
+## Status
+Superseded by ADR‑0054
+
+## Superseded Reason
+The step‑engine‑based authentication callback pipeline has been replaced by the
+ImmutableContextBuilder architecture defined in ADR‑0053 and ADR‑0054. The new
+architecture eliminates mutable shared state, step ordering, and dispatcher‑based
+pipelines in favor of pure, deterministic, immutable context builders.
 
 ## Context  
 The authentication callback originally consisted of a single service that performed multiple responsibilities:
