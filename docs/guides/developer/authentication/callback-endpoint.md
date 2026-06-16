@@ -1,12 +1,18 @@
-# Callback Endpoint — `/api/auth/callback`
+# Callback Endpoint — `/api/auth/callback` (Aligned With Auth Callback Refactor)
 
 The callback endpoint completes the **OIDC authorization code flow**.  
-It validates configuration, exchanges the authorization code for tokens, fetches and validates the Auth0 user profile, resolves identity, logs the login event, issues a session cookie, creates the session, and redirects the user to the frontend.
+It extracts the authorization code, invokes the **Frank Auth Callback Pipeline** (protocol), invokes the **Application Auth Callback Pipeline** (business), issues the session cookie, and redirects the user to the frontend.
 
-The endpoint itself contains **no business logic**, **no identity logic**, and **no Infrastructure calls**.  
-It simply orchestrates the dispatcher pipeline.
+The endpoint itself contains:
 
-All authentication behavior is implemented inside the pipeline steps and governed by:
+- **no business logic**  
+- **no identity logic**  
+- **no Infrastructure calls**  
+- **no protocol logic**  
+
+It is a **thin orchestrator** that coordinates the two pipelines and performs HTTP‑boundary responsibilities only.
+
+All authentication behavior is implemented inside the Frank and Application pipelines and governed by:
 
 - [Architecture Governance](ca://s?q=Open_architecture_governance)  
 - Security Governance  
@@ -23,150 +29,143 @@ GET /api/auth/callback?code=XYZ
 ```
 
 The endpoint accepts only the authorization code.  
-Identity, authorization, and session logic are handled exclusively inside the pipeline.
+Identity, protocol, and session logic are handled exclusively inside the pipelines.
 
 ---
 
-# Behavior
+# Behavior (Post‑Refactor)
 
-The callback endpoint executes a strict, ordered **authentication pipeline**:
+The callback endpoint performs **three** responsibilities:
 
----
+1. **Extract and validate the authorization code**  
+2. **Invoke the Frank + Application pipelines**  
+3. **Issue the session cookie and redirect**  
 
-### 1. Validate configuration  
-- Ensures all required OIDC settings are present  
-- Missing values → **500 Internal Server Error**  
-- Enforces Security + Operations Governance  
-- Uses only Frank’s configuration binding + environment seams  
-- No direct environment access inside steps  
+Everything else happens inside the pipelines.
 
 ---
 
-### 2. Validate that `code` is present  
-- Missing or empty → **400 Bad Request**  
-- Shape validation only (no business logic)  
-- No identity or Infrastructure access  
+# 1. Extract and Validate the Authorization Code
 
----
-
-### 3. Exchange authorization code  
-- Calls Auth0 `/oauth/token` via Infrastructure abstraction  
-- Retrieves an access token  
-- No tokens are persisted  
-- No Infrastructure types leak into Application  
-- No direct HTTP calls (uses named HttpClient via abstraction)  
-
----
-
-### 4. Fetch userinfo  
-- Calls Auth0 `/userinfo`  
-- Retrieves:
-  - `sub` (external ID)  
-  - `email`  
-  - `given_name`  
-  - `family_name`  
-- Uses Infrastructure only through abstractions  
-- No identity logic here  
-- No domain logic  
-
----
-
-### 5. Validate userinfo  
-- Ensures `sub` is present  
-- Missing `sub` → **502 Bad Gateway**  
-- Enforces Identity Mapping Governance  
-- Email is never used for identity  
-- No persistence  
-
----
-
-### 6. Resolve identity  
-- Maps external identity to internal `CustomerId`  
-- Creates Owner if needed  
-- Uses `IIdentityResolver` (Application abstraction)  
-- Never exposes internal IDs to Auth0  
-- Never uses email for identity  
-- Pure, deterministic, invariant‑checked  
-- No Infrastructure leakage into Domain  
-
----
-
-### 7. Audit login  
-- Logs successful login with `CustomerId` + external ID  
-- Runs **before** session creation  
-- Uses Infrastructure via abstractions  
-- Does not mutate context  
-- No domain logic  
-
----
-
-### 8. Issue session cookie  
-- Generates a 256‑bit session token  
-- Hashes it using SHA‑256  
-- Creates a `SessionCookie` value object  
-- Does **not** persist anything  
-- Cookie issuance happens in the API layer  
-- Enforces Session Token Governance  
-- Uses Frank’s cookie helpers + security headers  
-
----
-
-### 9. Create session  
-- Persists the session with the hashed token  
-- Associates it with the Owner  
-- Uses `IUnitOfWork`  
-- Enforces Session Management Governance  
-- No Infrastructure leakage into Domain  
-- No direct EF Core access  
-
----
-
-### 10. Build redirect  
-- Produces the final redirect URL for the frontend  
-- Uses configured `PostLoginRedirectUrl`  
-- Pure string construction  
-- No environment access  
+- Reads `code` from the query string  
+- If missing or empty → **400 Bad Request**  
+- No protocol logic  
+- No identity logic  
 - No Infrastructure access  
 
----
-
-### 11. Return redirect response  
-- API layer issues the session cookie  
-- API layer returns **302 Found**  
-- API layer relies on:
-  - Frank security headers  
-  - Frank CORS  
-  - Frank error boundary  
-- No business logic in the endpoint  
-- No domain logic  
+This is the only validation the endpoint performs.
 
 ---
 
-# Session Cookie
+# 2. Invoke the Frank Auth Callback Pipeline (Protocol Layer)
 
-The session cookie is:
+The endpoint calls:
+
+```
+FrankAuthCallbackPipeline.BuildAsync(...)
+```
+
+Frank performs all **OIDC protocol work**:
+
+- Validates OIDC configuration  
+- Exchanges the authorization code for tokens  
+- Fetches userinfo (if required)  
+- Normalizes provider‑specific claims  
+- Produces a stable, provider‑agnostic identity payload  
+
+Frank pipeline **does not**:
+
+- Resolve identity  
+- Create sessions  
+- Compute redirect URLs  
+- Compute cookie values  
+- Perform any business logic  
+
+Frank pipeline errors are shaped by Frank’s error boundary.
+
+---
+
+# 3. Invoke the Application Auth Callback Pipeline (Business Layer)
+
+The endpoint then calls:
+
+```
+ApplicationAuthCallbackPipeline.BuildAsync(...)
+```
+
+Application performs all **business logic**:
+
+- Validates required identity claims (e.g., `sub`)  
+- Resolves or creates the internal Owner record  
+- Logs the login audit event  
+- Creates the session  
+- Computes the session token hash  
+- Computes the cookie value (opaque token)  
+- Computes the final redirect URL  
+
+Application pipeline **does not**:
+
+- Perform OIDC protocol logic  
+- Perform token exchange  
+- Perform userinfo calls  
+- Issue cookies  
+- Perform HTTP operations  
+
+The result object includes:
+
+- `CustomerId`  
+- `SessionId`  
+- `TokenHash`  
+- `CookieValue`  
+- `RedirectUrl`  
+
+---
+
+# 4. Issue the Session Cookie (API Boundary)
+
+The API endpoint:
+
+- Uses the `CookieValue` from the Application pipeline  
+- Issues the secure session cookie  
+- Applies Frank security headers  
+- Applies Frank CORS  
+- Applies Frank error boundary  
+
+Cookie properties:
 
 - **HttpOnly**  
 - **Secure** (production)  
 - **SameSite=Lax**  
-- **Max‑Age** configured  
 - Contains an **opaque, random session token**  
-- Backed by a **hashed** token stored in the database  
-- Issued only after session creation succeeds  
+- Backed by a **hashed token** stored in the database  
 
 Local development uses `Secure=false`.
 
-Cookie issuance follows:
+---
 
-- Security Governance  
-- Session Management Governance  
-- API Endpoint Purity  
+# 5. Redirect the User
+
+The endpoint returns:
+
+```
+302 Found
+Location: <RedirectUrl from Application pipeline>
+Set-Cookie: cfd.session=...
+```
+
+The redirect URL is computed **only** by the Application pipeline.
+
+The endpoint does not:
+
+- Construct redirect URLs  
+- Perform business logic  
+- Perform identity logic  
 
 ---
 
 # Error Handling
 
-All errors flow through the global exception → ProblemDetails mapping provided by Frank.
+All errors flow through Frank’s global exception → ProblemDetails mapping.
 
 | Condition | Error Code | HTTP Status |
 |----------|------------|-------------|
@@ -190,6 +189,20 @@ Additional guarantees:
 
 ---
 
+# Summary
+
+The callback endpoint:
+
+- Extracts the authorization code  
+- Invokes Frank (protocol)  
+- Invokes Application (business)  
+- Issues the cookie  
+- Redirects the user  
+
+It contains **no business logic**, **no protocol logic**, and **no Infrastructure logic**.
+
+---
+
 # See Also
 
 - **[Login Endpoint](ca://s?q=Show_login_endpoint_doc)**  
@@ -197,4 +210,4 @@ Additional guarantees:
 - **[Authentication Configuration](ca://s?q=Show_authentication_configuration_doc)**  
 - **[Authentication Architecture Guide](ca://s?q=Show_authentication_architecture_doc)**  
 - **[Identity Mapping Guide](ca://s?q=Show_identity_mapping_guide)**  
-- **[Session Management Guide](ca://s?q=Show_session_management_guide)**  
+- **[Session Management Guide](ca://s?q=Show_session_management_guide)**

@@ -11,7 +11,7 @@ This guide does **not** define rules, boundaries, or architectural decisions —
 - Conventions  
 - ADR‑0013 (Server‑Side Identity Resolution)
 
-This guide focuses solely on **how identity mapping works in the current system**, aligned with the **new identity model**, **new DI architecture**, and **recent authentication refactors**.
+This guide focuses solely on **how identity mapping works in the current system**, aligned with the **new authentication callback architecture**, **new identity model**, and **new DI architecture**.
 
 ---
 
@@ -21,37 +21,58 @@ Identity mapping answers one question:
 
 > **“Given an external identity from Auth0, which internal Owner does this represent?”**
 
-US‑110 implements the first half of the identity lifecycle:
-
-- Fetch external user profile from Auth0  
-- Validate required claims (`sub`)  
-- Look up an existing Owner by external ID  
-- Create a new Owner if none exists  
-- Return the internal `OwnerId`  
-- Pass the `OwnerId` to the session creation step  
-
 Identity mapping ensures that **every authenticated user has a valid internal domain identity**.
+
+Identity mapping is performed **inside the Application Auth Callback Pipeline**, after Frank has completed all OIDC protocol work.
 
 ---
 
-# Identity Mapping Flow
+# Where Identity Mapping Happens (Post‑Refactor)
 
-Identity mapping runs inside the **Auth Callback pipeline**, specifically between:
+Identity mapping no longer runs inside a dispatcher‑based step engine.
 
-- **ValidateUserStep**  
-- **AuditLoginStep**  
+It now runs inside the **Application Auth Callback Pipeline**, implemented as:
 
-High‑level flow:
+```csharp
+IImmutableContextBuilder<
+    ApplicationAuthCallbackRequest,
+    ApplicationAuthCallbackContext,
+    ApplicationAuthCallbackContextBuilderResult>
+```
 
-1. Auth0 returns an access token  
-2. Pipeline fetches the user profile (`FetchUserStep`)  
-3. Pipeline validates the profile (`ValidateUserStep`)  
-4. Pipeline resolves identity (`ResolveIdentityStep`)  
+Identity mapping occurs after Frank has produced a normalized protocol result:
+
+```
+Frank Pipeline (protocol)
+    → Application Pipeline (business)
+        → Identity Mapping
+        → Session Creation
+        → Redirect + Cookie Value
+```
+
+Identity mapping is now a **pure business operation** inside Application.
+
+---
+
+# Identity Mapping Flow (Aligned)
+
+The new flow:
+
+1. Frank pipeline exchanges the authorization code  
+2. Frank pipeline extracts and normalizes claims  
+3. Application pipeline receives a normalized external identity  
+4. Application pipeline resolves identity  
 5. If an Owner exists → return the existing `OwnerId`  
 6. If not → create a new Owner  
-7. Pass the `OwnerId` to session creation  
+7. Application pipeline continues with session creation  
+8. Application pipeline returns `OwnerId` + `SessionId` + `CookieValue` + `RedirectUrl`  
 
-Identity mapping is deterministic, pure, and isolated from Infrastructure except through abstractions.
+Identity mapping is:
+
+- deterministic  
+- pure  
+- isolated from Infrastructure except through abstractions  
+- aligned with the new callback architecture  
 
 ---
 
@@ -100,32 +121,15 @@ This aligns with **Domain Purity** and **Security Governance**.
 
 ---
 
-# Where Identity Mapping Happens
+# Identity Resolver Behavior (Aligned With New Architecture)
 
-Identity mapping occurs in the pipeline step:
+Identity mapping is implemented via:
 
 ```
-ResolveIdentityStep
+IIdentityResolver
 ```
 
-This step:
-
-1. Requires `ctx.User`  
-2. Extracts the external subject (`sub`)  
-3. Calls the identity resolver  
-4. Returns the internal `OwnerId`  
-
-The identity resolver is injected via DI and follows:
-
-- Dispatcher pipeline purity  
-- Architecture Governance dependency rules  
-- Security Governance identity rules  
-
----
-
-# Identity Resolver Behavior (Aligned)
-
-The identity resolver performs two operations:
+The resolver performs two operations:
 
 ---
 
@@ -190,18 +194,19 @@ This aligns with **Security Governance**.
 
 ---
 
-# Error Handling
+# Error Handling (Aligned)
 
 Identity mapping may fail for several reasons:
 
 ### Missing `sub`
-- Handled in `ValidateUserStep`  
-- Returns **502 Bad Gateway**  
+- Handled in Frank pipeline  
+- Application pipeline receives a normalized error  
+- API returns **502 Bad Gateway**  
 
 ### Database failure
 - Owner lookup fails  
 - Owner creation fails  
-- Returns **500 Internal Server Error**  
+- API returns **500 Internal Server Error**  
 
 ### Invalid profile data
 - Missing required fields for Owner creation (rare)  
@@ -216,7 +221,7 @@ No cookies are issued on failure.
 
 ---
 
-# Testing Identity Mapping (Aligned)
+# Testing Identity Mapping (Aligned With New Pipelines)
 
 Identity mapping is tested in three layers:
 
@@ -230,30 +235,36 @@ Identity mapping is tested in three layers:
 
 ---
 
-## 2. Integration Tests  
-- Full callback flow  
-- Owner creation on first login  
-- Owner reuse on subsequent logins  
+## 2. Application Pipeline Tests  
+- Identity resolution  
+- Owner creation  
+- Owner reuse  
 - Session creation after identity resolution  
+- Redirect + cookie value computation  
 
-Integration tests use the **new ApiContext + ApiFactory** harness.
+Tests use:
+
+- Fake Frank pipeline result  
+- Real Application pipeline  
+- Fake repositories  
 
 ---
 
-## 3. Guardrail Tests  
-- Email is never used for identity  
-- External ID is required  
-- Identity mapping step is pure  
-- No Infrastructure leakage into Application  
+## 3. Integration Tests  
+- Full callback flow  
+- Owner creation on first login  
+- Owner reuse on subsequent logins  
+- Cookie issuance  
+- Redirect correctness  
 
-Guardrails use **minimal DI**, not Testcontainers.
+Integration tests use the **new ApiContext + ApiFactory** harness.
 
 ---
 
 # Troubleshooting
 
 ### Owner not created  
-- Check that `sub` is present  
+- Check that `sub` is present in Frank pipeline result  
 - Check database connectivity  
 - Check identity resolver DI registration  
 
@@ -265,7 +276,7 @@ Guardrails use **minimal DI**, not Testcontainers.
 ### Callback returning 500  
 - Usually caused by missing Auth0 secrets  
 - Check `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_DOMAIN`  
-- Check hosting provider configuration (Render/Vercel)  
+- Check hosting provider configuration (Render)  
 
 ---
 
@@ -277,15 +288,24 @@ Identity mapping spans:
 
 ## API Layer
 - Does not perform identity resolution  
-- Only orchestrates the pipeline  
+- Only orchestrates Frank + Application pipelines  
 - Never reads identity from headers or body  
 
 ---
 
+## Frank Layer
+- Performs OIDC protocol logic  
+- Extracts and normalizes claims  
+- Produces a stable external identity  
+- Contains no business logic  
+
+---
+
 ## Application Layer
-- Contains `ResolveIdentityStep`  
-- Contains identity resolver logic  
-- Contains no Infrastructure references  
+- Contains identity resolution logic  
+- Contains session creation logic  
+- Contains redirect + cookie value logic  
+- Contains no protocol logic  
 
 ---
 
@@ -307,8 +327,8 @@ All boundaries follow **Architecture Governance** and **Security Governance**.
 
 # Related Documents
 
-- **Session Management Guide**  
 - **Authentication Architecture Guide**  
+- **Session Management Guide**  
 - **Authentication Testing Guide**  
 - **Authentication Operations Guide**  
 - **Create Account Form Guide**  

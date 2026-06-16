@@ -10,6 +10,7 @@
 - [Architecture Conventions](ca://s?q=Open_Architecture_Conventions)
 - [Code Conventions](ca://s?q=Open_Code_Conventions)
 - [Documentation Conventions](ca://s?q=Open_Documentation_Conventions)
+- [Authentication Callback Architecture](ca://s?q=Open_Authentication_Callback_Architecture)
 - [Scrum Master Guide](ca://s?q=Open_Scrum_Master_Guide)
 - [Product Owner Guide](ca://s?q=Open_Product_Owner_Guide)
 
@@ -24,8 +25,10 @@ Core architectural explanations and subsystem architecture
 → [Architecture Guides](ca://s?q=Open_Architecture_Guides)
 
 ### Authentication  
-OIDC login, callback flow, session management  
+OIDC login, **builder‑based callback flow**, identity mapping, session creation, session tokens, session cookies  
 → [Authentication Guides](ca://s?q=Open_Authentication_Guides)
+
+> Note: The previous step‑engine authentication pipeline has been fully replaced by the ImmutableContextBuilder architecture (ADR‑0054).
 
 ### Testing  
 Testing strategy across API, Application, Domain, and frontend  
@@ -54,9 +57,9 @@ Vertical slice walkthroughs and slice‑level abstractions
 1. Clone the repository and install dependencies according to the root README.md.
 2. Review the conventions listed under Quick Links before making changes.
 3. Understand the PR Preview lifecycle via the Workflow Conventions.
-4. Review the Architecture Conventions to understand the system’s DDD layering.
+4. Review the Architecture Conventions to understand the system’s DDD layering and cross‑cutting primitives.
 5. Understand the Story → Task → PR workflow described below.
-6. Explore the Architecture Guides to understand vertical slices, CQRS, and Frank primitives.
+6. Explore the Architecture Guides to understand vertical slices, CQRS, Frank primitives, and ImmutableContextBuilder pipelines.
 7. Run the system locally using the Operations Guides.
 
 ---
@@ -237,6 +240,8 @@ Backend code must respect:
 - Domain purity  
 - CQRS pipelines  
 - Frank primitives  
+- ImmutableContextBuilder pipelines  
+- Strict separation of protocol (Frank) vs business (Application)  
 - Repository and reader boundaries  
 - Handler purity  
 - Endpoint purity  
@@ -251,6 +256,22 @@ Frontend code must follow:
 - API client conventions  
 
 See the [Architecture Guides](ca://s?q=Open_Architecture_Guides) for deeper explanations.
+
+---
+
+# Core Architectural Primitives
+
+CampFitFurDogs uses several cross‑cutting primitives that appear throughout the system:
+
+- Frank HostingEngine  
+- Frank StartupEngine  
+- ImmutableContextBuilder (protocol and business pipelines)  
+- CQRS dispatcher  
+- Repository + Unit of Work  
+- Environment abstraction  
+- Endpoint discovery  
+
+These primitives define the backbone of the system’s architecture.
 
 ---
 
@@ -273,6 +294,7 @@ All documentation must follow Documentation Conventions:
 - [Frank Architecture](ca://s?q=Open_Frank_Architecture)
 - [Vertical Slice Index](ca://s?q=Open_Vertical_Slice_Index)
 - [Dispatcher Pipeline Guide](ca://s?q=Open_Dispatcher_Pipeline_Guide)
+- [Authentication Callback Architecture](ca://s?q=Open_Authentication_Callback_Architecture)
 
 ---
 
@@ -287,5 +309,6 @@ All development work follows:
 - Workflow and automation conventions  
 - Composite action standards  
 - Documentation and patching rules  
+- ImmutableContextBuilder‑based authentication architecture  
 
 The developer documentation, conventions, and governance together ensure a stable, predictable, and maintainable system.

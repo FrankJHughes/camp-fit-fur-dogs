@@ -1,10 +1,10 @@
-# Authentication Operations Guide
+# Authentication Operations Guide (Aligned With Auth Callback Refactor)
 
-This guide explains how to operate and configure the authentication system implemented in **US‑110 (Authentication: Owner Login)**.  
+This guide explains how to operate and configure the authentication system implemented in **US‑110 (Authentication: Owner Login)** and **US‑111 (Session Management)**.  
 It documents the *operational setup*, *environment configuration*, *Auth0 integration*, *local development workflow*, and *preview/production hosting requirements*.
 
 This guide does **not** define rules, boundaries, or architectural decisions — those live in governance, conventions, and ADRs.  
-This guide focuses solely on **how to operate the authentication system that exists today**.
+This guide focuses solely on **how to operate the authentication system that exists today**, aligned with the **new authentication callback architecture**.
 
 ---
 
@@ -13,7 +13,7 @@ This guide focuses solely on **how to operate the authentication system that exi
 Authentication operations involve:
 
 - Auth0 tenant configuration  
-- Environment variable setup  
+- Application configuration (`Authentication:Callback:*`)  
 - Callback URL configuration  
 - Logout URL configuration  
 - Web origin + CORS configuration  
@@ -21,8 +21,6 @@ Authentication operations involve:
 - Preview environment setup  
 - Production environment setup  
 - Troubleshooting common issues  
-
-Each environment has different requirements based on hosting provider behavior, cookie security rules, and redirect constraints.
 
 All behavior follows:
 
@@ -86,31 +84,85 @@ These must be updated whenever Render preview URLs change.
 
 ---
 
-# Environment Variables
+# Application Configuration (Aligned With Refactor)
 
-Authentication requires the following environment variables:
+The system no longer uses `AUTH0_*` environment variables directly.  
+All configuration is now provided under:
 
-| Variable | Purpose |
-|----------|----------|
-| `AUTH0_DOMAIN` | Auth0 tenant domain |
-| `AUTH0_CLIENT_ID` | Auth0 application client ID |
-| `AUTH0_CLIENT_SECRET` | Auth0 application client secret |
-| `AUTH0_AUDIENCE` | API audience (optional) |
-| `AUTH0_REDIRECT_URI` | Callback URL for the API |
-| `AUTH0_LOGOUT_REDIRECT_URI` | Logout redirect URL |
+```
+Authentication:Callback:Oidc:*
+Authentication:Callback:PostLoginRedirectUrl
+```
 
-These values are consumed through **Frank hosting abstractions**, not `Environment.GetEnvironmentVariable`.
+### Canonical configuration shape:
+
+```json
+{
+  "Authentication": {
+    "Callback": {
+      "PostLoginRedirectUrl": "https://yourapp.com/dashboard",
+      "Oidc": {
+        "Authority": "https://YOUR_DOMAIN",
+        "ClientId": "YOUR_CLIENT_ID",
+        "ClientSecret": "YOUR_CLIENT_SECRET",
+        "CallbackUrl": "https://yourapp.com/auth/callback",
+        "Disabled": false
+      }
+    }
+  }
+}
+```
+
+### Environment variable equivalents:
+
+- `Authentication__Callback__Oidc__Authority`  
+- `Authentication__Callback__Oidc__ClientId`  
+- `Authentication__Callback__Oidc__ClientSecret`  
+- `Authentication__Callback__Oidc__CallbackUrl`  
+- `Authentication__Callback__Oidc__Disabled`  
+- `Authentication__Callback__PostLoginRedirectUrl`  
+
+These values are consumed **only** by the **Frank Auth Callback Pipeline**.
+
+The Application pipeline consumes only the normalized protocol result and the `PostLoginRedirectUrl`.
 
 ---
 
-# Local Development Values
+# The `Oidc:Disabled` Flag
 
 ```
-AUTH0_DOMAIN=dev-xxxxx.us.auth0.com
-AUTH0_CLIENT_ID=xxxxxxxxxxxxxxxxxxxx
-AUTH0_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxx
-AUTH0_REDIRECT_URI=http://localhost:5000/api/auth/callback
-AUTH0_LOGOUT_REDIRECT_URI=http://localhost:3000
+Authentication:Callback:Oidc:Disabled = true
+```
+
+This flag:
+
+- Completely disables OIDC authentication  
+- Causes the Frank pipeline to short‑circuit  
+- Prevents token exchange  
+- Prevents userinfo calls  
+- Prevents identity resolution  
+- Prevents session creation  
+- Causes the callback endpoint to return a shaped **501 Not Implemented**  
+
+Used for:
+
+- Local offline development  
+- CI environments without secrets  
+- Automated tests  
+
+---
+
+# Local Development Configuration
+
+Example:
+
+```
+Authentication__Callback__Oidc__Authority=https://dev-tenant.us.auth0.com
+Authentication__Callback__Oidc__ClientId=abc123
+Authentication__Callback__Oidc__ClientSecret=xyz789
+Authentication__Callback__Oidc__CallbackUrl=http://localhost:5000/api/auth/callback
+Authentication__Callback__PostLoginRedirectUrl=http://localhost:3000/
+Authentication__Callback__Oidc__Disabled=false
 ```
 
 Local development uses **HTTP**, so cookies are issued with:
@@ -123,12 +175,7 @@ This is the only environment where insecure cookies are allowed.
 
 ---
 
-# Preview Environment Values
-
-```
-AUTH0_REDIRECT_URI=https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
-AUTH0_LOGOUT_REDIRECT_URI=https://campfitfurdogsapi-pr-<number>.onrender.com
-```
+# Preview Environment Configuration (Render PR Previews)
 
 Preview environments require:
 
@@ -139,21 +186,69 @@ Preview environments require:
 - Correct CORS origins  
 - Correct web origins  
 
+### Preview Callback URL
+
+```
+https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
+```
+
+### Preview Frontend URL
+
+```
+https://campfitfurdogsapi-pr-<number>.onrender.com
+```
+
+### Common Preview Issues
+
+#### 1. Cookie not set  
+- Missing HTTPS  
+- Wrong domain  
+- Wrong callback URL  
+
+#### 2. 500 on callback  
+- Missing OIDC secrets  
+- Wrong redirect URI  
+
+#### 3. Infinite redirect loop  
+- Wrong logout redirect URL  
+
 ---
 
-# Production Values
+# Production Environment Configuration
+
+### Production Callback URL
 
 ```
-AUTH0_REDIRECT_URI=https://campfitfurdogsapi.onrender.com/api/auth/callback
-AUTH0_LOGOUT_REDIRECT_URI=https://campfitfurdogs.com
+https://campfitfurdogsapi.onrender.com/api/auth/callback
 ```
 
-Production requires:
+### Production Frontend URL
 
-- HTTPS  
+```
+https://campfitfurdogs.com
+```
+
+### Production Cookie Behavior
+
 - `Secure=true`  
-- Domain-scoped cookies  
-- Correct callback + logout URLs  
+- `SameSite=Lax`  
+- `HttpOnly=true`  
+- Domain‑scoped cookie  
+
+### Production Troubleshooting
+
+#### 1. Cookie not appearing  
+- Check HTTPS  
+- Check domain mismatch  
+- Check SameSite rules  
+
+#### 2. Callback failing  
+- Check Auth0 logs  
+- Check redirect URI mismatch  
+
+#### 3. Owner not created  
+- Check identity resolver  
+- Check database connectivity  
 
 ---
 
@@ -176,7 +271,8 @@ npm run dev
 - Frontend calls `/api/auth/login`  
 - Browser redirects to Auth0  
 - Auth0 redirects back to `/api/auth/callback`  
-- Callback pipeline resolves identity + creates session  
+- Frank pipeline performs protocol logic  
+- Application pipeline resolves identity + creates session  
 - API issues session cookie  
 - Browser stores cookie  
 - Frontend redirects to dashboard  
@@ -187,93 +283,6 @@ npm run dev
 - `SameSite=Lax`  
 - `HttpOnly=true`  
 - Works over HTTP  
-
-This matches **Security Governance** for local development.
-
----
-
-# Preview Environment Workflow
-
-Preview environments run on Render.
-
-## Requirements
-
-- HTTPS enforced  
-- `Secure=true` cookie flag  
-- Correct callback URLs  
-- Correct logout URLs  
-- Correct CORS origins  
-- Correct web origins  
-
-## Preview Callback URL
-
-```
-https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
-```
-
-## Preview Frontend URL
-
-```
-https://campfitfurdogsapi-pr-<number>.onrender.com
-```
-
-## Common Preview Issues
-
-### 1. Cookie not set  
-- Missing HTTPS  
-- Wrong domain  
-- Wrong callback URL  
-
-### 2. 500 on callback  
-- Missing Auth0 secrets  
-- Wrong redirect URI  
-
-### 3. Infinite redirect loop  
-- Wrong logout redirect URL  
-
----
-
-# Production Environment Workflow
-
-Production uses:
-
-- Render for API  
-- Vercel or static hosting for frontend  
-- Auth0 for identity  
-
-## Production Callback URL
-
-```
-https://campfitfurdogsapi.onrender.com/api/auth/callback
-```
-
-## Production Frontend URL
-
-```
-https://campfitfurdogs.com
-```
-
-## Production Cookie Behavior
-
-- `Secure=true`  
-- `SameSite=Lax`  
-- `HttpOnly=true`  
-- Domain-scoped cookie  
-
-## Production Troubleshooting
-
-### 1. Cookie not appearing  
-- Check HTTPS  
-- Check domain mismatch  
-- Check SameSite rules  
-
-### 2. Callback failing  
-- Check Auth0 logs  
-- Check redirect URI mismatch  
-
-### 3. Owner not created  
-- Check identity resolver  
-- Check database connectivity  
 
 ---
 
@@ -293,13 +302,13 @@ Logs are emitted through the standard logging pipeline.
 
 # Common Operational Failures
 
-## 1. Missing Auth0 Secrets  
+## 1. Missing OIDC Secrets  
 **Symptoms:**  
 - 500 on callback  
 - No tokens returned  
 
 **Fix:**  
-- Set `AUTH0_CLIENT_SECRET`  
+- Set `Authentication__Callback__Oidc__ClientSecret`  
 - Redeploy  
 
 ---

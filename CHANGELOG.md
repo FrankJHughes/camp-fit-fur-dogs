@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Sprint 9] – Unreleased
 
+### Added
+- Improved login reliability and consistency across environments, ensuring owners can sign in without intermittent failures.
+- More predictable post‑login behavior: owners are now redirected consistently after authentication, reducing confusion and dead‑end states.
+- Hardened session handling to reduce unexpected logouts and improve stability during normal use.
+
+### Changed
+- Updated authentication flow to provide a smoother transition from external login back into the application.
+- Improved error messaging for failed login attempts so owners receive clearer, more actionable feedback.
+
 ## [Sprint 8] – 2026-06-06
 
 ### Stories Completed

@@ -61,38 +61,38 @@ Frank also provides the **StartupEngine** and **HostingEngine**, which CampFitFu
 
 Frank provides:
 
-### **DI auto‑registration engine**
+### DI auto‑registration engine
 - Registers interfaces marked with `[AutoRegister]`
 - Discovers implementations
 - Validates min/max implementation counts
 - Registers services with the correct lifetime
 
-### **Endpoint discovery**
+### Endpoint discovery
 - Scans assemblies for `IEndpoint` implementations
 - Registers them automatically
 
-### **Validator scanning**
+### Validator scanning
 - Discovers and registers validators
 
-### **Security headers**
+### Security headers
 - `AddSecurityHeaders()` extension
 - `SecurityHeadersMiddleware` with hardened defaults
 
-### **Hosting provider abstractions**
+### Hosting provider abstractions
 - `IHostingModule`
 - `IHostingEnvironment`
 - `IEnvironment`
 - Deterministic, testable hosting pipeline
 
-### **Startup engine**
+### Startup engine
 - Executes startup modules in two phases:
   - `AddAll(builder)` before the host is built
   - `UseAll(app)` after the host is built
 
-### **Environment abstraction**
+### Environment abstraction
 - Safe, testable environment variable access
 
-### **Test seams**
+### Test seams
 - Hosting seam  
 - Environment seam  
 - Artifact seam  
@@ -103,19 +103,19 @@ Frank contains **no business logic** and **no slice‑specific logic**.
 
 ---
 
-# 3. Hosting Model (Aligned With Actual Implementation)
+# 3. Hosting Model
 
 CampFitFurDogs defines hosting modules; Frank provides the engine.
 
-In `Program.cs`:
+In Program.cs:
 
-```csharp
+```
 await Hosting.AdaptToHostingEnvironment(builder);
 ```
 
 Where:
 
-```csharp
+```
 var hostingModules = ConstructHostingModules();
 var hostingEngine = new HostingEngine(hostingModules);
 await hostingEngine.ApplyHostingEnvironmentConfigurationAsync(builder);
@@ -159,13 +159,13 @@ They must not:
 
 ---
 
-# 4. Startup Model (Aligned With Actual Implementation)
+# 4. Startup Model
 
 CampFitFurDogs defines startup modules; Frank provides the engine.
 
-In `Program.cs`:
+In Program.cs:
 
-```csharp
+```
 Startup.AddAllServices(builder);
 var app = builder.Build();
 Startup.UseAllServices(app);
@@ -173,7 +173,7 @@ Startup.UseAllServices(app);
 
 Where:
 
-```csharp
+```
 var startupModules = ConstructStartupModules();
 var startupEngine = new StartupEngine(startupModules);
 startupEngine.AddAll(builder);
@@ -184,7 +184,7 @@ builder.Services.AddStartupEngine();
 
 And:
 
-```csharp
+```
 var startupEngine = app.Services.GetRequiredService<StartupEngine>();
 startupEngine.UseAll(app);
 ```
@@ -195,16 +195,16 @@ Startup modules encapsulate startup logic for a horizontal concern:
 
 Examples:
 
-- `ApiStartupModule`  
-- `ApplicationStartupModule`  
-- `AuthenticationStartupModule`  
-- `AuthorizationStartupModule`  
-- `CorsStartupModule`  
-- `ExceptionHandlingStartupModule`  
-- `InfrastructureStartupModule`  
-- `LoggingStartupModule`  
-- `SecurityHeadersStartupModule`  
-- `SwaggerStartupModule`  
+- ApiStartupModule  
+- ApplicationStartupModule  
+- AuthenticationStartupModule  
+- AuthorizationStartupModule  
+- CorsStartupModule  
+- ExceptionHandlingStartupModule  
+- InfrastructureStartupModule  
+- LoggingStartupModule  
+- SecurityHeadersStartupModule  
+- SwaggerStartupModule  
 
 Modules may:
 
@@ -226,8 +226,8 @@ Modules must not:
 StartupEngine:
 
 - Executes modules in the order provided  
-- Runs `AddAll(builder)` before DI is built  
-- Runs `UseAll(app)` after DI is built  
+- Runs AddAll(builder) before DI is built  
+- Runs UseAll(app) after DI is built  
 - Ensures deterministic startup  
 - Ensures consistent module ordering  
 - Provides a stable startup lifecycle  
@@ -241,7 +241,7 @@ StartupEngine does **not**:
 
 ---
 
-# 5. Test Harness (Aligned With Actual System)
+# 5. Test Harness
 
 The test harness uses:
 
@@ -353,10 +353,276 @@ Security headers are mandatory.
 
 Api must apply:
 
-- `AddSecurityHeaders()`  
-- `SecurityHeadersMiddleware`  
+- AddSecurityHeaders()  
+- SecurityHeadersMiddleware  
 
 Guardrails enforce presence.
+
+---
+
+# 11. Authentication Callback Architecture
+
+The authentication callback flow follows a **three‑layer structural pattern**:
+
+## 11.1 Frank Pipeline (Protocol Layer)
+
+Implemented as:
+
+```
+IImmutableContextBuilder<
+    FrankAuthCallbackRequest,
+    OidcAuthCallbackContext,
+    FrankAuthCallbackResult>
+```
+
+Responsibilities:
+
+- OIDC protocol handling  
+- Authorization‑code exchange  
+- Claims extraction  
+- Provider normalization  
+
+Contains **no business logic**.
+
+## 11.2 Application Pipeline (Business Layer)
+
+Implemented as:
+
+```
+IImmutableContextBuilder<
+    ApplicationAuthCallbackRequest,
+    ApplicationAuthCallbackContext,
+    ApplicationAuthCallbackContextBuilderResult>
+```
+
+Responsibilities:
+
+- Identity resolution  
+- Customer creation  
+- Session creation  
+- Redirect URL selection  
+- Cookie value generation  
+
+Contains **no protocol logic**.
+
+## 11.3 Api Endpoint (Infrastructure Boundary)
+
+The API callback endpoint is a **thin orchestrator**:
+
+- Extracts the `code` query parameter  
+- Invokes the Frank pipeline  
+- Invokes the Application pipeline  
+- Issues the authentication cookie  
+- Redirects the user  
+
+The endpoint must not contain:
+
+- Protocol logic  
+- Business logic  
+- Persistence logic  
+
+This preserves the layering model and ensures the authentication flow is fully testable.
+
+---
+
+# 12. ImmutableContextBuilder Architecture
+
+`ImmutableContextBuilder<TRequest, TContext, TResult>` is a core architectural primitive used for deterministic, multi‑stage transformations that must remain pure, strongly typed, and invariant‑checked.
+
+It replaces the old step‑engine pattern and is now the standard mechanism for:
+
+- Frank Auth Callback Pipeline (protocol)
+- Application Auth Callback Pipeline (business)
+- Identity mapping flows
+- Session creation flows
+- Redirect computation flows
+- Any multi‑stage transformation requiring purity + determinism
+
+## 12.1 Purpose
+
+ImmutableContextBuilder enforces:
+
+- **Immutability** — no mutation, no overwriting, no clearing  
+- **Determinism** — each stage produces a new context  
+- **Purity** — no side effects inside transformations  
+- **Strong typing** — request, context, and result are explicit  
+- **Governance alignment** — no cross‑layer violations  
+
+## 12.2 Structural Pattern
+
+A builder implements:
+
+```
+IImmutableContextBuilder<TRequest, TContext, TResult>
+```
+
+Where:
+
+- **TRequest** — immutable input  
+- **TContext** — immutable working state  
+- **TResult** — immutable final output  
+
+Each transformation:
+
+- Accepts a context  
+- Returns a new context  
+- Never mutates the old one  
+
+## 12.3 Layering Rules
+
+- **Frank builders**  
+  - May perform protocol logic  
+  - May perform external HTTP calls  
+  - Must not perform business logic  
+  - Must not perform persistence  
+
+- **Application builders**  
+  - May perform business logic  
+  - May perform identity resolution  
+  - May perform session creation  
+  - Must not perform HTTP  
+  - Must not access hosting providers  
+
+- **Domain**  
+  - Contains no builders  
+
+## 12.4 When to Use a Builder
+
+Use a builder when:
+
+- A flow has multiple sequential stages  
+- Each stage depends on the previous stage  
+- The flow must be deterministic  
+- The flow must be pure  
+- The flow must be testable  
+- The flow must not use dispatcher pipelines  
+
+Examples:
+
+- Authentication callback  
+- Payment provider callbacks  
+- Webhook processing  
+- Multi‑stage normalization  
+- Multi‑stage validation  
+- Multi‑stage redirect logic  
+
+## 12.5 When *Not* to Use a Builder
+
+Do **not** use a builder when:
+
+- Implementing CQRS handlers  
+- Performing domain logic  
+- Performing Infrastructure logic  
+- Performing HTTP in Application  
+- Performing persistence in Frank  
+- Implementing branching workflows  
+- Implementing long‑running processes  
+
+Builders are for **pure, deterministic, synchronous transformations**.
+
+## 12.6 Testing Requirements
+
+Builders must be tested at three levels:
+
+- **Unit tests** — individual transformations  
+- **Builder tests** — full end‑to‑end builder behavior  
+- **Guardrail tests** — immutability, no mutation, no overwriting  
+
+Integration tests apply only when builders participate in API flows.
+
+---
+
+# 13. Convention Boundaries
+
+CampFitFurDogs maintains four convention documents: **architecture**, **code**, **docs**, and **workflow**.  
+Each governs a different dimension of the system.  
+To prevent cross‑domain drift, the boundaries must remain strict.
+
+## 13.1 Architecture Conventions (this document)
+
+Defines:
+
+- System structure  
+- Layering rules  
+- Vertical slice boundaries  
+- Cross‑cutting primitives  
+- Hosting and startup models  
+- Authentication callback architecture  
+- Security architecture  
+- ImmutableContextBuilder architecture  
+
+Must not include:
+
+- Coding style  
+- Naming rules  
+- Documentation rules  
+- Workflow rules  
+- PR process  
+- Testing style  
+
+## 13.2 Code Conventions
+
+Defines:
+
+- Naming rules  
+- File layout  
+- Handler patterns  
+- CQRS conventions  
+- Validation patterns  
+- Error handling  
+- Logging  
+- Test structure  
+
+Must not include:
+
+- Architectural rules  
+- Hosting rules  
+- Documentation structure  
+- Workflow process  
+
+## 13.3 Docs Conventions
+
+Defines:
+
+- Documentation structure  
+- Story grammar  
+- Task templates  
+- PR templates  
+- ADR templates  
+- Docs folder layout  
+
+Must not include:
+
+- Architectural rules  
+- Coding style  
+- Workflow process  
+
+## 13.4 Workflow Conventions
+
+Defines:
+
+- Story → Task → PR lifecycle  
+- Branching strategy  
+- Commit message rules  
+- Review process  
+- CI/CD expectations  
+- Definition of Done  
+- Sprint review structure  
+
+Must not include:
+
+- Architectural rules  
+- Coding style  
+- Documentation templates  
+
+## 13.5 Boundary Enforcement
+
+- Architectural decisions belong in **Architecture Conventions** or **ADRs**  
+- Coding style belongs in **Code Conventions**  
+- Documentation templates belong in **Docs Conventions**  
+- Work lifecycle rules belong in **Workflow Conventions**  
+
+Guardrail tests and PR review checklists enforce these boundaries.
 
 ---
 
@@ -367,7 +633,8 @@ The architecture ensures:
 - Strict layering  
 - Deterministic hosting behavior  
 - Deterministic startup behavior  
-- Testable, composable providers  
+- Testable, composable authentication pipelines  
+- ImmutableContextBuilder as a core primitive  
 - Strong security posture  
 - Clear cross‑cutting boundaries  
 - Frank as the backbone of shared behavior  

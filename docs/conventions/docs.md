@@ -280,15 +280,15 @@ Documentation must:
   - CQRS abstractions  
   - Domain primitives  
   - Endpoint discovery  
-  - **DI auto‑registration engine**  
-  - **Validator scanning**  
-  - **Security headers middleware**  
-  - **Hosting provider abstractions**  
-  - **Environment abstraction**  
-  - **GitHub artifact client abstraction**  
-  - **PR parser abstraction**  
-  - **Configuration writer abstraction**  
-  - **StartupModule Engine primitives**  
+  - DI auto‑registration engine  
+  - Validator scanning  
+  - Security headers middleware  
+  - Hosting provider abstractions  
+  - Environment abstraction  
+  - GitHub artifact client abstraction  
+  - PR parser abstraction  
+  - Configuration writer abstraction  
+  - StartupModule Engine primitives  
   - Guardrail enforcement  
   - Test seams  
 

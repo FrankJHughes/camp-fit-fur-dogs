@@ -8,7 +8,8 @@ They do **not** define rules (see Conventions) and do **not** record decisions (
 Instead, they explain **how the architecture works** and **how to apply it correctly**.
 
 Frank provides the system’s cross‑cutting backbone — including the DI auto‑registration engine, endpoint discovery, validator scanning, environment abstraction, hosting provider abstractions, **HostingEngine**, and **StartupEngine**.  
-Application, Domain, Infrastructure, and Api form the vertical slices of behavior.
+Application, Domain, Infrastructure, and Api form the vertical slices of behavior.  
+Authentication and session flows now use the **ImmutableContextBuilder** architecture.
 
 ---
 
@@ -22,13 +23,15 @@ Use these guides to understand:
 - How domain events propagate  
 - How vertical slices are structured  
 - How validation boundaries are enforced  
-- How authentication and session flows integrate with the architecture  
+- How the **builder‑based authentication callback architecture** works  
+- How identity mapping, session creation, and cookie issuance integrate with the architecture  
 - How Infrastructure integrates with Application and Domain  
 - How **StartupEngine** composes startup modules  
 - How **HostingEngine** selects and configures hosting providers  
 - How environment seams and hosting seams work  
 - How tests map to architectural layers and seams  
 - How Frank provides cross‑cutting primitives and discovery mechanisms  
+- How ImmutableContextBuilder enables pure, deterministic multi‑stage transformations  
 
 These guides evolve as the system evolves.
 
@@ -68,27 +71,45 @@ These guides evolve as the system evolves.
 - **[Vertical Slice Architecture](../vertical-slice-architecture.md)**  
   How slices encapsulate API, Application, Domain, and Infrastructure behavior.
 
+- **[Immutable Context Builder Architecture](../immutable-context-builder.md)**  
+  How multi‑stage transformations are implemented using pure, deterministic, immutable pipelines.
+
 ---
 
 ## Authentication Architecture
 
 - **[Authentication Overview](../authentication/overview.md)**  
-  High-level explanation of the OIDC authentication flow.
+  High‑level explanation of the OIDC authentication flow and the three‑layer callback architecture.
 
 - **[Login Endpoint](../authentication/login-endpoint.md)**  
   Details for `/api/auth/login`, the pure redirect endpoint.
 
 - **[Callback Endpoint](../authentication/callback-endpoint.md)**  
-  Details for `/api/auth/callback`, which completes the OIDC flow.
+  Details for `/api/auth/callback`, which orchestrates the Frank pipeline, Application pipeline, cookie issuance, and redirect.
 
 - **[Authentication Configuration](../authentication/configuration.md)**  
   Required Auth0 configuration keys and environment variables.
 
+- **[Frank Callback Pipeline](../authentication/frank-callback-pipeline.md)**  
+  Protocol‑level pipeline implemented using ImmutableContextBuilder.
+
+- **[Application Callback Pipeline](../authentication/application-callback-pipeline.md)**  
+  Business‑level pipeline implemented using ImmutableContextBuilder.
+
 - **[Identity Mapping](../authentication/identity-mapping.md)**  
   How external identities map to internal Owner identities.
 
+- **[Session Token Architecture](../authentication/session-token-architecture.md)**  
+  How session tokens are generated, hashed, stored, and validated.
+
+- **[Session Cookie Specification](../authentication/session-cookie-specification.md)**  
+  Cookie format, flags, security properties, and lifetime.
+
 - **[Session Management](../authentication/session-management.md)**  
-  How session cookies are created, stored, and validated.
+  How session records are created, persisted, validated, and expired.
+
+- **[Authentication Error Handling](../authentication/authentication-error-handling.md)**  
+  How errors are surfaced during login, callback, and session validation.
 
 ---
 
@@ -124,6 +145,7 @@ Update or add new architecture guides when:
 - A hosting provider abstraction changes  
 - A new environment or preview behavior is introduced  
 - StartupEngine or HostingEngine behavior changes  
+- A new ImmutableContextBuilder pipeline is introduced  
 
 Do **not** update these guides for:
 
