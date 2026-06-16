@@ -16,18 +16,18 @@ public class AuthenticationStartupModule : IStartupModule
         var services = builder.Services;
         var config = builder.Configuration;
 
-        var authority = config["Authentication:Oidc:Authority"]
-            ?? throw new InvalidOperationException("Missing Authentication:Oidc:Authority");
-        var clientId = config["Authentication:Oidc:ClientId"]
-            ?? throw new InvalidOperationException("Missing Authentication:Oidc:ClientId");
-        var clientSecret = config["Authentication:Oidc:ClientSecret"]
-            ?? throw new InvalidOperationException("Missing Authentication:Oidc:ClientSecret");
-        var callbackUrl = config["Authentication:Oidc:CallbackUrl"]
-            ?? throw new InvalidOperationException("Missing Authentication:Oidc:CallbackUrl");
-        var postLoginRedirectUrl = config["Authentication:Oidc:PostLoginRedirectUrl"]
-            ?? throw new InvalidOperationException("Missing Authentication:Oidc:PostLoginRedirectUrl");
+        var authority = config["Authentication:Callback:Oidc:Authority"]
+            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
+        var clientId = config["Authentication:Callback:Oidc:ClientId"]
+            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
+        var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"]
+            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
+        var callbackUrl = config["Authentication:Callback:Oidc:CallbackUrl"]
+            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl");
+        var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"]
+            ?? throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
 
-        var disableOidc = config.GetValue<bool>("Authentication:Oidc:Disabled");
+        var disableOidc = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
 
         var auth = services
             .AddAuthentication(options =>

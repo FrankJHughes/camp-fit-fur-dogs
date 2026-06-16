@@ -1,10 +1,10 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
+using Frank.Abstractions.Authentication.Callback;
 
 namespace CampFitFurDogs.Application.Abstractions.Identity;
 
 public interface IIdentityResolver
 {
     Task<Guid> ResolveAsync(
-        AuthUser user,
+        FrankAuthCallbackResult authCallbackResult,
         CancellationToken cancellationToken);
 }

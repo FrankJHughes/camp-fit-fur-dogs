@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Infrastructure;
@@ -56,7 +55,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             {
                 ["ASPNETCORE_ENVIRONMENT"] = _ctx.Environment,
                 ["Frontend__BaseUrl"] = "http://localhost:5173",
-                ["Authentication:Oidc:Disabled"] = "true"
+                ["Authentication:Callback:Oidc:Disabled"] = "true"
             });
 
             foreach (var apply in _ctx.ConfigOverrides)
@@ -70,10 +69,6 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureServices((context, services) =>
         {
-            // Default fake auth client
-            services.RemoveAll<IAuthClient>();
-            services.AddSingleton<IAuthClient, FakeOidcAuthClient>();
-
             // Cookie defaults for TestServer
             services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
             {
