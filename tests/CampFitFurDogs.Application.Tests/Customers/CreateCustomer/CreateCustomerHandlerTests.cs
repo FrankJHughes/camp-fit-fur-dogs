@@ -1,7 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Tests.Fakes;
-using CampFitFurDogs.Domain.Customers.Exceptions;
 using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Application.Tests.Customers.CreateCustomer;

@@ -1,11 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.TestUtilities;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Testcontainers.PostgreSql;
-using Xunit;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 

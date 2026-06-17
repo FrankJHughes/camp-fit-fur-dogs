@@ -1,6 +1,5 @@
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Customers;
 

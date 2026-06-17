@@ -1,4 +1,3 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Identity;
 using CampFitFurDogs.Infrastructure.Data;
 using Frank.Abstractions.Authentication.Callback;

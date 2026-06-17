@@ -1,9 +1,5 @@
 using Frank.Abstractions.Startup;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 

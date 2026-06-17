@@ -2,7 +2,6 @@ using System.Text.Json;
 using CampFitFurDogs.Application.Settings;
 using CampFitFurDogs.Domain.Errors;
 using Frank.Api;
-using Frank.Authentication.Callback.Oidc;
 using Frank.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;

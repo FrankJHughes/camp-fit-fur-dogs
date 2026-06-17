@@ -1,5 +1,4 @@
 using Frank.Abstractions.Events;
-using Frank.Events;
 
 namespace Frank.Domain;
 
