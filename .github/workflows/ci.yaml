@@ -20,6 +20,8 @@ jobs:
       docs-only: ${{ steps.filter.outputs.docs-only }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Detect changed paths
         id: filter
@@ -52,6 +54,8 @@ jobs:
     needs: determine-changes
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: ./.github/actions/setup-node-pnpm
 
@@ -71,6 +75,8 @@ jobs:
       needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
@@ -100,6 +106,8 @@ jobs:
       )
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
@@ -131,6 +139,8 @@ jobs:
       )
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: ./.github/actions/setup-node-pnpm
 
