@@ -1,11 +1,11 @@
 using System.Reflection;
 using FluentValidation;
-
+using Frank.AutoRegistration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.DependencyInjection;
+namespace Frank;
 
-public static class ServiceCollectionExtensions
+public static class FrankExtensions
 {
     public static IServiceCollection AddFrank(
         this IServiceCollection services,

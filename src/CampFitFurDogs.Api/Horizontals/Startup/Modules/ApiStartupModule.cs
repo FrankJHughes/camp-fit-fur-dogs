@@ -1,6 +1,6 @@
+using Frank;
 using Frank.Abstractions.Startup;
 using Frank.Api;
-using Frank.DependencyInjection;
 
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;

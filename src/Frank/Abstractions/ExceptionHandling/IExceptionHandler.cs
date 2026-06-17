@@ -1,5 +1,5 @@
 using Frank.Abstractions.Errors;
-using Frank.DependencyInjection;
+using Frank.AutoRegistration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Abstractions.ExceptionHandling;

@@ -1,7 +1,7 @@
 using System.Reflection;
-using Frank.DependencyInjection.AutoRegistration.Shapes;
+using Frank.AutoRegistration.Shapes;
 
-namespace Frank.DependencyInjection.AutoRegistration;
+namespace Frank.AutoRegistration;
 
 public static class Planner
 {

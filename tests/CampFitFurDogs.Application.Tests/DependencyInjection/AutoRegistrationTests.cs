@@ -5,7 +5,7 @@ using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 using FluentValidation;
 using Frank.Abstractions;
-using Frank.DependencyInjection;
+using Frank;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Frank.DependencyInjection.AutoRegistration.Shapes;
+namespace Frank.AutoRegistration.Shapes;
 
 public sealed record Implementation(
     TypeInfo ImplementingClass,

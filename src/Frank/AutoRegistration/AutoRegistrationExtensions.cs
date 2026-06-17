@@ -1,8 +1,7 @@
 using System.Reflection;
-using Frank.DependencyInjection.AutoRegistration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.DependencyInjection;
+namespace Frank.AutoRegistration;
 
 public static partial class AutoRegistrationExtensions
 {

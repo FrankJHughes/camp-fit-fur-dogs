@@ -1,4 +1,4 @@
-namespace Frank.DependencyInjection.AutoRegistration.Shapes;
+namespace Frank.AutoRegistration.Shapes;
 
 public sealed record Violation(
     Plan Plan,

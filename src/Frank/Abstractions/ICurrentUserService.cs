@@ -1,4 +1,4 @@
-using Frank.DependencyInjection;
+using Frank.AutoRegistration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Abstractions;

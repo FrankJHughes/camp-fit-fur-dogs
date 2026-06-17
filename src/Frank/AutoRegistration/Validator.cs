@@ -1,6 +1,6 @@
-using Frank.DependencyInjection.AutoRegistration.Shapes;
+using Frank.AutoRegistration.Shapes;
 
-namespace Frank.DependencyInjection.AutoRegistration;
+namespace Frank.AutoRegistration;
 
 public sealed class Validator
 {

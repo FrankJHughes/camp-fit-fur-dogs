@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.DependencyInjection;
+namespace Frank.AutoRegistration;
 
 [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
 public sealed class AutoRegisterAttribute(

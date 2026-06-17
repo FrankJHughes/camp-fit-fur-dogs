@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.DependencyInjection.AutoRegistration;
+namespace Frank.AutoRegistration;
 
 public sealed class Orchestrator
 {
