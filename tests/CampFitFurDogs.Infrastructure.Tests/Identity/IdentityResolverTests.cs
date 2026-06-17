@@ -9,12 +9,18 @@ namespace CampFitFurDogs.Infrastructure.Tests.Identity;
 
 public sealed class IdentityResolverTests
 {
+    // ------------------------------------------------------------
+    // FAKES
+    // ------------------------------------------------------------
+
     private sealed class FakeReader : IFindCustomerByExternalIdReader
     {
         public string? ReceivedExternalId { get; private set; }
         public FindCustomerByExternalIdResponse? Returned { get; set; }
 
-        public Task<FindCustomerByExternalIdResponse?> FindByExternalIdAsync(string externalId, CancellationToken ct)
+        public Task<FindCustomerByExternalIdResponse?> FindByExternalIdAsync(
+            string externalId,
+            CancellationToken ct)
         {
             ReceivedExternalId = externalId;
             return Task.FromResult(Returned);
@@ -24,9 +30,12 @@ public sealed class IdentityResolverTests
     private sealed class FakeDispatcher : ICommandDispatcher
     {
         public object? ReceivedCommand { get; private set; }
-        public Guid ReturnedId { get; set; } = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+        public Guid ReturnedId { get; set; } =
+            Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
 
-        public Task<TResult> DispatchAsync<TResult>(ICommand<TResult> command, CancellationToken ct)
+        public Task<TResult> DispatchAsync<TResult>(
+            ICommand<TResult> command,
+            CancellationToken ct)
         {
             ReceivedCommand = command;
             return Task.FromResult((TResult)(object)ReturnedId);
@@ -53,6 +62,10 @@ public sealed class IdentityResolverTests
             Email = email
         };
 
+    // ------------------------------------------------------------
+    // TESTS
+    // ------------------------------------------------------------
+
     [Fact]
     public async Task ResolveAsync_WhenCustomerExists_ReturnsExistingId()
     {
@@ -70,6 +83,8 @@ public sealed class IdentityResolverTests
 
         result.Should().Be(existingId);
         reader.ReceivedExternalId.Should().Be("sub-123");
+
+        // Should NOT create a new customer
         dispatcher.ReceivedCommand.Should().BeNull();
     }
 

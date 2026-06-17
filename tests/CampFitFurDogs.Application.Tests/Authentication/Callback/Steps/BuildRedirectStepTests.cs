@@ -1,4 +1,3 @@
-using System.Xml.Linq;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Application.Authentication.Callback.Steps;
 using CampFitFurDogs.Application.Settings;

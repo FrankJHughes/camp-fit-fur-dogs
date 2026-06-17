@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 
-namespace CampFitFurDogs.Api.Tests.Authentication;
+namespace CampFitFurDogs.Api.Tests.Authentication.Login;
 
 public class AuthLoginEndpointTests : IAsyncLifetime
 {
