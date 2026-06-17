@@ -1,17 +1,18 @@
 using System.Text.Json;
 using Frank.Abstractions.ImmutableContext;
+using Frank.Settings;
 
 namespace Frank.Authentication.Callback.Oidc.Steps;
 
 public sealed class ExchangeCodeStep : IImmutableContextBuildStep<OidcAuthCallbackContext>
 {
     private readonly HttpClient _http;
-    private readonly OidcAuthCallbackOptions _options;
+    private readonly AuthCallbackOidcSettings _options;
 
     public IImmutableContextBuildStepMetadata Metadata { get; } =
         new ImmutableContextBuildStepMetadata("oidc.exchange-code", "Exchange Authorization Code");
 
-    public ExchangeCodeStep(HttpClient http, OidcAuthCallbackOptions options)
+    public ExchangeCodeStep(HttpClient http, AuthCallbackOidcSettings options)
     {
         _http = http;
         _options = options;

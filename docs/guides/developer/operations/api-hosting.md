@@ -175,7 +175,7 @@ No orphaned resources remain.
 
 - `ConnectionStrings__DefaultConnection`  
 - `ASPNETCORE_ENVIRONMENT`  
-- `Frontend__BaseUrl`  
+- `Frontend:BaseUrl`  
 - `PREVIEW_DB_CONNECTION_STRING`  
 
 ---

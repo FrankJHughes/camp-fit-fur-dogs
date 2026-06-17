@@ -35,7 +35,7 @@ public sealed class IdentityResolver : IIdentityResolver
 
         // Create a new customer via application command
         var command = new CreateCustomerCommand(
-            ExternalAuthProviderId: frankAuthCallbackResult.SubjectId,
+            ExternalId: frankAuthCallbackResult.SubjectId,
             FirstName: frankAuthCallbackResult.GivenName!,
             LastName: frankAuthCallbackResult.FamilyName!,
             Email: frankAuthCallbackResult.Email!);

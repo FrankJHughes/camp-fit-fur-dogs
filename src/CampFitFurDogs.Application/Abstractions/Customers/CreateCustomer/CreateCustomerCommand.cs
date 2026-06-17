@@ -7,6 +7,6 @@ public sealed record CreateCustomerCommand(
     string FirstName,
     string LastName,
     string Email,
-    string? Phone = null,
-    string? Password = null,
-    string? ExternalAuthProviderId = null) : ICommand<Guid>;
+    string ExternalId,
+    string? Phone = null
+) : ICommand<Guid>;

@@ -209,7 +209,7 @@ public sealed class RenderPrPreviewHostingModuleTests
         overrides["ConnectionStrings:DefaultConnection"]
             .Should().Be("Server=Test;");
 
-        overrides["Frontend__BaseUrl"]
+        overrides["Frontend:BaseUrl"]
             .Should().Be("https://preview.example.com");
     }
 }

@@ -66,7 +66,7 @@ public sealed class DevelopmentHostingModuleTests : IDisposable
             .Should().Be("http://0.0.0.0:8080");
 
         // Module returns frontend override
-        overrides["Frontend__BaseUrl"]
+        overrides["Frontend:BaseUrl"]
             .Should().Be("https://localhost:5173");
     }
 
@@ -83,7 +83,7 @@ public sealed class DevelopmentHostingModuleTests : IDisposable
         builder.WebHost.GetSetting("urls")
             .Should().Be("http://0.0.0.0:5555");
 
-        overrides["Frontend__BaseUrl"]
+        overrides["Frontend:BaseUrl"]
             .Should().Be("https://localhost:5173");
     }
 
@@ -99,7 +99,7 @@ public sealed class DevelopmentHostingModuleTests : IDisposable
 
         var overrides = await module.GetConfigurationOverridesAsync(builder);
 
-        overrides.Should().ContainKey("Frontend__BaseUrl");
-        overrides["Frontend__BaseUrl"].Should().Be("https://localhost:5173");
+        overrides.Should().ContainKey("Frontend:BaseUrl");
+        overrides["Frontend:BaseUrl"].Should().Be("https://localhost:5173");
     }
 }

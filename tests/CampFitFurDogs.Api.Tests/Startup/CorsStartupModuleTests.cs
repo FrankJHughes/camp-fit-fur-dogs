@@ -8,7 +8,7 @@ namespace CampFitFurDogs.Api.Tests.Startup;
 
 public class CorsStartupModuleTests
 {
-    private const string FrontendConfigKey = "Frontend__BaseUrl";
+    private const string FrontendConfigKey = "Frontend:BaseUrl";
 
     // ------------------------------------------------------------
     // ORIGIN CONFIGURATION
@@ -63,7 +63,7 @@ public class CorsStartupModuleTests
         Func<Task> act = () => StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
 
         act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*Frontend__BaseUrl*");
+            .WithMessage("*Frontend:BaseUrl*");
     }
 
     [Fact]

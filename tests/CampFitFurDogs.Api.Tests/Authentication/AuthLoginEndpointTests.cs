@@ -49,12 +49,13 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         {
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Authentication:Callback:Oidc:Authority"] = "dev-fake.auth0.com",
+                ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
                 ["Authentication:Callback:Oidc:ClientSecret"] = "secret123",
                 ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
                 ["Authentication:Callback:PostLoginRedirectUrl"] = "http://localhost:5173/",
-                ["Authentication:Callback:Oidc:Disabled"] = "false"
+                ["Authentication:Callback:Oidc:Disabled"] = "false",
+                ["Frontend:BaseUrl"] = "/"
             });
         });
 
@@ -95,7 +96,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        json.Should().Contain("Auth0 configuration is missing or incomplete");
+        json.Should().Contain("Authentication configuration is missing or incomplete");
     }
 
     [Fact]
@@ -116,7 +117,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        json.Should().Contain("Auth0 configuration is missing or incomplete");
+        json.Should().Contain("Authentication configuration is missing or incomplete");
     }
 
     [Fact]
@@ -126,7 +127,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         {
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Authentication:Callback:Oidc:Authority"] = "dev-fake.auth0.com",
+                ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "",
                 ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
             });
@@ -137,7 +138,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        json.Should().Contain("Auth0 configuration is missing or incomplete");
+        json.Should().Contain("Authentication configuration is missing or incomplete");
     }
 
     [Fact]
@@ -147,7 +148,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         {
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Authentication:Callback:Oidc:Authority"] = "dev-fake.auth0.com",
+                ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
                 ["Authentication:Callback:Oidc:CallbackUrl"] = ""
             });
@@ -158,6 +159,6 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
         var json = await response.Content.ReadAsStringAsync();
-        json.Should().Contain("Auth0 configuration is missing or incomplete");
+        json.Should().Contain("Authentication configuration is missing or incomplete");
     }
 }

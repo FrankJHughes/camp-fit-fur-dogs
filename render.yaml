@@ -25,9 +25,11 @@ projects:
         - key: ConnectionStrings__DefaultConnection
           sync: false # do not copy to preview environment
 
-        - key: Frontend__BaseUrl
+        - key: Frontend:BaseUrl
           sync: false # do not copy to preview environment
 
         - key: GITHUB_PAT
           value: "secret" # access to the GitHub Artifacts hosting the preview environment variable overrides
+
+        - key: Authentication__Callback__Oidc__ClientSecret
 

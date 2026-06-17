@@ -42,9 +42,8 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
         });
 
         //
-        // OPTIONAL VALUE OBJECTS — mapped via nullable scalar + converter
+        // OPTIONAL VALUE OBJECTS
         //
-
         builder.Property(c => c.Phone)
             .HasConversion(
                 v => v == null ? null : v.Value,
@@ -52,19 +51,20 @@ public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer,
             .HasColumnName("phone")
             .IsRequired(false);
 
-        builder.Property(c => c.PasswordHash)
-            .HasConversion(
-                v => v == null ? null : v.Value,
-                v => v == null ? null : PasswordHash.From(v))
-            .HasColumnName("password_hash")
-            .IsRequired(false);
+        //
+        // REQUIRED ExternalId (post–US‑184)
+        //
+        builder.OwnsOne(c => c.ExternalId, ext =>
+        {
+            // ExternalId is a single-property VO containing only "Value"
+            ext.Property(e => e.Value)
+                .HasColumnName("external_id")
+                .HasMaxLength(200)
+                .IsRequired();
 
-        builder.Property(c => c.ExternalAuthProviderId)
-            .HasConversion(
-                v => v == null ? null : v.Value,
-                v => v == null ? null : ExternalAuthProviderId.From(v))
-            .HasColumnName("external_auth_provider_id")
-            .HasMaxLength(200)
-            .IsRequired(false);
+            // Unique constraint on the external identity
+            ext.HasIndex(e => e.Value)
+                .IsUnique();
+        });
     }
 }

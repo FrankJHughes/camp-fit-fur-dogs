@@ -7,7 +7,7 @@ namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 [StartupModule(20)]
 public sealed class CorsStartupModule : IStartupModule
 {
-    private const string FrontendKey = "Frontend__BaseUrl";
+    private const string FrontendKey = "Frontend:BaseUrl";
     private const string PreflightKey = "Cors:PreflightMaxAgeSeconds";
 
     private string? _validatedOrigin;

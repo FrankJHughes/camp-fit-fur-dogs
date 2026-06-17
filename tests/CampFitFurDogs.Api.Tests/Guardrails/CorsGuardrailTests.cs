@@ -8,7 +8,7 @@ public class CorsGuardrailTests
     private static readonly Assembly ApiAssembly =
         typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
 
-    private const string CanonicalConfigKey = "Frontend__BaseUrl";
+    private const string CanonicalConfigKey = "Frontend:BaseUrl";
 
     // ---------------------------------------------------------------------
     // 1. ONLY CorsStartupModule may configure CORS
@@ -157,7 +157,7 @@ public class CorsGuardrailTests
             .ToList();
 
         configKeyUsages.Should().OnlyContain(s => s == CanonicalConfigKey,
-            "Only the canonical Frontend__BaseUrl key may be used.");
+            "Only the canonical Frontend:BaseUrl key may be used.");
     }
 
     // ---------------------------------------------------------------------

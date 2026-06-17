@@ -88,7 +88,7 @@ public sealed class IdentityResolverTests
         dispatcher.ReceivedCommand.Should().BeOfType<CreateCustomerCommand>();
 
         var cmd = (CreateCustomerCommand)dispatcher.ReceivedCommand!;
-        cmd.ExternalAuthProviderId.Should().Be("sub-123");
+        cmd.ExternalId.Should().Be("sub-123");
         cmd.FirstName.Should().Be("John");
         cmd.LastName.Should().Be("Doe");
         cmd.Email.Should().Be("john@example.com");

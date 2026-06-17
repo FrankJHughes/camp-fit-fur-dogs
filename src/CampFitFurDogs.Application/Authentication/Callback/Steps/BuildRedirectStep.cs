@@ -1,4 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
+using CampFitFurDogs.Application.Settings;
 using Frank.Abstractions.ImmutableContext;
 using Microsoft.Extensions.Options;
 
@@ -9,7 +10,7 @@ public sealed class BuildRedirectStep
 {
     private readonly string _defaultRedirect;
 
-    public BuildRedirectStep(IOptions<ApplicationAuthCallbackOptions> options)
+    public BuildRedirectStep(IOptions<AuthCallbackSettings> options)
     {
         _defaultRedirect = options.Value.PostLoginRedirectUrl
             ?? throw new InvalidOperationException("PostLoginRedirectUrl must be configured.");

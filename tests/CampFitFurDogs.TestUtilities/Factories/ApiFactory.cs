@@ -54,7 +54,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ASPNETCORE_ENVIRONMENT"] = _ctx.Environment,
-                ["Frontend__BaseUrl"] = "http://localhost:5173",
+                ["Frontend:BaseUrl"] = "http://localhost:5173",
                 ["Authentication:Callback:Oidc:Disabled"] = "true"
             });
 

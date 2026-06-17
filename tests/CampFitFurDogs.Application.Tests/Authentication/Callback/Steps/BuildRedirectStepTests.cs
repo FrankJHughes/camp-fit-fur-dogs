@@ -1,5 +1,7 @@
+using System.Xml.Linq;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Application.Authentication.Callback.Steps;
+using CampFitFurDogs.Application.Settings;
 using CampFitFurDogs.Application.Tests.Fakes.Authentication.Callback;
 using Microsoft.Extensions.Options;
 
@@ -8,12 +10,14 @@ namespace CampFitFurDogs.Application.Tests.Authentication.Callback.Steps;
 public sealed class BuildRedirectStepTests
 {
     private static BuildRedirectStep NewStep(string defaultUrl = "/home")
-        => new BuildRedirectStep(
-            Options.Create(new ApplicationAuthCallbackOptions
-            {
-                PostLoginRedirectUrl = defaultUrl
-            })
-        );
+    {
+        return new BuildRedirectStep(
+                Options.Create(new AuthCallbackSettings
+                {
+                    PostLoginRedirectUrl = defaultUrl
+                })
+            );
+    }
 
     [Fact]
     public async Task ExecuteAsync_UsesRequestedRedirect_WhenSafe()
