@@ -1,4 +1,4 @@
-﻿name: Build & Test
+﻿﻿name: Build & Test
 
 on:
   pull_request:
@@ -6,6 +6,8 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch: {}
+  # schedule:
+  #   - cron: "0 9 * * *"
 
 jobs:
 
@@ -20,8 +22,6 @@ jobs:
       docs-only: ${{ steps.filter.outputs.docs-only }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Detect changed paths
         id: filter
@@ -38,7 +38,7 @@ jobs:
               - 'tests/Frank*/**'
             infra:
               - '.github/**'
-              - '*.slnx'
+              - '*.sln'
               - 'Makefile'
               - 'docker-compose*'
             docs-only:
@@ -54,8 +54,6 @@ jobs:
     needs: determine-changes
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/setup-node-pnpm
 
@@ -75,17 +73,6 @@ jobs:
       needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          cache: false
-
-      - name: Restore dependencies
-        run: dotnet restore CampFitFurDogs.slnx
-
       - uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
@@ -106,17 +93,6 @@ jobs:
       )
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          cache: false
-
-      - name: Restore dependencies
-        run: dotnet restore CampFitFurDogs.slnx
-
       - uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
@@ -139,8 +115,6 @@ jobs:
       )
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/setup-node-pnpm
 

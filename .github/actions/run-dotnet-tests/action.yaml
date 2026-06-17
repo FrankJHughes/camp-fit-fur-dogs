@@ -2,48 +2,27 @@ name: Run .NET Tests
 description: Run .NET tests for the specified projects.
 inputs:
   projects:
-    description: 'Newline-separated list of test project paths (relative to repo root)'
+    description: 'Newline-separated list of test project paths'
     required: true
-
 runs:
   using: composite
   steps:
-    - name: Ensure repo root
-      shell: bash
-      run: cd "$GITHUB_WORKSPACE"
-
-    - name: Clean bin/obj
-      shell: bash
+    - uses: actions/setup-dotnet@v4
+    - shell: bash
+      run: find . -type d \( -name bin -o -name obj \) -exec rm -rf {} +
+    - shell: bash
       run: |
-        cd "$GITHUB_WORKSPACE"
-        find . -type d \( -name bin -o -name obj \) -prune -exec rm -rf {} +
-
-    - name: Build test projects
-      shell: bash
-      run: |
-        cd "$GITHUB_WORKSPACE"
         while IFS= read -r project; do
           [[ -z "$project" ]] && continue
           echo "::group::Build $project"
-          dotnet build "$GITHUB_WORKSPACE/$project" \
-            --configuration Debug \
-            --no-restore \
-            --nologo
+          dotnet build "$project" --configuration Debug
           echo "::endgroup::"
         done <<< "${{ inputs.projects }}"
-
-    - name: Run tests
-      shell: bash
+    - shell: bash
       run: |
-        cd "$GITHUB_WORKSPACE"
         while IFS= read -r project; do
           [[ -z "$project" ]] && continue
           echo "::group::Test $project"
-          dotnet test "$GITHUB_WORKSPACE/$project" \
-            --framework net10.0 \
-            --configuration Debug \
-            --no-build \
-            --no-restore \
-            --logger "console;verbosity=detailed"
+          dotnet test "$project" --framework net10.0 --no-build --no-restore --logger "console;verbosity=detailed"
           echo "::endgroup::"
         done <<< "${{ inputs.projects }}"
