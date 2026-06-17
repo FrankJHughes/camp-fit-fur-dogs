@@ -6,8 +6,6 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch: {}
-  # schedule:
-  #   - cron: "0 9 * * *"
 
 jobs:
 
@@ -73,6 +71,15 @@ jobs:
       needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          cache: true
+
+      - name: Restore dependencies
+        run: dotnet restore
+
       - uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
@@ -93,6 +100,15 @@ jobs:
       )
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          cache: true
+
+      - name: Restore dependencies
+        run: dotnet restore
+
       - uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |

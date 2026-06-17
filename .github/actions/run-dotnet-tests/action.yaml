@@ -8,45 +8,14 @@ inputs:
 runs:
   using: composite
   steps:
-    # Ensure we’re at the repo root for all subsequent steps
-    - name: Set working directory
-      shell: bash
-      run: |
-        echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-        cd "$GITHUB_WORKSPACE"
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        # If you have global.json, this will honor it.
-        # Otherwise, pin explicitly:
-        # dotnet-version: '10.0.x'
-        cache: true
-
-    - name: Restore dependencies (solution-wide)
-      shell: bash
-      run: |
-        cd "$GITHUB_WORKSPACE"
-        if [ -f "CampFitFurDogs.sln" ]; then
-          dotnet restore CampFitFurDogs.sln
-        else
-          # Fallback: restore per project
-          while IFS= read -r project; do
-            [[ -z "$project" ]] && continue
-            dotnet restore "$GITHUB_WORKSPACE/$project"
-          done <<< "${{ inputs.projects }}"
-        fi
-
     - name: Clean bin/obj
       shell: bash
       run: |
-        cd "$GITHUB_WORKSPACE"
-        find . -type d \( -name bin -o -name obj \) -prune -exec rm -rf {} +
+        find "$GITHUB_WORKSPACE" -type d \( -name bin -o -name obj \) -prune -exec rm -rf {} +
 
     - name: Build test projects
       shell: bash
       run: |
-        cd "$GITHUB_WORKSPACE"
         while IFS= read -r project; do
           [[ -z "$project" ]] && continue
           echo "::group::Build $project"
@@ -57,7 +26,6 @@ runs:
     - name: Run tests
       shell: bash
       run: |
-        cd "$GITHUB_WORKSPACE"
         while IFS= read -r project; do
           [[ -z "$project" ]] && continue
           echo "::group::Test $project"
