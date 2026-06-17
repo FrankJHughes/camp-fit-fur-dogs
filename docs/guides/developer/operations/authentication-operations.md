@@ -1,10 +1,16 @@
-# Authentication Operations Guide (Aligned With Auth Callback Refactor)
+# Authentication Operations Guide  
+**Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
-This guide explains how to operate and configure the authentication system implemented in **US‑110 (Authentication: Owner Login)** and **US‑111 (Session Management)**.  
+This guide explains how to operate and configure the authentication system implemented in:
+
+- **US‑110 — Authentication: Owner Login (OIDC)**
+- **US‑111 — Session Management**
+- **US‑184 — De‑feature Local Identity**
+
 It documents the *operational setup*, *environment configuration*, *Auth0 integration*, *local development workflow*, and *preview/production hosting requirements*.
 
 This guide does **not** define rules, boundaries, or architectural decisions — those live in governance, conventions, and ADRs.  
-This guide focuses solely on **how to operate the authentication system that exists today**, aligned with the **new authentication callback architecture**.
+This guide focuses solely on **how to operate the authentication system that exists today**, aligned with the **exclusive OIDC authentication model** and the **three‑layer callback architecture**.
 
 ---
 
@@ -29,6 +35,8 @@ All behavior follows:
 - Hosting Provider Abstraction Rules  
 - Frank Hosting Abstractions  
 
+The system uses **exclusive OIDC authentication** — no local identity, no passwords, no hybrid flows.
+
 ---
 
 # Auth0 Configuration
@@ -45,8 +53,6 @@ Authentication relies on a correctly configured Auth0 application.
 | Allowed Logout URLs | Must include frontend URLs |
 | Allowed Web Origins | Must include frontend URLs |
 | Allowed CORS Origins | Must include frontend URLs |
-
-These settings ensure the OIDC login flow can complete successfully across local, preview, and production environments.
 
 Auth0 must always be configured with **HTTPS** URLs for preview and production.
 
@@ -84,7 +90,7 @@ These must be updated whenever Render preview URLs change.
 
 ---
 
-# Application Configuration (Aligned With Refactor)
+# Application Configuration (Aligned With Exclusive OIDC Authentication)
 
 The system no longer uses `AUTH0_*` environment variables directly.  
 All configuration is now provided under:
@@ -105,7 +111,7 @@ Authentication:Callback:PostLoginRedirectUrl
         "Authority": "https://YOUR_DOMAIN",
         "ClientId": "YOUR_CLIENT_ID",
         "ClientSecret": "YOUR_CLIENT_SECRET",
-        "CallbackUrl": "https://yourapp.com/auth/callback",
+        "CallbackUrl": "https://yourapp.com/api/auth/callback",
         "Disabled": false
       }
     }
@@ -124,7 +130,11 @@ Authentication:Callback:PostLoginRedirectUrl
 
 These values are consumed **only** by the **Frank Auth Callback Pipeline**.
 
-The Application pipeline consumes only the normalized protocol result and the `PostLoginRedirectUrl`.
+The Application pipeline consumes only:
+
+- The normalized protocol result  
+- The optional `returnUrl`  
+- `PostLoginRedirectUrl`  
 
 ---
 

@@ -1,4 +1,5 @@
-# Login Endpoint — `/api/auth/login` (Aligned With Auth Callback Refactor)
+# Login Endpoint — `/api/auth/login`  
+**Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
 The login endpoint initiates the **OIDC authorization code flow** by redirecting the client to the external identity provider (Auth0).  
 This endpoint is **pure** — it performs no domain logic, no identity logic, and no persistence.  
@@ -18,11 +19,14 @@ It does **not** access Infrastructure, Domain, or Application handlers directly.
 # HTTP Request
 
 ```http
-GET /api/auth/login
+GET /api/auth/login?returnUrl=/dashboard
 ```
 
-The request contains no parameters.  
+The request accepts an optional `returnUrl` parameter.  
 Identity, authorization, and session logic are handled exclusively in the **callback architecture** (Frank pipeline → Application pipeline → API boundary).
+
+The login endpoint **does not validate or interpret `returnUrl`** — it simply forwards it to Auth0 via the OIDC `state` parameter.  
+Validation occurs **only** in the Application pipeline.
 
 ---
 
@@ -48,6 +52,7 @@ It uses the following configuration values:
   - `response_type=code`
   - `scope=openid profile email`
   - PKCE parameters (if enabled)
+  - Encoded `state` containing the optional `returnUrl`
 - Returns **302 Redirect** to the identity provider  
 - Performs **no** domain logic  
 - Performs **no** persistence  
@@ -71,7 +76,7 @@ Authentication:Callback:Oidc:Disabled = true
 Then:
 
 - The login endpoint must **not** construct an OIDC URL  
-- The endpoint returns a shaped **501 Not Implemented** (or equivalent)  
+- The endpoint returns a shaped **501 Not Implemented**  
 - No redirect occurs  
 - No OIDC flow is initiated  
 
@@ -111,6 +116,7 @@ A complete test suite must verify:
 - `response_type=code`  
 - `scope` is included  
 - PKCE parameters are included when enabled  
+- `state` includes the encoded `returnUrl` when provided  
 
 ### Disabled Mode
 - `Oidc:Disabled=true` → 501 Not Implemented  

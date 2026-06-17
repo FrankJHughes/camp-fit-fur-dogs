@@ -141,12 +141,20 @@ All three types must:
 - Contain no side effects  
 - Contain no direct Infrastructure or Api dependencies  
 
-## 3.2 Frank Pipeline Builder
+## 3.2 Frank Pipeline Builder (OIDC Protocol Layer)
 
 Frank pipeline builders:
 
-- Handle **protocol logic only**  
+- Handle **OIDC protocol logic only**  
 - May call external identity providers via abstractions  
+- Must validate:
+  - Authorization code  
+  - Token issuer  
+  - Token audience  
+  - Token signature  
+  - Nonce  
+  - State  
+  - Required claims  
 - Must not contain business logic  
 - Must not access persistence  
 - Must not construct aggregates  
@@ -155,18 +163,24 @@ Frank pipeline builders:
 
 They produce a protocol‑normalized result consumed by Application.
 
-## 3.3 Application Pipeline Builder
+## 3.3 Application Pipeline Builder (Business Layer)
 
 Application pipeline builders:
 
 - Handle **business logic only**  
-- May perform identity resolution  
-- May create sessions via abstractions  
-- Must not contain protocol logic  
-- Must not decode or validate tokens directly  
-- Must not call external identity providers  
-- Must not issue cookies (only compute cookie value)  
-- Must not write to HttpContext  
+- Perform identity resolution using validated OIDC claims  
+- Create or load Owners  
+- Create sessions via abstractions  
+- Compute redirect URLs  
+- Compute opaque cookie values  
+
+Application builders must not:
+
+- Perform protocol logic  
+- Decode or validate tokens  
+- Call external identity providers  
+- Issue cookies (only compute cookie value)  
+- Write to HttpContext  
 
 They produce a result that includes all data the Api endpoint needs.
 
@@ -198,14 +212,14 @@ Each endpoint:
 - Dispatches commands/queries via dispatchers  
 - Performs DTO binding and authorization  
 
-## 4.2 Auth Callback Endpoint Rules
+## 4.2 Auth Callback Endpoint Rules (OIDC‑Exclusive)
 
 Authentication callback endpoints must:
 
-- Extract the `code` query parameter  
+- Extract the `code` and `state` query parameters  
 - Throw `BadRequestException` if missing  
-- Invoke the Frank pipeline builder  
-- Invoke the Application pipeline builder  
+- Invoke the Frank pipeline builder (protocol)  
+- Invoke the Application pipeline builder (business)  
 - Issue the authentication cookie using `CookieValue`  
 - Redirect to the `RedirectUrl` provided by the Application pipeline  
 
@@ -490,6 +504,6 @@ These conventions ensure:
 - Consistent use of Frank for cross‑cutting concerns  
 - Preview‑safe behavior  
 - Predictable CI/CD behavior  
-- Fully aligned authentication callback flows using ImmutableContextBuilder  
+- Fully aligned **OIDC‑exclusive** authentication callback flows using ImmutableContextBuilder  
 
 All contributors must follow these rules.

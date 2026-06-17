@@ -1,7 +1,8 @@
-# Callback Endpoint — `/api/auth/callback` (Aligned With Auth Callback Refactor)
+# Callback Endpoint — `/api/auth/callback`  
+**Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
 The callback endpoint completes the **OIDC authorization code flow**.  
-It extracts the authorization code, invokes the **Frank Auth Callback Pipeline** (protocol), invokes the **Application Auth Callback Pipeline** (business), issues the session cookie, and redirects the user to the frontend.
+It extracts the authorization code (and optional `returnUrl`), invokes the **Frank Auth Callback Pipeline** (protocol), invokes the **Application Auth Callback Pipeline** (business), issues the session cookie, and redirects the user.
 
 The endpoint itself contains:
 
@@ -9,12 +10,14 @@ The endpoint itself contains:
 - **no identity logic**  
 - **no Infrastructure calls**  
 - **no protocol logic**  
+- **no redirect computation**  
+- **no cookie value computation**  
 
-It is a **thin orchestrator** that coordinates the two pipelines and performs HTTP‑boundary responsibilities only.
+It is a **thin orchestrator** that performs only HTTP‑boundary responsibilities.
 
 All authentication behavior is implemented inside the Frank and Application pipelines and governed by:
 
-- [Architecture Governance](ca://s?q=Open_architecture_governance)  
+- Architecture Governance  
 - Security Governance  
 - Session Management Governance  
 - Identity Mapping Governance  
@@ -25,10 +28,14 @@ All authentication behavior is implemented inside the Frank and Application pipe
 # HTTP Request
 
 ```http
-GET /api/auth/callback?code=XYZ
+GET /api/auth/callback?code=XYZ&returnUrl=/dashboard
 ```
 
-The endpoint accepts only the authorization code.  
+The endpoint accepts:
+
+- `code` — required  
+- `returnUrl` — optional (validated only in Application pipeline)
+
 Identity, protocol, and session logic are handled exclusively inside the pipelines.
 
 ---
@@ -48,10 +55,12 @@ Everything else happens inside the pipelines.
 # 1. Extract and Validate the Authorization Code
 
 - Reads `code` from the query string  
-- If missing or empty → **400 Bad Request**  
+- Reads optional `returnUrl`  
+- If `code` is missing or empty → **400 Bad Request**  
 - No protocol logic  
 - No identity logic  
 - No Infrastructure access  
+- No redirect logic  
 
 This is the only validation the endpoint performs.
 
@@ -69,6 +78,7 @@ Frank performs all **OIDC protocol work**:
 
 - Validates OIDC configuration  
 - Exchanges the authorization code for tokens  
+- Validates issuer, audience, signature, nonce, state  
 - Fetches userinfo (if required)  
 - Normalizes provider‑specific claims  
 - Produces a stable, provider‑agnostic identity payload  
@@ -78,6 +88,7 @@ Frank pipeline **does not**:
 - Resolve identity  
 - Create sessions  
 - Compute redirect URLs  
+- Interpret or validate `returnUrl`  
 - Compute cookie values  
 - Perform any business logic  
 
@@ -102,6 +113,9 @@ Application performs all **business logic**:
 - Computes the session token hash  
 - Computes the cookie value (opaque token)  
 - Computes the final redirect URL  
+  - If `returnUrl` is provided → validate + use it  
+  - If unsafe → sanitize or replace  
+  - If missing → use default post‑login redirect  
 
 Application pipeline **does not**:
 
@@ -134,7 +148,7 @@ The API endpoint:
 Cookie properties:
 
 - **HttpOnly**  
-- **Secure** (production)  
+- **Secure** (preview/prod)  
 - **SameSite=Lax**  
 - Contains an **opaque, random session token**  
 - Backed by a **hashed token** stored in the database  
@@ -158,6 +172,7 @@ The redirect URL is computed **only** by the Application pipeline.
 The endpoint does not:
 
 - Construct redirect URLs  
+- Validate `returnUrl`  
 - Perform business logic  
 - Perform identity logic  
 
@@ -174,6 +189,7 @@ All errors flow through Frank’s global exception → ProblemDetails mapping.
 | Token exchange failure | `ExternalAuthProviderFailure` | 502 |
 | Userinfo failure | `ExternalAuthProviderFailure` | 502 |
 | Missing `sub` claim | `ExternalAuthProviderFailure` | 502 |
+| Invalid `returnUrl` | `ValidationError` | 400 |
 | Identity resolution failure | `Unexpected` | 500 |
 | Session creation failure | `Unexpected` | 500 |
 | Any other unhandled error | `Unexpected` | 500 |
@@ -194,6 +210,7 @@ Additional guarantees:
 The callback endpoint:
 
 - Extracts the authorization code  
+- Extracts optional `returnUrl`  
 - Invokes Frank (protocol)  
 - Invokes Application (business)  
 - Issues the cookie  

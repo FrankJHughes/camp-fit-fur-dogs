@@ -1,6 +1,6 @@
 # Architecture Conventions
 
-The architecture of Camp Fit Fur Dogs defines the structural boundaries, layering rules, hosting model, and cross‑cutting primitives that shape the entire system.  
+The architecture of Camp Fit Fur Dogs defines the structural boundaries, layering rules, hosting model, authentication model, and cross‑cutting primitives that shape the entire system.  
 Architecture conventions describe **how the system is organized**, not how code is written or how workflows operate.
 
 Frank is the system’s cross‑cutting backbone.  
@@ -353,16 +353,25 @@ Security headers are mandatory.
 
 Api must apply:
 
-- AddSecurityHeaders()  
-- SecurityHeadersMiddleware  
+- `AddSecurityHeaders()`  
+- `SecurityHeadersMiddleware`  
 
 Guardrails enforce presence.
 
 ---
 
-# 11. Authentication Callback Architecture
+# 11. Authentication Architecture (OIDC‑Exclusive)
 
-The authentication callback flow follows a **three‑layer structural pattern**:
+CampFitFurDogs uses **exclusive OIDC authentication**.  
+Local identity, local registration, and local password flows have been fully removed.
+
+Authentication is composed of three layers:
+
+1. **Frank Pipeline** — OIDC protocol engine  
+2. **Application Pipeline** — identity resolution, onboarding, session creation  
+3. **Api Endpoint** — thin orchestrator  
+
+This ensures a deterministic, testable, secure authentication flow.
 
 ## 11.1 Frank Pipeline (Protocol Layer)
 
@@ -377,12 +386,20 @@ IImmutableContextBuilder<
 
 Responsibilities:
 
-- OIDC protocol handling  
 - Authorization‑code exchange  
+- Token retrieval  
+- Token validation (issuer, audience, signature, nonce, state)  
 - Claims extraction  
 - Provider normalization  
+- Required‑claim enforcement  
+- Rejection of malformed or incomplete tokens  
 
-Contains **no business logic**.
+Prohibitions:
+
+- No business logic  
+- No persistence  
+- No session creation  
+- No redirect logic  
 
 ## 11.2 Application Pipeline (Business Layer)
 
@@ -397,19 +414,24 @@ IImmutableContextBuilder<
 
 Responsibilities:
 
-- Identity resolution  
-- Customer creation  
+- Identity resolution using OIDC claims  
+- Owner onboarding  
 - Session creation  
 - Redirect URL selection  
 - Cookie value generation  
 
-Contains **no protocol logic**.
+Prohibitions:
+
+- No protocol logic  
+- No HTTP calls  
+- No token validation  
+- No claim extraction  
 
 ## 11.3 Api Endpoint (Infrastructure Boundary)
 
 The API callback endpoint is a **thin orchestrator**:
 
-- Extracts the `code` query parameter  
+- Extracts `code` and `state`  
 - Invokes the Frank pipeline  
 - Invokes the Application pipeline  
 - Issues the authentication cookie  
@@ -421,32 +443,30 @@ The endpoint must not contain:
 - Business logic  
 - Persistence logic  
 
-This preserves the layering model and ensures the authentication flow is fully testable.
-
 ---
 
 # 12. ImmutableContextBuilder Architecture
 
 `ImmutableContextBuilder<TRequest, TContext, TResult>` is a core architectural primitive used for deterministic, multi‑stage transformations that must remain pure, strongly typed, and invariant‑checked.
 
-It replaces the old step‑engine pattern and is now the standard mechanism for:
+It is used for:
 
-- Frank Auth Callback Pipeline (protocol)
-- Application Auth Callback Pipeline (business)
-- Identity mapping flows
-- Session creation flows
-- Redirect computation flows
-- Any multi‑stage transformation requiring purity + determinism
+- OIDC protocol pipeline  
+- Authentication business pipeline  
+- Identity mapping  
+- Session creation  
+- Redirect computation  
+- Multi‑stage normalization and validation  
 
 ## 12.1 Purpose
 
 ImmutableContextBuilder enforces:
 
-- **Immutability** — no mutation, no overwriting, no clearing  
-- **Determinism** — each stage produces a new context  
-- **Purity** — no side effects inside transformations  
-- **Strong typing** — request, context, and result are explicit  
-- **Governance alignment** — no cross‑layer violations  
+- **Immutability**  
+- **Determinism**  
+- **Purity**  
+- **Strong typing**  
+- **Governance alignment**  
 
 ## 12.2 Structural Pattern
 
@@ -456,12 +476,6 @@ A builder implements:
 IImmutableContextBuilder<TRequest, TContext, TResult>
 ```
 
-Where:
-
-- **TRequest** — immutable input  
-- **TContext** — immutable working state  
-- **TResult** — immutable final output  
-
 Each transformation:
 
 - Accepts a context  
@@ -470,63 +484,48 @@ Each transformation:
 
 ## 12.3 Layering Rules
 
-- **Frank builders**  
-  - May perform protocol logic  
-  - May perform external HTTP calls  
-  - Must not perform business logic  
-  - Must not perform persistence  
+### Frank builders  
+- Perform protocol logic  
+- Perform external HTTP  
+- Must not perform business logic  
+- Must not perform persistence  
 
-- **Application builders**  
-  - May perform business logic  
-  - May perform identity resolution  
-  - May perform session creation  
-  - Must not perform HTTP  
-  - Must not access hosting providers  
+### Application builders  
+- Perform business logic  
+- Perform identity resolution  
+- Perform session creation  
+- Must not perform HTTP  
+- Must not perform protocol logic  
 
-- **Domain**  
-  - Contains no builders  
+### Domain  
+- Contains no builders  
 
 ## 12.4 When to Use a Builder
 
 Use a builder when:
 
 - A flow has multiple sequential stages  
-- Each stage depends on the previous stage  
-- The flow must be deterministic  
-- The flow must be pure  
+- Each stage depends on the previous  
+- The flow must be deterministic and pure  
 - The flow must be testable  
-- The flow must not use dispatcher pipelines  
 
-Examples:
+## 12.5 When Not to Use a Builder
 
-- Authentication callback  
-- Payment provider callbacks  
-- Webhook processing  
-- Multi‑stage normalization  
-- Multi‑stage validation  
-- Multi‑stage redirect logic  
+Do **not** use a builder for:
 
-## 12.5 When *Not* to Use a Builder
-
-Do **not** use a builder when:
-
-- Implementing CQRS handlers  
-- Performing domain logic  
-- Performing Infrastructure logic  
-- Performing HTTP in Application  
-- Performing persistence in Frank  
-- Implementing branching workflows  
-- Implementing long‑running processes  
-
-Builders are for **pure, deterministic, synchronous transformations**.
+- CQRS handlers  
+- Domain logic  
+- Infrastructure logic  
+- Long‑running processes  
+- Branching workflows  
 
 ## 12.6 Testing Requirements
 
-Builders must be tested at three levels:
+Builders must be tested at:
 
-- **Unit tests** — individual transformations  
-- **Builder tests** — full end‑to‑end builder behavior  
-- **Guardrail tests** — immutability, no mutation, no overwriting  
+- Unit level  
+- Builder level  
+- Guardrail level  
 
 Integration tests apply only when builders participate in API flows.
 
@@ -535,8 +534,7 @@ Integration tests apply only when builders participate in API flows.
 # 13. Convention Boundaries
 
 CampFitFurDogs maintains four convention documents: **architecture**, **code**, **docs**, and **workflow**.  
-Each governs a different dimension of the system.  
-To prevent cross‑domain drift, the boundaries must remain strict.
+Each governs a different dimension of the system.
 
 ## 13.1 Architecture Conventions (this document)
 
@@ -547,7 +545,7 @@ Defines:
 - Vertical slice boundaries  
 - Cross‑cutting primitives  
 - Hosting and startup models  
-- Authentication callback architecture  
+- Authentication architecture  
 - Security architecture  
 - ImmutableContextBuilder architecture  
 
@@ -633,7 +631,7 @@ The architecture ensures:
 - Strict layering  
 - Deterministic hosting behavior  
 - Deterministic startup behavior  
-- Testable, composable authentication pipelines  
+- Testable, composable **OIDC‑exclusive** authentication pipelines  
 - ImmutableContextBuilder as a core primitive  
 - Strong security posture  
 - Clear cross‑cutting boundaries  
