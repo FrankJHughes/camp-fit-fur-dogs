@@ -87,7 +87,8 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "",
                 ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = ""
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "",
+                ["Frontend:BaseUrl"] = "/"
             });
         });
 
@@ -108,7 +109,8 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
+                ["Frontend:BaseUrl"] = "/"
             });
         });
 
@@ -129,7 +131,8 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
+                ["Frontend:BaseUrl"] = "/"
             });
         });
 
@@ -150,7 +153,8 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = ""
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "",
+                ["Frontend:BaseUrl"] = "/"
             });
         });
 
