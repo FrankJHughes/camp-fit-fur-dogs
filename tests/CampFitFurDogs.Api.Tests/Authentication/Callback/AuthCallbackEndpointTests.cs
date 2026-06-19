@@ -6,8 +6,10 @@ using FluentAssertions;
 using Frank.Abstractions.Authentication.Callback;
 using Frank.Abstractions.ImmutableContext;
 using Frank.Authentication.Callback.Oidc;
+using Frank.Testing.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -80,6 +82,14 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
         var ctx = new ApiContext()
             .WithDatabase(false)
             .WithCookieAuthOnly(false)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            )
             .WithServiceOverride(services =>
             {
                 // Remove real engines
