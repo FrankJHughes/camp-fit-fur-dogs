@@ -11,7 +11,7 @@ public sealed class FakeOidcHttpClient : HttpMessageHandler
     public bool FailJwksEndpoint { get; set; }
 
     public HttpClient CreateClient()
-        => new HttpClient(this);
+        => new(this);
 
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,

@@ -1,31 +1,13 @@
+using Frank.Testing.Contexts;
+
 namespace CampFitFurDogs.TestUtilities.Contexts;
 
-public sealed record ApiClientContext(
-    string? AuthenticatedUserSub = null,
-    Dictionary<string, string>? DefaultHeaders = null
-)
+public sealed record ApiClientContext
+    : MutatedWebApplicationClientContext<ApiClientContext>
 {
-    public ApiClientContext() : this(
-        AuthenticatedUserSub: null,
-        DefaultHeaders: new Dictionary<string, string>()
-    )
-    { }
-
-    // -------------------------------------------------------
-    // AUTHENTICATED USER
-    // -------------------------------------------------------
-    public ApiClientContext WithAuthenticatedUser(string? externalSub)
-        => this with { AuthenticatedUserSub = externalSub };
-
-    // -------------------------------------------------------
-    // HEADERS
-    // -------------------------------------------------------
-    public ApiClientContext WithHeader(string key, string value)
+    public ApiClientContext()
     {
-        var copy = new Dictionary<string, string>(DefaultHeaders!)
-        {
-            [key] = value
-        };
-        return this with { DefaultHeaders = copy };
+        // CampFitFurDogs-specific cookie scheme
+        SignInScheme = "cfd.session";
     }
 }

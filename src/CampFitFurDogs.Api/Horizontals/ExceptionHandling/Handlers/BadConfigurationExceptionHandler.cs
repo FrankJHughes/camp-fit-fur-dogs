@@ -15,7 +15,7 @@ public sealed class BadConfigurationExceptionHandler : IExceptionHandler
         ErrorCode.BadConfiguration;
 
     public ProblemDetails CreateProblemDetails(Exception ex) =>
-        new ProblemDetails
+        new()
         {
             Title = "Bad Configuration",
             Detail = ex.Message,

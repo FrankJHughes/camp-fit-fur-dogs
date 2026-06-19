@@ -1,51 +1,89 @@
-# Conventions
+# Conventions Index
 
-Authoritative system‑wide rules for code, architecture, workflows, documentation, and operational guardrails.
+This index provides a unified map of all conventions across Frank, CampFitFurDogs,
+testing, and development workflow.  
+Conventions define **how the system is implemented** and serve as the authoritative
+rules for code, architecture, testing, and workflow.
 
-Conventions define the **non‑negotiable standards** that keep the system consistent, maintainable, and safe.  
-All contributors must follow these conventions when writing code, documentation, workflows, or tests.
-
-Conventions describe **how the system is implemented**, not governance or policy.  
-Governance lives under `docs/governance/` and defines **what must be true**.
-
----
-
-# Convention Categories
-
-The repository maintains four canonical convention documents.  
-These are the single source of truth for implementation‑level rules and must remain synchronized.
+Governance defines **what must be true**.  
+Conventions define **how it must be done**.
 
 ---
 
-## Architecture Conventions
+# Frank Conventions
 
-System‑wide architectural implementation rules and guardrails.
-
-- **[Architecture Conventions](architecture.md)** — DDD layering, hosting provider architecture, authentication/session architecture, endpoint architecture, test seams, Frank boundaries
-
----
-
-## Workflow Conventions
-
-CI/CD, PR Preview lifecycle, and automation rules.
-
-- **[Workflow Conventions](workflow.md)** — CI/CD architecture, PR Preview lifecycle, composite actions, dependency graph, script‑first workflow structure
-
----
+Frank provides platform‑level primitives, hosting, OIDC protocol support, DI,
+test seams, and cross‑cutting infrastructure.
 
 ## Code Conventions
 
-Coding standards and purity rules for backend and frontend.
+- [DI & Registration](../Frank/conventions/code/di-and-registration-conventions.md)
+- [CQRS](../Frank/conventions/code/cqrs-conventions.md)
+- [Immutable Context Builder](../Frank/conventions/code/immutable-context-builder-conventions.md)
+- [Endpoint Conventions](../Frank/conventions/code/endpoint-conventions.md)
+- [Hosting Provider Conventions](../Frank/conventions/code/hosting-provider-conventions.md)
+- [Security Header Conventions](../Frank/conventions/code/security-header-conventions.md)
+- [Environment Seam Conventions](../Frank/conventions/code/environment-seam-conventions.md)
+- [OIDC Protocol Code Conventions](../Frank/conventions/code/oidc-protocol-code-conventions.md)
+- [Test Seam Conventions](../Frank/conventions/code/test-seam-conventions.md)
 
-- **[Code Conventions](code.md)** — backend and frontend coding rules, CQRS usage, endpoint rules, EF Core mapping, form architecture, test seams, preview‑safe behavior
+## Architecture Conventions
+
+- [OIDC Protocol Architecture](../Frank/conventions/platform-architecture/oidc-protocol-architecture.md)
 
 ---
 
-## Documentation Conventions
+# CampFitFurDogs Conventions
 
-Documentation structure, formatting, and patching rules.
+CampFitFurDogs implements product‑level behavior, domain logic, application
+orchestration, persistence, and UI.
 
-- **[Documentation Conventions](docs.md)** — documentation lifecycle, Universal Patch Rule, fencing/quoting rules, ADR integration, authorship standards
+## Code Conventions
+
+- [Backend Layering](../CampFitFurDogs/conventions/code/backend-layering-conventions.md)
+- [Domain Conventions](../CampFitFurDogs/conventions/code/domain-conventions.md)
+- [Application Conventions](../CampFitFurDogs/conventions/code/application-conventions.md)
+- [Infrastructure Conventions](../CampFitFurDogs/conventions/code/infrastructure-conventions.md)
+- [API Endpoint Conventions](../CampFitFurDogs/conventions/code/api-endpoint-conventions.md)
+- [Authentication Callback Conventions](../CampFitFurDogs/conventions/code/authentication-callback-conventions.md)
+- [Session Cookie Conventions](../CampFitFurDogs/conventions/code/session-cookie-conventions.md)
+- [EF Core Conventions](../CampFitFurDogs/conventions/code/ef-core-conventions.md)
+- [Frontend Conventions](../CampFitFurDogs/conventions/code/frontend-conventions.md)
+
+---
+
+# Test Conventions
+
+Test conventions define how to use Frank’s test seams, the ApiFactory harness,
+fake builders, and deterministic test data.
+
+- [Testing Conventions](../CampFitFurDogs/conventions/test/testing-conventions.md)
+- [Test Harness Conventions](../CampFitFurDogs/conventions/test/test-harness-conventions.md)
+- [Fake Builder Conventions](../CampFitFurDogs/conventions/test/fake-builder-conventions.md)
+- [HttpClient Test Conventions](../CampFitFurDogs/conventions/test/httpclient-test-conventions.md)
+- [Integration Test Conventions](../CampFitFurDogs/conventions/test/integration-test-conventions.md)
+- [Unit Test Conventions](../CampFitFurDogs/conventions/test/unit-test-conventions.md)
+- [Frontend Test Conventions](../CampFitFurDogs/conventions/test/frontend-test-conventions.md)
+- [Test Data Conventions](../CampFitFurDogs/conventions/test/test-data-conventions.md)
+- [Test Fixture Conventions](../CampFitFurDogs/conventions/test/test-fixture-conventions.md)
+
+---
+
+# Development Workflow Conventions
+
+Workflow conventions define how stories, tasks, branches, commits, PRs, CI/CD,
+and releases operate.
+
+- [Branching Conventions](../CampFitFurDogs/conventions/development-workflow/branching-conventions.md)
+- [Commit Message Conventions](../CampFitFurDogs/conventions/development-workflow/commit-message-conventions.md)
+- [Pull Request Conventions](../CampFitFurDogs/conventions/development-workflow/pull-request-conventions.md)
+- [Issue Lifecycle Conventions](../CampFitFurDogs/conventions/development-workflow/issue-lifecycle-conventions.md)
+- [Task Lifecycle Conventions](../CampFitFurDogs/conventions/development-workflow/task-lifecycle-conventions.md)
+- [Story Lifecycle Conventions](../CampFitFurDogs/conventions/development-workflow/story-lifecycle-conventions.md)
+- [CI/CD Conventions](../CampFitFurDogs/conventions/development-workflow/ci-cd-conventions.md)
+- [Local Development Conventions](../CampFitFurDogs/conventions/development-workflow/local-development-conventions.md)
+- [Preview Environment Conventions](../CampFitFurDogs/conventions/development-workflow/preview-environment-conventions.md)
+- [Release Conventions](../CampFitFurDogs/conventions/development-workflow/release-conventions.md)
 
 ---
 
@@ -53,16 +91,17 @@ Documentation structure, formatting, and patching rules.
 
 Conventions ensure:
 
-- Predictable architecture  
-- Consistent code quality  
-- Deterministic CI/CD behavior  
-- Safe and maintainable documentation  
-- Clear onboarding for new contributors  
-- Reduced cognitive load across the team  
-- Alignment with Frank and governance  
-- Preview‑safe behavior across all environments  
+- predictable architecture  
+- consistent code quality  
+- deterministic CI/CD behavior  
+- safe and maintainable documentation  
+- clear onboarding for new contributors  
+- reduced cognitive load  
+- alignment with Frank’s platform guarantees  
+- preview‑safe behavior across all environments  
 
-Conventions are **living documents** and should be reviewed at each sprint close.
+Conventions are **source‑of‑truth documents**.  
+Guides and runbooks must conform to them.
 
 ---
 
@@ -70,21 +109,11 @@ Conventions are **living documents** and should be reviewed at each sprint close
 
 Changes to conventions must:
 
-1. Be proposed and discussed in a PR  
-2. Reference the relevant ADR (if architectural)  
-3. Follow the **Universal Patch Rule**  
-4. Update all affected convention files  
-5. Update any impacted guides or runbooks  
-6. Ensure guardrail tests remain aligned  
+1. be proposed and discussed in a PR  
+2. reference the relevant ADR (if architectural)  
+3. follow the Universal Patch Rule  
+4. update all affected convention files  
+5. update any impacted guides or runbooks  
+6. ensure guardrail tests remain aligned  
 
-Conventions are **source‑of‑truth documents**.  
-Guides and runbooks must conform to them.
-
----
-
-# Related Documentation
-
-- **[Guides Index](../guides/README.md)** — role guides and developer sub‑guides  
-- **[ADR Index](../adr/README.md)** — architecture decision records  
-- **[Governance](../governance/governance.md)** — roles, ceremonies, ADR process, CI governance, security governance, operations governance
-
+Conventions are reviewed at each sprint close.

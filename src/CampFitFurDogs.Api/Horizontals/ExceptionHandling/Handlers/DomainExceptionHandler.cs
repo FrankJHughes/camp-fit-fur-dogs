@@ -24,7 +24,7 @@ public sealed class DomainExceptionHandler : IExceptionHandler
         ErrorCode.DomainError;
 
     public ProblemDetails CreateProblemDetails(Exception ex) =>
-        new ProblemDetails
+        new()
         {
             Title = "Domain Error",
             Detail = ex.Message,

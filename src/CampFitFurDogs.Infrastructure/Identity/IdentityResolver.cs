@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
-using CampFitFurDogs.Application.Abstractions.Identity;
+using Frank.Abstractions.Identity;
 using Frank.Abstractions;
 using Frank.Abstractions.Authentication.Callback;
 

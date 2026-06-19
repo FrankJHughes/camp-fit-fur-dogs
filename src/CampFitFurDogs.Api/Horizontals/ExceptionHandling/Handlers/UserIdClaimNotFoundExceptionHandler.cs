@@ -13,7 +13,7 @@ public sealed class UserIdClaimNotFoundExceptionHandler : IExceptionHandler
         ErrorCode.InvalidUserIdentity; // Add this to your error codes
 
     public ProblemDetails CreateProblemDetails(Exception ex) =>
-        new ProblemDetails
+        new()
         {
             Title = "Invalid user identity",
             Detail = ex.Message,

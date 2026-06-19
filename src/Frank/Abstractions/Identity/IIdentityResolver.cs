@@ -1,6 +1,6 @@
 using Frank.Abstractions.Authentication.Callback;
 
-namespace CampFitFurDogs.Application.Abstractions.Identity;
+namespace Frank.Abstractions.Identity;
 
 public interface IIdentityResolver
 {

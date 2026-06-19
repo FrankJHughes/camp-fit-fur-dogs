@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
-using CampFitFurDogs.Application.Abstractions.Identity;
+using Frank.Abstractions.Identity;
 using CampFitFurDogs.Application.Authentication.Callback.Steps;
 using CampFitFurDogs.Application.Tests.Fakes.Authentication.Callback;
 using Frank.Abstractions.Authentication.Callback;
