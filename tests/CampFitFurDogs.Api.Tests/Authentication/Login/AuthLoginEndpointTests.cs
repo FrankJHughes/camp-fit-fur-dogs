@@ -10,14 +10,16 @@ namespace CampFitFurDogs.Api.Tests.Authentication.Login;
 
 public class AuthLoginEndpointTests : IAsyncLifetime
 {
+    private ApiContext _ctx = default!;
     private ApiFactory _api = default!;
+
 
     // ------------------------------------------------------------
     // TEST INITIALIZATION
     // ------------------------------------------------------------
     public Task InitializeAsync()
     {
-        var ctx = new ApiContext()
+        _ctx = new ApiContext()
             .WithDatabase(false) // Login endpoint does not use DB
             .WithCookieAuthOnly(false)
             .WithConfigOverride(cfg =>
@@ -29,7 +31,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
                 )
             );
 
-        _api = new ApiFactory(ctx);
+        _api = new ApiFactory(_ctx);
 
         return Task.CompletedTask;
     }
@@ -39,7 +41,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
     // Helper: create client with config overrides
     private HttpClient CreateClientWithOverrides(Action<IConfigurationBuilder> apply)
     {
-        var ctx = new ApiContext()
+        var ctx = _ctx
             .WithDatabase(false)
             .WithCookieAuthOnly(false)
             .WithConfigOverride(apply);
