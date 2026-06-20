@@ -6,6 +6,7 @@ using FluentAssertions;
 using Testcontainers.PostgreSql;
 using Frank.Testing.Contexts;
 using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
@@ -27,7 +28,15 @@ public class ListDogsByCurrentUserEndpointTests : IAsyncLifetime
 
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(true);
+            .WithCookieAuthOnly(true)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            );
 
         _api = new ApiFactory(ctx);
     }

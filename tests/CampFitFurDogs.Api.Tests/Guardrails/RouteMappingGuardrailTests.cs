@@ -5,6 +5,7 @@ using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Testcontainers.PostgreSql;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -28,7 +29,16 @@ public class RouteMappingGuardrailTests : IAsyncLifetime
     {
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(false);
+            .WithCookieAuthOnly(false)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            );
+
 
         var api = new ApiFactory(ctx);
         return api.CreateClient(new ApiClientContext());

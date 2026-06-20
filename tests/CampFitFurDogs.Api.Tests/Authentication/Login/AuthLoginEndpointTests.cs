@@ -19,7 +19,15 @@ public class AuthLoginEndpointTests : IAsyncLifetime
     {
         var ctx = new ApiContext()
             .WithDatabase(false) // Login endpoint does not use DB
-            .WithCookieAuthOnly(false);
+            .WithCookieAuthOnly(false)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            );
 
         _api = new ApiFactory(ctx);
 

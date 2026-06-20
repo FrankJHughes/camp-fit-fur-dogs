@@ -5,6 +5,7 @@ using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Testcontainers.PostgreSql;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
@@ -29,7 +30,15 @@ public class RegisterDogEndpointTests : IAsyncLifetime
         // 2. Build ApiContext
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(true);
+            .WithCookieAuthOnly(true)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            );
 
         // 3. Create ApiFactory
         _api = new ApiFactory(ctx);

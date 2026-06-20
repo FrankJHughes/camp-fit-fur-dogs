@@ -8,6 +8,7 @@ using Frank.Testing.Contexts;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -31,7 +32,15 @@ public class DbContextGuardrailTests : IAsyncLifetime
     {
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(false);
+            .WithCookieAuthOnly(false)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            );
 
         return new ApiFactory(ctx);
     }

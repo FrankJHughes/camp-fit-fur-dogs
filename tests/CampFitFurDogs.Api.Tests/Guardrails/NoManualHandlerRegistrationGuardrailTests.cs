@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Frank.Testing.Contexts;
 using Testcontainers.PostgreSql;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -27,7 +28,15 @@ public class NoManualHandlerRegistrationGuardrailTests : IAsyncLifetime
     {
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(false);
+            .WithCookieAuthOnly(false)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            );
 
         return new ApiFactory(ctx);
     }

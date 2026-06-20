@@ -3,6 +3,7 @@ using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Frank.Abstractions.Events;
 using Frank.Testing.Contexts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 
@@ -28,7 +29,15 @@ public class DomainEventHandlerRegistrationGuardrailTests : IAsyncLifetime
     {
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(false);
+            .WithCookieAuthOnly(false)
+            .WithConfigOverride(cfg =>
+                cfg.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["Frontend:BaseUrl"] = "http://localhost:5173"
+                    }
+                )
+            );
 
         return new ApiFactory(ctx);
     }
