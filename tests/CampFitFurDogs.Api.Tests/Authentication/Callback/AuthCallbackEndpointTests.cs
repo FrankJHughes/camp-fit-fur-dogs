@@ -18,6 +18,7 @@ namespace CampFitFurDogs.Api.Tests.Authentication.Callback;
 public sealed class AuthCallbackEndpointTests : IAsyncLifetime
 {
     private ApiFactory _api = default!;
+    private ApiContext _ctx = default!;
 
     // ------------------------------------------------------------
     // FAKES
@@ -79,7 +80,7 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     // ------------------------------------------------------------
     public Task InitializeAsync()
     {
-        var ctx = new ApiContext()
+        _ctx = new ApiContext()
             .WithDatabase(false)
             .WithCookieAuthOnly(false)
             .WithConfigOverride(cfg =>
@@ -122,7 +123,7 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
                 });
             });
 
-        _api = new ApiFactory(ctx);
+        _api = new ApiFactory(_ctx);
         return Task.CompletedTask;
     }
 
