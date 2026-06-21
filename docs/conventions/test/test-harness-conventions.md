@@ -1,7 +1,8 @@
 # Test Harness Conventions (CampFitFurDogs)
 
-CampFitFurDogs uses a custom ApiFactory‑based test harness built on top of Frank’s
-test seams. The harness ensures deterministic, isolated, environment‑free tests.
+CampFitFurDogs uses a custom `ApiFactory`‑based test harness built on top of
+Frank’s test seams. The harness ensures deterministic, isolated, environment‑free
+tests.
 
 ---
 
@@ -9,14 +10,16 @@ test seams. The harness ensures deterministic, isolated, environment‑free test
 
 The test harness must:
 
-- use `CampFitFurDogsApiFactory` for all backend tests  
+- use `ApiFactory` for all backend tests  
+- construct it with an `ApiContext`  
 - override services using `WithServiceOverride`  
+- override configuration using `WithConfigOverride`  
 - replace real builders with fakes  
 - replace HttpClient with fake handlers  
 - run with no real environment variables  
 - run with no real hosting providers  
 
-ApiFactory must not:
+`ApiFactory` must not:
 
 - hit real databases  
 - hit real identity providers  
@@ -32,6 +35,7 @@ Tests must:
 - not depend on system time (use time abstractions)  
 - not depend on environment variables  
 - not depend on network availability  
+- provide required configuration keys (e.g., `Frontend:BaseUrl`)  
 
 ---
 

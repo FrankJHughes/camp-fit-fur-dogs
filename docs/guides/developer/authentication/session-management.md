@@ -78,9 +78,9 @@ It contains **no user data**, is **not a JWT**, and is **not readable** by the c
 
 Example (conceptual):
 
-```
+````text
 Set-Cookie: cfd.session=2f9c3e2a...; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400
-```
+````
 
 ### Cookie Properties
 
@@ -111,10 +111,10 @@ Each session token consists of:
 
 The pipeline returns:
 
-```
+````text
 CookieValue  (plaintext token)
 TokenHash    (SHA‑256 hash)
-```
+````
 
 The **plaintext token** is sent to the browser as a cookie.  
 The **hash** is stored in the database.
@@ -218,13 +218,11 @@ Until then:
 
 ### Auth0 Callback URLs
 
-Ensure the following callback URLs are configured:
-
-```
+````text
 http://localhost:5000/api/auth/callback
 https://<preview>.onrender.com/api/auth/callback
 https://campfitfurdogsapi.onrender.com/api/auth/callback
-```
+````
 
 ---
 
@@ -266,10 +264,10 @@ Session behavior is tested in three layers:
 
 Tests live in:
 
-```
+````text
 tests/Api.Tests/Authentication
 tests/Api.Tests/Guardrails
-```
+````
 
 ---
 
@@ -300,4 +298,4 @@ tests/Api.Tests/Guardrails
 - **[Authentication Testing Guide](ca://s?q=Show_authentication_testing_guide)**  
 - **[Authentication Operations Guide](ca://s?q=Show_authentication_operations_guide)**  
 - **[Create Account Form Guide](ca://s?q=Show_create_account_form_guide)**  
-- **[Create Account Feature Slice Guide](ca://s?q=Show_create_account_feature_slice_guide)**
+- **[Create Account Feature Slice Guide](ca://s?q=Show_create_account_feature_slice_guide)**  

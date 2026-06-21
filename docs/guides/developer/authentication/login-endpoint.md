@@ -18,9 +18,9 @@ It does **not** access Infrastructure, Domain, or Application handlers directly.
 
 # HTTP Request
 
-```http
+````http
 GET /api/auth/login?returnUrl=/dashboard
-```
+````
 
 The request accepts an optional `returnUrl` parameter.  
 Identity, authorization, and session logic are handled exclusively in the **callback architecture** (Frank pipeline → Application pipeline → API boundary).
@@ -69,9 +69,9 @@ This endpoint is intentionally thin and deterministic, following **API Endpoint 
 
 If:
 
-```
+````text
 Authentication:Callback:Oidc:Disabled = true
-```
+````
 
 Then:
 
@@ -141,4 +141,4 @@ A complete test suite must verify:
 - **[Authentication Overview](ca://s?q=Show_authentication_overview)**  
 - **[Callback Endpoint](ca://s?q=Show_callback_endpoint_doc)**  
 - **[Authentication Configuration](ca://s?q=Show_authentication_configuration_doc)**  
-- **[Authentication Architecture Guide](ca://s?q=Show_authentication_architecture_doc)**
+- **[Authentication Architecture Guide](ca://s?q=Show_authentication_architecture_doc)**  

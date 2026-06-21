@@ -1,6 +1,6 @@
 # Testing Conventions (CampFitFurDogs)
 
-CampFitFurDogs tests rely on Frank’s test seams and the ApiFactory test harness.
+CampFitFurDogs tests rely on Frank’s test seams and the `ApiFactory` test harness.
 Tests must be deterministic, isolated, and free of external dependencies.
 
 ---
@@ -9,16 +9,18 @@ Tests must be deterministic, isolated, and free of external dependencies.
 
 Tests must:
 
-- use `CampFitFurDogsApiFactory`
-- override services using `WithServiceOverride`
-- replace real builders with fakes
-- replace HttpClient with fake handlers
+- use `ApiFactory` for all backend tests  
+- construct it with an `ApiContext`  
+- override services using `WithServiceOverride`  
+- override configuration using `WithConfigOverride`  
+- replace real builders with fakes  
+- replace HttpClient with fake handlers  
 
 Tests must not:
 
-- hit real databases
-- hit real identity providers
-- hit real external services
+- hit real databases  
+- hit real identity providers  
+- hit real external services  
 
 ---
 
@@ -26,13 +28,13 @@ Tests must not:
 
 Tests must assert:
 
-- missing `code` → 400
-- missing `state` → 400
-- cookie is issued
-- cookie name is correct
-- cookie is opaque
-- cookie flags are correct
-- redirect URL matches Application builder output
+- missing `code` → 400  
+- missing `state` → 400  
+- cookie is issued  
+- cookie name is correct  
+- cookie is opaque  
+- cookie flags are correct  
+- redirect URL matches Application builder output  
 
 ---
 
@@ -40,9 +42,9 @@ Tests must assert:
 
 Repositories must be tested using:
 
-- in‑memory database
-- deterministic seed data
-- no external dependencies
+- in‑memory database  
+- deterministic seed data  
+- no external dependencies  
 
 ---
 
@@ -50,9 +52,9 @@ Repositories must be tested using:
 
 Readers must:
 
-- use `AsNoTracking`
-- return DTOs
-- never mutate state
+- use `AsNoTracking`  
+- return DTOs  
+- never mutate state  
 
 ---
 
@@ -60,10 +62,10 @@ Readers must:
 
 Frontend tests must:
 
-- mock API layer
-- avoid real network calls
-- test components as pure functions
-- test hooks with mocked API clients
+- mock the API layer  
+- avoid real network calls  
+- test components as pure functions  
+- test hooks with mocked API clients  
 
 ---
 
@@ -71,7 +73,7 @@ Frontend tests must:
 
 Tests must not:
 
-- depend on environment variables
-- depend on real hosting providers
-- depend on real HttpClient
-- depend on real cookies
+- depend on environment variables  
+- depend on real hosting providers  
+- depend on real HttpClient  
+- depend on real cookies  

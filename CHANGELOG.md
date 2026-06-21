@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 - More reliable sign‑in experience powered by our upgraded **exclusive OIDC authentication flow**, ensuring owners can log in consistently across all environments.
 - Improved post‑login behavior so owners are always returned to the correct page after signing in, even when navigating from deep links or bookmarked pages.
 - Strengthened session stability to reduce unexpected logouts and keep owners signed in during normal use.
+- Introduced the first phase of our new **Observability Foundation**, enabling deeper insight into authentication, request handling, error boundaries, and platform behavior. This groundwork improves stability today and unlocks richer diagnostics in future releases.
+- Increased product reliability through the migration of our **test harness into the Frank platform**, reducing regressions and improving confidence in new releases.
+- Clearer and more structured **Frank documentation**, now separated into platform‑level and product‑level guides for easier navigation and onboarding.
+- Added foundational improvements to the Frank platform, including upgrades to the **Hosting Engine**, **Startup Engine**, **Dependency Registration Engine**, and the new **Endpoint Registration Engine**, ensuring a more consistent and predictable backend architecture.
 
 ### Changed
 - Updated the login and authentication flow to provide a smoother, more predictable transition from Auth0 back into the application.

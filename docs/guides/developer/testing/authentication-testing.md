@@ -1,13 +1,13 @@
 # Authentication Testing Guide  
-**Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
+Aligned With Exclusive OIDC Authentication & Auth Callback Refactor
 
 This guide explains how to test the authentication system implemented in:
 
-- **US‑110 — Authentication: Owner Login (OIDC)**
-- **US‑111 — Session Management**
-- **US‑184 — De‑feature Local Identity**
+- US‑110 — Authentication: Owner Login (OIDC)
+- US‑111 — Session Management
+- US‑184 — De‑feature Local Identity
 
-It documents the **testing strategy**, **test layers**, **test responsibilities**, and **test patterns** used to validate:
+It documents the testing strategy, test layers, responsibilities, and patterns used to validate:
 
 - OIDC login initiation  
 - Frank Auth Callback Pipeline (protocol)  
@@ -17,34 +17,34 @@ It documents the **testing strategy**, **test layers**, **test responsibilities*
 - Cookie issuance  
 - Redirect computation (including `returnUrl`)  
 
-This guide does **not** define rules or architectural decisions — those live in governance, conventions, and ADRs.  
-This guide focuses solely on **how to test the authentication implementation that exists today**, aligned with the **exclusive OIDC authentication model**, **new callback architecture**, **new test harness**, and **new guardrail boundaries**.
+This guide does not define rules or architectural decisions — those live in governance, conventions, and ADRs.  
+This guide focuses solely on how to test the authentication implementation that exists today, aligned with the exclusive OIDC authentication model, new callback architecture, new test harness, and guardrail boundaries.
 
 ---
 
-# Testing Strategy Overview
+## Testing Strategy Overview
 
-Authentication is tested across **four layers**, each with a distinct purpose:
+Authentication is tested across four layers:
 
-1. **Unit Tests** — Validate individual pipeline components  
-2. **Application Pipeline Tests** — Validate business‑layer behavior  
-3. **Integration Tests** — Validate the full callback flow end‑to‑end  
-4. **Guardrail Tests** — Validate security‑critical invariants  
+1. Unit Tests — validate individual pipeline components  
+2. Application Pipeline Tests — validate business‑layer behavior  
+3. Integration Tests — validate the full callback flow end‑to‑end  
+4. Guardrail Tests — validate security‑critical invariants  
 
 This layered approach ensures:
 
-- Deterministic behavior  
-- High coverage  
-- Isolation of failures  
-- Protection against regressions  
+- deterministic behavior  
+- high coverage  
+- isolation of failures  
+- protection against regressions  
 
 ---
 
-# Test Layer 1 — Unit Tests (Post‑Refactor)
+## Unit Tests (Pure Components)
 
-Unit tests now target **pure components**, not step classes.
+Unit tests target pure components inside the Frank and Application pipelines.
 
-There are no more:
+The old step engine no longer exists. There are no tests for:
 
 - `ValidateConfigurationStep`  
 - `ExchangeCodeStep`  
@@ -55,60 +55,58 @@ There are no more:
 - `CreateSessionStep`  
 - `BuildRedirectStep`  
 
-These no longer exist.
-
-Instead, unit tests cover **pure, isolated components** inside the Frank and Application pipelines.
+Unit tests now cover pure, isolated components.
 
 ---
 
-## 1. Frank Pipeline Components (Protocol Layer)
+### Frank Pipeline Components (Protocol Layer)
 
-### Token Exchange Component
-- Valid authorization code → returns token payload  
-- Missing/invalid code → throws protocol exception  
-- External provider failure → throws protocol exception  
+#### Token Exchange Component
+- valid authorization code → returns token payload  
+- missing/invalid code → throws protocol exception  
+- external provider failure → throws protocol exception  
 
-### Userinfo Component
-- Valid token → returns normalized userinfo  
-- Missing `sub` → throws protocol exception  
-- Provider failure → throws protocol exception  
+#### Userinfo Component
+- valid token → returns normalized userinfo  
+- missing `sub` → throws protocol exception  
+- provider failure → throws protocol exception  
 
-### Claims Normalization
-- Normalizes provider‑specific claims  
-- Produces stable identity payload  
-- Never performs business logic  
-
----
-
-## 2. Application Pipeline Components (Business Layer)
-
-### Identity Resolution
-- Existing Owner → reused  
-- Missing Owner → created  
-- Missing `sub` → throws business exception  
-- Email is never used for identity  
-- No protocol logic  
-
-### Session Creation
-- Creates session with hashed token  
-- Persists via repository abstraction  
-- Commits via `IUnitOfWork`  
-
-### Cookie Value Computation
-- Generates opaque token  
-- Hashes token  
-- Produces cookie value  
-- Never issues cookies (API layer only)  
-
-### Redirect Computation
-- Uses configured `PostLoginRedirectUrl`  
-- Validates optional `returnUrl`  
-- Rejects unsafe URLs  
-- Deterministic  
+#### Claims Normalization
+- normalizes provider‑specific claims  
+- produces stable identity payload  
+- never performs business logic  
 
 ---
 
-## Unit Test Example
+### Application Pipeline Components (Business Layer)
+
+#### Identity Resolution
+- existing Owner → reused  
+- missing Owner → created  
+- missing `sub` → throws business exception  
+- email is never used for identity  
+- no protocol logic  
+
+#### Session Creation
+- creates session with hashed token  
+- persists via repository abstraction  
+- commits via `IUnitOfWork`  
+
+#### Cookie Value Computation
+- generates opaque token  
+- hashes token  
+- produces cookie value  
+- never issues cookies (API layer only)  
+
+#### Redirect Computation
+- uses configured `PostLoginRedirectUrl`  
+- validates optional `returnUrl`  
+- rejects unsafe URLs  
+- deterministic  
+
+---
+
+### Unit Test Example
 
 ```csharp
 public class IdentityResolverTests
@@ -133,43 +131,43 @@ tests/Api.Tests/Authentication/Unit
 
 ---
 
-# Test Layer 2 — Application Pipeline Tests
+## Application Pipeline Tests
 
-These tests validate the **Application Auth Callback Pipeline** end‑to‑end, using:
+These tests validate the Application Auth Callback Pipeline end‑to‑end, using:
 
-- Real pipeline  
-- Real DI container  
-- Fake Frank pipeline result  
-- Fake repositories  
-- Fake clock  
+- real pipeline  
+- real DI container  
+- fake Frank pipeline result  
+- fake repositories  
+- fake clock  
 
 These tests verify:
 
 ### Identity Mapping
 - Owner creation  
 - Owner reuse  
-- Missing `sub` → failure  
+- missing `sub` → failure  
 
 ### Session Creation
-- Session persisted  
-- Token hash stored  
-- Session associated with Owner  
+- session persisted  
+- token hash stored  
+- session associated with Owner  
 
 ### Cookie Value Computation
-- Opaque token  
-- No dots (`.`)  
-- Not a JWT  
-- Not base64 of user data  
+- opaque token  
+- no dots (`.`)  
+- not a JWT  
+- not base64 of user data  
 
 ### Redirect Computation
-- Uses configured `PostLoginRedirectUrl`  
-- Applies validated `returnUrl` when provided  
-- Rejects unsafe `returnUrl` values  
-- Deterministic  
+- uses configured `PostLoginRedirectUrl`  
+- applies validated `returnUrl` when provided  
+- rejects unsafe `returnUrl` values  
+- deterministic  
 
 ---
 
-## Application Pipeline Test Example
+### Application Pipeline Test Example
 
 ```csharp
 public class ApplicationAuthCallbackPipelineTests
@@ -193,59 +191,58 @@ tests/Api.Tests/Authentication/ApplicationPipeline
 
 ---
 
-# Test Layer 3 — Integration Tests (Aligned With Exclusive OIDC)
+## Integration Tests (Full Callback Flow)
 
-Integration tests validate the **entire callback flow**, including:
+Integration tests validate the entire callback flow:
 
 - Frank pipeline (protocol)  
 - Application pipeline (business)  
 - API callback endpoint (boundary)  
-- Cookie issuance  
-- Redirect behavior  
+- cookie issuance  
+- redirect behavior  
 - `returnUrl` propagation  
 
 These tests run against:
 
-- The real API  
-- The real DI container  
-- A deterministic fake Auth0 client  
-- Real repositories (in‑memory or Testcontainers)  
+- the real API  
+- the real DI container  
+- a deterministic fake Auth0 client  
+- real repositories (in‑memory or Testcontainers)  
 
-**Important:**  
 Integration tests use **ApiContext + ApiFactory**, not the guardrail harness.
 
 ---
 
-## Integration Test Responsibilities
+### Integration Test Responsibilities
 
-### Happy Path
-- Valid code → valid token → valid userinfo  
+#### Happy Path
+- valid code → valid token → valid userinfo  
 - Owner created or reused  
-- Session created  
-- Cookie issued  
-- Redirect returned  
+- session created  
+- cookie issued  
+- redirect returned  
 - `returnUrl` applied when valid  
 
-### Missing Authorization Code
-- Returns 400  
-- No session created  
-- No cookie issued  
+#### Missing Authorization Code
+- returns 400  
+- no session created  
+- no cookie issued  
 
-### Protocol Failures
-- Token exchange failure → 502  
-- Userinfo failure → 502  
-- Missing `sub` → 502  
-- Invalid or tampered `state` → 400  
+#### Protocol Failures
+- token exchange failure → 502  
+- userinfo failure → 502  
+- missing `sub` → 502  
+- invalid or tampered `state` → 400  
 
-### Business Failures
-- Identity resolver failure → 500  
-- Session creation failure → 500  
-- Invalid `returnUrl` → 400  
-- No cookie issued  
+#### Business Failures
+- identity resolver failure → 500  
+- session creation failure → 500  
+- invalid `returnUrl` → 400  
+- no cookie issued  
 
 ---
 
-## Integration Test Example
+### Integration Test Example
 
 ```csharp
 public class AuthCallbackEndpointTests
@@ -269,48 +266,48 @@ tests/Api.Tests/Authentication/Callback
 
 ---
 
-# Test Layer 4 — Guardrail Tests
+## Guardrail Tests
 
-Guardrail tests ensure **security‑critical invariants** never regress.
+Guardrail tests ensure security‑critical invariants never regress.
 
-Guardrails validate **safety**, not business logic.
+Guardrails validate safety, not business logic.
 
-Guardrails use **minimal DI**, not Testcontainers or ApiFactory, unless testing routing or persistence.
+Guardrails use minimal DI unless testing routing or persistence.
 
 ---
 
-## Guardrail Responsibilities
+### Guardrail Responsibilities
 
-### Cookie Flags
+#### Cookie Flags
 - `HttpOnly=true`  
 - `Secure=true` (preview/prod)  
 - `SameSite=Lax`  
 - `Path=/`  
-- No sensitive data in cookie value  
-- Cookie value is opaque and random  
+- no sensitive data in cookie value  
+- cookie value is opaque and random  
 
-### Token Opacity
-- Token is random  
-- Token contains no user data  
-- Token is not a JWT  
-- Token contains no dots (`.`)  
-- Token is not base64 of any recognizable structure  
+#### Token Opacity
+- token is random  
+- token contains no user data  
+- token is not a JWT  
+- token contains no dots (`.`)  
+- token is not base64 of any recognizable structure  
 
-### Identity Mapping Purity
-- Email is never used for identity  
-- Only `ExternalId` (`sub`) determines identity  
-- Missing `sub` → 502  
-- No identity logic in API or Frank layers  
+#### Identity Mapping Purity
+- email is never used for identity  
+- only `ExternalId` (`sub`) determines identity  
+- missing `sub` → 502  
+- no identity logic in API or Frank layers  
 
-### No Leaks
-- No tokens logged  
-- No userinfo logged  
-- No internal IDs leaked to Auth0  
-- No redirect URLs logged if they contain sensitive data  
+#### No Leaks
+- no tokens logged  
+- no userinfo logged  
+- no internal IDs leaked to Auth0  
+- no redirect URLs logged if they contain sensitive data  
 
 ---
 
-## Guardrail Test Example
+### Guardrail Test Example
 
 ```csharp
 public class SessionCookieGuardrailTests
@@ -335,59 +332,46 @@ tests/Api.Tests/Guardrails
 
 ---
 
-# Test Data Setup
+## Test Data Setup
 
 Authentication tests rely on deterministic fakes:
 
 ### Fake Frank Pipeline
-- Deterministic token exchange  
-- Deterministic userinfo  
-- Simulated protocol failures  
-- No business logic  
+- deterministic token exchange  
+- deterministic userinfo  
+- simulated protocol failures  
+- no business logic  
 
 ### Fake Application Pipeline Dependencies
-- In‑memory Owner repository  
-- In‑memory Session repository  
-- Deterministic clock  
-- Deterministic redirect computation  
+- in‑memory Owner repository  
+- in‑memory Session repository  
+- deterministic clock  
+- deterministic redirect computation  
 
 ### Test Cookie Extractor
-- Parses `Set-Cookie` headers  
-- Validates cookie flags  
-- Validates opacity  
+- parses `Set-Cookie` headers  
+- validates cookie flags  
+- validates opacity  
 
 ---
 
-# Common Testing Pitfalls (Updated)
+## Common Testing Pitfalls
 
-### ❌ Using Testcontainers in guardrails  
-Guardrails must use minimal DI unless testing persistence.
-
-### ❌ Using real Auth0 endpoints  
-Never required — always mock.
-
-### ❌ Forgetting to assert cookie flags  
-Security regressions can slip through.
-
-### ❌ Not testing Owner reuse  
-Identity mapping must be idempotent.
-
-### ❌ Not testing `returnUrl` validation  
-Unsafe URLs must be rejected.
-
-### ❌ Not testing failure modes  
-Authentication has many.
-
-### ❌ Using old step‑based tests  
-The step engine no longer exists.
+- using Testcontainers in guardrails  
+- using real Auth0 endpoints  
+- forgetting to assert cookie flags  
+- not testing Owner reuse  
+- not testing `returnUrl` validation  
+- not testing failure modes  
+- using old step‑based tests  
 
 ---
 
-# Related Documents
+## Related Documents
 
-- **Session Management Guide**  
-- **Identity Mapping Guide**  
-- **Authentication Architecture Guide**  
-- **Authentication Operations Guide**  
-- **Create Account Form Guide**  
-- **Create Account Feature Slice Guide**
+- Session Management Guide  
+- Identity Mapping Guide  
+- Authentication Architecture Guide  
+- Authentication Operations Guide  
+- Architecture Governance  
+- Security Governance  

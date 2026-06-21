@@ -226,4 +226,3 @@ It enforces:
 - Security boundaries  
 
 It is a critical part of the authentication and session architecture.
-

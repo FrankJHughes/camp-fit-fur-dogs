@@ -41,93 +41,93 @@ These guides evolve as the system evolves.
 
 ## Core Architecture
 
-- **[API Endpoint Purity](../api-endpoint-purity.md)**  
+- **API Endpoint Purity**  
   How to keep endpoints thin, pure, and free of domain logic.
 
-- **[Dispatcher Pipeline](../dispatcher-pipeline.md)**  
+- **Dispatcher Pipeline**  
   How commands and queries flow through the application layer.
 
-- **[Domain Events](../domain-events.md)**  
+- **Domain Events**  
   How domain events are raised, dispatched, and handled.
 
-- **[Folder Structure](../folder-structure.md)**  
+- **Folder Structure**  
   How vertical slices and layers are organized in the codebase.
 
-- **[Purity Rules](../purity-rules.md)**  
+- **Purity Rules**  
   Cross-layer architectural purity constraints.
 
-- **[Shared Kernel](../shared-kernel.md)**  
+- **Shared Kernel**  
   What belongs in Frank and why.
 
-- **[Validation Boundaries](validation-boundaries.md)**  
+- **Validation Boundaries**  
   Clear separation of API, Application, and Domain validation responsibilities.
 
-- **[Test Architecture](../test-architecture.md)**  
+- **Test Architecture**  
   How to structure tests across layers (API, Application, Domain) and how to use Frank’s seams.
 
-- **[Infrastructure Architecture](../infrastructure-architecture.md)**  
+- **Infrastructure Architecture**  
   How EF Core, repositories, readers, hosting providers, and environment abstractions integrate with the system.
 
-- **[Vertical Slice Architecture](../vertical-slice-architecture.md)**  
+- **Vertical Slice Architecture**  
   How slices encapsulate API, Application, Domain, and Infrastructure behavior.
 
-- **[Immutable Context Builder Architecture](../immutable-context-builder.md)**  
+- **Immutable Context Builder Architecture**  
   How multi‑stage transformations are implemented using pure, deterministic, immutable pipelines.
 
 ---
 
 ## Authentication Architecture
 
-- **[Authentication Overview](../authentication/overview.md)**  
+- **Authentication Overview**  
   High‑level explanation of the OIDC authentication flow and the three‑layer callback architecture.
 
-- **[Login Endpoint](../authentication/login-endpoint.md)**  
+- **Login Endpoint**  
   Details for `/api/auth/login`, the pure redirect endpoint.
 
-- **[Callback Endpoint](../authentication/callback-endpoint.md)**  
+- **Callback Endpoint**  
   Details for `/api/auth/callback`, which orchestrates the Frank pipeline, Application pipeline, cookie issuance, and redirect.
 
-- **[Authentication Configuration](../authentication/configuration.md)**  
+- **Authentication Configuration**  
   Required Auth0 configuration keys and environment variables.
 
-- **[Frank Callback Pipeline](../authentication/frank-callback-pipeline.md)**  
+- **Frank Callback Pipeline**  
   Protocol‑level pipeline implemented using ImmutableContextBuilder.
 
-- **[Application Callback Pipeline](../authentication/application-callback-pipeline.md)**  
+- **Application Callback Pipeline**  
   Business‑level pipeline implemented using ImmutableContextBuilder.
 
-- **[Identity Mapping](../authentication/identity-mapping.md)**  
+- **Identity Mapping**  
   How external identities map to internal Owner identities.
 
-- **[Session Token Architecture](../authentication/session-token-architecture.md)**  
+- **Session Token Architecture**  
   How session tokens are generated, hashed, stored, and validated.
 
-- **[Session Cookie Specification](../authentication/session-cookie-specification.md)**  
+- **Session Cookie Specification**  
   Cookie format, flags, security properties, and lifetime.
 
-- **[Session Management](../authentication/session-management.md)**  
+- **Session Management**  
   How session records are created, persisted, validated, and expired.
 
-- **[Authentication Error Handling](../authentication/authentication-error-handling.md)**  
+- **Authentication Error Handling**  
   How errors are surfaced during login, callback, and session validation.
 
 ---
 
 ## Cross‑Cutting Architecture
 
-- **[Hosting Provider Architecture](../hosting-provider-architecture.md)**  
+- **Hosting Provider Architecture**  
   How hosting providers integrate with Frank’s hosting abstractions and how HostingEngine selects and configures them.
 
-- **[Environment Abstraction](../environment-abstraction.md)**  
+- **Environment Abstraction**  
   How environment variables are accessed safely and deterministically through Frank’s seams.
 
-- **[Security Headers Architecture](../security-headers-architecture.md)**  
+- **Security Headers Architecture**  
   How security headers are applied and enforced across environments.
 
-- **[Startup Engine Architecture](../startup-engine.md)**  
+- **Startup Engine Architecture**  
   How StartupEngine runs startup modules to assemble the application.
 
-- **[Hosting Engine Architecture](../hosting-engine.md)**  
+- **Hosting Engine Architecture**  
   How HostingEngine evaluates hosting modules and configures the environment.
 
 ---

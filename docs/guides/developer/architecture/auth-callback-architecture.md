@@ -1,57 +1,58 @@
 # Auth Callback Architecture
 
-This guide documents the **current** authentication callback flow after the refactor to:
+This guide explains the authentication callback architecture used by
+CampFitFurDogs after the refactor to:
 
-- A **Frank protocol pipeline**
-- An **Application business pipeline**
-- A **thin API callback endpoint**
+- a Frank‑owned **OIDC protocol pipeline**
+- an Application‑owned **business pipeline**
+- a thin **API callback endpoint**
 
-The previous `AuthCallbackExecutor`/`IAuthCallbackStep` engine has been replaced by **immutable context builders** and a **three‑layer architecture**:
+The previous `AuthCallbackExecutor` / `IAuthCallbackStep` engine has been fully
+replaced by immutable context builders and a strict three‑layer architecture.
 
-1. Frank — OIDC protocol handling  
-2. Application — identity + session + redirect  
-3. API — cookie issuance + redirect orchestration  
-
-This guide describes the **post‑refactor architecture** and how responsibilities are split.
-
-The system now uses **exclusive OIDC authentication**.  
-Local identity, local registration, and local password flows have been fully removed.
+Local identity, local registration, and password flows have been removed.  
+The system is now **OIDC‑exclusive**.
 
 ---
 
-# 1. Purpose
+## Purpose
 
-The authentication callback architecture orchestrates the **OIDC authorization‑code callback flow**:
+The authentication callback architecture orchestrates the OIDC
+authorization‑code callback flow in a deterministic, testable, and governed way.
 
-1. Validate configuration  
-2. Exchange authorization code  
-3. Extract and normalize claims  
-4. Resolve identity  
-5. Create or load customer  
-6. Create session  
-7. Compute redirect URL (including `returnUrl` if provided)  
-8. Compute cookie value  
-9. Issue session cookie and redirect  
+The flow performs:
 
-Each responsibility is implemented in the **correct layer**:
+- configuration validation  
+- authorization code exchange  
+- claims extraction and normalization  
+- identity resolution  
+- customer creation or lookup  
+- session creation  
+- redirect URL computation  
+- cookie value computation  
+- cookie issuance + redirect  
 
-- Frank: protocol  
-- Application: business  
-- API: boundary orchestration  
+Each responsibility is implemented in the correct layer:
 
-The architecture is:
-
-- deterministic  
-- pure at each layer  
-- invariant‑checked  
-- testable  
-- cross‑cutting  
-- reusable  
-- governed  
+- **Frank** — protocol  
+- **Application** — business  
+- **API** — boundary  
 
 ---
 
-# 2. Architecture Overview
+## When to Use This Guide
+
+Use this guide when:
+
+- implementing or modifying authentication callback behavior  
+- adding a new identity provider  
+- updating redirect logic  
+- writing tests for callback behavior  
+- onboarding new engineers to the authentication system  
+
+---
+
+## Architecture Overview
 
 ```text
 API Callback Endpoint
@@ -63,19 +64,17 @@ Application Auth Callback Pipeline (business)
 API issues cookie + redirect
 ```
 
-The flow is composed of:
+| Layer | Responsibility |
+|-------|----------------|
+| API | HTTP boundary, parameter extraction, cookie issuance, redirect |
+| Frank | OIDC protocol, token exchange, claims extraction |
+| Application | identity resolution, session creation, redirect + cookie value |
 
-| Component | Responsibility |
-|----------|----------------|
-| API endpoint | HTTP boundary, `code` + `returnUrl` extraction, cookie issuance, redirect |
-| Frank pipeline | OIDC protocol, token exchange, claims extraction, normalization |
-| Application pipeline | Identity resolution, customer/session creation, redirect + cookie value computation |
-
-Each pipeline is implemented as an **immutable context builder**.
+Each pipeline is implemented as an immutable context builder.
 
 ---
 
-# 3. Frank Auth Callback Pipeline
+## Frank Auth Callback Pipeline
 
 Frank owns the **protocol layer**.
 
@@ -86,30 +85,29 @@ IImmutableContextBuilder<
     FrankAuthCallbackResult>
 ```
 
-### 3.1 Responsibilities
+### Responsibilities
 
-- Validate OIDC configuration  
-- Exchange authorization code for tokens  
-- Fetch/parse userinfo (if required)  
-- Normalize provider‑specific claims into a stable shape  
-- Produce a protocol‑level result for Application  
+- validate OIDC configuration  
+- exchange authorization code  
+- fetch and parse userinfo (if required)  
+- normalize provider‑specific claims  
+- produce a protocol‑level result for Application  
 
-### 3.2 Non‑Responsibilities
+### Non‑Responsibilities
 
 Frank must not:
 
-- Perform business rules  
-- Create customers  
-- Create sessions  
-- Issue cookies  
-- Compute redirect URLs  
-- Interpret `returnUrl`  
+- perform business logic  
+- create customers or sessions  
+- issue cookies  
+- compute redirect URLs  
+- interpret `returnUrl`  
 
-Frank’s pipeline is **pure protocol**.
+Frank is **pure protocol**.
 
 ---
 
-# 4. Application Auth Callback Pipeline
+## Application Auth Callback Pipeline
 
 Application owns the **business layer**.
 
@@ -120,86 +118,78 @@ IImmutableContextBuilder<
     ApplicationAuthCallbackContextBuilderResult>
 ```
 
-### 4.1 Responsibilities
+### Responsibilities
 
 Given the normalized protocol result, Application must:
 
-- Resolve identity (find or create customer)  
-- Create or load customer record  
-- Create session  
-- Compute redirect URL  
-  - If `returnUrl` is provided → validate + use it  
-  - If not provided → use default post‑login redirect  
-- Compute cookie value (opaque, secure)  
-- Produce a complete result for the API boundary  
+- resolve identity  
+- create or load customer  
+- create session  
+- compute redirect URL  
+- compute cookie value  
+- produce a complete result for the API boundary  
 
-`ApplicationAuthCallbackContextBuilderResult` must include:
+`ApplicationAuthCallbackContextBuilderResult` includes:
 
 - `CustomerId`  
 - `SessionId`  
 - `TokenHash`  
 - `CookieValue`  
-- `RedirectUrl` (including validated `returnUrl` when present)  
+- `RedirectUrl`  
 
-### 4.2 Redirect URL Rules
+### Redirect URL Rules
 
 Application must:
 
-- Accept `returnUrl` from the API endpoint  
-- Validate that `returnUrl` is:
-  - Local  
-  - Safe  
-  - Non‑malicious  
-- Reject or sanitize unsafe values  
-- Produce the final `RedirectUrl`  
+- accept `returnUrl` from the API  
+- validate that it is local and safe  
+- sanitize or reject unsafe values  
+- compute the final redirect target  
 
-### 4.3 Non‑Responsibilities
+### Non‑Responsibilities
 
 Application must not:
 
-- Perform OIDC protocol logic  
-- Exchange tokens  
-- Call identity providers  
-- Issue cookies  
-- Access HttpContext  
+- perform OIDC protocol logic  
+- exchange tokens  
+- issue cookies  
+- access HttpContext  
 
-Application’s pipeline is **pure business**.
+Application is **pure business**.
 
 ---
 
-# 5. API Callback Endpoint
+## API Callback Endpoint
 
-The API callback endpoint is a **thin orchestrator**.
+The API callback endpoint is a thin orchestrator.
 
-### 5.1 Responsibilities
+### Responsibilities
 
-- Extract the `code` query parameter  
-- Extract the optional `returnUrl` query parameter  
-- Validate that `code` is present  
-- Invoke the Frank pipeline  
-- Invoke the Application pipeline  
-- Issue the session cookie using `CookieValue`  
-- Redirect to the `RedirectUrl` provided by the Application pipeline  
+- extract `code`  
+- extract optional `returnUrl`  
+- validate that `code` is present  
+- invoke Frank pipeline  
+- invoke Application pipeline  
+- issue session cookie using `CookieValue`  
+- redirect to `RedirectUrl`  
 
-### 5.2 Non‑Responsibilities
+### Non‑Responsibilities
 
 The API endpoint must not:
 
-- Perform protocol logic  
-- Perform business logic  
-- Perform persistence  
-- Call identity providers  
-- Compute redirect URLs  
-- Validate or sanitize `returnUrl`  
-- Generate cookie values  
+- perform protocol logic  
+- perform business logic  
+- compute redirect URLs  
+- validate `returnUrl`  
+- generate cookie values  
 
-The endpoint is responsible only for **HTTP boundary behavior**.
+The endpoint is **boundary‑only**.
 
 ---
 
-# 6. Immutable Context Builder Pattern
+## Immutable Context Builder Pattern
 
-Both pipelines use the same architectural pattern:
+Both pipelines use:
 
 ```csharp
 public interface IImmutableContextBuilder<TRequest, TContext, TResult>
@@ -208,132 +198,118 @@ public interface IImmutableContextBuilder<TRequest, TContext, TResult>
 }
 ```
 
-### 6.1 Rules
+### Rules
 
-- `TRequest`, `TContext`, and `TResult` must be immutable  
-- Builders must be deterministic  
-- Builders must not mutate external state  
-- Builders must not perform HTTP in Application layer  
-- Builders must not perform persistence in Frank layer  
-
-This replaces the old `AuthCallbackExecutor`/`IAuthCallbackStep` engine with a **simpler, strongly typed pipeline**.
+- request, context, and result types must be immutable  
+- builders must be deterministic  
+- builders must not mutate external state  
+- Application builders must not perform HTTP  
+- Frank builders must not perform persistence  
 
 ---
 
-# 7. Error Model
+## Error Model
 
-Errors are handled at the correct layer:
+### API
 
-### 7.1 API
+- missing `code` → `400 Bad Request`  
+- all other errors → global error boundary  
 
-- Missing `code` → `400 Bad Request`  
-- All other errors → flow into Frank’s global error boundary  
+### Frank
 
-### 7.2 Frank Pipeline
+- protocol failures  
+- token exchange errors  
+- invalid provider responses  
 
-- Protocol failures (token exchange, invalid response, etc.)  
-- Must throw protocol‑specific exceptions  
-- Must not leak provider details  
+### Application
 
-### 7.3 Application Pipeline
+- identity resolution failures  
+- session creation failures  
 
-- Identity/session failures  
-- Must throw application‑level exceptions  
-- Must not leak infrastructure details  
-
-All errors are ultimately shaped by:
+Errors are shaped by:
 
 - Frank’s error boundary  
 - ProblemDetails conventions  
-- API Governance rules  
+- API governance  
 
 ---
 
-# 8. Observability
+## Observability
 
-The callback flow must be observable at each layer:
+Logs must capture:
 
-- **API**: callback invocation, cookie issuance, redirect target (non‑PII)  
-- **Frank**: protocol events (token exchange, claims extraction)  
-- **Application**: identity resolution, session creation, redirect decision  
+- API: callback invocation, redirect target (non‑PII)  
+- Frank: protocol events  
+- Application: identity/session events  
 
 Logs must never contain:
 
-- Authorization codes  
-- Tokens  
+- authorization codes  
+- tokens  
 - PII  
-- Provider error messages  
+- provider error messages  
 
 ---
 
-# 9. Testing Strategy
+## Testing Strategy
 
-### 9.1 Frank Pipeline Tests
+### Frank Pipeline Tests
 
-- Protocol success/failure paths  
-- Invalid configuration  
-- Provider error handling  
-- Claims normalization  
+- protocol success/failure  
+- invalid configuration  
+- claims normalization  
 
-### 9.2 Application Pipeline Tests
+### Application Pipeline Tests
 
-- New customer flow  
-- Existing customer flow  
-- Session creation  
-- Redirect URL selection (with and without `returnUrl`)  
-- Cookie value computation  
+- new/existing customer flows  
+- session creation  
+- redirect URL selection  
+- cookie value computation  
 
-### 9.3 API Endpoint Tests
+### API Endpoint Tests
 
-- Missing `code` → `400`  
-- Valid `code` → cookie issued + redirect  
-- `returnUrl` flows correctly into Application  
-- Error propagation into global error boundary  
+- missing `code` → `400`  
+- valid `code` → cookie + redirect  
+- `returnUrl` flows correctly  
+- error propagation  
 
 Tests must use:
 
-- Fake Frank pipeline implementation  
-- Fake Application pipeline implementation  
-- ApiFactory / ApiContext for endpoint tests  
+- fake Frank pipeline  
+- fake Application pipeline  
+- `ApiFactory` + `ApiContext`  
 
 ---
 
-# 10. Migration Notes (From Old Engine)
+## Migration Notes
 
-The previous engine:
+The old engine:
 
 - `AuthCallbackExecutor`  
 - `IAuthCallbackStep`  
 - `AuthCallbackContext`  
-- `AuthCallbackDiagnosticEvent`  
 
-has been **replaced** by:
+has been replaced by:
 
-- Frank immutable context builder (protocol)  
-- Application immutable context builder (business)  
-- Thin API callback endpoint  
+- Frank immutable context builder  
+- Application immutable context builder  
+- thin API endpoint  
 
-Key changes:
-
-- Step‑based engine → builder‑based pipelines  
-- Mutable context → immutable request/context/result types  
-- Engine‑local diagnostics → layer‑appropriate observability  
-- Single engine → three‑layer architecture (Frank, Application, API)  
-- Redirect logic moved entirely into Application  
-- `returnUrl` is now validated and applied only in Application  
+Redirect logic now lives entirely in Application.  
+`returnUrl` is validated only in Application.
 
 ---
 
-# 11. Summary
+## Summary
 
-The Auth Callback Architecture is now:
+The Auth Callback Architecture is:
 
-- **OIDC‑exclusive**  
-- **Three‑layered** — Frank (protocol), Application (business), API (boundary)  
-- **Immutable** — request/context/result types  
-- **Deterministic** — predictable, testable behavior  
-- **Governed** — aligned with Architecture, API, and Security Governance  
-- **Safe** — `returnUrl` validated only in Application  
-- **Extensible** — new providers and business rules can be added without breaking boundaries  
+- OIDC‑exclusive  
+- three‑layered  
+- immutable  
+- deterministic  
+- governed  
+- safe  
+- extensible  
 
-This architecture replaces the old `AuthCallbackExecutor` engine and is the canonical model for all authentication callback behavior going forward.
+This is the canonical model for all authentication callback behavior going forward.

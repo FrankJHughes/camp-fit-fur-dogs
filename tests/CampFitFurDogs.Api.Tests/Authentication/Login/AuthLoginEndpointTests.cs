@@ -65,8 +65,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
                 ["Authentication:Callback:Oidc:ClientSecret"] = "secret123",
                 ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
                 ["Authentication:Callback:PostLoginRedirectUrl"] = "http://localhost:5173/",
-                ["Authentication:Callback:Oidc:Disabled"] = "false",
-                ["Frontend:BaseUrl"] = "/"
+                ["Authentication:Callback:Oidc:Disabled"] = "false"
             });
         });
 

@@ -1,49 +1,128 @@
-# StartupEngine Guide
+# StartupEngine Architecture Guide  
+*A developer‑facing explanation of how application startup works using Frank’s StartupEngine.*
 
-The **StartupEngine** is provided by **Frank** and is responsible for orchestrating the startup lifecycle using a set of **startup modules** supplied by CampFitFurDogs.
+The **StartupEngine** is part of **Frank**, the shared kernel.  
+It provides a structured, deterministic way to compose application startup using a set of **startup modules** supplied by CampFitFurDogs.
 
-CampFitFurDogs does **not** implement the engine — it **implements modules** and **invokes** the engine.
+StartupEngine itself is **generic and app‑agnostic**.  
+CampFitFurDogs provides **modules**, not engines.
+
+This guide explains how StartupEngine works, how modules fit into the architecture, and how the startup lifecycle is structured.
 
 ---
 
 # 1. Purpose
 
-StartupEngine provides a structured, deterministic way to:
+StartupEngine exists to solve a specific architectural need:
 
-- Register services across all layers  
-- Apply cross‑cutting startup behavior  
-- Keep startup logic modular and composable  
-- Ensure consistent ordering of startup modules  
-- Centralize all application initialization  
+> **Provide a modular, deterministic, layer‑agnostic way to configure application startup.**
 
-StartupEngine itself is **app‑agnostic**.  
-All application‑specific behavior lives in **modules**.
+It replaces:
+
+- Ad‑hoc startup logic in `Program.cs`  
+- Large monolithic startup methods  
+- Unpredictable ordering of middleware and DI setup  
+- Scattered cross‑cutting configuration  
+
+StartupEngine ensures:
+
+- Consistent startup ordering  
+- Clear separation of concerns  
+- Composable startup behavior  
+- A unified startup lifecycle  
+- Predictable DI and middleware configuration  
 
 ---
 
-# 2. How StartupEngine Works
+# 2. High‑Level Model
 
-StartupEngine is constructed with an ordered list of **IStartupModule** instances:
+StartupEngine coordinates two phases:
 
-```csharp
-var startupModules = ConstructStartupModules();
-var startupEngine = new StartupEngine(startupModules);
+```
+AddAll (before host build)
+UseAll (after host build)
 ```
 
-It exposes two phases:
+Each phase runs across all startup modules in the order they were provided.
 
-### **AddAll(WebApplicationBuilder builder)**  
-Executed *before* the host is built.
+```
+Startup Modules
+    ↓
+StartupEngine.AddAll(builder)
+    ↓
+builder.Build()
+    ↓
+StartupEngine.UseAll(app)
+```
+
+---
+
+# 3. Startup Modules
+
+A **startup module** encapsulates startup logic for a specific horizontal concern.
+
+Examples:
+
+- API setup  
+- Application setup  
+- Authentication  
+- Authorization  
+- CORS  
+- Logging  
+- Infrastructure  
+- Security headers  
+- Swagger  
+
+Each module implements:
+
+```csharp
+public interface IStartupModule
+{
+    void Add(WebApplicationBuilder builder);
+    void Use(WebApplication app);
+}
+```
+
+Modules are:
+
+- Deterministic  
+- Composable  
+- Focused  
+- Layer‑agnostic  
+- Free of business logic  
+
+Modules configure startup — they do not execute use cases.
+
+---
+
+# 4. The Two Startup Phases
+
+## 4.1 Add Phase  
+**Executed before the host is built.**
 
 Modules use this phase to:
 
 - Register services  
 - Register configuration  
 - Register middleware dependencies  
-- Register cross‑cutting infrastructure  
+- Register EF Core, authentication, authorization, logging, etc.  
 
-### **UseAll(WebApplication app)**  
-Executed *after* the host is built.
+This phase is DI‑only.
+
+Example:
+
+```csharp
+public void Add(WebApplicationBuilder builder)
+{
+    builder.Services.AddAuthentication();
+    builder.Services.AddAuthorization();
+}
+```
+
+---
+
+## 4.2 Use Phase  
+**Executed after the host is built.**
 
 Modules use this phase to:
 
@@ -51,11 +130,24 @@ Modules use this phase to:
 - Map endpoints  
 - Finalize the request pipeline  
 
+This phase is pipeline‑only.
+
+Example:
+
+```csharp
+public void Use(WebApplication app)
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.MapControllers();
+}
+```
+
 ---
 
-# 3. CampFitFurDogs Startup Modules
+# 5. Constructing Startup Modules
 
-CampFitFurDogs defines its own startup modules:
+CampFitFurDogs constructs its startup modules in a single place:
 
 ```csharp
 public static IStartupModule[] ConstructStartupModules()
@@ -76,20 +168,11 @@ public static IStartupModule[] ConstructStartupModules()
 }
 ```
 
-Each module encapsulates startup logic for a specific horizontal concern.
-
-Examples:
-
-- **ApiStartupModule** → endpoints, routing  
-- **ApplicationStartupModule** → AddApplication(), pipeline steps  
-- **InfrastructureStartupModule** → AddInfrastructure(), DbContext  
-- **SecurityHeadersStartupModule** → security headers  
-- **CorsStartupModule** → CORS policy  
-- **SwaggerStartupModule** → OpenAPI  
+This list defines the **startup order**.
 
 ---
 
-# 4. How StartupEngine Is Invoked
+# 6. Invoking StartupEngine
 
 In `Program.cs`:
 
@@ -101,9 +184,8 @@ var app = builder.Build();
 Startup.UseAllServices(app);
 ```
 
-Where:
-
 ### AddAllServices
+
 ```csharp
 var startupModules = ConstructStartupModules();
 var startupEngine = new StartupEngine(startupModules);
@@ -114,6 +196,7 @@ builder.Services.AddStartupEngine();
 ```
 
 ### UseAllServices
+
 ```csharp
 var startupEngine = app.Services.GetRequiredService<StartupEngine>();
 startupEngine.UseAll(app);
@@ -127,24 +210,112 @@ This ensures:
 
 ---
 
-# 5. What StartupEngine Does NOT Do
+# 7. Interaction With HostingEngine
 
-StartupEngine does **not**:
+StartupEngine runs **after** HostingEngine.
 
-- Perform DI scanning (Frank handles this)  
-- Register handlers, repositories, readers (auto‑registration)  
-- Apply EF Core configurations (Frank handles this)  
-- Select hosting providers (HostingEngine handles this)  
-- Contain application logic  
+Sequence:
 
-StartupEngine is purely an **orchestrator**.
+```
+HostingEngine → StartupEngine.AddAll → Host Build → StartupEngine.UseAll
+```
+
+HostingEngine configures:
+
+- Environment  
+- Hosting provider  
+- Hosting metadata  
+
+StartupEngine configures:
+
+- DI  
+- Middleware  
+- Endpoints  
+- Cross‑cutting pipelines  
+
+They are complementary but separate.
 
 ---
 
-# 6. Summary
+# 8. Interaction With DI Auto‑Registration
 
-- Frank provides the **StartupEngine**  
-- CampFitFurDogs provides **startup modules**  
-- StartupEngine runs modules in two phases: AddAll + UseAll  
-- StartupEngine is stable, generic, and app‑agnostic  
+StartupEngine does **not**:
+
+- Scan for handlers  
+- Scan for validators  
+- Scan for repositories  
+- Scan for readers  
+- Scan for EF Core configurations  
+
+Frank’s DI auto‑registration engine handles all scanning.
+
+StartupEngine simply orchestrates module execution.
+
+---
+
+# 9. Interaction With the Test Harness
+
+The test harness uses StartupEngine to build a realistic test host.
+
+Sequence:
+
+```
+HostingEngine
+StartupEngine.AddAll
+Test overrides
+Host Build
+StartupEngine.UseAll
+```
+
+Test overrides must always run **after** both engines.
+
+StartupEngine itself contains no test‑specific logic.
+
+---
+
+# 10. What Belongs in a Startup Module
+
+Put it in a startup module if it:
+
+- Configures DI  
+- Configures middleware  
+- Configures endpoints  
+- Configures cross‑cutting infrastructure  
+- Configures authentication/authorization  
+- Configures logging  
+- Configures CORS  
+- Configures security headers  
+- Configures Swagger  
+
+Startup modules configure startup — nothing more.
+
+---
+
+# 11. What Does NOT Belong in StartupEngine or Modules
+
+Do **not** put the following in StartupEngine or modules:
+
+- Business logic  
+- Domain logic  
+- Application logic  
+- Persistence  
+- HTTP calls  
+- Request‑specific logic  
+- Environment‑specific logic (HostingEngine handles this)  
+- Test logic  
+- Slice‑specific behavior  
+
+StartupEngine is a **startup orchestrator**, not a logic container.
+
+---
+
+# 12. Summary
+
+- StartupEngine is part of **Frank**, the shared kernel  
+- It orchestrates startup using **startup modules**  
+- Modules run in two phases: AddAll + UseAll  
+- StartupEngine is deterministic, modular, and app‑agnostic  
 - All application‑specific startup behavior lives in modules  
+- StartupEngine interacts cleanly with HostingEngine and DI auto‑registration  
+- StartupEngine is a core part of the application’s startup architecture  
+

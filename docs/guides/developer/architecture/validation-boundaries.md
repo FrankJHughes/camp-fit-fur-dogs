@@ -1,49 +1,79 @@
 # Validation Boundaries  
-**API vs Application vs Domain**
+*A developer‑facing architecture guide for API, Application, and Domain validation.*
 
-This document defines the validation responsibilities across the three backend layers: **API**, **Application**, and **Domain**.  
-It ensures contributors understand *where* validation belongs, *why*, and *how* each layer interacts with the others.
+Validation in CampFitFurDogs is intentionally layered.  
+Each backend layer has a **distinct validation responsibility**, and understanding these boundaries is essential for writing predictable, maintainable, and testable code.
 
-This is a foundational architecture guide and complements:
+This guide explains:
 
-- [API Endpoint Purity Guide](ca://s?q=Show_API_endpoint_purity_guide)  
-- [Dispatcher Pipeline Guide](ca://s?q=Show_dispatcher_pipeline_guide)  
-- [Architecture Governance](ca://s?q=Open_architecture_governance)
+- What each layer validates  
+- Why validation is split across layers  
+- How validation flows through the system  
+- How errors surface  
+- How to test validation correctly  
+
+It complements:
+
+- API Endpoint Purity Guide  
+- Dispatcher Pipeline Guide  
+- Domain Events Architecture  
+- Architecture Overview  
 
 ---
 
-# Why This Matters
+# 1. Why Validation Is Layered
 
-Clear validation boundaries prevent:
+Validation is not a single concern — it spans three layers:
 
-- Validation rules scattering across layers  
-- Domain logic leaking into API endpoints  
-- Application services becoming bloated  
-- Duplicate or inconsistent validation  
+1. **API — Syntactic validation**  
+2. **Application — Semantic validation**  
+3. **Domain — Invariant validation**
+
+Each layer answers a different question:
+
+| Layer | Question |
+|-------|----------|
+| **API** | “Is the request well‑formed?” |
+| **Application** | “Does this make sense for the business?” |
+| **Domain** | “What must always be true?” |
+
+Keeping these responsibilities separate prevents:
+
+- Duplicate validation  
+- Business logic leaking into API endpoints  
+- Domain invariants leaking into handlers  
+- Repositories being used in validators  
 - Incorrect error codes  
 - Incorrect test placement  
 
-This guide ensures the system remains **predictable**, **pure**, and **maintainable**.
+---
+
+# 2. High‑Level Flow
+
+A request flows through validation in this order:
+
+```
+Client Request
+    ↓
+API Layer (syntactic validation)
+    ↓
+Application Layer (semantic validation)
+    ↓
+Domain Layer (invariant validation)
+    ↓
+Handler executes use case
+```
+
+Each layer builds on the previous one.
 
 ---
 
-# Layer Responsibilities Overview
-
-Validation is divided into three categories:
-
-1. **API Layer — Syntactic Validation**  
-2. **Application Layer — Semantic Validation**  
-3. **Domain Layer — Invariant Validation**
-
-Each layer has a distinct purpose and must not leak into the others.
-
----
-
-# 1. API Layer — **Syntactic Validation**
+# 3. API Layer — Syntactic Validation  
+**“Is the request well‑formed?”**
 
 The API layer validates **shape**, **format**, and **presence** of incoming data.
 
-This is the “Is the request well‑formed?” layer.
+This is the first line of defense.
 
 ### Responsibilities
 
@@ -56,10 +86,9 @@ This is the “Is the request well‑formed?” layer.
 - Query string validation  
 - Route parameter validation  
 
-### What the API layer must *not* do
+### What the API layer does *not* do
 
 - No business rules  
-- No cross‑field logic  
 - No repository access  
 - No domain invariants  
 - No entity creation  
@@ -74,17 +103,18 @@ This is the “Is the request well‑formed?” layer.
 
 - `"email" must be a valid email format`  
 - `"firstName" is required`  
-- `"page" must be a positive integer`
+- `"page" must be a positive integer"`
 
 API validation ensures the request is **syntactically correct**, nothing more.
 
 ---
 
-# 2. Application Layer — **Semantic Validation**
+# 4. Application Layer — Semantic Validation  
+**“Does this make sense for the business?”**
 
 The Application layer validates **business meaning** and **cross‑field rules**.
 
-This is the “Does this make sense for the business?” layer.
+This is where use‑case‑specific validation lives.
 
 ### Responsibilities
 
@@ -96,12 +126,12 @@ This is the “Does this make sense for the business?” layer.
 - Authorization checks  
 - Workflow rules  
 
-### What the Application layer must *not* do
+### What the Application layer does *not* do
 
 - No syntactic validation  
-- No domain invariant enforcement (that’s Domain)  
-- No persistence logic outside use cases  
+- No domain invariant enforcement  
 - No HTTP or API concerns  
+- No persistence logic outside use cases  
 
 ### Error Type
 
@@ -118,11 +148,16 @@ Application validation ensures the request is **semantically valid**.
 
 ---
 
-# 3. Domain Layer — **Invariant Validation**
+# 5. Domain Layer — Invariant Validation  
+**“What must always be true?”**
 
-The Domain layer enforces **rules that must always be true**, regardless of context.
+The Domain layer enforces **rules that must always hold**, regardless of context.
 
-This is the “What must always be true in the business universe?” layer.
+These rules live inside:
+
+- Value objects  
+- Entities  
+- Aggregates  
 
 ### Responsibilities
 
@@ -133,7 +168,7 @@ This is the “What must always be true in the business universe?” layer.
 - Internal consistency  
 - Rules that must hold *forever*  
 
-### What the Domain layer must *not* do
+### What the Domain layer does *not* do
 
 - No external calls  
 - No repository access  
@@ -153,11 +188,11 @@ This is the “What must always be true in the business universe?” layer.
 - `"BookingDate" must be in the future"`  
 - `"PasswordHash" must be a valid hash format"`
 
-Domain validation ensures the **business invariants** are upheld.
+Domain validation ensures **business invariants** are upheld.
 
 ---
 
-# Error Mapping Summary
+# 6. Error Mapping Summary
 
 | Layer | Error Type | HTTP Status | Notes |
 |-------|------------|-------------|-------|
@@ -169,17 +204,17 @@ Domain validation ensures the **business invariants** are upheld.
 | Configuration | `BadConfiguration` | 500 | Missing config keys |
 | Unexpected | `Unexpected` | 500 | Catch‑all |
 
-This table is consistent with **Security Governance**, **Operations Governance**, and Frank’s error boundary.
+This table aligns with Frank’s error primitives and the global exception middleware.
 
 ---
 
-# Testing Strategy
+# 7. Testing Strategy
 
 Validation must be tested at the correct layer.
 
 ---
 
-## API Tests — **Syntactic**
+## 7.1 API Tests — Syntactic
 
 Validate:
 
@@ -192,7 +227,7 @@ These tests ensure the API rejects malformed requests.
 
 ---
 
-## Application Tests — **Semantic**
+## 7.2 Application Tests — Semantic
 
 Validate:
 
@@ -205,7 +240,7 @@ These tests ensure business rules are enforced.
 
 ---
 
-## Domain Tests — **Invariants**
+## 7.3 Domain Tests — Invariants
 
 Validate:
 
@@ -217,7 +252,7 @@ These tests ensure domain invariants cannot be violated.
 
 ---
 
-# Examples
+# 8. Examples
 
 ## Example 1 — Email Field
 
@@ -240,7 +275,7 @@ These tests ensure domain invariants cannot be violated.
 
 ---
 
-# Summary
+# 9. Summary
 
 - **API = shape + format**  
 - **Application = business meaning**  
@@ -253,7 +288,7 @@ Following these boundaries keeps the system pure, testable, and maintainable.
 
 # Related Documents
 
-- [API Endpoint Purity Guide](ca://s?q=Show_API_endpoint_purity_guide)  
-- [Dispatcher Pipeline](ca://s?q=Show_dispatcher_pipeline_guide)  
-- [Authentication Overview](ca://s?q=Show_authentication_overview)  
-- [Architecture Governance](ca://s?q=Open_architecture_governance)
+- API Endpoint Purity Guide  
+- Dispatcher Pipeline Guide  
+- Authentication Overview  
+- Architecture Overview  

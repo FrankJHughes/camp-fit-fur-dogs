@@ -27,9 +27,9 @@ All authentication behavior is implemented inside the Frank and Application pipe
 
 # HTTP Request
 
-```http
+````http
 GET /api/auth/callback?code=XYZ&returnUrl=/dashboard
-```
+````
 
 The endpoint accepts:
 
@@ -70,9 +70,9 @@ This is the only validation the endpoint performs.
 
 The endpoint calls:
 
-```
+````csharp
 FrankAuthCallbackPipeline.BuildAsync(...)
-```
+````
 
 Frank performs all **OIDC protocol work**:
 
@@ -100,9 +100,9 @@ Frank pipeline errors are shaped by Frank’s error boundary.
 
 The endpoint then calls:
 
-```
+````csharp
 ApplicationAuthCallbackPipeline.BuildAsync(...)
-```
+````
 
 Application performs all **business logic**:
 
@@ -161,11 +161,11 @@ Local development uses `Secure=false`.
 
 The endpoint returns:
 
-```
+````http
 302 Found
 Location: <RedirectUrl from Application pipeline>
 Set-Cookie: cfd.session=...
-```
+````
 
 The redirect URL is computed **only** by the Application pipeline.
 
@@ -227,4 +227,4 @@ It contains **no business logic**, **no protocol logic**, and **no Infrastructur
 - **[Authentication Configuration](ca://s?q=Show_authentication_configuration_doc)**  
 - **[Authentication Architecture Guide](ca://s?q=Show_authentication_architecture_doc)**  
 - **[Identity Mapping Guide](ca://s?q=Show_identity_mapping_guide)**  
-- **[Session Management Guide](ca://s?q=Show_session_management_guide)**
+- **[Session Management Guide](ca://s?q=Show_session_management_guide)**  

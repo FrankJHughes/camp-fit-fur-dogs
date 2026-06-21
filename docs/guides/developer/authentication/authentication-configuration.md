@@ -1,4 +1,4 @@
-# Authentication Configuration (Aligned With Auth Callback Refactor)
+# Authentication Configuration
 
 The following configuration keys are required for **OIDC authentication**.  
 These values must be provided as **environment variables / appsettings** in all environments:
@@ -14,7 +14,7 @@ Missing or malformed configuration results in a **startup failure** or a
 
 # Configuration Shape (Canonical)
 
-```json
+````json
 {
   "Authentication": {
     "Callback": {
@@ -29,7 +29,7 @@ Missing or malformed configuration results in a **startup failure** or a
     }
   }
 }
-```
+````
 
 Environment variable equivalents:
 
@@ -161,16 +161,14 @@ Validation happens inside the **Frank Auth Callback Pipeline**:
 
 ## Local Development
 
-Example:
-
-```bash
+````bash
 Authentication__Callback__Oidc__Authority=https://dev-tenant.us.auth0.com
 Authentication__Callback__Oidc__ClientId=abc123
 Authentication__Callback__Oidc__ClientSecret=xyz789
 Authentication__Callback__Oidc__CallbackUrl=http://localhost:5000/auth/callback
 Authentication__Callback__PostLoginRedirectUrl=http://localhost:3000/
 Authentication__Callback__Oidc__Disabled=false
-```
+````
 
 - `Secure=false` cookies  
 - `SameSite=Lax`  
@@ -207,4 +205,4 @@ and validated by the **Frank pipeline** before any business logic runs.
 - **Authentication Architecture Guide**  
 - **Callback Endpoint Guide**  
 - **Identity Mapping Guide**  
-- **Session Management Guide**
+- **Session Management Guide**  

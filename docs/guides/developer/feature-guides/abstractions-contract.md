@@ -1,29 +1,36 @@
-# Abstractions Contract
+# Abstractions Contract  
+**Aligned With Vertical Slice Architecture, Exclusive OIDC Authentication, and De‑featured Local Identity**
 
-This guide explains the purpose and rules of the `Abstractions` folder in the Application layer.  
-It defines what belongs here, what does not, and how other layers should interact with these types.
+The `Abstractions` folder defines the **public surface area** of the Application layer.  
+It is the only part of Application that **API**, **Infrastructure**, and **Tests** may reference.
 
-The Abstractions folder is the **public surface area** of the Application layer — the only part of Application that other layers may reference.
+Abstractions contain **contracts**, not behavior.  
+They define the stable API of the Application layer.
 
 ---
 
 # 1. Purpose
 
-The `Abstractions` folder defines the **stable, dependency‑safe API** of the Application layer.  
-It contains the types that **API**, **Infrastructure**, and **Tests** are allowed to reference.
-
-These include:
+The `Abstractions` folder provides a **stable, dependency‑safe API** for all other layers.  
+It contains the types that external layers are allowed to reference:
 
 - **Commands**  
 - **Queries**  
 - **Result/Response DTOs**  
 - **Reader interfaces** (e.g., `IGetDogProfileReader`)  
-- **Service interfaces** (e.g., `ICurrentUserService`)  
+- **Service interfaces** (e.g., `ICurrentUser`)  
 - **Dispatcher interfaces** (`ICommandDispatcher`, `IQueryDispatcher`)  
 - **Domain event abstractions** (`IDomainEventDispatcher`, `IDomainEventHandler<T>`)  
-- **Cross‑cutting interfaces** (e.g., `IUnitOfWork`)  
+- **Cross‑cutting interfaces** (`IUnitOfWork`)  
 
-Everything in Abstractions is intentionally **stable**, **pure**, and **safe to reference**.
+Everything in Abstractions is intentionally:
+
+- **Pure**  
+- **Stable**  
+- **Safe to reference**  
+- **Free of implementation details**  
+
+Abstractions define **what** the Application layer exposes — not **how** it works.
 
 ---
 
@@ -46,13 +53,13 @@ src/CampFitFurDogs.Application/Abstractions/
 
   ICommandDispatcher.cs
   IQueryDispatcher.cs
-  ICurrentUserService.cs
+  ICurrentUser.cs
   IDomainEventDispatcher.cs
   IDomainEventHandler.cs
   IUnitOfWork.cs
 ````
 
-Each feature has its own subfolder.
+Each vertical slice has its own subfolder.
 
 ---
 
@@ -80,28 +87,30 @@ Commands and queries define the **public API** of a slice — they must be stabl
 
 ## 3.2 API Depends Only on Abstractions
 
-Endpoints must reference:
+API endpoints may reference:
 
 - Commands  
 - Queries  
 - Result DTOs  
 - Dispatchers  
 
-They must **not** reference:
+API endpoints must **not** reference:
 
 - Handlers  
 - Validators  
 - Application internals  
+- Domain entities  
+- Infrastructure types  
 
-This enforces **[API Endpoint Purity](ca://s?q=Generate_API_Endpoint_Purity_Guide)**.
+This enforces **API Endpoint Purity**.
 
 ---
 
 ## 3.3 Infrastructure May Depend on Abstractions
 
-Infrastructure can reference:
+Infrastructure may reference:
 
-- `ICurrentUserService`  
+- `ICurrentUser`  
 - Dispatcher interfaces  
 - Domain event abstractions  
 - Reader interfaces (Infrastructure implements these)
@@ -110,9 +119,10 @@ Infrastructure must **not** reference:
 
 - Application handlers  
 - Validators  
-- Commands/queries directly (except for mapping or persistence boundaries)
+- Commands/queries directly (except for mapping boundaries)  
+- Any Application implementation details  
 
-This enforces **[Architecture Governance](ca://s?q=Open_architecture_governance)**.
+This enforces **Architecture Governance**.
 
 ---
 
@@ -126,6 +136,9 @@ Abstractions must remain pure:
 - No references to EF Core or ASP.NET  
 - No DI attributes  
 - No business logic  
+- No pipeline logic  
+- No session logic  
+- No OIDC logic  
 
 Abstractions define **contracts**, not behavior.
 
@@ -135,20 +148,21 @@ Abstractions define **contracts**, not behavior.
 
 The Abstractions folder:
 
-- Makes the Application layer's public API explicit  
+- Makes the Application layer’s public API explicit  
 - Prevents accidental coupling between layers  
-- Allows Application internals to evolve without breaking API or Infrastructure  
+- Allows Application internals to evolve safely  
 - Supports clean layering and purity rules  
 - Enables guardrail tests to enforce architectural boundaries  
 - Houses reader interfaces so query handlers depend on stable contracts, not Infrastructure (**ADR‑0021**)  
+- Ensures vertical slices expose only their **command/query API**, not their internals  
 
-This is the backbone of the **vertical slice architecture**.
+Abstractions are the backbone of the **vertical slice architecture**.
 
 ---
 
 # 5. Contributor Guidelines
 
-When adding a new feature:
+When adding a new vertical slice:
 
 1. **Define commands/queries** in `Abstractions/<Feature>/`.  
 2. **Define result types** (DTOs) in the same folder.  
@@ -158,8 +172,9 @@ When adding a new feature:
 6. **Implement readers** in `Infrastructure/<Feature>/` (query slices only).  
 7. **Use only Abstractions** from API and Infrastructure.  
 8. **Do not reference internal handler types** from outside Application.  
+9. If a type is referenced across layers, it **belongs in Abstractions**.  
 
-If a type is referenced across layers, it **belongs in Abstractions**.
+Vertical slices expose **commands, queries, and results** — nothing else.
 
 ---
 

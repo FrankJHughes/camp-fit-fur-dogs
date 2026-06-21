@@ -28,6 +28,9 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
         _ctx = ctx;
     }
 
+    // ------------------------------------------------------------
+    // CLIENT CREATION
+    // ------------------------------------------------------------
     public HttpClient CreateClient(TClientContext clientCtx)
     {
         var client = base.CreateClient(new WebApplicationFactoryClientOptions
@@ -44,7 +47,7 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
             var payload = new
             {
                 Sub = id,
-                Scheme = clientCtx.SignInScheme // <- API-specific, provided by consumer
+                Scheme = clientCtx.SignInScheme
             };
 
             var response = client.PostAsJsonAsync("/__test__/sign-in", payload).Result;
@@ -54,28 +57,38 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
         return client;
     }
 
+    // ------------------------------------------------------------
+    // FIXED: Environment only — config overrides now applied in ConfigureWebHost
+    // ------------------------------------------------------------
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.UseEnvironment(_ctx.Environment);
+        return base.CreateHost(builder);
+    }
 
-        builder.ConfigureAppConfiguration(cfg =>
+    // ------------------------------------------------------------
+    // FIXED: Configuration overrides applied BEFORE StartupEngine runs
+    // ------------------------------------------------------------
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureAppConfiguration((context, cfg) =>
         {
+            // Ensure environment is set early
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ASPNETCORE_ENVIRONMENT"] = _ctx.Environment
             });
 
+            // Apply all config overrides BEFORE StartupEngine.AddAll executes
             foreach (var apply in _ctx.ConfigOverrides)
                 apply(cfg);
         });
 
-        return base.CreateHost(builder);
-    }
-
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
         builder.ConfigureServices((context, services) =>
         {
+            // ------------------------------------------------------------
+            // COOKIE AUTH ADJUSTMENTS FOR TESTING
+            // ------------------------------------------------------------
             services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
             {
                 opts.Cookie.SecurePolicy = CookieSecurePolicy.None;
@@ -104,6 +117,9 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
             foreach (var apply in _ctx.ServiceOverrides)
                 apply(services);
 
+            // ------------------------------------------------------------
+            // DATABASE HANDLING
+            // ------------------------------------------------------------
             if (!_ctx.DisableDatabase && _ctx.Postgres is not null)
             {
                 ConfigureDatabase(context, services, _ctx.Postgres);
@@ -113,13 +129,22 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
                 ConfigureDatabaseDisabled(context, services);
             }
 
+            // ------------------------------------------------------------
+            // ENDPOINT DISCOVERY
+            // ------------------------------------------------------------
             var assembly = typeof(SignInEndpoint).Assembly;
             EndpointDiscovery.AddEndpoints(assembly);
 
+            // ------------------------------------------------------------
+            // ALLOW SUBCLASSES TO MUTATE SERVICES
+            // ------------------------------------------------------------
             ConfigureMutations(context, services);
         });
     }
 
+    // ------------------------------------------------------------
+    // EXTENSION POINTS
+    // ------------------------------------------------------------
     protected virtual void ConfigureMutations(
         WebHostBuilderContext context,
         IServiceCollection services)
@@ -139,6 +164,9 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     {
     }
 
+    // ------------------------------------------------------------
+    // DATABASE LIFECYCLE
+    // ------------------------------------------------------------
     public async Task<MutatedWebApplicationFactory<TEntryPoint, TContext, TClientContext>> WithDatabaseAsync(
         Func<PostgreSqlBuilder, PostgreSqlBuilder>? configureBuilder = null)
     {

@@ -1,36 +1,35 @@
-# Immutable Context Builder Guide  
-*(Aligned With Authentication Callback Refactor)*
+# Immutable Context Builder Architecture
 
-`ImmutableContextBuilder<TRequest, TContext, TResult>` is a **deterministic, pure, invariant‑checked pipeline primitive** used to implement multi‑stage transformations without mutable state, step engines, or dispatcher pipelines.
+`ImmutableContextBuilder<TRequest, TContext, TResult>` is a deterministic, pure, invariant‑checked pipeline primitive used to implement multi‑stage transformations without mutable state, step engines, or dispatcher pipelines.
 
-It is now a **core architectural mechanism** used across:
+It is a core architectural mechanism used across:
 
-- Frank Auth Callback Pipeline (protocol)
-- Application Auth Callback Pipeline (business)
+- Frank Authentication Callback Pipeline (protocol)
+- Application Authentication Callback Pipeline (business)
 - Identity Mapping
 - Session Creation
 - Redirect Computation
-- Any multi‑stage transformation requiring purity + determinism
+- Any multi‑stage transformation requiring purity and determinism
 
-This guide documents **how ImmutableContextBuilder works today**, how it is used, and when to use it.
+This guide defines the builder pattern, lifecycle, invariants, purity rules, and usage guidelines.
 
 ---
 
-# Purpose
+# 1. Purpose
 
-`ImmutableContextBuilder` exists to solve a specific architectural need:
+ImmutableContextBuilder exists to solve a specific architectural need:
 
 > **Perform multi‑stage transformations in a deterministic, pure, strongly‑typed, and testable way — without mutable state or step engines.**
 
-It replaces:
+Builders replace:
 
 - Step engines  
-- Ordered step lists  
 - Mutable context objects  
+- Ordered step lists  
 - Ad‑hoc orchestration logic  
 - Dispatcher pipelines for non‑CQRS flows  
 
-It provides:
+Builders provide:
 
 - Determinism  
 - Purity  
@@ -39,9 +38,11 @@ It provides:
 - Testability  
 - Governance alignment  
 
+Builders are orchestration primitives, not business logic containers.
+
 ---
 
-# High‑Level Model
+# 2. Conceptual Model
 
 ```
 TRequest
@@ -53,21 +54,19 @@ TContext (immutable snapshots)
 TResult
 ```
 
-### TRequest  
-Input parameters for the pipeline.  
-Immutable.
+## TRequest  
+Immutable input parameters for the pipeline.
 
-### TContext  
-Internal working state.  
-Immutable snapshots created at each stage.
+## TContext  
+Immutable working state.  
+Each transformation produces a new context snapshot.
 
-### TResult  
-Final output.  
-Immutable.
+## TResult  
+Immutable final output.
 
 ---
 
-# Responsibilities
+# 3. Responsibilities
 
 A builder must:
 
@@ -81,11 +80,11 @@ A builder must:
 - Never perform HTTP (Application builders)  
 - Never perform persistence (Frank builders)  
 
-Builders are **pure orchestration**, not business logic containers.
+Builders are pure orchestration.
 
 ---
 
-# What Builders Replace
+# 4. What Builders Replace
 
 Builders replace:
 
@@ -93,11 +92,13 @@ Builders replace:
 - Mutable contexts  
 - Ordered step lists  
 - Dispatcher pipelines for non‑CQRS flows  
-- “God methods” that do too much  
+- Large procedural “god methods”  
+
+Builders eliminate ordering bugs, mutation bugs, and state corruption.
 
 ---
 
-# What Builders Do *Not* Replace
+# 5. What Builders Do *Not* Replace
 
 Builders do **not** replace:
 
@@ -105,13 +106,14 @@ Builders do **not** replace:
 - Domain logic  
 - Infrastructure logic  
 - API endpoints  
-- Hosting providers  
+- Hosting modules  
+- Startup modules  
 
-They are strictly for **pure, deterministic, synchronous transformations**.
+Builders are for **pure, deterministic, synchronous transformations**.
 
 ---
 
-# Anatomy of a Builder
+# 6. Builder Interface
 
 A builder implements:
 
@@ -136,7 +138,78 @@ Each transformation:
 
 ---
 
-# Example: Frank Auth Callback Pipeline
+# 7. Lifecycle
+
+The builder lifecycle is:
+
+```
+1. Validate request
+2. Create initial context
+3. Apply transformations in deterministic order
+4. Validate invariants at each step
+5. Produce final result
+```
+
+Each step produces a new immutable context snapshot.
+
+Builders must not:
+
+- Skip steps  
+- Reorder steps  
+- Conditionally remove steps  
+- Mutate previous contexts  
+
+---
+
+# 8. Invariant Enforcement
+
+Builders enforce strict invariants:
+
+## 8.1 No Mutation  
+Every state change produces a new context.
+
+## 8.2 No Clearing  
+Once a field is set, it cannot be unset.
+
+## 8.3 No Overwriting  
+Once a field is set, it cannot be replaced.
+
+## 8.4 No Nulls  
+Contexts must always be valid.
+
+## 8.5 No Illegal Transitions  
+Domain invariants must hold at every stage.
+
+These invariants prevent:
+
+- Ordering bugs  
+- Step bugs  
+- Accidental data loss  
+- Inconsistent state  
+
+---
+
+# 9. Error Handling
+
+Builders must:
+
+- Fail fast  
+- Fail deterministically  
+- Fail with invariant‑specific errors  
+- Never swallow exceptions  
+- Never return partial contexts  
+
+Errors must be:
+
+- Contextual  
+- Immutable  
+- Predictable  
+
+---
+
+# 10. Examples
+
+## 10.1 Frank Authentication Callback Pipeline
 
 ```
 FrankAuthCallbackRequest
@@ -153,14 +226,12 @@ Frank pipeline performs:
 
 All pure protocol logic.
 
----
-
-# Example: Application Auth Callback Pipeline
+## 10.2 Application Authentication Callback Pipeline
 
 ```
 ApplicationAuthCallbackRequest
     → ApplicationAuthCallbackContext
-        → ApplicationAuthCallbackContextBuilderResult
+        → ApplicationAuthCallbackResult
 ```
 
 Application pipeline performs:
@@ -174,47 +245,29 @@ All pure business logic.
 
 ---
 
-# Invariant Enforcement
+# 11. Testing Strategy
 
-Builders enforce:
-
-- **No mutation** — every state change produces a new context  
-- **No clearing** — once a field is set, it cannot be unset  
-- **No overwriting** — once a field is set, it cannot be replaced  
-- **No nulls** — contexts must always be valid  
-- **No illegal transitions** — domain invariants must hold  
-
-This prevents:
-
-- Ordering bugs  
-- Step bugs  
-- Accidental data loss  
-- Inconsistent state  
-
----
-
-# Testing Strategy
-
-### Unit Tests  
+## 11.1 Unit Tests  
 Test each transformation in isolation.
 
-### Builder Tests  
+## 11.2 Builder Tests  
 Test the full builder end‑to‑end.
 
-### Guardrail Tests  
+## 11.3 Guardrail Tests  
 Ensure:
+
 - Immutability  
 - No mutation  
 - No overwriting  
 - No clearing  
 - Deterministic behavior  
 
-### Integration Tests  
+## 11.4 Integration Tests  
 Used when builders participate in API flows (e.g., authentication callback).
 
 ---
 
-# When to Use a Builder
+# 12. When to Use a Builder
 
 Use a builder when:
 
@@ -238,7 +291,7 @@ Examples:
 
 ---
 
-# When *Not* to Use a Builder
+# 13. When *Not* to Use a Builder
 
 Do **not** use a builder when:
 
@@ -254,19 +307,19 @@ Builders are for **pure, deterministic, synchronous transformations**.
 
 ---
 
-# Summary
+# 14. Summary
 
-`ImmutableContextBuilder` is now a **core architectural primitive**.
+`ImmutableContextBuilder` is a core architectural primitive.
 
 It provides:
 
 - Determinism  
 - Purity  
 - Immutability  
+- Strong typing  
 - Testability  
 - Safety  
-- Strong typing  
 - Governance alignment  
 
-It replaces the old step engine and is the foundation for all new multi‑stage flows.
+It replaces the step engine and is the foundation for all new multi‑stage flows.
 

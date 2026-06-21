@@ -1,20 +1,20 @@
-# Authentication Architecture Guide
+# Authentication Architecture
 
-This guide documents the **current authentication architecture** implemented across:
+This guide documents the current authentication architecture implemented across:
 
-- **US‑110 — Authentication: Owner Login (OIDC)**
-- **US‑111 — Authentication: Session Management**
-- **US‑184 — De‑feature Local Identity**
+- US‑110 — Authentication: Owner Login (OIDC)
+- US‑111 — Authentication: Session Management
+- US‑184 — De‑feature Local Identity
 
-It describes how the system performs OIDC login, executes the authentication callback, resolves identity, creates sessions, and issues cookies — using the **exclusive OIDC authentication model** and the **three‑layer authentication callback architecture**:
+It describes how the system performs OIDC login, executes the authentication callback, resolves identity, creates sessions, and issues cookies — using the exclusive OIDC authentication model and the three‑layer authentication callback architecture:
 
-1. **OIDC Login Initiation**  
-2. **Frank Auth Callback Pipeline (protocol)**  
-3. **Application Auth Callback Pipeline (business)**  
-4. **API Callback Endpoint (boundary orchestration)**  
+1. OIDC Login Initiation  
+2. Frank Auth Callback Pipeline (protocol)  
+3. Application Auth Callback Pipeline (business)  
+4. API Callback Endpoint (boundary orchestration)  
 
-This guide explains **how authentication works today**, not governance.  
-Rules and boundaries live in:
+This guide explains **how authentication works today**.  
+Governance rules live in:
 
 - Architecture Governance  
 - API Governance  
@@ -24,13 +24,43 @@ Rules and boundaries live in:
 
 ---
 
-# High‑Level Architecture
+## Purpose
+
+The authentication architecture orchestrates the complete OIDC authorization‑code flow:
+
+- configuration validation  
+- authorization code exchange  
+- claims extraction and normalization  
+- identity resolution  
+- session creation  
+- redirect URL computation  
+- cookie value computation  
+- cookie issuance + redirect  
+
+Each responsibility is implemented in the correct layer:
+
+- Frank — protocol  
+- Application — business  
+- API — boundary  
+
+The architecture is:
+
+- deterministic  
+- immutable  
+- testable  
+- governed  
+- cross‑cutting  
+- aligned with Frank’s engine model  
+
+---
+
+## High‑Level Architecture
 
 Authentication consists of three cooperating components:
 
-1. **OIDC Login Initiation**  
-2. **Auth Callback Architecture (Frank + Application + API)**  
-3. **Session Issuance + Identity Mapping + Audit Logging**
+1. OIDC Login Initiation  
+2. Auth Callback Architecture (Frank + Application + API)  
+3. Session Issuance + Identity Mapping + Audit Logging  
 
 Authentication spans:
 
@@ -40,36 +70,35 @@ Authentication spans:
 - **Domain** — Owner + Session invariants  
 - **Infrastructure** — Auth0 client, repositories, audit logger  
 
-The system now uses **exclusive OIDC authentication**.  
 Local identity, local registration, and password flows have been fully removed.
 
 ---
 
-# Component 1 — OIDC Login Initiation
+## OIDC Login Initiation
 
 The login initiation endpoint:
 
-- Generates the Auth0 authorization URL  
-- Includes the correct redirect URI  
-- Includes PKCE parameters  
-- Includes the optional `returnUrl` parameter  
-- Redirects the browser to Auth0  
+- generates the Auth0 authorization URL  
+- includes the correct redirect URI  
+- includes PKCE parameters  
+- includes the optional `returnUrl` parameter  
+- redirects the browser to Auth0  
 
 This endpoint:
 
-- Contains **no identity logic**  
-- Contains **no session logic**  
-- Contains **no business logic**  
-- Uses only configuration + URL generation  
-- Relies on Frank middleware for security headers and CORS  
+- contains no identity logic  
+- contains no session logic  
+- contains no business logic  
+- uses only configuration + URL generation  
+- relies on Frank middleware for security headers and CORS  
 
 It simply begins the OIDC flow.
 
 ---
 
-# Component 2 — Auth Callback Architecture (Post‑Refactor)
+## Auth Callback Architecture
 
-The old dispatcher‑based callback engine has been replaced by a **three‑layer architecture**:
+The old dispatcher‑based callback engine has been replaced by a three‑layer architecture:
 
 ```
 API Callback Endpoint
@@ -92,9 +121,9 @@ This architecture is:
 
 ---
 
-# Layer 1 — Frank Auth Callback Pipeline (Protocol Layer)
+## Frank Auth Callback Pipeline (Protocol Layer)
 
-Frank owns the **OIDC protocol**.
+Frank owns the OIDC protocol.
 
 ```csharp
 IImmutableContextBuilder<
@@ -103,33 +132,33 @@ IImmutableContextBuilder<
     FrankAuthCallbackResult>
 ```
 
-## Responsibilities
+### Responsibilities
 
-- Validate OIDC configuration  
-- Exchange authorization code for tokens  
-- Validate issuer, audience, signature, nonce, state  
-- Fetch userinfo (if required)  
-- Normalize provider‑specific claims  
-- Produce a stable, provider‑agnostic result  
+- validate OIDC configuration  
+- exchange authorization code for tokens  
+- validate issuer, audience, signature, nonce, state  
+- fetch userinfo (if required)  
+- normalize provider‑specific claims  
+- produce a stable, provider‑agnostic result  
 
-## Non‑Responsibilities
+### Non‑Responsibilities
 
 Frank must not:
 
-- Perform business logic  
-- Resolve identity  
-- Create sessions  
-- Compute redirect URLs  
-- Interpret or validate `returnUrl`  
-- Compute cookie values  
+- perform business logic  
+- resolve identity  
+- create sessions  
+- compute redirect URLs  
+- interpret or validate `returnUrl`  
+- compute cookie values  
 
-Frank’s pipeline is **pure protocol**.
+Frank’s pipeline is pure protocol.
 
 ---
 
-# Layer 2 — Application Auth Callback Pipeline (Business Layer)
+## Application Auth Callback Pipeline (Business Layer)
 
-Application owns the **identity + session + redirect** logic.
+Application owns identity + session + redirect logic.
 
 ```csharp
 IImmutableContextBuilder<
@@ -138,19 +167,19 @@ IImmutableContextBuilder<
     ApplicationAuthCallbackContextBuilderResult>
 ```
 
-## Responsibilities
+### Responsibilities
 
 Given the normalized protocol result, Application must:
 
-- Resolve identity (find or create Owner)  
-- Create or load Owner  
-- Create session  
-- Compute redirect URL  
-  - If `returnUrl` is provided → validate + use it  
-  - If not provided → use default post‑login redirect  
-- Compute cookie value (opaque, secure)  
+- resolve identity (find or create Owner)  
+- create or load Owner  
+- create session  
+- compute redirect URL  
+  - if `returnUrl` is provided → validate + use it  
+  - otherwise → use default post‑login redirect  
+- compute cookie value (opaque, secure)  
 
-The result object must include:
+The result object includes:
 
 - `CustomerId`  
 - `SessionId`  
@@ -158,63 +187,63 @@ The result object must include:
 - `CookieValue`  
 - `RedirectUrl`  
 
-## Redirect URL Rules
+### Redirect URL Rules
 
 Application must:
 
-- Accept `returnUrl` from the API endpoint  
-- Validate that `returnUrl` is:
-  - Local  
-  - Safe  
-  - Non‑malicious  
-- Reject or sanitize unsafe values  
-- Produce the final `RedirectUrl`  
+- accept `returnUrl` from the API endpoint  
+- validate that `returnUrl` is:
+  - local  
+  - safe  
+  - non‑malicious  
+- reject or sanitize unsafe values  
+- produce the final `RedirectUrl`  
 
-## Non‑Responsibilities
+### Non‑Responsibilities
 
 Application must not:
 
-- Perform OIDC protocol logic  
-- Exchange tokens  
-- Call identity providers  
-- Issue cookies  
-- Access HttpContext  
+- perform OIDC protocol logic  
+- exchange tokens  
+- call identity providers  
+- issue cookies  
+- access HttpContext  
 
-Application’s pipeline is **pure business**.
+Application’s pipeline is pure business.
 
 ---
 
-# Layer 3 — API Callback Endpoint (Boundary Layer)
+## API Callback Endpoint (Boundary Layer)
 
-The API callback endpoint is a **thin orchestrator**.
+The API callback endpoint is a thin orchestrator.
 
-## Responsibilities
+### Responsibilities
 
-- Extract the `code` query parameter  
-- Extract the optional `returnUrl` query parameter  
-- Validate that `code` is present  
-- Invoke the Frank pipeline  
-- Invoke the Application pipeline  
-- Issue the session cookie using `CookieValue`  
-- Redirect to `RedirectUrl`  
+- extract the `code` query parameter  
+- extract the optional `returnUrl` query parameter  
+- validate that `code` is present  
+- invoke the Frank pipeline  
+- invoke the Application pipeline  
+- issue the session cookie using `CookieValue`  
+- redirect to `RedirectUrl`  
 
-## Non‑Responsibilities
+### Non‑Responsibilities
 
 The API endpoint must not:
 
-- Perform protocol logic  
-- Perform business logic  
-- Perform persistence  
-- Call identity providers  
-- Compute redirect URLs  
-- Validate or sanitize `returnUrl`  
-- Generate cookie values  
+- perform protocol logic  
+- perform business logic  
+- perform persistence  
+- call identity providers  
+- compute redirect URLs  
+- validate or sanitize `returnUrl`  
+- generate cookie values  
 
-The endpoint is responsible only for **HTTP boundary behavior**.
+The endpoint is responsible only for HTTP boundary behavior.
 
 ---
 
-# Immutable Context Builder Pattern
+## Immutable Context Builder Pattern
 
 Both pipelines use the same architectural pattern:
 
@@ -225,54 +254,54 @@ public interface IImmutableContextBuilder<TRequest, TContext, TResult>
 }
 ```
 
-## Rules
+### Rules
 
-- All types (`TRequest`, `TContext`, `TResult`) must be immutable  
-- Builders must be deterministic  
-- Builders must not mutate external state  
-- Builders must not perform HTTP in Application layer  
-- Builders must not perform persistence in Frank layer  
+- all types (`TRequest`, `TContext`, `TResult`) must be immutable  
+- builders must be deterministic  
+- builders must not mutate external state  
+- builders must not perform HTTP in Application layer  
+- builders must not perform persistence in Frank layer  
 
-This replaces the old step engine with a **simpler, strongly typed pipeline**.
-
----
-
-# Identity Mapping in the Architecture
-
-Identity mapping is performed **exclusively in the Application pipeline**.
-
-- External identity → internal domain identity  
-- Implemented via `IIdentityResolver`  
-- Pure and deterministic  
-- Never uses email  
-- Never exposes internal IDs to Auth0  
-- Never touches Infrastructure directly  
-- Never performs protocol logic  
-
-Identity mapping is part of the **OIDC‑exclusive authentication model**.  
-The external identity (OIDC `sub`) is the *only* identity input into the system.
-
-See the **Identity Mapping Guide** for details.
+This replaces the old step engine with a simpler, strongly typed pipeline.
 
 ---
 
-# Session Issuance in the Architecture
+## Identity Mapping
 
-Session issuance occurs **only in the Application pipeline** and the **API boundary**.
+Identity mapping is performed exclusively in the Application pipeline.
 
-1. **Token generation** (Application pipeline)  
-2. **Token hashing** (Application pipeline)  
-3. **Session creation** (Application pipeline)  
-4. **Cookie issuance** (API layer)  
-5. **Redirect** (API layer using Application result)  
+- external identity → internal domain identity  
+- implemented via `IIdentityResolver`  
+- pure and deterministic  
+- never uses email  
+- never exposes internal IDs to Auth0  
+- never touches Infrastructure directly  
+- never performs protocol logic  
+
+Identity mapping is part of the OIDC‑exclusive authentication model.  
+The external identity (`sub`) is the only identity input into the system.
+
+See the Identity Mapping Guide for details.
+
+---
+
+## Session Issuance
+
+Session issuance occurs only in the Application pipeline and the API boundary.
+
+1. token generation (Application)  
+2. token hashing (Application)  
+3. session creation (Application)  
+4. cookie issuance (API)  
+5. redirect (API using Application result)  
 
 Session tokens:
 
-- Are 256‑bit random values  
-- Are hashed using SHA‑256  
-- Are stored only as hashes  
-- Are issued as secure cookies  
-- Are opaque (never JWTs, never contain identity data)  
+- are 256‑bit random values  
+- are hashed using SHA‑256  
+- are stored only as hashes  
+- are issued as secure cookies  
+- are opaque (never JWTs, never contain identity data)  
 
 Production cookie flags:
 
@@ -284,58 +313,58 @@ Local development uses `Secure=false`.
 
 ---
 
-# Audit Logging in the Architecture
+## Audit Logging
 
-Audit logging occurs in the **Application pipeline**, immediately after identity resolution:
+Audit logging occurs in the Application pipeline, immediately after identity resolution:
 
-- Logs `CustomerId` + external identity (`sub`)  
-- Does not mutate state  
-- Runs before session creation  
-- Ensures login events are recorded even if session creation fails  
-- Never logs tokens, authorization codes, or PII  
+- logs `CustomerId` + external identity (`sub`)  
+- does not mutate state  
+- runs before session creation  
+- ensures login events are recorded even if session creation fails  
+- never logs tokens, authorization codes, or PII  
 
 ---
 
-# Architectural Boundaries
+## Architectural Boundaries
 
 Authentication spans four layers:
 
-## 1. API Layer
-- Defines endpoints  
-- Extracts `code` and optional `returnUrl`  
-- Orchestrates Frank + Application pipelines  
-- Issues cookies  
-- Returns redirect responses  
-- Uses Frank error boundary, security headers, and CORS  
-- Performs **no protocol logic** and **no business logic**  
+### API Layer
+- defines endpoints  
+- extracts `code` and optional `returnUrl`  
+- orchestrates Frank + Application pipelines  
+- issues cookies  
+- returns redirect responses  
+- uses Frank error boundary, security headers, and CORS  
+- performs no protocol logic and no business logic  
 
-## 2. Frank Layer
-- Performs **OIDC protocol logic only**  
-- Exchanges authorization code  
-- Validates tokens  
-- Normalizes claims  
-- Produces protocol‑level result  
-- Contains **no business logic**  
-- Does **not** interpret or validate `returnUrl`  
+### Frank Layer
+- performs OIDC protocol logic only  
+- exchanges authorization code  
+- validates tokens  
+- normalizes claims  
+- produces protocol‑level result  
+- contains no business logic  
+- does not interpret or validate `returnUrl`  
 
-## 3. Application Layer
-- Performs **business logic only**  
-- Identity resolution  
+### Application Layer
+- performs business logic only  
+- identity resolution  
 - Owner creation  
-- Session creation  
-- Redirect URL computation (including `returnUrl` validation)  
-- Cookie value computation  
-- Contains **no protocol logic**  
+- session creation  
+- redirect URL computation  
+- cookie value computation  
+- contains no protocol logic  
 
-## 4. Domain Layer
-- Owns Owner aggregate  
-- Owns Session entity  
-- Owns invariants  
-- Contains no Infrastructure or API references  
+### Domain Layer
+- owns Owner aggregate  
+- owns Session entity  
+- owns invariants  
+- contains no Infrastructure or API references  
 
 ---
 
-# Data Flow Diagram
+## Data Flow Diagram
 
 ```
 Browser → /api/auth/login?returnUrl=/dashboard
@@ -349,36 +378,36 @@ Auth0 → /api/auth/callback?code=XYZ&state=...
 
 ---
 
-# Error Handling Architecture
+## Error Handling
 
 Authentication errors fall into these categories:
 
-## 1. API Errors — 400
-- Missing authorization code  
-- Missing or malformed state  
-- Invalid `returnUrl` (if Application rejects it)  
+### API Errors — 400
+- missing authorization code  
+- missing or malformed state  
+- invalid `returnUrl` (if Application rejects it)  
 
-## 2. Protocol Errors — 502
-- Token exchange failure  
-- Missing access token  
-- Userinfo failure  
-- Missing external ID (`sub`)  
+### Protocol Errors — 502
+- token exchange failure  
+- missing access token  
+- userinfo failure  
+- missing external ID (`sub`)  
 
-## 3. Business Errors — 500
-- Identity resolver failure  
+### Business Errors — 500
+- identity resolver failure  
 - Owner creation failure  
-- Session creation failure  
+- session creation failure  
 
 All errors are surfaced via:
 
 - Frank error boundary  
 - ProblemDetails JSON  
-- Logged exceptions  
-- No cookies issued  
+- logged exceptions  
+- no cookies issued  
 
 ---
 
-# Observability
+## Observability
 
 The callback flow must be observable at each layer:
 
@@ -388,72 +417,77 @@ The callback flow must be observable at each layer:
 
 Logs must never contain:
 
-- Authorization codes  
-- Tokens  
+- authorization codes  
+- tokens  
 - PII  
-- Provider error messages  
+- provider error messages  
 
 ---
 
-# Testing Architecture
+## Testing Architecture
 
 Authentication is tested at three levels:
 
-## 1. Frank Pipeline Tests
-- Protocol success/failure  
-- Claims normalization  
-- Provider error handling  
-- State/nonce validation  
+### Frank Pipeline Tests
+- protocol success and failure paths  
+- claims normalization  
+- provider error handling  
+- state and nonce validation  
 
-## 2. Application Pipeline Tests
-- Identity resolution  
-- Session creation  
-- Redirect computation (with and without `returnUrl`)  
-- Cookie value computation  
+### Application Pipeline Tests
+- identity resolution  
+- session creation  
+- redirect computation (with and without `returnUrl`)  
+- cookie value computation  
 
-## 3. API Endpoint Tests
-- Missing `code` → `400`  
-- Valid `code` → cookie issued + redirect  
+### API Endpoint Tests
+- missing `code` → 400  
+- valid `code` → cookie issued + redirect  
 - `returnUrl` flows correctly into Application  
-- Error propagation into global error boundary  
+- error propagation into global error boundary  
 
 Tests use:
 
-- Fake Frank pipeline  
-- Fake Application pipeline  
-- ApiFactory / ApiContext  
+- fake Frank pipeline  
+- fake Application pipeline  
+- `ApiFactory` + `ApiContext`  
+- deterministic configuration overrides  
+- no real external services  
 
 ---
 
-# Local Development Notes
+## Local Development Notes
 
-## Auth0
-Local dev uses:
+### Auth0
+Local development uses the following callback URL:
 
 ```
 http://localhost:5000/api/auth/callback
 ```
 
-## Cookies
-Local dev:
+### Cookies
+
+Local development:
 
 - `Secure=false`  
 - `SameSite=Lax`  
 
-Preview/prod:
+Preview and production:
 
 - `Secure=true`  
 - `HttpOnly=true`  
 - `SameSite=Lax`  
 
+These flags are enforced by the API boundary and configured via environment‑specific cookie policies.
+
 ---
 
-# Related Documents
+## Related Documents
 
-- **Session Management Guide**  
-- **Identity Mapping Guide**  
-- **Authentication Testing Guide**  
-- **Authentication Operations Guide**  
-- **Architecture Governance**  
-- **API Governance**  
-- **Security Governance**
+- Session Management Guide  
+- Identity Mapping Guide  
+- Authentication Testing Guide  
+- Authentication Operations Guide  
+- Architecture Governance  
+- API Governance  
+- Security Governance  
