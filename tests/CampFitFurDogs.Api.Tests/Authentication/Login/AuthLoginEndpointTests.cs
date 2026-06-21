@@ -21,15 +21,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
     {
         _ctx = new ApiContext()
             .WithDatabase(false) // Login endpoint does not use DB
-            .WithCookieAuthOnly(false)
-            .WithConfigOverride(cfg =>
-                cfg.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["Frontend:BaseUrl"] = "http://localhost:5173"
-                    }
-                )
-            );
+            .WithCookieAuthOnly(false);
 
         _api = new ApiFactory(_ctx);
 
@@ -97,8 +89,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "",
                 ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "",
-                ["Frontend:BaseUrl"] = "/"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = ""
             });
         });
 
@@ -119,8 +110,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
-                ["Frontend:BaseUrl"] = "/"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
             });
         });
 
@@ -141,8 +131,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
-                ["Frontend:BaseUrl"] = "/"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
             });
         });
 
@@ -163,8 +152,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "",
-                ["Frontend:BaseUrl"] = "/"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = ""
             });
         });
 

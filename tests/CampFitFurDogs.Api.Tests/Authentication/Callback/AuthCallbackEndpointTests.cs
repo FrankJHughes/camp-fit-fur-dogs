@@ -83,14 +83,6 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
         _ctx = new ApiContext()
             .WithDatabase(false)
             .WithCookieAuthOnly(false)
-            .WithConfigOverride(cfg =>
-                cfg.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["Frontend:BaseUrl"] = "http://localhost:5173"
-                    }
-                )
-            )
             .WithServiceOverride(services =>
             {
                 // Remove real engines

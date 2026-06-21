@@ -30,15 +30,7 @@ public class RegisterDogEndpointTests : IAsyncLifetime
         // 2. Build ApiContext
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(true)
-            .WithConfigOverride(cfg =>
-                cfg.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["Frontend:BaseUrl"] = "http://localhost:5173"
-                    }
-                )
-            );
+            .WithCookieAuthOnly(true);
 
         // 3. Create ApiFactory
         _api = new ApiFactory(ctx);

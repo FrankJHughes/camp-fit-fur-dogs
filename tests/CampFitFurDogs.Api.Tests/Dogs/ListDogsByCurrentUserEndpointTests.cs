@@ -28,15 +28,7 @@ public class ListDogsByCurrentUserEndpointTests : IAsyncLifetime
 
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(true)
-            .WithConfigOverride(cfg =>
-                cfg.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["Frontend:BaseUrl"] = "http://localhost:5173"
-                    }
-                )
-            );
+            .WithCookieAuthOnly(true);
 
         _api = new ApiFactory(ctx);
     }

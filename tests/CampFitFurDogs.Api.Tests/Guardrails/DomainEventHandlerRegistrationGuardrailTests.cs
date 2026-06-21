@@ -29,15 +29,7 @@ public class DomainEventHandlerRegistrationGuardrailTests : IAsyncLifetime
     {
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(false)
-            .WithConfigOverride(cfg =>
-                cfg.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["Frontend:BaseUrl"] = "http://localhost:5173"
-                    }
-                )
-            );
+            .WithCookieAuthOnly(false);
 
         return new ApiFactory(ctx);
     }

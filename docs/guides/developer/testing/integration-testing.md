@@ -183,15 +183,7 @@ public class CreateCustomerTests : IClassFixture<PostgresFixture>
     {
         var ctx = new ApiContext()
             .WithDatabase(true, fixture.Container)
-            .WithCookieAuthOnly(false)
-            .WithConfigOverride(cfg =>
-                cfg.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["Frontend:BaseUrl"] = "http://localhost:5173"
-                    }
-                )
-            );
+            .WithCookieAuthOnly(false);
 
         _api = new ApiFactory(ctx);
     }
