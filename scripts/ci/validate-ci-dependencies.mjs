@@ -31,7 +31,13 @@ if (!fs.existsSync(depsPath)) fail(`ci-deps.json not found at ${depsPath}`);
 if (!fs.existsSync(workflowPath)) fail(`ci.yaml not found at ${workflowPath}`);
 
 const deps = JSON.parse(fs.readFileSync(depsPath, "utf8"));
-const rawWorkflow = fs.readFileSync(workflowPath, "utf8");
+
+// Read workflow YAML and strip BOM if present
+let rawWorkflow = fs.readFileSync(workflowPath, "utf8");
+if (rawWorkflow.charCodeAt(0) === 0xFEFF) {
+  rawWorkflow = rawWorkflow.slice(1);
+}
+
 const workflow = yaml.load(rawWorkflow);
 
 if (!workflow.jobs) fail("Workflow contains no jobs.");
@@ -88,22 +94,9 @@ if (!hasPathsFilter) {
 }
 
 // ------------------------------------------------------------
-// 4. Validate nightly schedule
+// 4. Validate nightly schedule (currently disabled)
 // ------------------------------------------------------------
 const onSection = workflow.on;
-// if (!onSection || !onSection.schedule) {
-//   fail("Workflow missing nightly schedule trigger.");
-// }
-
-// const schedule = Array.isArray(onSection.schedule)
-//   ? onSection.schedule
-//   : [onSection.schedule];
-
-// const hasNightly = schedule.some((s) => s && s.cron === "0 9 * * *");
-
-// if (!hasNightly) {
-//     fail("Workflow missing required nightly full run at 09:00 UTC.");
-// }
 
 // ------------------------------------------------------------
 // 5. Validate workflow_dispatch exists
