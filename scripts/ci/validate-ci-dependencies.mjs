@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import process from "node:process";
-import yaml from "js-yaml";
+import * as yaml from "js-yaml";
 
 function fail(message) {
   console.error(message);
