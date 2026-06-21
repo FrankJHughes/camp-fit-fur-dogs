@@ -1,14 +1,15 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Frank.Settings;
 
 namespace Frank.Authentication.Callback.Oidc;
 
 public sealed class Auth0OidcUserInfoClient : IOidcUserInfoClient
 {
     private readonly HttpClient _http;
-    private readonly OidcAuthCallbackOptions _options;
+    private readonly AuthCallbackOidcSettings _options;
 
-    public Auth0OidcUserInfoClient(HttpClient http, OidcAuthCallbackOptions options)
+    public Auth0OidcUserInfoClient(HttpClient http, AuthCallbackOidcSettings options)
     {
         _http = http;
         _options = options;

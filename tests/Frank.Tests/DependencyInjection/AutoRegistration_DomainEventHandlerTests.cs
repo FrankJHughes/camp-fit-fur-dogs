@@ -1,5 +1,5 @@
 using Frank.Abstractions.Events;
-using Frank.DependencyInjection;
+using Frank.AutoRegistration;
 using Frank.Events;
 
 namespace Frank.Tests.DependencyInjection;

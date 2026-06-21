@@ -5,7 +5,7 @@ namespace Frank.Tests.Fakes.Authentication.Callback.Oidc;
 public static class FakeUserInfo
 {
     public static OidcUserInfo Basic =>
-        new OidcUserInfo(
+        new(
             Subject: "user-123",
             Email: "test@campfitfurdogs.com",
             GivenName: "Test",

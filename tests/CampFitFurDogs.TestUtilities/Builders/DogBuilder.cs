@@ -64,7 +64,7 @@ public sealed class DogBuilder
     // ------------------------------------------------------------
 
     public RegisterDogCommand BuildApiRequest()
-        => new RegisterDogCommand(
+        => new(
             OwnerId: _owner.Value,
             Name: _name,
             Breed: _breed,

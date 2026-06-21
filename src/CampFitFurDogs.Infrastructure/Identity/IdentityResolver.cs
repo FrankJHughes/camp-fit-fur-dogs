@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
-using CampFitFurDogs.Application.Abstractions.Identity;
+using Frank.Abstractions.Identity;
 using Frank.Abstractions;
 using Frank.Abstractions.Authentication.Callback;
 
@@ -35,7 +35,7 @@ public sealed class IdentityResolver : IIdentityResolver
 
         // Create a new customer via application command
         var command = new CreateCustomerCommand(
-            ExternalAuthProviderId: frankAuthCallbackResult.SubjectId,
+            ExternalId: frankAuthCallbackResult.SubjectId,
             FirstName: frankAuthCallbackResult.GivenName!,
             LastName: frankAuthCallbackResult.FamilyName!,
             Email: frankAuthCallbackResult.Email!);

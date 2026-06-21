@@ -1,23 +1,26 @@
 # Dispatcher Pipeline Guide
 
-This guide explains how the **command and query dispatcher pipeline** works in Camp Fit Fur Dogs.  
-It describes the runtime flow, how handlers are invoked, how validation works, and how domain events are dispatched.  
-This is a **developer guide**, not governance or conventions.
+This guide describes how the command and query dispatcher pipeline works in Camp Fit Fur Dogs.  
+It defines the runtime flow, validation rules, handler responsibilities, Unit of Work behavior, and domain event dispatching.  
+This is a developer‑level guide focused on how slices execute through the Application layer.
 
 ---
 
 # 1. Purpose of the Dispatcher Pipeline
 
-The dispatcher pipeline exists to:
+The dispatcher pipeline provides a unified execution model for all commands and queries.  
+It ensures:
 
-- Centralize command and query execution  
-- Apply cross‑cutting concerns consistently  
-- Keep API endpoints thin  
-- Make handlers easy to test  
-- Ensure all business logic flows through a single mechanism  
-- Provide a predictable, uniform execution model across all slices  
+- Consistent cross‑cutting behavior  
+- Thin API endpoints  
+- Predictable handler execution  
+- Centralized validation  
+- Centralized persistence  
+- Centralized domain event dispatch  
+- Isolation between read and write paths  
+- Easy testability of handlers and slices  
 
-The dispatcher is the backbone of the application layer.
+All business logic flows through this pipeline.
 
 ---
 
@@ -45,53 +48,56 @@ public interface IQueryDispatcher
 }
 ```
 
-API endpoints call these dispatchers — never handlers directly.
+API endpoints call dispatchers — never handlers directly.
 
-Handlers, validators, and dispatchers are auto‑registered.
-
----
-
-# 3. Command Pipeline (Deep‑Dive)
-
-The command pipeline executes in the following strict order:
+Handlers, validators, and dispatchers are auto‑registered via Frank’s DI engine.
 
 ---
+
+# 3. Command Pipeline
+
+The command pipeline executes in a strict, ordered sequence.
+
+```
+Validation → Handler → Unit of Work → Domain Events → Result
+```
 
 ## 3.1 Validation
 
 - All `IValidator<TCommand>` instances are resolved  
 - Validation runs before the handler  
-- Validation failures stop the pipeline immediately  
+- Validation failures stop execution  
 - Errors are returned to the API boundary for shaping  
 
-Validation is a pipeline concern — not a handler concern.
-
----
+Validation contains no business logic.
 
 ## 3.2 Handler Resolution
 
 - Exactly one `ICommandHandler<TCommand, TResult>` must exist  
 - Resolved via auto‑registration  
-- Handlers are never invoked directly by endpoints  
-
----
+- Endpoints never invoke handlers directly  
 
 ## 3.3 Handler Execution
 
-- `HandleAsync` is invoked  
-- Handlers orchestrate domain behavior  
-- Handlers may call repositories, domain services, and aggregates  
-- Handlers do not raise domain events directly — aggregates do  
+Handlers:
 
----
+- Orchestrate domain behavior  
+- Call repositories  
+- Load aggregates  
+- Invoke aggregate methods  
+- Never raise domain events directly (aggregates do)  
+- Never call DbContext directly  
+- Never perform persistence  
+
+Handlers are pure orchestrators.
 
 ## 3.4 Persistence (Unit of Work)
 
 The Unit of Work coordinates:
 
-- Change tracking  
-- Commit  
-- Domain event dispatch  
+1. Change tracking  
+2. Commit  
+3. Domain event dispatch  
 
 Flow:
 
@@ -100,13 +106,11 @@ Flow:
 3. Commit persists changes  
 4. Commit triggers domain event dispatch  
 
-The handler never flushes DbContext directly.
-
----
+Handlers never flush DbContext directly.
 
 ## 3.5 Domain Events
 
-Domain events flow as follows:
+Domain events flow through the system as follows:
 
 1. Aggregates raise events internally  
 2. Unit of Work collects them  
@@ -114,8 +118,6 @@ Domain events flow as follows:
 4. Domain event handlers run in sequence  
 
 Domain events never cross the API boundary.
-
----
 
 ## 3.6 Result
 
@@ -127,11 +129,13 @@ Commands never return domain entities.
 
 ---
 
-# 4. Query Pipeline (Deep‑Dive)
+# 4. Query Pipeline
 
-Queries follow a simplified pipeline:
+Queries follow a simplified, read‑only pipeline.
 
----
+```
+Validation → Handler → Reader → Result
+```
 
 ## 4.1 Validation
 
@@ -140,15 +144,12 @@ Queries follow a simplified pipeline:
 
 Queries must not mutate state.
 
----
-
 ## 4.2 Handler Execution
 
 - Exactly one `IQueryHandler<TQuery, TResult>` must exist  
 - Handler executes read‑only logic  
-- Queries may use readers or read‑only repositories  
-
----
+- Handlers depend on readers, not repositories (ADR‑0021)  
+- Handlers never call `CommitAsync()`  
 
 ## 4.3 Result
 
@@ -159,7 +160,7 @@ Queries do not raise domain events.
 
 ---
 
-# 5. Handler Overview
+# 5. Handler Responsibilities
 
 Handlers implement:
 
@@ -178,13 +179,24 @@ public interface IQueryHandler<in TQuery, TResult>
 Handlers are:
 
 - Slice‑local  
-- Auto‑registered  
 - Stateless  
+- Auto‑registered  
 - Focused on orchestration  
+- Bound to a single use case  
+- Free of cross‑cutting concerns  
+
+Handlers do not:
+
+- Perform validation  
+- Manage transactions  
+- Dispatch domain events  
+- Issue HTTP responses  
+- Access HttpContext  
+- Access EF Core directly  
 
 ---
 
-# 6. Validation Overview
+# 6. Validation Responsibilities
 
 Validators implement:
 
@@ -200,13 +212,17 @@ Validators:
 - Run before handlers  
 - Are auto‑registered  
 - Live in the same slice as the handler  
-- Contain no business logic  
+- Contain no domain logic  
+- Contain no persistence logic  
+- Contain no cross‑cutting logic  
+
+Validators enforce input correctness, not business rules.
 
 ---
 
 # 7. Execution Flow Summary
 
-### Command Flow
+## Command Flow
 
 ```
 API Endpoint
@@ -228,7 +244,7 @@ Domain Events Dispatched
 Result Returned
 ```
 
-### Query Flow
+## Query Flow
 
 ```
 API Endpoint
@@ -248,18 +264,35 @@ Result Returned
 
 ---
 
-# 8. Contributor Guidance
+# 8. Purity Rules
+
+The dispatcher pipeline enforces strict purity rules:
+
+- Handlers do not access HTTP, cookies, or headers  
+- Handlers do not access EF Core directly  
+- Handlers do not perform I/O  
+- Handlers do not dispatch domain events  
+- Validators do not perform domain logic  
+- Queries do not mutate state  
+- Commands do not return domain entities  
+- Domain events do not cross the API boundary  
+
+These rules ensure slices remain isolated, testable, and predictable.
+
+---
+
+# 9. Contributor Guidance
 
 When adding a new command or query:
 
-1. Create the request type  
+1. Create the request type in Abstractions  
 2. Add validators if needed  
 3. Implement the handler  
 4. Inject repositories or readers  
-5. For commands, call `CommitAsync`  
+5. For commands, call `CommitAsync()`  
 6. Use dispatchers in endpoints  
 7. Keep handlers small and focused  
-8. Ensure domain events are raised inside aggregates  
+8. Ensure aggregates raise domain events  
 9. Test handlers in isolation  
 10. Test the slice end‑to‑end via API tests  
 
@@ -270,7 +303,7 @@ If a handler grows beyond ~30 lines, logic is leaking into the wrong layer.
 # Related Guides
 
 - API Endpoint Guide  
-- Domain Events Guide  
-- Authentication Architecture Guide  
+- Domain Events Architecture  
+- Dependency Injection Architecture  
 - Session Management Guide  
 - Vertical Slice Guide  

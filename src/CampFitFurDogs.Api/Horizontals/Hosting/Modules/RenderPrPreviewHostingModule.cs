@@ -8,7 +8,7 @@ namespace CampFitFurDogs.Api.Horizontals.Hosting.Modules;
 public sealed class RenderPrPreviewHostingModule : IHostingModule
 {
     private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
-    private const string ConfigKey_FrontendBaseUrl = "Frontend__BaseUrl";
+    private const string ConfigKey_FrontendBaseUrl = "Frontend:BaseUrl";
     private readonly IEnvironment _env;
     private readonly IRenderPrParser _prParser;
     private readonly IGitHubArtifactClient _artifacts;

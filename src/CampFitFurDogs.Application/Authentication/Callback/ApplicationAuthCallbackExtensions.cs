@@ -11,11 +11,6 @@ public static class ApplicationAuthCallbackExtensions
     public static IServiceCollection AddApplicationAuthCallback(this IServiceCollection services)
     {
 
-        services.AddOptions<ApplicationAuthCallbackOptions>()
-                .BindConfiguration("Authentication:Callback")
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
-
         // ⭐ Token service
         services.AddScoped<ISessionTokenService, SessionTokenService>();
 

@@ -50,7 +50,7 @@ The harness ensures that every test:
 
 # 2. Test Layering Model
 
-````text
+```
 API Tests
     ↓ (dispatchers)
 Application Tests
@@ -60,7 +60,7 @@ Infrastructure Tests
 Frontend Tests
     ↓ (API clients)
 Guardrail Tests
-````
+```
 
 Each layer has its own harness:
 
@@ -89,16 +89,16 @@ API tests use **ApiTestFactory**, which provides:
 
 ## 3.1 Creating a test client
 
-````csharp
+```csharp
 var app = new ApiTestFactory();
 var client = app.CreateClient();
-````
+```
 
 ## 3.2 Faking authentication
 
-````csharp
+```csharp
 client = client.WithAuthenticatedUser(ownerId);
-````
+```
 
 This injects:
 
@@ -108,22 +108,22 @@ This injects:
 
 ## 3.3 Overriding DI
 
-````csharp
+```csharp
 app.Override<ICurrentTime, FakeClock>();
-````
+```
 
 ## 3.4 Testing cookies
 
-````csharp
+```csharp
 var cookie = client.GetSetCookie("session");
-````
+```
 
 ## 3.5 Testing ProblemDetails
 
-````csharp
+```csharp
 var problem = await response.ReadProblemDetailsAsync();
 problem.Title.Should().Be("Unauthorized");
-````
+```
 
 ## 3.6 Testing endpoints with and without auth
 
@@ -144,33 +144,33 @@ Application tests run **pure**, without:
 
 ## 4.1 Mocking ICurrentUser
 
-````csharp
+```csharp
 _currentUser.Id.Returns(ownerId);
-````
+```
 
 ## 4.2 Mocking repositories/readers
 
-````csharp
+```csharp
 _repository.SaveAsync(...).Returns(...);
-````
+```
 
 ## 4.3 Testing handlers
 
-````csharp
+```csharp
 var result = await handler.Handle(command, ct);
-````
+```
 
 ## 4.4 Testing validators
 
-````csharp
+```csharp
 var errors = validator.Validate(command);
-````
+```
 
 ## 4.5 Testing domain events
 
-````csharp
+```csharp
 dispatcher.Received().PublishAsync(Arg.Any<DogRegisteredDomainEvent>());
-````
+```
 
 ---
 
@@ -185,25 +185,25 @@ Infrastructure tests use:
 
 ## 5.1 Using the fixture
 
-````csharp
+```csharp
 public class DogRepositoryTests : IClassFixture<PostgresFixture>
 {
     private readonly AppDbContext _db;
 }
-````
+```
 
 ## 5.2 Testing repositories
 
-````csharp
+```csharp
 await _db.Dogs.AddAsync(dog);
 await _db.SaveChangesAsync();
-````
+```
 
 ## 5.3 Testing readers
 
-````csharp
+```csharp
 var result = await reader.GetDogProfile(id, ct);
-````
+```
 
 ## 5.4 Testing EF Core configurations
 
@@ -225,35 +225,35 @@ Frontend tests use:
 
 ## 6.1 Component tests
 
-````ts
+```ts
 render(<RegisterDogForm />);
-````
+```
 
 ## 6.2 Page tests
 
-````ts
+```ts
 render(<Page params={{ id: "123" }} />);
-````
+```
 
 ## 6.3 Mocking API clients
 
-````ts
+```ts
 vi.mock("@/api/registerDog", () => ({
   registerDog: vi.fn().mockResolvedValue(successResult)
 }));
-````
+```
 
 ## 6.4 Testing FormCommand flows
 
-````ts
+```ts
 await user.click(screen.getByRole("button", { name: "Submit" }));
-````
+```
 
 ## 6.5 Testing useCommand/useApiQuery
 
-````ts
+```ts
 expect(result.current.state.status).toBe("success");
-````
+```
 
 ---
 
@@ -271,28 +271,28 @@ Guardrail tests enforce:
 
 ## 7.1 Architecture tests
 
-````csharp
+```csharp
 Types.InAssembly(Application)
     .Should().NotReference(Infra);
-````
+```
 
 ## 7.2 Reader isolation
 
-````csharp
+```csharp
 QueryHandlers.Should().NotUseRepositories();
-````
+```
 
 ## 7.3 Endpoint purity
 
-````csharp
+```csharp
 Endpoints.Should().NotReferenceHandlers();
-````
+```
 
 ## 7.4 DI guardrails
 
-````csharp
+```csharp
 AllServices.Should().BeResolvable();
-````
+```
 
 ---
 
@@ -308,21 +308,21 @@ The test harness provides helpers for:
 
 ## 8.1 Fake authenticated user
 
-````csharp
+```csharp
 client.WithAuthenticatedUser(ownerId);
-````
+```
 
 ## 8.2 Fake session cookie
 
-````csharp
+```csharp
 client.WithSessionCookie("abc123");
-````
+```
 
 ## 8.3 Testing callback pipeline
 
-````csharp
+```csharp
 var result = await client.GetAsync("/api/auth/callback?code=123");
-````
+```
 
 ---
 
@@ -335,9 +335,9 @@ var result = await client.GetAsync("/api/auth/callback?code=123");
 
 ## 9.1 Resetting database
 
-````csharp
+```csharp
 await fixture.ResetAsync();
-````
+```
 
 ---
 
@@ -352,9 +352,9 @@ The harness provides seams for:
 
 ## 10.1 Overriding time
 
-````csharp
+```csharp
 app.Override<IClock>(new FakeClock(DateTime.Parse("2024-01-01")));
-````
+```
 
 ---
 
@@ -371,9 +371,9 @@ app.Override<IClock>(new FakeClock(DateTime.Parse("2024-01-01")));
 
 # 12. Slice TDD Workflow (Unified)
 
-````text
+```
 Application → Infrastructure → API → Frontend
-````
+```
 
 Each slice follows:
 
@@ -439,4 +439,3 @@ The test harness provides:
 - Architecture enforcement  
 
 This document is the **entry point** for all testing in Camp Fit Fur Dogs.
-

@@ -73,7 +73,9 @@ jobs:
       needs.determine-changes.outputs.infra == 'true'
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/run-dotnet-tests
+
+      - name: Run SharedKernel .NET tests
+        uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
             tests/Frank.Tests
@@ -93,7 +95,9 @@ jobs:
       )
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/run-dotnet-tests
+
+      - name: Run Backend .NET tests
+        uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
             tests/CampFitFurDogs.Api.Tests

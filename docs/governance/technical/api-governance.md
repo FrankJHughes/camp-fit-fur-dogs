@@ -93,6 +93,35 @@ Session creation must:
 - Be auditable via `IAuditLogger`  
 - Produce deterministic, secure cookies  
 
+## 3.1 Authentication Callback Governance (NEW)
+
+The authentication callback endpoint must:
+
+- Act as a **thin orchestrator**  
+- Extract the `code` query parameter  
+- Throw a shaped `400` error when missing  
+- Invoke the **Frank pipeline** (protocol logic only)  
+- Invoke the **Application pipeline** (business logic only)  
+- Issue the session cookie using the Application pipeline’s result  
+- Redirect to the URL provided by the Application pipeline  
+
+The callback endpoint must not:
+
+- Contain protocol logic  
+- Contain business logic  
+- Construct aggregates  
+- Perform persistence  
+- Compute redirect URLs  
+- Generate cookie values  
+- Call external identity providers directly  
+
+The callback flow must be:
+
+- Deterministic  
+- Testable  
+- Fully observable  
+- Fully shaped by Frank’s error boundary  
+
 ---
 
 # 4. Authorization Governance
@@ -150,6 +179,16 @@ The API must never:
 - Return framework‑generated HTML error pages  
 - Return inconsistent error shapes  
 
+## 5.1 Callback Error Governance (NEW)
+
+The callback endpoint must:
+
+- Return `400` for missing or invalid `code`  
+- Allow pipeline exceptions to flow into Frank’s error boundary  
+- Never leak identity provider errors  
+- Never leak token or claims data  
+- Never return protocol‑level details  
+
 ---
 
 # 6. Versioning Governance
@@ -197,6 +236,15 @@ Forbidden:
 - Introducing new required fields without versioning  
 - Changing cookie behavior without governance approval  
 
+## 7.1 Callback Stability Guarantees (NEW)
+
+The callback endpoint must maintain:
+
+- Stable redirect semantics  
+- Stable cookie issuance semantics  
+- Stable pipeline invocation order  
+- Stable error semantics  
+
 ---
 
 # 8. Session Boundary Governance
@@ -223,6 +271,16 @@ Session validation must:
 - Use Frank’s identity seam  
 - Never rely on frontend checks  
 
+## 8.1 Callback Session Governance (NEW)
+
+The callback endpoint must:
+
+- Issue cookies **only** using the Application pipeline’s `CookieValue`  
+- Never compute cookie values directly  
+- Never embed identity provider tokens  
+- Never embed PII  
+- Never embed claims not approved by governance  
+
 ---
 
 # 9. API Observability Governance
@@ -248,6 +306,22 @@ Observability must integrate with:
 - Frank hosting provider abstractions  
 - Frank error boundary  
 
+## 9.1 Callback Observability (NEW)
+
+The callback endpoint must log:
+
+- Callback invocation  
+- Pipeline success/failure  
+- Cookie issuance event (non‑PII)  
+- Redirect target (non‑PII)  
+
+It must not log:
+
+- Authorization codes  
+- Tokens  
+- Claims  
+- Provider error messages  
+
 ---
 
 # 10. Forbidden API Patterns
@@ -267,6 +341,19 @@ The following patterns are prohibited:
 - Bypassing Frank’s middleware pipeline  
 - Skipping security headers  
 - Skipping correlation IDs  
+
+## 10.1 Callback‑Specific Forbidden Patterns (NEW)
+
+Forbidden in callback endpoints:
+
+- Calling identity providers directly  
+- Performing token exchange directly  
+- Performing identity resolution directly  
+- Computing redirect URLs  
+- Computing cookie values  
+- Returning provider errors  
+- Returning raw exceptions  
+- Returning unshaped errors  
 
 ---
 

@@ -11,7 +11,7 @@ public sealed class UnexpectedExceptionHandler : IExceptionHandler
         ErrorCode.Unexpected;
 
     public ProblemDetails CreateProblemDetails(Exception ex) =>
-        new ProblemDetails
+        new()
         {
             Title = "Internal Server Error",
             Detail = ex.Message,

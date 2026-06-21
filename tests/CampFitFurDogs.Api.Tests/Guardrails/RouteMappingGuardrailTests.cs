@@ -1,11 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
-using CampFitFurDogs.TestUtilities;
+using Frank.Testing.Contexts;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Testcontainers.PostgreSql;
-using Xunit;
+using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -30,6 +30,7 @@ public class RouteMappingGuardrailTests : IAsyncLifetime
         var ctx = new ApiContext()
             .WithDatabase(true, _postgres)
             .WithCookieAuthOnly(false);
+
 
         var api = new ApiFactory(ctx);
         return api.CreateClient(new ApiClientContext());

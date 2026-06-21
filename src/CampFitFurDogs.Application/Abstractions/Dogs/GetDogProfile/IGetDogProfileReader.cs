@@ -1,5 +1,5 @@
 
-using Frank.DependencyInjection;
+using Frank.AutoRegistration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;

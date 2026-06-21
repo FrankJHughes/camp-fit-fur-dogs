@@ -18,17 +18,11 @@ public sealed class FindCustomerByExternalIdReader : IFindCustomerByExternalIdRe
         string externalId,
         CancellationToken ct)
     {
-        // IMPORTANT:
-        // EF Core cannot translate VO construction inside the query.
-        // Also, comparing VO instances with == does NOT work unless operator overloads exist.
-        // Therefore we compare on the underlying string value.
-        var externalAuthId = ExternalAuthProviderId.From(externalId);
-
         return _db.Set<Customer>()
             .AsNoTracking()
             .Where(c =>
-                c.ExternalAuthProviderId != null &&
-                c.ExternalAuthProviderId == externalAuthId)
+                c.ExternalId != null &&
+                c.ExternalId.Value == externalId)
             .Select(c =>
                 new FindCustomerByExternalIdResponse(
                     Id: c.Id.Value))

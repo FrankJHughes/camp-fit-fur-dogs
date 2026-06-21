@@ -9,6 +9,9 @@ Covers aggregate setup, command (write) slices, and query (read) slices using TD
 >
 > ✅ `RegisterDog` (command) · ✅ `GetDogProfile` (query) · ❌ “Dog Management” (feature area)
 
+Vertical slices are **domain use cases**.  
+Cross‑cutting concerns (authentication, session, security headers, CORS, etc.) are **horizontals**, not slices.
+
 ---
 
 ## Related Documents
@@ -159,19 +162,19 @@ src/CampFitFurDogs.Api/<Feature>/
 
 - Endpoints implement `IEndpoint` (ADR‑0020).  
 - Endpoints are thin: map HTTP → command → result.  
-- Identity comes from `ICurrentUserService`.
+- Identity comes from `ICurrentUser`.
 
 ---
 
 ## 4. Frontend (RED → GREEN)
 
-Frontend uses the **new FormCommand architecture**:
+Frontend uses the **FormCommand architecture**:
 
 - `FormCommand.run` is the only submit API  
 - `useFormStateMachine` manages validation + error merging  
 - `FormField` handles accessibility  
 - API clients return `CommandResult`  
-- Success response for create-account is **only `{ customerId }`**
+- Success responses for create commands are minimal DTOs (e.g., `{ id }` or `{ customerId }`)
 
 ### 4a. Component (RED → GREEN)
 
@@ -401,4 +404,4 @@ frontend/src/app/<feature>/[id]/page.tsx
 - [ ] Frontend tests pass  
 - [ ] Guardrails pass  
 - [ ] CHANGELOG updated  
-- [ ] PR opened with merge checklist
+- [ ] PR opened with merge checklist  

@@ -59,15 +59,6 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("ExternalAuthProviderId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("external_auth_provider_id");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text")
-                        .HasColumnName("password_hash");
-
                     b.Property<string>("Phone")
                         .HasColumnType("text")
                         .HasColumnName("phone");
@@ -123,6 +114,28 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
+                    b.OwnsOne("CampFitFurDogs.Domain.Customers.ExternalId", "ExternalId", b1 =>
+                        {
+                            b1.Property<Guid>("CustomerId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("external_id");
+
+                            b1.HasKey("CustomerId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique();
+
+                            b1.ToTable("customers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CustomerId");
+                        });
+
                     b.OwnsOne("CampFitFurDogs.Domain.Customers.FirstName", "FirstName", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
@@ -160,6 +173,9 @@ namespace CampFitFurDogs.Infrastructure.Migrations
                         });
 
                     b.Navigation("Email")
+                        .IsRequired();
+
+                    b.Navigation("ExternalId")
                         .IsRequired();
 
                     b.Navigation("FirstName")

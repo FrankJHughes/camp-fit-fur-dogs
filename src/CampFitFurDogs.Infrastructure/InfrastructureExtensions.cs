@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Audit;
-using CampFitFurDogs.Application.Abstractions.Identity;
+using Frank.Abstractions.Identity;
 using CampFitFurDogs.Infrastructure.Audit;
 using CampFitFurDogs.Infrastructure.Data;
 using CampFitFurDogs.Infrastructure.Identity;

@@ -4,7 +4,6 @@ using FluentAssertions;
 using Frank.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 

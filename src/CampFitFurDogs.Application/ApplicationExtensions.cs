@@ -1,8 +1,6 @@
-using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Application.Abstractions.Authentication.Oidc;
-using CampFitFurDogs.Application.Authentication;
 using CampFitFurDogs.Application.Authentication.Callback;
-using Frank.DependencyInjection;
+using CampFitFurDogs.Application.Settings;
+using Frank.Authentication.Callback;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application;
@@ -12,7 +10,21 @@ public static class ApplicationExtensions
     public static IServiceCollection AddApplication(
         this IServiceCollection services)
     {
+        services.AddFrankAuthCallback();
+
+        services
+            .AddOptions<AuthCallbackSettings>()
+            .BindConfiguration("Frontend")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         services.AddApplicationAuthCallback();
+
+        services
+            .AddOptions<FrontendSettings>()
+            .BindConfiguration("Frontend")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }

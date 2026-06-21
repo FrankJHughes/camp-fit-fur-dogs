@@ -332,4 +332,4 @@ Guardrails turn architecture into something the system **defends**, not somethin
 - **[Frontend Testing](../frontend-testing.md)**  
 - **[Purity Rules](../purity-rules.md)**  
 - **[Dispatcher Pipeline](../dispatcher-pipeline.md)**  
-- **[Abstractions Contract](../abstractions-contract.md)**
+- **[Abstractions Contract](../abstractions-contract.md)**  

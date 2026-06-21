@@ -83,7 +83,7 @@ Forbidden:
 - HTTP clients  
 - UI logic  
 - Hosting logic  
-- Authentication logic  
+- Authentication protocol logic  
 - Configuration access  
 - Manual DI registration of slice services  
 
@@ -250,6 +250,46 @@ Identity resolution:
 - Must not accept identity from request bodies  
 - Must use Frank’s identity seam  
 
+## 6.1 Authentication Callback Architecture Governance (NEW)
+
+The authentication callback flow must follow a **three‑layer architecture**:
+
+### **1. Frank Pipeline (Protocol Layer)**  
+- Handles OIDC protocol logic  
+- Exchanges authorization codes  
+- Extracts claims  
+- Normalizes provider output  
+- Contains **no business logic**
+
+### **2. Application Pipeline (Business Layer)**  
+- Resolves identity  
+- Creates or loads customer  
+- Creates session  
+- Produces redirect URL  
+- Produces cookie value  
+- Contains **no protocol logic**
+
+### **3. API Callback Endpoint (Infrastructure Boundary)**  
+The API endpoint must:
+
+- Extract the `code` query parameter  
+- Throw a shaped `400` error if missing  
+- Invoke Frank pipeline  
+- Invoke Application pipeline  
+- Issue the session cookie  
+- Redirect to the Application pipeline’s URL  
+
+The API endpoint must not:
+
+- Perform protocol logic  
+- Perform business logic  
+- Construct aggregates  
+- Perform persistence  
+- Compute redirect URLs  
+- Compute cookie values  
+
+This separation is **architecturally mandatory**.
+
 ---
 
 # 7. Error Boundary Governance
@@ -269,6 +309,15 @@ Error shaping must use:
 - Frank security headers middleware  
 
 Domain errors must be mapped to API errors through Application layer boundaries.
+
+## 7.1 Callback Error Governance (NEW)
+
+The callback endpoint must:
+
+- Return `400` for missing/invalid `code`  
+- Allow pipeline exceptions to flow into Frank’s error boundary  
+- Never leak identity provider errors  
+- Never leak tokens or claims  
 
 ---
 
@@ -292,6 +341,19 @@ The following patterns are prohibited:
 - Hosting providers performing HTTP, JSON, or ZIP operations directly  
 - API bypassing Frank middleware  
 
+## 8.1 Callback‑Specific Forbidden Patterns (NEW)
+
+Forbidden:
+
+- Protocol logic in Application  
+- Business logic in Frank  
+- Cookie issuance outside API  
+- Redirect computation outside Application pipeline  
+- Identity provider calls in API or Application  
+- Token handling outside Frank pipeline  
+- Returning provider errors  
+- Returning raw exceptions  
+
 ---
 
 # 9. Architecture Enforcement
@@ -306,6 +368,7 @@ Architecture is enforced through:
 - Hosting provider seam tests  
 - Endpoint discovery tests  
 - Security header enforcement tests  
+- Authentication callback pipeline tests (NEW)
 
 No PR may merge if:
 
@@ -313,5 +376,6 @@ No PR may merge if:
 - It introduces forbidden patterns  
 - It weakens architectural boundaries  
 - It bypasses Frank’s cross‑cutting infrastructure  
+- It violates callback architecture rules (NEW)
 
 Architecture governance is non‑negotiable.

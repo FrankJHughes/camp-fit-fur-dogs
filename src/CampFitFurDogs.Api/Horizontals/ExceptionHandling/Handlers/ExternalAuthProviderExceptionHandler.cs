@@ -16,7 +16,7 @@ public sealed class ExternalAuthProviderExceptionHandler : IExceptionHandler
         ErrorCode.ExternalAuthProviderFailure;
 
     public ProblemDetails CreateProblemDetails(Exception ex) =>
-        new ProblemDetails
+        new()
         {
             Title = "External Auth Provider Failure",
             Detail = ex.Message,

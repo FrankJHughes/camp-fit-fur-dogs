@@ -16,5 +16,5 @@ public static class SessionFixtures
         CustomerId.From(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
 
     public static readonly DateTimeOffset CreatedAt =
-        new DateTimeOffset(2026, 5, 1, 12, 0, 0, TimeSpan.Zero);
+        new(2026, 5, 1, 12, 0, 0, TimeSpan.Zero);
 }

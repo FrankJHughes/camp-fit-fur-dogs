@@ -1,53 +1,85 @@
-# Vertical Slice Index
+# Vertical Slice Index  
+**Aligned With Exclusive OIDC Authentication, De‑featured Local Identity, and Actual Implemented Slices**
 
-This index lists all vertical slices in Camp Fit Fur Dogs and links to their corresponding guides.  
-It helps contributors discover existing slices and understand where new slices belong.
+This index lists all **actual vertical slices** in Camp Fit Fur Dogs.
 
 Vertical slices follow the rule:
 
-> One verb, one noun. Not a feature area.
+> One verb, one noun. Not a feature area.  
+> Must represent a domain use case.  
+> Must have domain logic.
 
-Each slice encapsulates **API → Application → Domain → Infrastructure** behavior for a single use case, following **Vertical Slice Architecture** and **API Endpoint Purity**.
-
----
-
-# Authentication Slices
-
-| Slice | Description | Guide |
-|-------|-------------|--------|
-| OwnerLogin | Initiates OIDC login | [Authentication Operations Guide](ca://s?q=Show_authentication_operations_guide) |
-| AuthCallback | Handles callback → identity → session | [Authentication Operations Guide](ca://s?q=Show_authentication_operations_guide) |
-| Logout | Ends session | [Session Management Guide](ca://s?q=Show_session_management_guide) |
+Horizontals (cross‑cutting concerns) are **not** slices and are not listed here.
 
 ---
 
 # Customer Slices
 
+```
+src/CampFitFurDogs.Application/Customers
+    CreateCustomer
+```
+
 | Slice | Description | Guide |
 |-------|-------------|--------|
-| CreateAccount | Owner onboarding | [Create Account Slice Guide](ca://s?q=Show_create_account_feature_slice_guide) |
-| GetCustomerProfile | Query customer profile | [Query Slice Guide](ca://s?q=Show_query_slice_guide) |
+| CreateCustomer | Owner onboarding | [Create Customer Slice Guide](ca://s?q=Show_create_customer_slice_guide) |
 
 ---
 
 # Dog Slices
 
+```
+src/CampFitFurDogs.Application/Dogs
+    EditDogProfile
+    GetDogProfile
+    ListDogsByOwner
+    RegisterDog
+    RemoveDog
+```
+
 | Slice | Description | Guide |
 |-------|-------------|--------|
 | RegisterDog | Register a dog | [Register Dog Slice Guide](ca://s?q=Show_register_dog_slice_guide) |
-| GetDogProfile | Query dog profile | [Dog Profile Slice Guide](ca://s?q=Show_dog_profile_slice_guide) |
+| EditDogProfile | Edit a dog’s profile | [Edit Dog Profile Slice Guide](ca://s?q=Show_edit_dog_profile_slice_guide) |
+| GetDogProfile | Query a dog’s profile | [Dog Profile Slice Guide](ca://s?q=Show_dog_profile_slice_guide) |
+| ListDogsByOwner | List all dogs for the authenticated owner | [List Dogs Slice Guide](ca://s?q=Show_list_dogs_slice_guide) |
+| RemoveDog | Remove a dog | [Remove Dog Slice Guide](ca://s?q=Show_remove_dog_slice_guide) |
 
 ---
 
-# Infrastructure Slices
+# Session (Domain Aggregate, Not Yet Slices)
 
-Infrastructure slices represent **cross‑cutting API behavior** implemented as vertical slices when appropriate.
+The `Session` aggregate exists, but **no vertical slices exist yet**.
 
-| Slice | Description | Guide |
-|-------|-------------|--------|
-| RateLimiting | API throttling | [Infrastructure Slice Guide](ca://s?q=Show_infrastructure_slice_guide) |
-| SecurityHeaders | HTTP security headers | [Infrastructure Slice Guide](ca://s?q=Show_infrastructure_slice_guide) |
-| CORS | Web origin governance | [CORS Governance Guide](ca://s?q=Show_cors_governance_guide) |
+Future slices (not implemented):
+
+- CreateSession  
+- ValidateSession  
+- RevokeSession  
+- RotateSession  
+
+These will be added when US‑111+ stories are implemented.
+
+---
+
+# Horizontals (Cross‑Cutting Concerns — Not Slices)
+
+These are **not** vertical slices and are intentionally excluded:
+
+- Authentication (OIDC login + callback)  
+- Session cookie issuance  
+- SecurityHeaders  
+- CORS  
+- ErrorBoundary  
+- ProblemDetails  
+- Observability  
+- Logging  
+- DI registration  
+- Hosting configuration  
+- RateLimiting (future)  
+- API Throttling (future)  
+
+Horizontals are governed by **Infrastructure Governance**, not slice conventions.
 
 ---
 

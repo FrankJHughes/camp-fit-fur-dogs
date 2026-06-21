@@ -1,5 +1,5 @@
 using System.Reflection;
-using Frank.DependencyInjection;
+using Frank.AutoRegistration;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -23,8 +23,7 @@ public class AutoRegister_AttributeUsageTests
         typeof(Frank.Abstractions.Events.IDomainEventDispatcher),
         typeof(Frank.Abstractions.Events.IDomainEventHandler<>),
         typeof(Frank.Abstractions.ExceptionHandling.IExceptionHandler),
-        typeof(Frank.Abstractions.Time.IClock),
-        typeof(Frank.IRepository<>)
+        typeof(Frank.Abstractions.Time.IClock)
     ];
 
     [Fact]

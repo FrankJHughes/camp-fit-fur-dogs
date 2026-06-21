@@ -15,7 +15,7 @@ public sealed class BadRequestExceptionHandler : IExceptionHandler
         ErrorCode.BadRequest;
 
     public ProblemDetails CreateProblemDetails(Exception ex) =>
-        new ProblemDetails
+        new()
         {
             Title = "Bad Request",
             Detail = ex.Message,

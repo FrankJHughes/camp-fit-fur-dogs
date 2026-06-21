@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using Frank.Abstractions;

@@ -1,178 +1,191 @@
-# Integration Testing Guide
+# Integration Testing Guide  
+Validated Infrastructure • Real Database • Real API • Real DI
 
-Integration tests validate **real API + real database behavior** using a temporary Neon branch or a local Postgres container.  
-They ensure that every pull request targeting `main` is fully exercised end‑to‑end before merge.
+Integration tests verify that the system behaves correctly under real conditions:
+real API host, real middleware pipeline, real DI container, real EF Core migrations,
+and a real PostgreSQL database (local Testcontainers or Neon branch in CI).
 
-Integration tests are part of the system’s **operational safety net**, complementing unit tests, guardrails, and preview‑environment tests.
-
-This guide has been fully aligned with the **new test harness**, **new DI patterns**, **new identity model**, and **recent governance + conventions updates**.
-
----
-
-# What Integration Tests Cover
-
-Integration tests validate:
-
-- API + database behavior  
-- EF Core migrations against a real PostgreSQL instance  
-- End‑to‑end flows for key vertical slices (customers, dogs, authentication‑dependent flows)  
-- Repository + reader behavior  
-- Real DI container wiring  
-- Real middleware pipeline  
-- Identity resolution using the real OIDC callback pipeline (when applicable)  
-
-Integration tests do **not** replace:
-
-- [Test Architecture](ca://s?q=Show_test_architecture_guide)  
-- [Authentication Testing](ca://s?q=Show_authentication_testing_guide)  
-- [Frontend Testing](ca://s?q=Show_frontend_testing_guide)
-
-Integration tests focus on **backend correctness under real conditions**, not guardrail enforcement or unit‑level behavior.
+Integration tests form a critical part of the system’s operational safety net and
+are required for all pull requests targeting `main`.
 
 ---
 
-# Test Harness (Updated)
+## Purpose of Integration Tests
 
-Integration tests now use:
+Integration tests ensure that:
+
+- the API behaves correctly end‑to‑end  
+- EF Core migrations apply cleanly against a real PostgreSQL instance  
+- repositories and readers interact with the database correctly  
+- identity resolution and authentication flows behave as expected  
+- vertical slices (customers, dogs, authentication‑dependent flows) work under real conditions  
+- the DI container and middleware pipeline are wired correctly  
+
+Integration tests complement, but do not replace:
+
+- Test Architecture Guide  
+- Authentication Testing Guide  
+- Frontend Testing Guide  
+- Guardrail tests  
+- Unit tests  
+
+Integration tests validate **system behavior**, not internal implementation details.
+
+---
+
+## Test Harness (Current Model)
+
+Integration tests use the unified test harness:
 
 - **ApiContext** — configures database, auth mode, and environment  
-- **ApiFactory** — builds the real API host  
-- **ApiClientContext** — configures the test client  
-- **PostgreSqlContainer** (local) or **Neon branch** (CI)  
+- **ApiFactory** — builds the real API host with real DI + real middleware  
+- **ApiClientContext** — configures the test client (auth, headers, cookies)  
+- **PostgresFixture** — provides a fresh PostgreSQL container per test class  
 
-Legacy base classes (e.g., `ApiWithPostgresTestBase`) are no longer used.
+This harness ensures:
 
-Integration tests must:
+- no mocks  
+- no in‑memory databases  
+- no minimal DI containers  
+- no bypassed middleware  
+- no shortcuts  
 
-- Use **real DI**  
-- Use **real middleware**  
-- Use **real repositories/readers**  
-- Use **real EF Core migrations**  
-- Use **real Postgres** (local or Neon)  
-
----
-
-# CI Behavior (GitHub Actions)
-
-On every pull request targeting `main`, the CI workflow performs the following sequence:
-
-## 1. Create a Neon branch database
-- Named `pr-<number>`  
-- Expires automatically after 14 days  
-- Created via Neon API  
-- Connection string converted from PostgreSQL URI → Npgsql format  
-
-## 2. Apply EF Core migrations
-- Uses the same migration pipeline as production  
-- Ensures schema correctness before tests run  
-- Fails fast if migrations are invalid  
-
-## 3. Run the integration test suite
-- Executes `CampFitFurDogs.IntegrationTests`  
-- Uses the Neon branch connection string  
-- Validates repository, reader, and API behavior  
-- Exercises real DI container + middleware  
-- Uses the **new ApiContext/ApiFactory harness**  
-
-## 4. Delete the Neon branch database
-- Ensures no leftover resources  
-- Keeps Neon clean and cost‑efficient  
-- Enforced by CI teardown step  
-
-This ensures every PR is validated against a **real database**, not mocks or in‑memory substitutes.
+Every integration test runs against the **real system**.
 
 ---
 
-# Local Integration Testing
+## Database Strategy
 
-You can run integration tests locally using the same script CI uses:
+Integration tests always run against a **real PostgreSQL instance**:
 
-```
+- **Locally:** Testcontainers (`PostgresFixture`)  
+- **CI:** Neon branch database (created per PR, destroyed after run)  
+
+This ensures:
+
+- migrations are validated  
+- schema drift is detected early  
+- repository and reader behavior is exercised  
+- identity and authentication flows behave correctly  
+
+In‑memory databases are prohibited.
+
+---
+
+## CI Workflow (GitHub Actions)
+
+Every pull request targeting `main` triggers the Integration Tests workflow.
+
+### 1. Create a Neon branch database
+- named `pr-<number>`  
+- auto‑expires after 14 days  
+- connection string converted to Npgsql format  
+
+### 2. Apply EF Core migrations
+- uses the same migration pipeline as production  
+- fails fast on schema errors  
+
+### 3. Run integration tests
+- executes the full integration test suite  
+- uses the Neon branch connection string  
+- validates API + DB + DI + middleware behavior  
+
+### 4. Delete the Neon branch database
+- ensures no leftover resources  
+- keeps Neon clean and cost‑efficient  
+
+This guarantees that every PR is validated against a **real database** before merge.
+
+---
+
+## Local Integration Testing
+
+Run integration tests locally using the same script CI uses:
+
+```powershell
 .\scripts\integration\Run-IntegrationTests.ps1 -ConnectionString "<your connection string>"
 ```
 
-## Local workflow options
+Supported local workflows:
 
-- Use a **local Postgres container**  
-- Use a **Neon preview branch** (download `db-conn.txt` from CI)  
-- Use a **personal Neon branch** for debugging  
+- local Postgres container  
+- Neon preview branch (download `db-conn.txt` from CI)  
+- personal Neon branch for debugging  
 
-Local integration tests should behave identically to CI.
+Local behavior matches CI behavior.
 
 ---
 
-# Integration Test Responsibilities (Updated)
+## Responsibilities of Integration Tests
 
 Integration tests must validate:
 
 ### API Behavior
-- Endpoints return correct status codes  
-- Endpoints return correct payloads  
-- Endpoints enforce authorization correctly  
-- Endpoints interact with the database correctly  
+- correct status codes  
+- correct payloads  
+- correct authorization behavior  
+- correct interaction with the database  
 
 ### Database Behavior
-- EF Core migrations apply cleanly  
-- Repositories behave correctly  
-- Readers behave correctly  
-- Domain invariants are enforced at persistence boundaries  
+- migrations apply cleanly  
+- repositories behave correctly  
+- readers behave correctly  
+- domain invariants are enforced at persistence boundaries  
 
-### Identity + Authentication (when applicable)
-- OIDC callback pipeline works end‑to‑end  
-- External ID → internal ID mapping works  
-- Sessions are created correctly  
-- Cookies are issued correctly  
+### Identity + Authentication
+- OIDC callback pipeline  
+- external ID → internal ID mapping  
+- session creation  
+- cookie issuance  
 
 ### Vertical Slice Behavior
 Each slice must be tested end‑to‑end:
 
-- Customer creation  
-- Dog creation + assignment  
-- Authentication‑dependent flows  
-- Any slice that touches persistence  
+- customer creation  
+- dog creation + assignment  
+- authentication‑dependent flows  
+- any slice that touches persistence  
 
 ---
 
-# What Integration Tests Should NOT Do (Aligned With Governance)
+## What Integration Tests Must NOT Do
 
-Integration tests must **not**:
+Integration tests must not:
 
-- Use guardrail patterns  
-- Use minimal DI containers  
-- Mock HttpContextAccessor  
-- Mock repositories or readers  
-- Use `/__test__/sign-in` unless explicitly testing identity resolution  
-- Use in‑memory databases  
-- Use Testcontainers for guardrails  
+- use guardrail patterns  
+- use minimal DI containers  
+- mock HttpContextAccessor  
+- mock repositories or readers  
+- use in‑memory databases  
+- use `/__test__/sign-in` unless explicitly testing identity resolution  
+- create Testcontainers manually (use `PostgresFixture`)  
 
 Integration tests must use **real infrastructure**, not substitutes.
 
 ---
 
-# Example Integration Test Structure (Updated)
+## Example Integration Test (Updated for PostgresFixture)
 
 ```csharp
-public class CreateCustomerTests : IAsyncLifetime
+using System.Net.Http.Json;
+using CampFitFurDogs.TestUtilities.Contexts;
+using CampFitFurDogs.TestUtilities.Factories;
+using CampFitFurDogs.TestUtilities.Fixtures;
+using FluentAssertions;
+
+namespace CampFitFurDogs.IntegrationTests.Customers;
+
+public class CreateCustomerTests : IClassFixture<PostgresFixture>
 {
-    private PostgreSqlContainer _postgres = default!;
-    private ApiFactory _api = default!;
+    private readonly ApiFactory _api;
 
-    public async Task InitializeAsync()
+    public CreateCustomerTests(PostgresFixture fixture)
     {
-        _postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
-        await _postgres.StartAsync();
-
         var ctx = new ApiContext()
-            .WithDatabase(true, _postgres)
+            .WithDatabase(true, fixture.Container)
             .WithCookieAuthOnly(false);
 
         _api = new ApiFactory(ctx);
-    }
-
-    public async Task DisposeAsync()
-    {
-        if (_postgres is not null)
-            await _postgres.DisposeAsync();
     }
 
     [Fact]
@@ -192,48 +205,49 @@ public class CreateCustomerTests : IAsyncLifetime
 }
 ```
 
-This reflects the **new test harness** and **new DI patterns**.
+This is the canonical structure for all integration tests.
 
 ---
 
-# Branch Protection
+## Branch Protection Requirements
 
-The `main` branch must require:
+The `main` branch must enforce:
 
-- Pull requests  
-- The **Integration Tests** workflow to pass  
-- No force pushes  
-- No direct commits  
+- pull requests  
+- passing Integration Tests workflow  
+- no force pushes  
+- no direct commits  
 
 This ensures:
 
-- Schema changes cannot break production  
-- Repository and reader behavior is always validated  
-- Vertical slices remain end‑to‑end correct  
+- schema changes cannot break production  
+- repository and reader behavior is always validated  
+- vertical slices remain correct end‑to‑end  
+- `main` remains stable and deployable  
 
 Integration tests are a **merge gate**, not an optional check.
 
 ---
 
-# Summary
+## Summary
 
-Integration tests ensure:
+Integration tests ensure that:
 
 - EF Core migrations are valid  
-- The API works against a real database  
-- Vertical slices behave correctly end‑to‑end  
-- Identity resolution works under real conditions  
+- the API works against a real database  
+- vertical slices behave correctly end‑to‑end  
+- identity resolution works under real conditions  
 - CI enforces correctness before merge  
-- `main` remains stable and deployable  
+- `main` remains stable, predictable, and deployable  
 
-They are a critical part of the system’s operational safety model.
+They are a foundational part of the system’s operational safety model.
 
 ---
 
-# Related Documentation
+## Related Documentation
 
-- [API Hosting](ca://s?q=Show_api_hosting_guide)  
-- [Database Hosting](ca://s?q=Show_db_hosting_guide)  
-- [Authentication Testing](ca://s?q=Show_authentication_testing_guide)  
-- [Test Architecture](ca://s?q=Show_test_architecture_guide)  
-- [Preview Troubleshooting](ca://s?q=Show_preview_troubleshooting_guide)
+- API Hosting Guide  
+- Database Hosting Guide  
+- Authentication Testing Guide  
+- Test Architecture Guide  
+- Preview Troubleshooting Guide  

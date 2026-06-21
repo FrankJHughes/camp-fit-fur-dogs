@@ -1,5 +1,5 @@
 using System.Reflection;
-using Frank.DependencyInjection;
+using Frank.AutoRegistration;
 
 namespace Frank.Tests.DependencyInjection;
 

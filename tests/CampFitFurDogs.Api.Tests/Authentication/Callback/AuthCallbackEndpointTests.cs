@@ -6,8 +6,10 @@ using FluentAssertions;
 using Frank.Abstractions.Authentication.Callback;
 using Frank.Abstractions.ImmutableContext;
 using Frank.Authentication.Callback.Oidc;
+using Frank.Testing.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -16,6 +18,7 @@ namespace CampFitFurDogs.Api.Tests.Authentication.Callback;
 public sealed class AuthCallbackEndpointTests : IAsyncLifetime
 {
     private ApiFactory _api = default!;
+    private ApiContext _ctx = default!;
 
     // ------------------------------------------------------------
     // FAKES
@@ -77,7 +80,7 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     // ------------------------------------------------------------
     public Task InitializeAsync()
     {
-        var ctx = new ApiContext()
+        _ctx = new ApiContext()
             .WithDatabase(false)
             .WithCookieAuthOnly(false)
             .WithServiceOverride(services =>
@@ -112,7 +115,7 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
                 });
             });
 
-        _api = new ApiFactory(ctx);
+        _api = new ApiFactory(_ctx);
         return Task.CompletedTask;
     }
 

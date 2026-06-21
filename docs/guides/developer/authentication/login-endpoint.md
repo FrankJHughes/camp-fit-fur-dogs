@@ -1,4 +1,5 @@
-# Login Endpoint — `/api/auth/login`
+# Login Endpoint — `/api/auth/login`  
+**Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
 The login endpoint initiates the **OIDC authorization code flow** by redirecting the client to the external identity provider (Auth0).  
 This endpoint is **pure** — it performs no domain logic, no identity logic, and no persistence.  
@@ -17,35 +18,73 @@ It does **not** access Infrastructure, Domain, or Application handlers directly.
 
 # HTTP Request
 
-```http
-GET /api/auth/login
-```
+````http
+GET /api/auth/login?returnUrl=/dashboard
+````
 
-The request contains no parameters.  
-Identity, authorization, and session logic are handled exclusively in the callback pipeline.
+The request accepts an optional `returnUrl` parameter.  
+Identity, authorization, and session logic are handled exclusively in the **callback architecture** (Frank pipeline → Application pipeline → API boundary).
+
+The login endpoint **does not validate or interpret `returnUrl`** — it simply forwards it to Auth0 via the OIDC `state` parameter.  
+Validation occurs **only** in the Application pipeline.
 
 ---
 
-# Behavior
+# Behavior (Post‑Refactor)
 
-The login endpoint:
+The login endpoint performs exactly **one** responsibility:
 
-- Constructs an Auth0 authorization URL using validated configuration  
+### Construct the OIDC authorization URL and redirect the browser.
+
+It uses the following configuration values:
+
+- `Authentication:Callback:Oidc:Authority`  
+- `Authentication:Callback:Oidc:ClientId`  
+- `Authentication:Callback:Oidc:CallbackUrl`  
+- `Authentication:Callback:Oidc:Disabled` (short‑circuit mode)  
+
+### The endpoint:
+
+- Builds the authorization URL  
 - Includes:
   - `client_id`
   - `redirect_uri`
   - `response_type=code`
-  - `scope`
-  - `audience` (if configured)
-  - PKCE parameters (if enabled)  
+  - `scope=openid profile email`
+  - PKCE parameters (if enabled)
+  - Encoded `state` containing the optional `returnUrl`
 - Returns **302 Redirect** to the identity provider  
 - Performs **no** domain logic  
 - Performs **no** persistence  
 - Performs **no** identity resolution  
 - Performs **no** session logic  
+- Performs **no** protocol logic  
 - Uses the global error pipeline for all failures  
 
 This endpoint is intentionally thin and deterministic, following **API Endpoint Purity**.
+
+---
+
+# Disabled Mode
+
+If:
+
+````text
+Authentication:Callback:Oidc:Disabled = true
+````
+
+Then:
+
+- The login endpoint must **not** construct an OIDC URL  
+- The endpoint returns a shaped **501 Not Implemented**  
+- No redirect occurs  
+- No OIDC flow is initiated  
+
+This is used for:
+
+- Local offline development  
+- CI environments without secrets  
+- Automated tests  
 
 ---
 
@@ -56,6 +95,7 @@ All errors flow through Frank’s global exception → ProblemDetails mapping.
 | Condition | Error Code | HTTP Status |
 |----------|------------|-------------|
 | Missing configuration | `BadConfiguration` | 500 |
+| OIDC disabled | `NotImplemented` | 501 |
 | Unexpected failure | `Unexpected` | 500 |
 
 Additional guarantees:
@@ -75,8 +115,12 @@ A complete test suite must verify:
 - `redirect_uri` is correct  
 - `response_type=code`  
 - `scope` is included  
-- `audience` is included when configured  
 - PKCE parameters are included when enabled  
+- `state` includes the encoded `returnUrl` when provided  
+
+### Disabled Mode
+- `Oidc:Disabled=true` → 501 Not Implemented  
+- No redirect is generated  
 
 ### Error Conditions
 - Missing configuration → 500  
@@ -88,6 +132,7 @@ A complete test suite must verify:
 - No handler calls  
 - No session logic  
 - No identity logic  
+- No protocol logic  
 
 ---
 

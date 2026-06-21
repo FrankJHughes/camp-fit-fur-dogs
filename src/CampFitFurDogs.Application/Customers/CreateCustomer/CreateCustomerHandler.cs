@@ -1,6 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.Domain.Customers.Exceptions;
 using Frank.Abstractions;
 
 namespace CampFitFurDogs.Application.Customers.CreateCustomer;
@@ -25,40 +24,18 @@ public sealed class CreateCustomerHandler
         var firstName = FirstName.From(request.FirstName);
         var lastName = LastName.From(request.LastName);
         var email = Email.From(request.Email);
+        var externalId = ExternalId.From(request.ExternalId);
 
-        PhoneNumber? phone =
-            string.IsNullOrWhiteSpace(request.Phone)
-                ? null
-                : PhoneNumber.From(request.Phone);
-
-        // Duplicate email check applies ONLY to local accounts
-        if (request.Password is not null)
-        {
-            if (await _repo.EmailExistsAsync(email, ct))
-                throw new EmailAlreadyExistsException(email.Value);
-        }
-
-        // Identity source is validated by:
-        // - Command validator (semantic)
-        // - Domain (invariant)
-        var passwordHash =
-            request.Password is not null
-                ? PasswordHash.From(request.Password)
-                : null;
-
-        var externalId =
-            request.ExternalAuthProviderId is not null
-                ? ExternalAuthProviderId.From(request.ExternalAuthProviderId)
-                : null;
+        var phone = string.IsNullOrWhiteSpace(request.Phone) ? null : PhoneNumber.From(request.Phone);
 
         // Create domain entity (domain enforces identity invariants)
         var customer = Customer.Create(
-            firstName,
-            lastName,
-            email,
-            phone,
-            passwordHash,
-            externalId);
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            externalId: externalId,
+            phone: phone
+        );
 
         // Persist
         await _repo.AddAsync(customer, ct);

@@ -1,61 +1,88 @@
-# Identity Mapping Guide (Aligned With Recent Changes)
+# Identity Mapping Guide
 
-This guide explains how **identity mapping** works today based on the implementation completed for **US‑110 (Authentication: Owner Login)** and used by **US‑111 (Session Management)**.  
-It documents the *runtime behavior* and *developer workflow* for mapping an external OIDC identity (Auth0) to an internal domain identity (Owner/Customer).
+This guide explains how identity mapping works today based on the implementation
+completed for:
 
-This guide does **not** define rules, boundaries, or architectural decisions — those live in:
+- US‑110 — Authentication: Owner Login  
+- US‑111 — Session Management  
+
+It documents the runtime behavior and developer workflow for mapping an external
+OIDC identity (Auth0) to an internal domain identity (Owner).
+
+This guide does not define rules or boundaries. Those live in:
 
 - Architecture Governance  
 - Security Governance  
 - Operations Governance  
 - Conventions  
-- ADR‑0013 (Server‑Side Identity Resolution)
+- ADR‑0013 — Server‑Side Identity Resolution  
 
-This guide focuses solely on **how identity mapping works in the current system**, aligned with the **new identity model**, **new DI architecture**, and **recent authentication refactors**.
+This guide focuses solely on how identity mapping works in the current system,
+aligned with the new authentication callback architecture, identity model, and
+DI architecture.
 
 ---
 
-# Purpose of Identity Mapping
+## Purpose
 
-Identity mapping answers one question:
+Identity mapping answers the question:
 
 > **“Given an external identity from Auth0, which internal Owner does this represent?”**
 
-US‑110 implements the first half of the identity lifecycle:
+Identity mapping ensures that every authenticated user has a valid internal
+domain identity.
 
-- Fetch external user profile from Auth0  
-- Validate required claims (`sub`)  
-- Look up an existing Owner by external ID  
-- Create a new Owner if none exists  
-- Return the internal `OwnerId`  
-- Pass the `OwnerId` to the session creation step  
-
-Identity mapping ensures that **every authenticated user has a valid internal domain identity**.
+Identity mapping is performed inside the **Application Auth Callback Pipeline**,
+after Frank has completed all OIDC protocol work.
 
 ---
 
-# Identity Mapping Flow
+## Where Identity Mapping Happens
 
-Identity mapping runs inside the **Auth Callback pipeline**, specifically between:
+Identity mapping runs inside the Application Auth Callback Pipeline:
 
-- **ValidateUserStep**  
-- **AuditLoginStep**  
+```csharp
+IImmutableContextBuilder<
+    ApplicationAuthCallbackRequest,
+    ApplicationAuthCallbackContext,
+    ApplicationAuthCallbackContextBuilderResult>
+```
 
-High‑level flow:
+Flow:
 
-1. Auth0 returns an access token  
-2. Pipeline fetches the user profile (`FetchUserStep`)  
-3. Pipeline validates the profile (`ValidateUserStep`)  
-4. Pipeline resolves identity (`ResolveIdentityStep`)  
-5. If an Owner exists → return the existing `OwnerId`  
+```
+Frank Pipeline (protocol)
+    → Application Pipeline (business)
+        → Identity Mapping
+        → Session Creation
+        → Redirect + Cookie Value
+```
+
+Identity mapping is a pure business operation.
+
+---
+
+## Identity Mapping Flow
+
+1. Frank pipeline exchanges the authorization code  
+2. Frank pipeline extracts and normalizes claims  
+3. Application pipeline receives a normalized external identity  
+4. Application pipeline resolves identity  
+5. If an Owner exists → return existing `OwnerId`  
 6. If not → create a new Owner  
-7. Pass the `OwnerId` to session creation  
+7. Application pipeline continues with session creation  
+8. Application pipeline returns `OwnerId` + `SessionId` + `CookieValue` + `RedirectUrl`  
 
-Identity mapping is deterministic, pure, and isolated from Infrastructure except through abstractions.
+Identity mapping is:
+
+- deterministic  
+- pure  
+- isolated from Infrastructure except through abstractions  
+- aligned with the new callback architecture  
 
 ---
 
-# External Identity Format
+## External Identity Format
 
 Auth0 provides a unique subject identifier:
 
@@ -65,21 +92,19 @@ Auth0 provides a unique subject identifier:
 
 This value is:
 
-- Globally unique  
-- Stable across sessions  
-- Stable across devices  
-- Stable across password resets  
-- Stable across profile changes  
+- globally unique  
+- stable across sessions  
+- stable across devices  
+- stable across password resets  
+- stable across profile changes  
 
 It is the **only** external identifier used for identity mapping.
 
-Email is **not** used for identity resolution.
-
-This aligns with **Security Governance** and Identity Mapping Governance.
+Email is not used for identity resolution.
 
 ---
 
-# Internal Identity Format
+## Internal Identity Format
 
 The internal identity is a domain‑level `OwnerId`:
 
@@ -89,47 +114,28 @@ OwnerId: 8f1c2d8e-3b4a-4e9c-9c1d-2a7f4b1e9d22
 
 This ID:
 
-- Is generated by the domain  
-- Is stable for the lifetime of the Owner  
-- Is used across all domain operations  
-- Is stored in the session record  
-- Is never exposed to Auth0  
-- Is never derived from email  
-
-This aligns with **Domain Purity** and **Security Governance**.
+- is generated by the domain  
+- is stable for the lifetime of the Owner  
+- is used across all domain operations  
+- is stored in the session record  
+- is never exposed to Auth0  
+- is never derived from email  
 
 ---
 
-# Where Identity Mapping Happens
+## Identity Resolver Behavior
 
-Identity mapping occurs in the pipeline step:
+Identity mapping is implemented via:
 
 ```
-ResolveIdentityStep
+IIdentityResolver
 ```
 
-This step:
-
-1. Requires `ctx.User`  
-2. Extracts the external subject (`sub`)  
-3. Calls the identity resolver  
-4. Returns the internal `OwnerId`  
-
-The identity resolver is injected via DI and follows:
-
-- Dispatcher pipeline purity  
-- Architecture Governance dependency rules  
-- Security Governance identity rules  
+The resolver performs two operations:
 
 ---
 
-# Identity Resolver Behavior (Aligned)
-
-The identity resolver performs two operations:
-
----
-
-## 1. Lookup by External ID
+### 1. Lookup by External ID
 
 ```
 GetOwnerByExternalId(externalId)
@@ -139,14 +145,14 @@ If an Owner exists, return it.
 
 This lookup is:
 
-- Pure  
-- Deterministic  
-- Performed through Infrastructure abstractions  
-- Based solely on the external ID  
+- pure  
+- deterministic  
+- performed through Infrastructure abstractions  
+- based solely on the external ID  
 
 ---
 
-## 2. Create Owner if Missing
+### 2. Create Owner if Missing
 
 ```
 CreateOwnerFromExternalIdentity(externalId, profile)
@@ -154,26 +160,18 @@ CreateOwnerFromExternalIdentity(externalId, profile)
 
 This operation:
 
-- Creates a new Owner aggregate  
-- Stores the external ID  
-- Stores the Owner’s name (if available)  
-- Stores the Owner’s email (if available)  
-- Persists the Owner  
-- Returns the new `OwnerId`  
+- creates a new Owner aggregate  
+- stores the external ID  
+- stores the Owner’s name (if available)  
+- stores the Owner’s email (if available)  
+- persists the Owner  
+- returns the new `OwnerId`  
 
-This ensures that **first‑time logins automatically create an Owner**.
-
-Owner creation follows:
-
-- Domain invariants  
-- Application purity rules  
-- Infrastructure repository boundaries  
+This ensures that first‑time logins automatically create an Owner.
 
 ---
 
-# Data Stored During Owner Creation
-
-When a new Owner is created, the following fields are populated:
+## Data Stored During Owner Creation
 
 | Field | Source | Notes |
 |-------|--------|--------|
@@ -182,136 +180,143 @@ When a new Owner is created, the following fields are populated:
 | `Name` | Auth0 profile | Optional |
 | `CreatedAt` | System clock | Required |
 
-Only the **external ID** is used for identity resolution.
-
-Email is treated as **profile data**, not identity.
-
-This aligns with **Security Governance**.
+Only the external ID is used for identity resolution.  
+Email is treated as profile data, not identity.
 
 ---
 
-# Error Handling
+## Error Handling
 
 Identity mapping may fail for several reasons:
 
 ### Missing `sub`
-- Handled in `ValidateUserStep`  
-- Returns **502 Bad Gateway**  
+- handled in Frank pipeline  
+- Application receives a normalized error  
+- API returns **502 Bad Gateway**  
 
 ### Database failure
 - Owner lookup fails  
 - Owner creation fails  
-- Returns **500 Internal Server Error**  
+- API returns **500 Internal Server Error**  
 
 ### Invalid profile data
-- Missing required fields for Owner creation (rare)  
+- missing required fields for Owner creation (rare)  
 
 All failures are surfaced through:
 
 - Frank error boundary  
 - ProblemDetails JSON  
-- Logged exceptions  
+- logged exceptions  
 
 No cookies are issued on failure.
 
 ---
 
-# Testing Identity Mapping (Aligned)
+## Testing Identity Mapping
 
-Identity mapping is tested in three layers:
-
----
-
-## 1. Unit Tests  
-- Lookup existing Owner  
-- Create new Owner  
-- Reject missing `sub`  
-- Reject invalid external IDs  
+Identity mapping is tested at three levels:
 
 ---
 
-## 2. Integration Tests  
-- Full callback flow  
+### Unit Tests
+- lookup existing Owner  
+- create new Owner  
+- reject missing `sub`  
+- reject invalid external IDs  
+
+---
+
+### Application Pipeline Tests
+- identity resolution  
+- Owner creation  
+- Owner reuse  
+- session creation after identity resolution  
+- redirect + cookie value computation  
+
+Tests use:
+
+- fake Frank pipeline result  
+- real Application pipeline  
+- fake repositories  
+
+---
+
+### Integration Tests
+- full callback flow  
 - Owner creation on first login  
 - Owner reuse on subsequent logins  
-- Session creation after identity resolution  
+- cookie issuance  
+- redirect correctness  
 
-Integration tests use the **new ApiContext + ApiFactory** harness.
-
----
-
-## 3. Guardrail Tests  
-- Email is never used for identity  
-- External ID is required  
-- Identity mapping step is pure  
-- No Infrastructure leakage into Application  
-
-Guardrails use **minimal DI**, not Testcontainers.
+Integration tests use the new `ApiContext` + `ApiFactory` harness.
 
 ---
 
-# Troubleshooting
+## Troubleshooting
 
-### Owner not created  
-- Check that `sub` is present  
-- Check database connectivity  
-- Check identity resolver DI registration  
+### Owner not created
+- missing `sub`  
+- database connectivity issues  
+- identity resolver DI registration missing  
 
-### Owner created but not reused  
-- External ID mismatch  
+### Owner created but not reused
+- external ID mismatch  
 - Auth0 tenant misconfiguration  
-- Multiple Auth0 connections producing different `sub` formats  
+- multiple Auth0 connections producing different `sub` formats  
 
-### Callback returning 500  
-- Usually caused by missing Auth0 secrets  
-- Check `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_DOMAIN`  
-- Check hosting provider configuration (Render/Vercel)  
+### Callback returning 500
+- missing Auth0 secrets  
+- misconfigured hosting provider (Render)  
 
 ---
 
-# Architectural Boundaries (Aligned)
+## Architectural Boundaries
 
 Identity mapping spans:
 
 ---
 
-## API Layer
-- Does not perform identity resolution  
-- Only orchestrates the pipeline  
-- Never reads identity from headers or body  
+### API Layer
+- does not perform identity resolution  
+- only orchestrates Frank + Application pipelines  
 
 ---
 
-## Application Layer
-- Contains `ResolveIdentityStep`  
-- Contains identity resolver logic  
-- Contains no Infrastructure references  
+### Frank Layer
+- performs OIDC protocol logic  
+- extracts and normalizes claims  
+- produces a stable external identity  
+- contains no business logic  
 
 ---
 
-## Domain Layer
-- Owns Owner aggregate  
-- Owns invariants  
-- Owns identity semantics  
+### Application Layer
+- contains identity resolution logic  
+- contains session creation logic  
+- contains redirect + cookie value logic  
+- contains no protocol logic  
 
 ---
 
-## Infrastructure Layer
-- Implements Owner repository  
-- Implements identity persistence  
-- Implements audit logging  
-
-All boundaries follow **Architecture Governance** and **Security Governance**.
+### Domain Layer
+- owns Owner aggregate  
+- owns invariants  
+- owns identity semantics  
 
 ---
 
-# Related Documents
+### Infrastructure Layer
+- implements Owner repository  
+- implements identity persistence  
+- implements audit logging  
 
-- **Session Management Guide**  
-- **Authentication Architecture Guide**  
-- **Authentication Testing Guide**  
-- **Authentication Operations Guide**  
-- **Create Account Form Guide**  
-- **Create Account Feature Slice Guide**  
-- **Architecture Governance**  
-- **Security Governance**
+---
+
+## Related Documents
+
+- Authentication Architecture Guide  
+- Session Management Guide  
+- Authentication Testing Guide  
+- Authentication Operations Guide  
+- Architecture Governance  
+- Security Governance  

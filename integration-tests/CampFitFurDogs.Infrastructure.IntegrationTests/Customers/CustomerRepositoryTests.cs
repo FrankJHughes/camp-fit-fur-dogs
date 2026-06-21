@@ -16,11 +16,11 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
     public async Task Can_Create_And_Retrieve_Customer()
     {
         var customer = Customer.Create(
-            FirstName.From("Test"),
-            LastName.From("User"),
-            Email.From("test@example.com"),
-            PhoneNumber.From("916-555-5555"),
-            PasswordHash.Create("P@ssw0rd!")
+            firstName: FirstName.From("Test"),
+            lastName: LastName.From("User"),
+            email: Email.From("test@example.com"),
+            externalId: ExternalId.From("auth0|1234567890"),
+            phone: PhoneNumber.From("916-555-5555")
         );
 
         var customers = _fixture.DbContext.Set<Customer>();
@@ -31,5 +31,6 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
 
         Assert.NotNull(loaded);
         Assert.Equal(FirstName.From("Test"), loaded!.FirstName);
+        Assert.Equal(ExternalId.From("auth0|1234567890"), loaded.ExternalId);
     }
 }

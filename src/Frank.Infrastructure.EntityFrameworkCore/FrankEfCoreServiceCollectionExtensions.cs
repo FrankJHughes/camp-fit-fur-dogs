@@ -1,6 +1,6 @@
 using System.Reflection;
 using Frank.Abstractions;
-using Frank.DependencyInjection;
+using Frank.AutoRegistration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -20,7 +20,7 @@ public sealed class LocalDevelopmentHostingModule : IHostingModule
 
             return new Dictionary<string, string?>
             {
-                ["Frontend__BaseUrl"] = $"https://localhost:5173"
+                ["Frontend:BaseUrl"] = $"https://localhost:5173"
             };
         }
     }

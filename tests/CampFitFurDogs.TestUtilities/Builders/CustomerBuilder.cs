@@ -11,7 +11,7 @@ public sealed class CustomerBuilder
     private string _email = EmailFixtures.Random();
     private string? _phone = PhoneNumberFixtures.Valid;
     private string? _password = PasswordFixtures.Plain;
-    private string? _externalId = null;
+    private string _externalId = $"test|{Guid.NewGuid()}";
     private CustomerId? _id = null;
 
     public CustomerBuilder WithFirstName(string value) => With(b => b._firstName = value);
@@ -27,17 +27,16 @@ public sealed class CustomerBuilder
         var first = FirstName.From(_firstName);
         var last = LastName.From(_lastName);
         var email = Email.From(_email);
+        var externalId = ExternalId.From(_externalId);
         var phone = _phone is not null ? PhoneNumber.From(_phone) : null;
-        var password = _password is not null ? PasswordHash.Create(_password) : null;
-        var external = _externalId is not null ? ExternalAuthProviderId.From(_externalId) : null;
 
         var customer = Customer.Create(
             first,
             last,
             email,
-            phone,
-            password,
-            external);
+            externalId,
+            phone
+        );
 
         // Override ID if the test requested a deterministic one
         if (_id is not null)
@@ -63,7 +62,7 @@ public sealed class CustomerBuilder
             firstName: FirstName.From(firstName),
             lastName: LastName.From(lastName),
             email: Email.From(email),
-            externalId: ExternalAuthProviderId.From(externalId));
+            externalId: ExternalId.From(externalId));
     }
 
     /// <summary>

@@ -15,7 +15,7 @@ public sealed class DuplicateEmailExceptionHandler : IExceptionHandler
         ErrorCode.DuplicateEmail;
 
     public ProblemDetails CreateProblemDetails(Exception ex) =>
-        new ProblemDetails
+        new()
         {
             Title = "Duplicate Email",
             Detail = ex.Message,

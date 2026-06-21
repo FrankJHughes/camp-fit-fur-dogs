@@ -1,19 +1,20 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Frank.Abstractions.ImmutableContext;
+using Frank.Settings;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Frank.Authentication.Callback.Oidc.Steps;
 
 public sealed class ValidateTokensStep : IImmutableContextBuildStep<OidcAuthCallbackContext>
 {
-    private readonly OidcAuthCallbackOptions _options;
+    private readonly AuthCallbackOidcSettings _options;
     private readonly HttpClient _http;
 
     public IImmutableContextBuildStepMetadata Metadata { get; } =
         new ImmutableContextBuildStepMetadata("oidc.validate-tokens", "Validate ID Token");
 
-    public ValidateTokensStep(OidcAuthCallbackOptions options, HttpClient http)
+    public ValidateTokensStep(AuthCallbackOidcSettings options, HttpClient http)
     {
         _options = options;
         _http = http;

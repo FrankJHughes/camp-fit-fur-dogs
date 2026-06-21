@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Abstractions.ImmutableContext;
+using System.Text.Json;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication.Callback;
 
@@ -32,20 +33,45 @@ public class AuthCallbackEndpoint : IEndpoint
         // 1. Extract authorization code
         var code = http.Request.Query["code"].ToString();
         if (string.IsNullOrWhiteSpace(code))
+        {
             throw new BadRequestException("Missing authorization code.");
+        }
 
-        // 2. Run Frank pipeline (protocol layer)
+        // 1b. Extract and decode state
+        var stateRaw = http.Request.Query["state"].ToString();
+        string? requestedRedirectUrl = null;
+
+        if (!string.IsNullOrWhiteSpace(stateRaw))
+        {
+            try
+            {
+                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(stateRaw));
+                var stateObj = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+
+                if (stateObj != null && stateObj.TryGetValue("r", out var r))
+                {
+                    requestedRedirectUrl = r;
+                }
+            }
+            catch
+            {
+                // Ignore malformed state
+            }
+        }
+
+        // 2. Run Frank pipeline
         var frankAuthCallbackRequest = new FrankAuthCallbackRequest
         {
             Code = code
         };
         var frankAuthCallbackResult = await frankEngine.BuildAsync(frankAuthCallbackRequest, CancellationToken.None);
 
-        // 3. Run Application pipeline (business layer)
+        // 3. Run Application pipeline
         var appAuthCallbackRequest = new ApplicationAuthCallbackRequest
         {
             External = frankAuthCallbackResult,
-            Now = DateTimeOffset.UtcNow
+            Now = DateTimeOffset.UtcNow,
+            RequestedRedirectUrl = requestedRedirectUrl
         };
         var appAuthCallbackResult = await appEngine.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
 
