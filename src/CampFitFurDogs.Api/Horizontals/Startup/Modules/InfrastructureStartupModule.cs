@@ -3,7 +3,7 @@ using Frank.Abstractions.Startup;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
-[StartupModule(90)]
+[StartupModule(100)]
 public class InfrastructureStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)

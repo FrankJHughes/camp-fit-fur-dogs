@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CampFitFurDogs.Application\CampFitFurDogs.Application.csproj" />
     <ProjectReference Include="..\CampFitFurDogs.Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\Frank.Infrastructure\Frank.Infrastructure.csproj" />
     <ProjectReference Include="..\Frank.Infrastructure.EntityFrameworkCore\Frank.Infrastructure.EntityFrameworkCore.csproj" />
   </ItemGroup>
 

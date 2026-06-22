@@ -2,7 +2,7 @@ using Frank.Abstractions.Startup;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
-[StartupModule(30)]
+[StartupModule(60)]
 public class SwaggerStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)

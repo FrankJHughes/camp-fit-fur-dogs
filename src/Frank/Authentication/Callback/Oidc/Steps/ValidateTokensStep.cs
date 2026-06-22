@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 using Frank.Settings;
 using Microsoft.IdentityModel.Tokens;
 

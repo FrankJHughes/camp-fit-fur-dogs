@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Domain.Authentication.Sessions;
-using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 
 namespace CampFitFurDogs.Application.Authentication.Callback.Steps;
 

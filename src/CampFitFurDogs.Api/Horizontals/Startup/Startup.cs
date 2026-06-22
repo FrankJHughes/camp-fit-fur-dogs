@@ -1,6 +1,6 @@
 using Frank.Abstractions.Startup;
 using CampFitFurDogs.Api.Horizontals.Startup.Modules;
-using Frank.Api.Startup;
+using Frank.Api.StartupEngine;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup;
 
@@ -18,6 +18,7 @@ public static class Startup
             new ExceptionHandlingStartupModule(),
             new InfrastructureStartupModule(),
             new LoggingStartupModule(),
+            new ObservabilityStartupModule(),
             new SecurityHeadersStartupModule(),
             new SwaggerStartupModule()
         ];

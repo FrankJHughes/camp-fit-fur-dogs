@@ -1,5 +1,5 @@
 using Frank.Abstractions.Authentication.Callback;
-using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc.Steps;

@@ -4,7 +4,6 @@ using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
-using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 

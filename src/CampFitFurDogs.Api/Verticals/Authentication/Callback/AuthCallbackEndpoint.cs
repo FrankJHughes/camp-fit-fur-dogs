@@ -6,7 +6,7 @@ using Frank.Api;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Frank.Authentication.Callback.Oidc;
-using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 using System.Text.Json;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication.Callback;

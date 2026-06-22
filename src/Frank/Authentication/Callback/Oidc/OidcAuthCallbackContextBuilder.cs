@@ -1,6 +1,6 @@
 using Frank.Abstractions.Authentication.Callback;
-using Frank.Abstractions.ImmutableContext;
-using Frank.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.ImmutableContextBuilder;
 
 namespace Frank.Authentication.Callback.Oidc;
 

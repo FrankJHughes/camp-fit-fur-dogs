@@ -3,7 +3,7 @@ using Frank.Api;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
-[StartupModule(80)]
+[StartupModule(20)]
 public sealed class ExceptionHandlingStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)

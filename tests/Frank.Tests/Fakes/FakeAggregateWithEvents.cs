@@ -1,6 +1,5 @@
 using Frank.Abstractions.Events;
 using Frank.Domain;
-using Frank.Events;
 
 namespace Frank.Tests.Fakes;
 

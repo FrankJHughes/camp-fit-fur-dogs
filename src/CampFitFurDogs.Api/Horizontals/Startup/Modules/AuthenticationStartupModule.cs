@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
-[StartupModule(60)]
+[StartupModule(70)]
 public class AuthenticationStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)

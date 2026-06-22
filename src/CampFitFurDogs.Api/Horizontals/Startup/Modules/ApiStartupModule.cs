@@ -5,7 +5,7 @@ using Frank.Api;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
-[StartupModule(100)]
+[StartupModule(110)]
 public class ApiStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)

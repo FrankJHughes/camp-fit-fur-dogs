@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
-[StartupModule(20)]
+[StartupModule(50)]
 public sealed class CorsStartupModule : IStartupModule
 {
     private const string FrontendKey = "Frontend:BaseUrl";
