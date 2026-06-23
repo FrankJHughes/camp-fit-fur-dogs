@@ -22,7 +22,8 @@ Frank exists to provide:
 - **Layer‑agnostic infrastructure**  
 - **Deterministic startup and hosting orchestration**  
 - **Strict DI governance**  
-- **Predictable dependency direction**
+- **Predictable dependency direction**  
+- **Deterministic, structured observability across all layers**  
 
 Frank prevents duplication, enforces consistency, and ensures that Domain and Application remain pure and stable.
 
@@ -41,6 +42,7 @@ Both categories must be:
 - Layer‑agnostic  
 - Dependency‑safe  
 - Product‑agnostic  
+- Observable  
 
 ---
 
@@ -60,6 +62,7 @@ Domain primitives in Frank must be:
 - Immutable  
 - Self‑validating  
 - Free of Application or Infrastructure dependencies  
+- Free of observability emission (Domain is observable *through* Application/Infrastructure, not directly)
 
 ---
 
@@ -76,6 +79,7 @@ These types enforce:
 - Aggregate boundaries  
 - Domain event purity  
 - Consistent modeling across slices  
+- Deterministic event propagation through Frank’s dispatcher pipeline  
 
 ---
 
@@ -92,8 +96,9 @@ Frank must **not** contain:
 - Handlers  
 - Dispatchers  
 - Application logic  
+- Observability emitters  
 
-Those belong in Application.
+Those belong in Application or Infrastructure.
 
 ---
 
@@ -124,12 +129,15 @@ These primitives are:
 - Stable  
 - Safe for Domain and Application  
 - Required by all slices  
+- Fully observable  
 
 Frank includes:
 
 - DI auto‑registration engine  
 - HostingEngine  
 - StartupEngine  
+- Observability primitives (`IObservabilityContext`, `ITraceEvents`, `IMetrics`)  
+- Correlation propagation middleware  
 - EF Core configuration helpers  
 - Validator scanning  
 - Hosting abstractions  
@@ -153,6 +161,8 @@ It:
 - Configures application pipelines  
 - Performs startup validation  
 - Ensures consistent startup across environments  
+- Emits structured startup events  
+- Propagates correlation IDs through startup  
 
 CampFitFurDogs provides modules such as:
 
@@ -162,13 +172,13 @@ CampFitFurDogs provides modules such as:
 
 CampFitFurDogs **invokes** StartupEngine:
 
-```csharp
+````  
 StartupEngine.Run(builder, [
     new ApiStartupModule(),
     new ApplicationStartupModule(),
     new InfrastructureStartupModule()
 ]);
-```
+````
 
 StartupEngine is **never modified** by CampFitFurDogs.
 
@@ -184,6 +194,8 @@ It:
 - Applies hosting‑specific configuration  
 - Provides environment abstractions  
 - Ensures consistent hosting behavior  
+- Emits structured hosting events  
+- Propagates correlation IDs through hosting initialization  
 
 CampFitFurDogs provides hosting modules such as:
 
@@ -193,13 +205,13 @@ CampFitFurDogs provides hosting modules such as:
 
 CampFitFurDogs **invokes** HostingEngine:
 
-```csharp
+````  
 var hosting = HostingEngine.Select([
     new DevelopmentHostingModule(),
     new RenderHostingModule(),
     new TestHostingModule()
 ]);
-```
+````
 
 HostingEngine is **never modified** by CampFitFurDogs.
 
@@ -223,6 +235,7 @@ This system ensures:
 - No Scrutor  
 - No suffix scanning  
 - Strict architectural enforcement  
+- Deterministic observability of DI failures  
 
 ---
 
@@ -230,12 +243,13 @@ This system ensures:
 
 Frank registers validators from all participating assemblies:
 
-```
+````  
 services.AddValidatorsFromAssembly(assembly);
-```
+````
 
 Validators remain in Application.  
-Integration remains in Frank.
+Integration remains in Frank.  
+Validator discovery is observable and deterministic.
 
 ---
 
@@ -247,6 +261,7 @@ Frank provides helpers for:
 - Enforcing DbContext guardrails  
 - Ensuring consistent EF Core configuration  
 - Preventing Infrastructure leakage into Domain or Application  
+- Emitting structured EF Core configuration events  
 
 ---
 
@@ -265,6 +280,36 @@ These abstractions:
 - Are safe for Domain and Application  
 - Prevent direct environment access  
 - Prevent direct HTTP/JSON/ZIP usage  
+- Emit structured hosting events  
+
+---
+
+# 3.7 Observability Primitives (NEW)
+
+Frank provides the **observability foundation** for the entire system:
+
+- `IObservabilityContext` — immutable, correlated execution context  
+- `ITraceEvents` — structured event emitter  
+- `IMetrics` — vendor‑agnostic metrics  
+- Correlation propagation middleware  
+- Deterministic test sinks for events and metrics  
+
+Frank observability primitives:
+
+- Are layer‑agnostic  
+- Are product‑agnostic  
+- Are deterministic  
+- Are required for all slices  
+- Must be used exclusively (no ad‑hoc logging or Stopwatch)  
+
+Frank must **never** contain:
+
+- Vendor‑specific logging  
+- Vendor‑specific metrics  
+- Real exporters  
+- Real sinks  
+
+Those belong in Infrastructure.
 
 ---
 
@@ -281,6 +326,7 @@ Frank must **never** contain:
 - Queries  
 - DTOs  
 - Pipeline behaviors  
+- Observability emission logic (only primitives belong here)
 
 ## 4.2 Infrastructure Concerns
 
@@ -289,9 +335,10 @@ Frank must **never** contain:
 - Readers  
 - Migrations  
 - HTTP clients  
-- Logging  
+- Logging implementations  
 - File I/O  
 - External service integrations  
+- Observability exporters  
 
 ## 4.3 API Concerns
 
@@ -373,6 +420,7 @@ Application may reference Frank types:
 - Frank technical infrastructure  
 - EF Core configuration helpers  
 - Hosting abstractions  
+- Observability primitives  
 
 Application must not:
 
@@ -380,6 +428,7 @@ Application must not:
 - Add handlers or validators to Frank  
 - Add DTOs to Frank  
 - Add pipeline behaviors to Frank  
+- Add observability emitters to Frank  
 
 Frank is **referenced**, not extended.
 
@@ -401,6 +450,7 @@ Frank is **referenced**, not extended.
 - It is stable and domain‑specific  
 - It is a domain primitive  
 - It is cross‑cutting technical infrastructure  
+- It is an observability primitive  
 
 ## Do NOT put it in Frank if:
 
@@ -409,6 +459,7 @@ Frank is **referenced**, not extended.
 - It is a use‑case abstraction  
 - It is a convenience helper  
 - It is unstable or likely to churn  
+- It is an observability exporter or vendor integration  
 
 When unsure, default to **Domain**, not Frank.
 
@@ -423,4 +474,5 @@ When unsure, default to **Domain**, not Frank.
 - **API Endpoint Purity Guide**  
 - **Architecture Governance**  
 - **Security Governance**  
-- **Operations Governance**
+- **Operations Governance**  
+- **Observability Governance** (NEW)

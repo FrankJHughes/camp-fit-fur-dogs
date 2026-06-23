@@ -25,7 +25,8 @@ This checklist defines **how governance is verified**.
 - Story does not violate product boundaries  
 - Story does not duplicate existing functionality  
 - Story is testable and vertical‑slice compatible  
-- Story is linked in PR via **[Story Reference](ca://s?q=Show_story_reference_rules)**
+- Story is linked in PR via **[Story Reference](ca://s?q=Show_story_reference_rules)**  
+- Story includes observability acceptance criteria when applicable (NEW)
 
 ---
 
@@ -40,7 +41,8 @@ This checklist defines **how governance is verified**.
 - No drift between changelog and catalog  
 - Changelog is updated in the same PR as the change  
 - Changelog entries are written in user‑facing language  
-- Changelog is validated by CI and reviewers
+- Changelog is validated by CI and reviewers  
+- Observability‑related changes include event/metric naming updates (NEW)
 
 ---
 
@@ -56,7 +58,8 @@ This checklist defines **how governance is verified**.
 - No forbidden directory structures  
 - No missing or invalid metadata  
 - Hygiene scripts pass before merge  
-- CI validates hygiene via **[repo-hygiene rules](ca://s?q=Open_repo_hygiene_governance)**
+- CI validates hygiene via **[repo-hygiene rules](ca://s?q=Open_repo_hygiene_governance)**  
+- Observability conventions remain consistent across code, docs, and events (NEW)
 
 ---
 
@@ -71,7 +74,8 @@ This checklist defines **how governance is verified**.
 - CI enforces dependency direction  
 - Reviewers enforce product boundaries  
 - Frank changes require architectural review  
-- Product code must use Frank primitives, not reimplement them
+- Product code must use Frank primitives, not reimplement them  
+- Observability primitives must come from Frank only (NEW)
 
 ---
 
@@ -87,7 +91,9 @@ This checklist defines **how governance is verified**.
 - CI uses pinned versions  
 - CI enforces deterministic behavior  
 - CI enforces preview‑safe rules  
-- CI enforces governance via **[ci-governance.md](ca://s?q=Open_ci_governance)**
+- CI enforces governance via **[ci-governance.md](ca://s?q=Open_ci_governance)**  
+- CI validates observability propagation, event emission, and metric emission (NEW)  
+- CI blocks merges on forbidden observability patterns (NEW)
 
 ---
 
@@ -109,7 +115,8 @@ This checklist defines **how governance is verified**.
 - Hosting provider hardening rules enforced  
 - Incident response rules followed  
 - Security governance overrides conventions when needed  
-- PRs touching auth/session require security review
+- PRs touching auth/session require security review  
+- Security‑relevant observability events are emitted and validated (NEW)
 
 ---
 
@@ -127,7 +134,8 @@ This checklist defines **how governance is verified**.
 - PR does not violate product boundaries  
 - PR is reviewed by appropriate maintainers  
 - PR is approved by Product Owner when required  
-- PR includes rationale for governance‑level changes
+- PR includes rationale for governance‑level changes  
+- PR includes observability updates when behavior changes (NEW)
 
 ---
 
@@ -149,7 +157,8 @@ This checklist defines **how governance is verified**.
 - Vercel preview deployment validated  
 - Required artifacts (`db-conn.txt`, `frontend-url.txt`) present  
 - Operational changes documented and reviewed  
-- Operations governance overrides workflow conventions when needed
+- Operations governance overrides workflow conventions when needed  
+- Hosting and deployment observability events are emitted and validated (NEW)
 
 ---
 
@@ -165,11 +174,33 @@ This checklist defines **how governance is verified**.
 - No handler invocation from endpoints  
 - No domain mutation outside Application layer  
 - Architecture tests must pass  
-- Dependency direction must be preserved
+- Dependency direction must be preserved  
+- Observability context must propagate through all layers (NEW)  
+- Observability events/metrics must follow naming conventions (NEW)
 
 ---
 
-# 10. Governance Process Enforcement
+# 10. Observability Governance Enforcement (NEW)
+
+- All layers propagate `IObservabilityContext`  
+- No manual correlation ID creation  
+- No ad‑hoc logging  
+- No vendor‑specific logging/metrics APIs  
+- All events follow `slice.module.action` naming  
+- All metrics follow `slice.module.metric_name` naming  
+- No secrets, tokens, or PII in observability payloads  
+- Callback endpoints emit required observability events  
+- Infrastructure emits external call events/metrics  
+- Application emits use‑case boundary events/metrics  
+- API emits request boundary events/metrics  
+- CI validates observability determinism  
+- Observability tests must pass before merge  
+- Observability conventions remain consistent across code and docs  
+- Observability governance overrides workflow conventions when needed  
+
+---
+
+# 11. Governance Process Enforcement
 
 - Governance changes require Product Owner approval  
 - Governance changes include rationale and consequences  
@@ -178,18 +209,19 @@ This checklist defines **how governance is verified**.
 - Governance changes follow Universal Patch Rule  
 - Governance remains minimal and intentional  
 - Governance documents remain internally consistent  
-- Governance changes are recorded in ADRs when architectural
+- Governance changes are recorded in ADRs when architectural  
+- Observability governance changes require Frank review (NEW)
 
 ---
 
-# 11. Enforcement Roles
+# 12. Enforcement Roles
 
 - **Product Owner** — approves governance changes, enforces story/changelog rules  
 - **Reviewers** — enforce hygiene, CI, contributor governance, product boundaries  
-- **CI** — enforces structural rules, metadata validation, dependency direction  
+- **CI** — enforces structural rules, metadata validation, dependency direction, observability correctness  
 - **Scripts** — enforce deterministic behavior, prevent drift  
-- **Frank** — enforces architectural guardrails (DI, EF Core, hosting providers)  
-- **Preview Pipeline** — enforces hosting, configuration, and operational safety
+- **Frank** — enforces architectural guardrails (DI, EF Core, hosting providers, observability primitives)  
+- **Preview Pipeline** — enforces hosting, configuration, operational safety, and observability correctness  
 
 ---
 
@@ -199,10 +231,10 @@ This checklist ensures:
 
 - Governance is consistently enforced  
 - Conventions remain aligned with governance  
-- CI and scripts uphold structural rules  
+- CI and scripts uphold structural and observability rules  
 - Reviewers enforce boundaries and responsibilities  
 - Product Owner maintains strategic control  
-- The system remains stable, predictable, and maintainable  
+- The system remains stable, predictable, observable, and maintainable  
 
 Governance is the backbone of the repository.  
 This checklist is how it stays enforced.

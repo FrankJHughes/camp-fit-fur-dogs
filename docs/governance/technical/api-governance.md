@@ -283,44 +283,128 @@ The callback endpoint must:
 
 ---
 
-# 9. API Observability Governance
+# 9. API Observability Governance (UPDATED)
 
-The API must provide:
+The API must integrate with Frank’s Observability platform and must emit:
 
-- Structured logs  
-- Request correlation  
-- Authentication event logs  
-- Hosting provider selection logs  
-- Startup validation logs  
-- Security header validation logs  
+- Structured events  
+- Metrics  
+- Correlation IDs  
+- Deterministic, testable observability output  
 
-Logs must never contain:
+Observability is a required cross‑cutting concern for all API endpoints.
 
-- Secrets  
-- Tokens  
-- PII  
+## 9.1 Correlation Governance
 
-Observability must integrate with:
+The API must:
 
-- Frank correlation middleware  
-- Frank hosting provider abstractions  
-- Frank error boundary  
+- Use Frank’s correlation middleware  
+- Accept the `IObservabilityContext` created by Frank.Hosting  
+- Propagate correlation IDs through:
+  - API handlers  
+  - Application dispatchers  
+  - Domain services  
+  - Infrastructure adapters  
+  - Outbox handlers  
 
-## 9.1 Callback Observability (NEW)
+The API must not:
 
-The callback endpoint must log:
+- Generate correlation IDs manually  
+- Mutate the observability context  
+- Bypass Frank’s correlation middleware  
 
-- Callback invocation  
-- Pipeline success/failure  
+## 9.2 Event Governance
+
+The API must emit structured events using `ITraceEvents` for:
+
+- Request start  
+- Request end  
+- Validation failures  
+- Authorization failures  
+- Authentication failures  
+- Dispatcher invocation  
+- External call boundaries  
+
+Event names must follow:
+
+````  
+slice.module.action  
+````
+
+Events must include:
+
+- Correlation ID  
+- Slice  
+- Module  
+- Action  
+- Severity  
+- Structured payload  
+
+The API must not:
+
+- Use ad‑hoc logging  
+- Emit unstructured strings  
+- Emit events without correlation IDs  
+
+## 9.3 Metric Governance
+
+The API must emit metrics using `IMetrics` for:
+
+- Handler duration  
+- Dispatcher duration  
+- External call latency  
+- Success/failure counters  
+
+Metric names must follow:
+
+````  
+slice.module.metric_name  
+````
+
+Metrics must be deterministic and must not rely on real time.
+
+The API must not:
+
+- Use Stopwatch  
+- Use vendor‑specific metric libraries  
+- Emit metrics without correlation IDs  
+
+## 9.4 Callback Observability Governance (NEW)
+
+The authentication callback endpoint must emit:
+
+- Callback invocation event  
+- Pipeline success/failure event  
 - Cookie issuance event (non‑PII)  
-- Redirect target (non‑PII)  
+- Redirect target event (non‑PII)  
 
-It must not log:
+It must not emit:
 
 - Authorization codes  
 - Tokens  
 - Claims  
 - Provider error messages  
+- Raw exceptions  
+
+Callback observability must be:
+
+- Deterministic  
+- Structured  
+- Fully shaped by Frank’s error boundary  
+- Fully correlated  
+
+## 9.5 Forbidden Observability Patterns
+
+The API must never:
+
+- Generate correlation IDs manually  
+- Log secrets, tokens, or PII  
+- Emit unstructured logs  
+- Emit vendor‑specific logs or metrics  
+- Bypass Frank’s observability abstractions  
+- Use Stopwatch or real‑time timers  
+- Emit inconsistent event/metric names  
+- Emit observability output outside Frank’s middleware pipeline  
 
 ---
 

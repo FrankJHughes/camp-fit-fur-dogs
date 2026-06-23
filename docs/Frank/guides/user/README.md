@@ -1,10 +1,11 @@
-# Frank User Guide
+# Frank User Guide  
+Authoritative handbook for developers building applications with Frank
 
 Welcome to the **Frank User Guide** — the handbook for developers, engineers, and teams who *use* the Frank Framework to build applications.  
 This guide explains how to work with Frank’s capabilities, how to structure applications using Frank’s conventions, and how to leverage Frank’s deterministic, governed architecture in your own products.
 
-If you are building or maintaining the Frank Framework itself, see the **Frank Developer Guide**.  
-If you are testing Frank or using Frank.Testing, see the **Frank Tester Guide**.
+If you are building or maintaining the Frank Framework itself, see the **[Frank Developer Guide](ca://s?q=Open_Frank_Developer_Guide)**.  
+If you are testing Frank or using Frank.Testing, see the **[Frank Tester Guide](ca://s?q=Open_Frank_Tester_Guide)**.
 
 This guide is for **users of Frank**, not contributors to Frank.
 
@@ -22,6 +23,7 @@ Frank is a **deterministic, capability‑oriented application framework** design
 - structured validation  
 - consistent error handling  
 - secure defaults  
+- structured, correlated observability (NEW)  
 - a unified testing harness  
 
 Frank is designed for teams who want:
@@ -46,6 +48,7 @@ This guide provides:
 - how to configure hosting, environment, and DI  
 - how to work with Frank’s validation and pipeline systems  
 - how to use Frank.Testing for integration tests  
+- how to use Frank’s observability primitives (NEW)  
 
 Capability‑specific user guides live in:
 
@@ -60,6 +63,7 @@ Examples:
 - `hosting/`  
 - `environment/`  
 - `configuration/`  
+- `observability/` (NEW)  
 
 ---
 
@@ -79,6 +83,7 @@ Frank is organized into **capabilities**, each representing a cohesive subsystem
 - Dispatching  
 - Security Headers  
 - Error Boundaries  
+- Observability (NEW)  
 - Testing  
 
 Each capability has:
@@ -100,6 +105,7 @@ Frank applications start the same way every time:
 - configuration layering  
 - DI auto‑registration  
 - startup module execution  
+- observability context creation (NEW)  
 
 You do not write your own startup pipeline — Frank handles it.
 
@@ -115,7 +121,7 @@ You configure hosting via:
 - configuration  
 - hosting metadata  
 
-See the Hosting capability user guide.
+See the **[Hosting User Guide](ca://s?q=Open_hosting_user_guide)**.
 
 ---
 
@@ -184,6 +190,7 @@ Frank provides a deterministic request pipeline:
 - handler execution  
 - result mapping  
 - error boundaries  
+- observability events (NEW)  
 
 You write handlers, not controllers.
 
@@ -205,6 +212,28 @@ Frank ensures consistent error handling:
 - unhandled exceptions  
 
 You do not write your own exception middleware.
+
+---
+
+## **3.11 Observability (NEW)**
+
+Frank provides structured, correlated observability:
+
+- `IObservabilityContext` — immutable correlation context  
+- `ITraceEvents` — structured event emission  
+- `IMetrics` — deterministic metrics  
+- automatic correlation propagation  
+- deterministic event/metric naming conventions  
+
+As a user, you:
+
+- emit events at handler boundaries  
+- emit metrics for long‑running operations  
+- never create correlation IDs manually  
+- never log secrets, tokens, or PII  
+- never use vendor‑specific logging or metrics  
+
+See the **[Observability User Guide](ca://s?q=Open_observability_user_guide)**.
 
 ---
 
@@ -248,6 +277,7 @@ Frank handles:
 - validation  
 - error handling  
 - result mapping  
+- observability context propagation (NEW)  
 
 You focus on business logic.
 
@@ -295,6 +325,31 @@ Frank ensures:
 
 ---
 
+## **4.6 Working With Observability (NEW)**
+
+You emit events using:
+
+```csharp
+events.Info("orders.create.started", new { OrderId = id });
+```
+
+You emit metrics using:
+
+```csharp
+metrics.Increment("orders.create.count");
+```
+
+You **never**:
+
+- create correlation IDs manually  
+- log secrets, tokens, or PII  
+- use Stopwatch or real‑time timers  
+- use vendor‑specific logging/metrics APIs  
+
+Frank ensures deterministic observability behavior.
+
+---
+
 # 5. Testing With Frank
 
 Frank.Testing provides:
@@ -305,6 +360,7 @@ Frank.Testing provides:
 - DI mutation  
 - hosting provider mutation  
 - startup module mutation  
+- observability test sinks (NEW)  
 
 You write tests using:
 
@@ -337,6 +393,7 @@ Examples:
 - `configuration/` — how to consume configuration  
 - `validation/` — how to write validators  
 - `dispatching/` — how to write handlers  
+- `observability/` — how to emit events and metrics (NEW)  
 
 ---
 
@@ -353,6 +410,8 @@ As a Frank user, you should **not**:
 - access environment variables directly  
 - rely on static state  
 - modify Frank internals  
+- create correlation IDs manually (NEW)  
+- use ad‑hoc logging or vendor‑specific metrics (NEW)  
 
 These break determinism and guardrails.
 
@@ -367,7 +426,7 @@ The Frank User Guide is your handbook for:
 - writing handlers, validators, and services  
 - working with hosting, environment, and configuration  
 - writing deterministic tests using Frank.Testing  
+- using Frank’s observability primitives correctly (NEW)  
 - following Frank’s conventions and guardrails  
 
-Frank provides a governed, deterministic foundation so you can focus on building your product — not building a framework.
-
+Frank provides a governed, deterministic, observable foundation so you can focus on building your product — not building a framework.

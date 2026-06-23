@@ -1,7 +1,7 @@
 # Architecture Governance
 
 This document defines the architectural boundaries, dependency rules, and enforcement mechanisms for all products in the repository.  
-It complements (but does not duplicate) code conventions, security governance, and operational governance.
+It complements (but does not duplicate) code conventions, security governance, observability governance, and operational governance.
 
 Architecture governance ensures:
 
@@ -11,6 +11,7 @@ Architecture governance ensures:
 - Long‑term maintainability  
 - Zero architectural drift  
 - Consistent behavior across all products  
+- Deterministic, observable execution  
 
 Architecture is a contract. Violations are defects.
 
@@ -27,6 +28,7 @@ All products must follow these principles:
 - **Replaceability** — components must be swappable without cascade changes  
 - **Purity** — domain logic must remain free of infrastructure concerns  
 - **Determinism** — architectural behavior must not depend on runtime accidents  
+- **Observability** — all architectural boundaries must emit structured, correlated events and metrics  
 
 Architecture is intentional, not emergent.
 
@@ -43,7 +45,7 @@ All layers → Frank
 ```
 
 Frank is the **only allowed cross‑cutting dependency**.  
-Frank provides primitives, DI auto‑registration, endpoint discovery, validator scanning, hosting provider abstractions, environment abstraction, security headers, and test seams.
+Frank provides primitives, DI auto‑registration, endpoint discovery, validator scanning, hosting provider abstractions, environment abstraction, security headers, observability context propagation, and test seams.
 
 ## 2.1 Domain Layer
 
@@ -65,6 +67,7 @@ Forbidden:
 - Logging  
 - Configuration access  
 - External service calls  
+- Observability emission (Domain must be observable *through* Application/Infrastructure, not directly)
 
 ## 2.2 Application Layer
 
@@ -76,6 +79,8 @@ The Application layer:
 - Dispatches domain events  
 - Depends only on Domain and Frank  
 - Participates in DI via `[AutoRegister]`  
+- Emits observability events/metrics for use‑case boundaries  
+- Propagates `IObservabilityContext` through all operations  
 
 Forbidden:
 
@@ -86,6 +91,8 @@ Forbidden:
 - Authentication protocol logic  
 - Configuration access  
 - Manual DI registration of slice services  
+- Manual correlation ID creation  
+- Ad‑hoc logging  
 
 ## 2.3 Infrastructure Layer
 
@@ -99,11 +106,9 @@ The Infrastructure layer:
 - Implements authentication providers  
 - Depends on Application and Domain  
 - Uses Frank auto‑registration for DI participation  
-- Uses Frank hosting provider abstractions:
-  - `IEnvironment`  
-  - `IRenderPrParser`  
-  - `IGitHubArtifactClient`  
-  - `IRenderConfigurationWriter`
+- Uses Frank hosting provider abstractions  
+- Emits observability events/metrics for external calls, retries, and failures  
+- Propagates correlation IDs to external systems  
 
 Forbidden:
 
@@ -113,6 +118,8 @@ Forbidden:
 - Manual DI registration of slice services  
 - Direct environment variable access  
 - Direct HTTP, JSON, or ZIP handling inside hosting providers  
+- Vendor‑specific logging or metrics APIs  
+- Stopwatch timing  
 
 ## 2.4 API Layer
 
@@ -126,6 +133,8 @@ The API layer:
 - Uses Frank endpoint discovery  
 - Applies Frank security headers middleware  
 - Uses Frank error boundary helpers  
+- Uses Frank correlation middleware  
+- Emits structured events and metrics for request boundaries  
 
 Forbidden:
 
@@ -135,7 +144,8 @@ Forbidden:
 - Domain mutation outside Application layer  
 - Direct handler invocation (must use dispatchers)  
 - Infrastructure dependencies  
-- Bypassing Frank middleware (security headers, correlation, error boundary)
+- Bypassing Frank middleware (security headers, correlation, error boundary)  
+- Ad‑hoc logging  
 
 ---
 
@@ -174,12 +184,14 @@ Commands:
 - Must not return domain entities  
 - Must not return arbitrary data  
 - Must be deterministic  
+- Must emit observability events/metrics for execution boundaries  
 
 Queries:
 
 - Must not mutate state  
 - Must return DTOs  
 - Must be idempotent  
+- Must emit observability metrics for duration  
 
 Forbidden:
 
@@ -194,6 +206,7 @@ Frank enforces:
 - Dispatcher pipeline behavior  
 - Validation integration  
 - Error boundary integration  
+- Observability context propagation  
 
 ---
 
@@ -212,6 +225,8 @@ Hosting providers:
 - Must not perform HTTP directly  
 - Must not parse JSON or ZIP directly  
 - Must not write configuration directly  
+- Must emit structured events for provider selection and validation  
+- Must propagate correlation IDs through hosting initialization  
 
 Only Frank may define hosting provider infrastructure.
 
@@ -228,6 +243,7 @@ Provider selection rules:
 - First active provider wins  
 - All others are skipped  
 - Enforced by guardrails  
+- Fully observable  
 
 ---
 
@@ -242,6 +258,7 @@ Authentication:
 - Must not expose tokens to the frontend  
 - Must not store tokens in Domain or Application  
 - Must integrate with Frank’s authentication seams  
+- Must emit structured authentication events (non‑PII)  
 
 Identity resolution:
 
@@ -249,6 +266,7 @@ Identity resolution:
 - Must not depend on infrastructure details  
 - Must not accept identity from request bodies  
 - Must use Frank’s identity seam  
+- Must propagate correlation IDs  
 
 ## 6.1 Authentication Callback Architecture Governance (NEW)
 
@@ -259,6 +277,7 @@ The authentication callback flow must follow a **three‑layer architecture**:
 - Exchanges authorization codes  
 - Extracts claims  
 - Normalizes provider output  
+- Emits protocol‑level observability events  
 - Contains **no business logic**
 
 ### **2. Application Pipeline (Business Layer)**  
@@ -267,6 +286,7 @@ The authentication callback flow must follow a **three‑layer architecture**:
 - Creates session  
 - Produces redirect URL  
 - Produces cookie value  
+- Emits business‑level observability events  
 - Contains **no protocol logic**
 
 ### **3. API Callback Endpoint (Infrastructure Boundary)**  
@@ -278,6 +298,7 @@ The API endpoint must:
 - Invoke Application pipeline  
 - Issue the session cookie  
 - Redirect to the Application pipeline’s URL  
+- Emit callback‑level observability events  
 
 The API endpoint must not:
 
@@ -301,6 +322,8 @@ Errors must:
 - Never expose stack traces  
 - Never expose infrastructure details  
 - Never expose domain internals  
+- Always include correlation IDs  
+- Emit structured error events  
 
 Error shaping must use:
 
@@ -318,10 +341,45 @@ The callback endpoint must:
 - Allow pipeline exceptions to flow into Frank’s error boundary  
 - Never leak identity provider errors  
 - Never leak tokens or claims  
+- Emit structured callback error events  
 
 ---
 
-# 8. Forbidden Architectural Patterns
+# 8. Observability Architecture Governance (NEW)
+
+Observability is a **first‑class architectural concern**.
+
+All layers must:
+
+- Accept and propagate `IObservabilityContext`  
+- Emit structured events using `ITraceEvents`  
+- Emit metrics using `IMetrics`  
+- Follow naming conventions:
+  - Events: `slice.module.action`
+  - Metrics: `slice.module.metric_name`
+- Ensure deterministic observability behavior  
+- Avoid vendor‑specific logging/metrics APIs  
+- Avoid Stopwatch or real‑time timing  
+- Avoid ad‑hoc logging  
+
+Observability must be:
+
+- Cross‑layer  
+- Deterministic  
+- Structured  
+- Correlated  
+- Testable  
+
+Forbidden:
+
+- Manual correlation ID creation  
+- Logging secrets, tokens, or PII  
+- Emitting unstructured logs  
+- Emitting observability output outside Frank’s abstractions  
+
+---
+
+# 9. Forbidden Architectural Patterns
 
 The following patterns are prohibited:
 
@@ -340,8 +398,10 @@ The following patterns are prohibited:
 - Hosting providers accessing environment variables directly  
 - Hosting providers performing HTTP, JSON, or ZIP operations directly  
 - API bypassing Frank middleware  
+- Manual correlation ID creation  
+- Vendor‑specific logging or metrics APIs  
 
-## 8.1 Callback‑Specific Forbidden Patterns (NEW)
+## 9.1 Callback‑Specific Forbidden Patterns (NEW)
 
 Forbidden:
 
@@ -356,7 +416,7 @@ Forbidden:
 
 ---
 
-# 9. Architecture Enforcement
+# 10. Architecture Enforcement
 
 Architecture is enforced through:
 
@@ -368,7 +428,9 @@ Architecture is enforced through:
 - Hosting provider seam tests  
 - Endpoint discovery tests  
 - Security header enforcement tests  
-- Authentication callback pipeline tests (NEW)
+- Authentication callback pipeline tests  
+- Observability propagation tests (NEW)  
+- Observability determinism tests (NEW)  
 
 No PR may merge if:
 
@@ -376,6 +438,7 @@ No PR may merge if:
 - It introduces forbidden patterns  
 - It weakens architectural boundaries  
 - It bypasses Frank’s cross‑cutting infrastructure  
-- It violates callback architecture rules (NEW)
+- It violates callback architecture rules  
+- It violates observability architecture rules (NEW)  
 
 Architecture governance is non‑negotiable.

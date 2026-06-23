@@ -1,14 +1,24 @@
-# PowerShell tree-style output
-# Requires PowerShell 7+
+function Show-Tree {
+  param(
+    [string]$Path = ".",
+    [string]$Indent = ""
+  )
 
-Get-ChildItem -Recurse -Directory `
-| Where-Object {
-  $_.FullName -notmatch 'bin' -and
-  $_.FullName -notmatch 'obj' -and
-  $_.FullName -notmatch 'node_modules' -and
-  $_.FullName -notmatch 'dist' -and
-  $_.FullName -notmatch 'build'
-} `
-| ForEach-Object {
-  $_.FullName.Replace((Get-Location).Path, '')
+  $items = Get-ChildItem -LiteralPath $Path | Sort-Object Name
+
+  for ($i = 0; $i -lt $items.Count; $i++) {
+    $item = $items[$i]
+    $isLast = ($i -eq $items.Count - 1)
+    $connector = if ($isLast) { "└── " } else { "├── " }
+
+    # Only output the name, not the full path
+    Write-Host "$Indent$connector$($item.Name)"
+
+    if ($item.PSIsContainer) {
+      $newIndent = if ($isLast) { "$Indent    " } else { "$Indent│   " }
+      Show-Tree -Path $item.FullName -Indent $newIndent
+    }
+  }
 }
+
+Show-Tree

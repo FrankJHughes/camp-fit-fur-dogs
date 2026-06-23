@@ -1,20 +1,12 @@
 # API Endpoint Purity Guide  
-*A developer‑facing architecture guide for building clean, predictable, and maintainable API endpoints.*
+Product‑specific architectural rules for Camp Fit Fur Dogs
 
-API endpoints are the outermost layer of the backend.  
-Their job is simple and consistent:
+API endpoints are the outermost layer of the Camp Fit Fur Dogs backend.  
+They are intentionally thin, predictable, and free of business logic.
 
-- Accept HTTP requests  
-- Validate **shape** (not business rules)  
-- Map to commands/queries  
-- Invoke the dispatcher pipeline  
-- Map results to response DTOs  
-- Return HTTP responses  
+Endpoints translate HTTP requests into commands/queries, invoke the Frank dispatcher, and translate results into HTTP responses. All business logic lives in the Application and Domain layers.
 
-Endpoints are intentionally thin.  
-All business logic flows through **Application** and **Domain**, never through the API layer.
-
-This guide explains how endpoints fit into the architecture and how to keep them pure, predictable, and easy to maintain.
+This document defines the **product‑specific purity rules** for API endpoints.
 
 ---
 
@@ -23,18 +15,17 @@ This guide explains how endpoints fit into the architecture and how to keep them
 Endpoints exist to:
 
 - Bind HTTP requests  
-- Perform syntactic validation  
-- Translate requests into commands/queries  
-- Dispatch those commands/queries  
-- Translate results into HTTP responses  
+- Perform syntactic (shape) validation  
+- Map request DTOs to commands/queries  
+- Dispatch commands/queries through Frank  
+- Map results to response DTOs  
+- Return HTTP responses  
 
-Endpoints are **orchestrators**, not logic containers.
+Endpoints orchestrate — they do not execute logic.
 
 ---
 
 # 2. High‑Level Flow
-
-A request flows through the system like this:
 
 ```
 HTTP Request
@@ -43,7 +34,7 @@ API Endpoint
     ↓
 Command / Query
     ↓
-Dispatcher Pipeline
+Frank Dispatcher Pipeline
     ↓
 Application Handler
     ↓
@@ -56,24 +47,20 @@ API Endpoint
 HTTP Response
 ```
 
-Endpoints are the glue between HTTP and the application pipeline.
-
 ---
 
 # 3. Responsibilities of API Endpoints
 
-Endpoints handle **HTTP concerns only**.
-
 ### Endpoints DO:
 
 - Bind route, query, and body parameters  
-- Validate request **shape** (syntactic validation)  
+- Validate request **shape**  
 - Map request DTO → command/query  
-- Call the dispatcher  
+- Call the Frank dispatcher  
 - Map result → response DTO  
 - Return appropriate HTTP status codes  
-- Participate in Frank endpoint discovery  
-- Rely on Frank middleware (security headers, CORS, error boundary)  
+- Use Frank endpoint discovery attributes  
+- Rely on Frank middleware (security headers, CORS, error shaping)  
 
 ### Endpoints DO NOT:
 
@@ -82,22 +69,18 @@ Endpoints handle **HTTP concerns only**.
 - Instantiate or manipulate domain entities  
 - Bypass the dispatcher pipeline  
 - Invoke handlers directly  
-- Reference Application handlers or validators  
+- Reference Application internals  
 - Reference Infrastructure types  
 - Perform domain mutations  
-- Perform identity resolution  
+- Resolve identity manually  
 - Perform authorization logic  
 - Access configuration or environment  
 - Perform HTTP/JSON/ZIP operations  
 - Interact with hosting providers  
 
-Endpoints orchestrate — they do not execute logic.
-
 ---
 
-# 4. Typical Endpoint Flow
-
-A clean endpoint follows this pattern:
+# 4. Typical Endpoint Pattern
 
 ```csharp
 var command = new RegisterDogCommand(request.Name, request.Breed);
@@ -119,18 +102,16 @@ Notice what’s missing:
 - No authorization logic  
 - No configuration access  
 
-This is the ideal endpoint shape.
-
 ---
 
 # 5. Dependency Rules
 
-Endpoints depend only on:
+Endpoints may depend on:
 
 - Commands  
 - Queries  
 - Result DTOs  
-- Dispatcher interfaces  
+- Frank dispatcher interfaces  
 - ASP.NET primitives  
 - Frank endpoint discovery attributes  
 
@@ -144,7 +125,7 @@ Endpoints must **not** depend on:
 - Hosting providers  
 - Environment abstractions  
 
-This keeps dependency direction clean:
+Dependency direction remains:
 
 ```
 Api → Application → Domain
@@ -173,7 +154,7 @@ This ensures:
 
 # 7. DTO Purity
 
-DTOs used by endpoints must:
+DTOs must:
 
 - Contain only data  
 - Not reference domain entities  
@@ -181,7 +162,7 @@ DTOs used by endpoints must:
 - Not reference Infrastructure types  
 - Not contain behavior  
 
-DTOs are **transport shapes**, nothing more.
+DTOs are transport shapes only.
 
 ---
 
@@ -226,8 +207,6 @@ Endpoints simply declare:
 [Authorize]
 ```
 
-…and let the system handle the rest.
-
 ---
 
 # 10. Middleware Integration
@@ -248,16 +227,16 @@ Endpoints must not implement these concerns manually.
 
 When adding a new endpoint:
 
-1. Define the command/query and result in Application Abstractions  
-2. Implement the handler in Application  
-3. Add validators if needed  
-4. Use the dispatcher from the endpoint  
-5. Keep endpoint logic limited to mapping and HTTP concerns  
-6. Do not bypass the dispatcher pipeline  
-7. Do not reference Application internals or Infrastructure  
-8. Ensure endpoint is discovered via Frank endpoint discovery  
-9. Ensure endpoint follows API security rules  
-10. Ensure endpoint relies on Frank middleware  
+1. Create request/response DTOs  
+2. Create command/query  
+3. Create handler  
+4. Create validator  
+5. Add endpoint using Frank’s dispatcher  
+6. Emit product‑specific observability events  
+7. Add tests  
+8. Keep endpoint logic limited to mapping and HTTP concerns  
+9. Do not bypass the dispatcher pipeline  
+10. Ensure endpoint follows API purity rules  
 
 If an endpoint grows beyond ~10–20 lines, logic is leaking into the wrong layer.
 
@@ -265,7 +244,7 @@ If an endpoint grows beyond ~10–20 lines, logic is leaking into the wrong laye
 
 # 12. Summary
 
-- Endpoints are **pure orchestrators**  
+- Endpoints are pure orchestrators  
 - They handle HTTP concerns only  
 - They never contain business logic  
 - They always use the dispatcher pipeline  
@@ -276,8 +255,7 @@ If an endpoint grows beyond ~10–20 lines, logic is leaking into the wrong laye
 
 # Related Documents
 
-- Dispatcher Pipeline Guide  
-- Domain Events Architecture  
-- Validation Boundaries  
-- Authentication Overview  
-- Architecture Overview  
+- CFFD Developer Guide  
+- Validation Conventions  
+- Mapping Conventions  
+- Frank Dispatcher Pipeline Guide  

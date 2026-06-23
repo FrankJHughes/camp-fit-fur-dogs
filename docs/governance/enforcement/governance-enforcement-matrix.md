@@ -34,6 +34,8 @@ Guided links point to the relevant governance area for deeper review.
 | **[Security Governance](ca://s?q=Open_security_governance)** | ✔ | ✔ | ✔ | — | ✔ | ✔ |
 | **[Contributor Governance](ca://s?q=Open_contributor_governance)** | ✔ | ✔ | ✔ | — | — | — |
 | **[Operations Governance](ca://s?q=Open_operations_governance)** | ✔ | ✔ | ✔ | — | ✔ | ✔ |
+| **[Architecture Governance](ca://s?q=Open_architecture_governance)** | ✔ | ✔ | ✔ | — | ✔ | — |
+| **[Observability Governance](ca://s?q=Open_observability_governance)** (NEW) | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
 | **[Governance Process](ca://s?q=Open_governance_process)** | ✔ | ✔ | — | — | — | — |
 
 ---
@@ -46,6 +48,7 @@ Guided links point to the relevant governance area for deeper review.
 - Ensures changelog correctness  
 - Enforces multi‑product boundaries at the strategic level  
 - Approves security‑sensitive and operational governance changes  
+- Approves observability governance changes (NEW)  
 - Final authority on governance conflicts  
 
 ## Reviewers (REV)
@@ -55,6 +58,7 @@ Guided links point to the relevant governance area for deeper review.
 - Enforce product boundaries  
 - Validate story correctness and acceptance criteria  
 - Ensure conventions align with governance  
+- Validate observability naming, placement, and usage (NEW)  
 
 ## Continuous Integration (CI)
 - Enforces structural rules  
@@ -63,6 +67,7 @@ Guided links point to the relevant governance area for deeper review.
 - Enforces path‑based test selection  
 - Enforces preview‑safe behavior  
 - Enforces security scanning and operational safety  
+- Enforces observability propagation, determinism, and naming conventions (NEW)  
 
 ## Scripts & Automation (SCR)
 - Prevent drift across catalog, changelog, stories, docs  
@@ -70,6 +75,7 @@ Guided links point to the relevant governance area for deeper review.
 - Enforce governance‑driven metadata rules  
 - Enforce CI dependency graph correctness  
 - Support operational safety (e.g., teardown probes, readiness probes)  
+- Enforce observability metadata correctness (NEW)  
 
 ## Frank Guardrails (SK)
 - Enforce architectural boundaries  
@@ -79,6 +85,7 @@ Guided links point to the relevant governance area for deeper review.
 - Enforce domain purity  
 - Enforce hosting provider selection and validation primitives  
 - Enforce DI auto‑registration and EF Core scanning  
+- Enforce observability primitives, correlation propagation, and forbidden patterns (NEW)  
 
 ## Operations / Hosting Providers (OPS)
 - Enforce hosting provider hardening  
@@ -87,6 +94,7 @@ Guided links point to the relevant governance area for deeper review.
 - Enforce environment isolation  
 - Enforce preview environment lifecycle  
 - Surface operational failures deterministically  
+- Emit and validate operational observability events (NEW)  
 
 ---
 
@@ -102,6 +110,8 @@ Guided links point to the relevant governance area for deeper review.
 | Security Governance | PO | REV, CI, SK, OPS |
 | Contributor Governance | REV | PO, CI |
 | Operations Governance | OPS | PO, REV, CI, SK |
+| Architecture Governance | SK | REV, CI |
+| Observability Governance (NEW) | SK | CI, REV, OPS, SCR |
 | Governance Process | PO | REV |
 
 ---
@@ -109,11 +119,11 @@ Guided links point to the relevant governance area for deeper review.
 # How to Use This Matrix
 
 - **Reviewers** use it during PR review  
-- **CI** uses it to validate structural rules  
+- **CI** uses it to validate structural and observability rules  
 - **Product Owner** uses it to approve governance changes  
 - **Scripts** use it to enforce deterministic behavior  
-- **Frank** uses it to enforce architectural guardrails  
-- **Operations** uses it to enforce hosting and configuration safety  
+- **Frank** uses it to enforce architectural and observability guardrails  
+- **Operations** uses it to enforce hosting, configuration, and observability safety  
 
 This matrix ensures **every governance rule has a clear enforcement owner**.
 
@@ -125,11 +135,11 @@ The Governance Enforcement Matrix ensures:
 
 - No governance rule is unenforced  
 - Responsibilities are explicit and non‑overlapping  
-- CI and scripts enforce structural rules  
+- CI and scripts enforce structural and observability rules  
 - Reviewers enforce boundaries and hygiene  
 - Product Owner maintains strategic control  
-- Frank enforces architecture  
-- Operations enforces hosting and configuration safety  
+- Frank enforces architecture and observability primitives  
+- Operations enforces hosting, configuration, and observability safety  
 
 Governance defines the rules.  
 This matrix defines **who enforces them**.
