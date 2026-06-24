@@ -4,7 +4,6 @@ using Testcontainers.PostgreSql;
 
 using Frank.Abstractions;
 using Frank.Abstractions.Events;
-using Frank.Testing.Contexts;
 
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;

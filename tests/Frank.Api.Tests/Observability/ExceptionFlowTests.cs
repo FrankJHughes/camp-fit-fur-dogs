@@ -1,5 +1,4 @@
 using System.Net;
-using Frank.Api.Tests.Fakes;
 using Frank.Api.Tests.Helpers;
 using Xunit;
 

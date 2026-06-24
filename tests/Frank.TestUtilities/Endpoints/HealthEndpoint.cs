@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Frank.Api.Tests.TestEndpoints;
+namespace Frank.TestUtilities.Endpoints;
 
 public sealed class HealthEndpoint : IEndpoint
 {

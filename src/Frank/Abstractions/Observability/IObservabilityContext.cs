@@ -15,12 +15,12 @@ public interface IObservabilityContext
     /// <summary>
     /// The vertical slice or capability emitting the event.
     /// </summary>
-    string Slice { get; }
+    string Channel { get; }
 
     /// <summary>
     /// The module or subsystem within the slice.
     /// </summary>
-    string Module { get; }
+    string Agent { get; }
 
     /// <summary>
     /// The environment (e.g., Development, Staging, Production).

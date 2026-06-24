@@ -3,8 +3,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Frank.Abstractions.Observability;
-using Frank.Infrastructure.Observability;
-namespace Frank.Api.Observability;
+namespace Frank.Infrastructure.Observability.Http;
 
 public sealed class ObservabilityMiddleware
 {
@@ -39,19 +38,16 @@ public sealed class ObservabilityMiddleware
 
         var correlationId = _correlation.Propagate(incomingCorrelation);
 
-        var context = new ObservabilityContext
-        {
-            CorrelationId = correlationId,
-            Slice = "http",
-            Module = "pipeline",
-            Environment = _environment.EnvironmentName,
-            Timestamp = DateTimeOffset.UtcNow,
-            Metadata = new Dictionary<string, object?>
+        var context = new ObservabilityContext(
+            correlationId: correlationId,
+            channel: "http",
+            agent: "pipeline",
+            environment: _environment,
+            metadata: new Dictionary<string, object?>
             {
                 ["path"] = httpContext.Request.Path.Value,
                 ["method"] = httpContext.Request.Method
-            }
-        };
+            });
 
         httpContext.Response.Headers["X-Correlation-ID"] = correlationId;
 

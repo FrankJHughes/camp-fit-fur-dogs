@@ -16,5 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Frank\Frank.csproj" />
     <ProjectReference Include="..\..\src\Frank.Infrastructure\Frank.Infrastructure.csproj" />
+    <ProjectReference Include="..\Frank.TestUtilities\Frank.TestUtilities.csproj" />
   </ItemGroup>
 </Project>
