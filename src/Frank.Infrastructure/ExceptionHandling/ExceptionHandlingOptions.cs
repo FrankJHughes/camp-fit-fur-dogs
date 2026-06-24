@@ -1,4 +1,4 @@
-namespace Frank.Api.ExceptionHandling;
+namespace Frank.Integration.ExceptionHandling;
 
 public sealed class ExceptionHandlingOptions
 {

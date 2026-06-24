@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Security.Claims;
+using Frank.Abstractions;
 using Frank.Abstractions.Authentication.Callback;
 using Frank.Abstractions.Identity;
-using Frank.Api;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

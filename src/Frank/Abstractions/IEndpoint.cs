@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 
-namespace Frank.Api;
+namespace Frank.Abstractions;
 
 public interface IEndpoint
 {

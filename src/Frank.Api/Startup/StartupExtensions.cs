@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.Api.StartupEngine;
+namespace Frank.Api.Startup;
 
 public static class StartupExtensions
 {

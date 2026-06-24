@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Abstractions;
-using Frank.Api;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 

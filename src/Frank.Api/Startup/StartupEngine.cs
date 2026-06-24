@@ -2,7 +2,7 @@ using System.Reflection;
 using Frank.Abstractions.Startup;
 using Microsoft.AspNetCore.Builder;
 
-namespace Frank.Api.StartupEngine;
+namespace Frank.Api.Startup;
 
 public sealed class StartupEngine
 {

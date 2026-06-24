@@ -1,14 +1,17 @@
 using System.Reflection;
-using Frank.Api.ExceptionHandling;
+using Frank.Integration.ExceptionHandling;
+using Microsoft.AspNetCore.Http;
+
+namespace Frank.Api.ExceptionHandling;
 
 public sealed class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ExceptionHandlingRegistry _registry;
+    private readonly ExceptionHandlerRegistry _registry;
 
     public ExceptionHandlingMiddleware(
         RequestDelegate next,
-        ExceptionHandlingRegistry registry)
+        ExceptionHandlerRegistry registry)
     {
         _next = next;
         _registry = registry;

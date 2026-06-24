@@ -1,7 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using CampFitFurDogs.Application.Abstractions.Dogs.RemoveDog;
 using Frank.Abstractions;
-using Frank.Api;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 

@@ -1,13 +1,13 @@
 using System.Reflection;
 using Frank.Abstractions.ExceptionHandling;
 
-namespace Frank.Api.ExceptionHandling;
+namespace Frank.Integration.ExceptionHandling;
 
-public sealed class ExceptionHandlingRegistry
+public sealed class ExceptionHandlerRegistry
 {
     private readonly IReadOnlyList<IExceptionHandler> _handlers;
 
-    public ExceptionHandlingRegistry(IEnumerable<IExceptionHandler> handlers)
+    public ExceptionHandlerRegistry(IEnumerable<IExceptionHandler> handlers)
     {
         _handlers = handlers
             .OrderBy(GetOrder)

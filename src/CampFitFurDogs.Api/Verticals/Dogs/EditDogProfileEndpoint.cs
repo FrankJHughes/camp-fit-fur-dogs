@@ -1,7 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using Frank.Abstractions;
-using Frank.Api;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;

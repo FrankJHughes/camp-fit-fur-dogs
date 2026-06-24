@@ -2,12 +2,12 @@ using System.Security.Claims;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using Frank.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Domain.Errors;
-using Frank.Api;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Abstractions.ImmutableContextBuilder;
 using System.Text.Json;
+using Frank.Abstractions;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication.Callback;
 

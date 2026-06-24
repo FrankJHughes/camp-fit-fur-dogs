@@ -1,5 +1,5 @@
+using Frank.Abstractions;
 using Frank.Abstractions.Observability;
-using Frank.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

@@ -1,6 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using Frank.Abstractions;
-using Frank.Api;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 
