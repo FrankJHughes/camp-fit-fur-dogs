@@ -3,7 +3,7 @@ using System.Reflection;
 using Frank.Abstractions;
 using Microsoft.AspNetCore.Routing;
 
-namespace Frank.Api;
+namespace Frank.Api.Endpoints;
 
 public static class EndpointDiscovery
 {
@@ -23,6 +23,14 @@ public static class EndpointDiscovery
 
         foreach (var type in endpointTypes)
             _endpointTypes.TryAdd(type, 0);
+    }
+
+    public static void AddEndpoints(IEnumerable<Assembly> assemblies)
+    {
+        foreach (var assembly in assemblies)
+        {
+            AddEndpoints(assembly);
+        }
     }
 
     /// <summary>

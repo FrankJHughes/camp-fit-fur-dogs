@@ -1,5 +1,5 @@
 using System.Net.Http.Json;
-using Frank.Api;
+using Frank.Api.Endpoints;
 using Frank.Testing.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;

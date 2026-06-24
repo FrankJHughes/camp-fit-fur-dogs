@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Routing;
 
-namespace Frank.Api;
+namespace Frank.Api.Endpoints;
 
-public static class EndpointDiscoveryExtensions
+public static class EndpointRoutBuilderExtensions
 {
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
     {
