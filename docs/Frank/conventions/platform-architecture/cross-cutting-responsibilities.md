@@ -1,17 +1,14 @@
-# cross-cutting-responsibilities.md
+# Frank — Conventions — Platform Architecture — Cross‑Cutting Responsibilities  
+*The platform‑level primitives that every product relies on.*
 
-# Cross‑Cutting Responsibilities (Frank)
+Frank provides the **platform‑level primitives** that every product — including CampFitFurDogs — relies on.  
+These responsibilities are **cross‑cutting** by nature: they apply uniformly across all modules, slices, and layers.
 
-Frank provides the **platform‑level primitives** that every product — including
-CampFitFurDogs — relies on. These responsibilities are cross‑cutting by nature:
-they apply uniformly across all modules, slices, and layers.
-
-Frank exists to **centralize**, **standardize**, and **harden** these concerns so
-that products remain clean, consistent, and maintainable.
+Frank exists to **centralize**, **standardize**, and **harden** these concerns so that products remain clean, consistent, and maintainable.
 
 ---
 
-## Purpose
+# Purpose
 
 Cross‑cutting responsibilities exist to:
 
@@ -25,24 +22,25 @@ Frank is the **single source of truth** for these concerns.
 
 ---
 
-## Categories of Cross‑Cutting Responsibilities
+# Categories of Cross‑Cutting Responsibilities
 
-### 1. Hosting & Startup
+## 1. Hosting & Startup
 
 Frank owns:
 
 - hosting providers  
-- startup engine  
+- HostingEngine  
+- StartupEngine  
 - module loader  
 - lifecycle events  
 - environment detection  
 - configuration loading  
 
-Products must not implement their own hosting logic.
+Products must **not** implement their own hosting logic.
 
 ---
 
-### 2. Configuration & Environment
+## 2. Configuration & Environment
 
 Frank provides:
 
@@ -51,11 +49,11 @@ Frank provides:
 - secrets resolution  
 - environment detection (`Development`, `Staging`, `Production`)  
 
-Products must not read environment variables directly.
+Products must **not** read environment variables directly.
 
 ---
 
-### 3. Logging & Observability
+## 3. Logging & Observability
 
 Frank defines:
 
@@ -64,12 +62,13 @@ Frank defines:
 - execution tracing  
 - lifecycle event logging  
 - error context enrichment  
+- observability test harness (ADR‑0060)  
 
-Products must not implement their own logging frameworks.
+Products must **not** implement their own logging frameworks.
 
 ---
 
-### 4. HTTP & External Calls
+## 4. HTTP & External Calls
 
 Frank provides:
 
@@ -78,25 +77,32 @@ Frank provides:
 - circuit breakers  
 - timeout policies  
 - typed HTTP responses  
+- outbound trace context propagation  
 
-Products must not use `HttpClient` directly.
+Products must **not** use `HttpClient` directly.
 
 ---
 
-### 5. Time, IDs, and Deterministic Utilities
+## 5. Time, IDs, and Deterministic Utilities
 
 Frank provides:
 
 - clock abstraction  
 - deterministic ID generator  
 - random number abstraction  
-- time provider for tests  
+- deterministic time provider for tests  
 
-Products must not call `DateTime.UtcNow`, `Guid.NewGuid()`, or `Random()` directly.
+Products must **not** call:
+
+- `DateTime.UtcNow`  
+- `Guid.NewGuid()`  
+- `Random()`  
+
+directly.
 
 ---
 
-### 6. Security & Hardening
+## 6. Security & Hardening
 
 Frank enforces:
 
@@ -106,11 +112,11 @@ Frank enforces:
 - anti‑abuse protections  
 - safe defaults for hosting  
 
-Products must not weaken or override these defaults.
+Products must **not** weaken or override these defaults.
 
 ---
 
-### 7. Serialization & Formatting
+## 7. Serialization & Formatting
 
 Frank provides:
 
@@ -119,13 +125,13 @@ Frank provides:
 - safe defaults  
 - deterministic formatting  
 
-Products must not define their own global JSON settings.
+Products must **not** define their own global JSON settings.
 
 ---
 
-## Prohibitions
+# Prohibitions
 
-Frank must not:
+Frank must **not**:
 
 - contain business logic  
 - contain slice‑specific logic  
@@ -137,7 +143,7 @@ Frank is a **platform**, not an application.
 
 ---
 
-## Enforcement
+# Enforcement
 
 Cross‑cutting responsibilities are enforced through:
 

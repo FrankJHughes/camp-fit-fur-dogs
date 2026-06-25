@@ -7,7 +7,7 @@ using Frank.Abstractions.Identity;
 
 namespace Frank.Infrastructure.Observability.Http;
 
-public sealed class ObservabilityMiddleware
+public sealed class ObservabilityInstrumentationMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IObservabilitySink _trace;
@@ -17,7 +17,7 @@ public sealed class ObservabilityMiddleware
     private readonly IHostEnvironment _environment;
     private readonly ICurrentUser _currentUser;
 
-    public ObservabilityMiddleware(
+    public ObservabilityInstrumentationMiddleware(
         RequestDelegate next,
         IObservabilitySink trace,
         IMetrics metrics,

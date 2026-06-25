@@ -1,4 +1,4 @@
-# Frank Observability User Guide
+# Frank — Guides — User — Observability
 
 This guide explains observability from the perspective of **users of the Frank platform** — developers, operators, and maintainers who rely on observability outputs to understand system behavior.
 
@@ -10,14 +10,16 @@ It describes how to **use** the observability data produced by Frank.
 ## 1. What Observability Provides to Users
 
 Frank Observability provides:
-- End-to-end correlation IDs  
+
+- End‑to‑end correlation IDs  
 - Structured, queryable events  
-- Vendor-agnostic metrics  
+- Vendor‑agnostic metrics  
 - Consistent naming across all slices and modules  
 - Deterministic behavior in test and production environments  
 
 Users consume this data through:
-- Logs/event streams  
+
+- Logs / event streams  
 - Metrics dashboards  
 - Tracing systems  
 - CI/CD observability reports  
@@ -29,12 +31,14 @@ Users consume this data through:
 Every request, domain action, and infrastructure call is associated with a correlation ID.
 
 Users can:
+
 - Trace a request across API → domain → infrastructure  
 - Identify where failures occur  
 - Understand latency contributions  
 - Reconstruct execution paths  
 
 Correlation IDs appear in:
+
 - Events  
 - Metrics  
 - Outbox messages  
@@ -46,11 +50,12 @@ Correlation IDs appear in:
 
 Events follow the naming pattern:
 
-````  
-slice.module.action  
-````
+```
+slice.module.action
+```
 
 Users can:
+
 - Filter events by slice or module  
 - Identify domain actions  
 - Understand API behavior  
@@ -65,24 +70,26 @@ Event payloads are structured and consistent across the platform.
 
 Metrics follow the naming pattern:
 
-````  
-slice.module.metric_name  
-````
+```
+slice.module.metric_name
+```
 
 Users can:
+
 - Monitor latency  
 - Track success/failure counts  
 - Observe retry behavior  
 - Measure domain operation duration  
 - Build dashboards and alerts  
 
-Metrics are vendor-agnostic and consistent across all applications built on Frank.
+Metrics are vendor‑agnostic and consistent across all applications built on Frank.
 
 ---
 
 ## 5. Observability in CI/CD
 
 Users can:
+
 - Inspect event/metric output from test runs  
 - Validate deterministic behavior  
 - Identify regressions in event/metric emission  
@@ -93,6 +100,7 @@ Users can:
 ## 6. Observability in Production
 
 Users can:
+
 - Trace customer requests  
 - Diagnose failures  
 - Monitor performance  
@@ -106,6 +114,7 @@ Frank Observability ensures consistent, structured, correlated data across all e
 ## 7. User Responsibilities Summary
 
 Users must:
+
 - Understand correlation IDs  
 - Interpret structured events  
 - Interpret metrics  

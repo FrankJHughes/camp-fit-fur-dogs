@@ -1,4 +1,4 @@
-# Frank Developer Guide  
+# Frank — Developer Guide  
 Authoritative handbook for contributors to the Frank Framework
 
 Welcome to the **Frank Developer Guide** — the authoritative handbook for developers who build, extend, or maintain the Frank Framework.  
@@ -13,14 +13,14 @@ As a Frank developer, you are responsible for maintaining these guarantees.
 
 This guide provides:
 
-- A high‑level understanding of Frank’s architecture  
-- Rules and expectations for Frank contributors  
-- How to extend Frank safely  
-- How to maintain Frank’s purity and determinism  
-- How to work with Frank’s capabilities  
-- How to write tests for Frank itself  
-- How to reason about Frank’s guardrails  
-- How to integrate and extend **Frank Observability** (NEW)  
+- a high‑level understanding of Frank’s architecture  
+- rules and expectations for Frank contributors  
+- how to extend Frank safely  
+- how to maintain Frank’s purity and determinism  
+- how to work with Frank’s capabilities  
+- how to write tests for Frank itself  
+- how to reason about Frank’s guardrails  
+- how to integrate and extend **Frank Observability** (NEW)  
 
 This guide is **not** about using Frank in a product.  
 That belongs in the **Frank User Guide**.
@@ -31,9 +31,10 @@ This guide is about **building Frank itself**.
 
 # 2. Frank’s Architectural Principles
 
-Frank is built on a set of strict architectural principles:
+Frank is built on a set of strict architectural principles.
 
-## **2.1 Determinism**
+## 2.1 Determinism
+
 Frank must behave the same way every time:
 
 - deterministic startup  
@@ -45,7 +46,10 @@ Frank must behave the same way every time:
 
 No randomness. No implicit behavior. No hidden state.
 
-## **2.2 Purity**
+---
+
+## 2.2 Purity
+
 Frank enforces purity at multiple levels:
 
 - no direct environment variable access  
@@ -57,7 +61,10 @@ Frank enforces purity at multiple levels:
 
 Everything must be explicit, injectable, and testable.
 
-## **2.3 Capability‑Oriented Design**
+---
+
+## 2.3 Capability‑Oriented Design
+
 Frank is composed of **capabilities**, each with:
 
 - a clear purpose  
@@ -69,7 +76,10 @@ Frank is composed of **capabilities**, each with:
 
 Capabilities must remain isolated and composable.
 
-## **2.4 Guardrails**
+---
+
+## 2.4 Guardrails
+
 Frank enforces correctness through:
 
 - startup validation  
@@ -82,7 +92,10 @@ Frank enforces correctness through:
 
 Guardrails must never be bypassed.
 
-## **2.5 Product‑Agnosticism**
+---
+
+## 2.5 Product‑Agnosticism
+
 Frank must never contain:
 
 - product logic  
@@ -124,15 +137,15 @@ docs/frank/guides/developer/<capability>/README.md
 
 As a Frank developer, you must:
 
-- Preserve determinism  
-- Preserve purity  
-- Preserve guardrails  
-- Preserve capability boundaries  
-- Preserve product‑agnosticism  
-- Maintain backward compatibility when possible  
-- Add tests for every change  
-- Document every new capability  
-- Emit structured, correlated observability events for all capability boundaries (NEW)  
+- preserve determinism  
+- preserve purity  
+- preserve guardrails  
+- preserve capability boundaries  
+- preserve product‑agnosticism  
+- maintain backward compatibility when possible  
+- add tests for every change  
+- document every new capability  
+- emit structured, correlated observability events for all capability boundaries (NEW)  
 
 Frank is a **governed framework** — not a free‑for‑all.
 
@@ -142,14 +155,14 @@ Frank is a **governed framework** — not a free‑for‑all.
 
 When adding or modifying a capability, you must:
 
-1. Understand the capability’s invariants  
-2. Preserve its extension model  
-3. Maintain its guardrails  
-4. Add developer documentation  
-5. Add user documentation (if applicable)  
-6. Add tests in `Frank.*.Tests`  
-7. Ensure no product‑specific logic leaks into Frank  
-8. Ensure observability is integrated correctly (NEW)  
+1. understand the capability’s invariants  
+2. preserve its extension model  
+3. maintain its guardrails  
+4. add developer documentation  
+5. add user documentation (if applicable)  
+6. add tests in `Frank.*.Tests`  
+7. ensure no product‑specific logic leaks into Frank  
+8. ensure observability is integrated correctly (NEW)  
 
 Every capability must remain:
 
@@ -171,38 +184,39 @@ Frank provides:
 - `IObservabilityContext` — immutable correlation context  
 - `ITraceEvents` — structured event emission  
 - `IMetrics` — deterministic metrics  
-- Correlation propagation middleware  
-- Test sinks for deterministic observability testing  
+- correlation propagation middleware  
+- test sinks for deterministic observability testing  
 
-### Observability Rules for Frank Developers
+## Observability Rules for Frank Developers
 
-- No ad‑hoc logging  
-- No vendor‑specific logging or metrics  
-- No Stopwatch or real‑time timers  
-- All events must follow `slice.module.action` naming  
-- All metrics must follow `slice.module.metric_name` naming  
-- No secrets, tokens, or PII in observability payloads  
-- All capability boundaries must emit events  
-- All external calls must emit events and metrics  
-- All errors must emit structured error events  
+- no ad‑hoc logging  
+- no vendor‑specific logging or metrics  
+- no Stopwatch or real‑time timers  
+- all events must follow `slice.module.action` naming  
+- all metrics must follow `slice.module.metric_name` naming  
+- no secrets, tokens, or PII in observability payloads  
+- all capability boundaries must emit events  
+- all external calls must emit events and metrics  
+- all errors must emit structured error events  
 
 Observability is required for:
 
 - HostingEngine lifecycle  
 - StartupEngine lifecycle  
 - DI auto‑registration  
-- Configuration loading  
-- Pipeline execution  
-- Error boundaries  
-- Test harness execution  
+- configuration loading  
+- pipeline execution  
+- error boundaries  
+- test harness execution  
 
 ---
 
 # 7. Testing Frank
 
-Frank has two test layers:
+Frank has two test layers.
 
-## **7.1 Unit Tests**
+## 7.1 Unit Tests
+
 Located in:
 
 ```
@@ -218,7 +232,10 @@ These validate:
 - error conditions  
 - observability emission (NEW)  
 
-## **7.2 Integration Tests**
+---
+
+## 7.2 Integration Tests
+
 Located in:
 
 ```

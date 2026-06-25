@@ -1,15 +1,13 @@
-# Identity Mapping Guide
+# Identity Mapping - Developer Guide
 
-This guide explains how identity mapping works today based on the implementation
-completed for:
+This guide explains how identity mapping works today based on the implementation completed for:
 
 - US‑110 — Authentication: Owner Login  
 - US‑111 — Session Management  
 
-It documents the runtime behavior and developer workflow for mapping an external
-OIDC identity (Auth0) to an internal domain identity (Owner).
+It documents the runtime behavior and developer workflow for mapping an external OIDC identity (Auth0) to an internal domain identity (Owner).
 
-This guide does not define rules or boundaries. Those live in:
+This guide does **not** define rules or boundaries. Those live in:
 
 - Architecture Governance  
 - Security Governance  
@@ -17,52 +15,48 @@ This guide does not define rules or boundaries. Those live in:
 - Conventions  
 - ADR‑0013 — Server‑Side Identity Resolution  
 
-This guide focuses solely on how identity mapping works in the current system,
-aligned with the new authentication callback architecture, identity model, and
-DI architecture.
+This guide focuses solely on **how identity mapping works in the current system**, aligned with the new authentication callback architecture, identity model, and DI architecture.
 
 ---
 
-## Purpose
+# Purpose
 
 Identity mapping answers the question:
 
 > **“Given an external identity from Auth0, which internal Owner does this represent?”**
 
-Identity mapping ensures that every authenticated user has a valid internal
-domain identity.
+Identity mapping ensures that every authenticated user has a valid internal domain identity.
 
-Identity mapping is performed inside the **Application Auth Callback Pipeline**,
-after Frank has completed all OIDC protocol work.
+Identity mapping is performed inside the **Application Auth Callback Pipeline**, after Frank has completed all OIDC protocol work.
 
 ---
 
-## Where Identity Mapping Happens
+# Where Identity Mapping Happens
 
 Identity mapping runs inside the Application Auth Callback Pipeline:
 
-```csharp
+````csharp
 IImmutableContextBuilder<
     ApplicationAuthCallbackRequest,
     ApplicationAuthCallbackContext,
     ApplicationAuthCallbackContextBuilderResult>
-```
+````
 
 Flow:
 
-```
+````text
 Frank Pipeline (protocol)
     → Application Pipeline (business)
         → Identity Mapping
         → Session Creation
         → Redirect + Cookie Value
-```
+````
 
-Identity mapping is a pure business operation.
+Identity mapping is a **pure business operation**.
 
 ---
 
-## Identity Mapping Flow
+# Identity Mapping Flow
 
 1. Frank pipeline exchanges the authorization code  
 2. Frank pipeline extracts and normalizes claims  
@@ -82,13 +76,13 @@ Identity mapping is:
 
 ---
 
-## External Identity Format
+# External Identity Format
 
 Auth0 provides a unique subject identifier:
 
-```
+````text
 "sub": "auth0|abc123xyz"
-```
+````
 
 This value is:
 
@@ -100,17 +94,17 @@ This value is:
 
 It is the **only** external identifier used for identity mapping.
 
-Email is not used for identity resolution.
+Email is **not** used for identity resolution.
 
 ---
 
-## Internal Identity Format
+# Internal Identity Format
 
 The internal identity is a domain‑level `OwnerId`:
 
-```
+````text
 OwnerId: 8f1c2d8e-3b4a-4e9c-9c1d-2a7f4b1e9d22
-```
+````
 
 This ID:
 
@@ -123,23 +117,23 @@ This ID:
 
 ---
 
-## Identity Resolver Behavior
+# Identity Resolver Behavior
 
 Identity mapping is implemented via:
 
-```
+````csharp
 IIdentityResolver
-```
+````
 
 The resolver performs two operations:
 
 ---
 
-### 1. Lookup by External ID
+## 1. Lookup by External ID
 
-```
+````text
 GetOwnerByExternalId(externalId)
-```
+````
 
 If an Owner exists, return it.
 
@@ -152,11 +146,11 @@ This lookup is:
 
 ---
 
-### 2. Create Owner if Missing
+## 2. Create Owner if Missing
 
-```
+````text
 CreateOwnerFromExternalIdentity(externalId, profile)
-```
+````
 
 This operation:
 
@@ -171,35 +165,37 @@ This ensures that first‑time logins automatically create an Owner.
 
 ---
 
-## Data Stored During Owner Creation
+# Data Stored During Owner Creation
 
-| Field | Source | Notes |
-|-------|--------|--------|
-| `ExternalId` | Auth0 `sub` | Required |
-| `Email` | Auth0 profile | Optional |
-| `Name` | Auth0 profile | Optional |
-| `CreatedAt` | System clock | Required |
+````text
+| Field        | Source         | Notes     |
+|--------------|----------------|-----------|
+| ExternalId   | Auth0 `sub`    | Required  |
+| Email        | Auth0 profile  | Optional  |
+| Name         | Auth0 profile  | Optional  |
+| CreatedAt    | System clock   | Required  |
+````
 
 Only the external ID is used for identity resolution.  
 Email is treated as profile data, not identity.
 
 ---
 
-## Error Handling
+# Error Handling
 
 Identity mapping may fail for several reasons:
 
-### Missing `sub`
+## Missing `sub`
 - handled in Frank pipeline  
 - Application receives a normalized error  
 - API returns **502 Bad Gateway**  
 
-### Database failure
+## Database failure
 - Owner lookup fails  
 - Owner creation fails  
 - API returns **500 Internal Server Error**  
 
-### Invalid profile data
+## Invalid profile data
 - missing required fields for Owner creation (rare)  
 
 All failures are surfaced through:
@@ -212,13 +208,13 @@ No cookies are issued on failure.
 
 ---
 
-## Testing Identity Mapping
+# Testing Identity Mapping
 
 Identity mapping is tested at three levels:
 
 ---
 
-### Unit Tests
+## Unit Tests
 - lookup existing Owner  
 - create new Owner  
 - reject missing `sub`  
@@ -226,7 +222,7 @@ Identity mapping is tested at three levels:
 
 ---
 
-### Application Pipeline Tests
+## Application Pipeline Tests
 - identity resolution  
 - Owner creation  
 - Owner reuse  
@@ -241,7 +237,7 @@ Tests use:
 
 ---
 
-### Integration Tests
+## Integration Tests
 - full callback flow  
 - Owner creation on first login  
 - Owner reuse on subsequent logins  
@@ -252,37 +248,37 @@ Integration tests use the new `ApiContext` + `ApiFactory` harness.
 
 ---
 
-## Troubleshooting
+# Troubleshooting
 
-### Owner not created
+## Owner not created
 - missing `sub`  
 - database connectivity issues  
 - identity resolver DI registration missing  
 
-### Owner created but not reused
+## Owner created but not reused
 - external ID mismatch  
 - Auth0 tenant misconfiguration  
 - multiple Auth0 connections producing different `sub` formats  
 
-### Callback returning 500
+## Callback returning 500
 - missing Auth0 secrets  
 - misconfigured hosting provider (Render)  
 
 ---
 
-## Architectural Boundaries
+# Architectural Boundaries
 
 Identity mapping spans:
 
 ---
 
-### API Layer
+## API Layer
 - does not perform identity resolution  
 - only orchestrates Frank + Application pipelines  
 
 ---
 
-### Frank Layer
+## Frank Layer
 - performs OIDC protocol logic  
 - extracts and normalizes claims  
 - produces a stable external identity  
@@ -290,7 +286,7 @@ Identity mapping spans:
 
 ---
 
-### Application Layer
+## Application Layer
 - contains identity resolution logic  
 - contains session creation logic  
 - contains redirect + cookie value logic  
@@ -298,21 +294,21 @@ Identity mapping spans:
 
 ---
 
-### Domain Layer
+## Domain Layer
 - owns Owner aggregate  
 - owns invariants  
 - owns identity semantics  
 
 ---
 
-### Infrastructure Layer
+## Infrastructure Layer
 - implements Owner repository  
 - implements identity persistence  
 - implements audit logging  
 
 ---
 
-## Related Documents
+# Related Documents
 
 - Authentication Architecture Guide  
 - Session Management Guide  

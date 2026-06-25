@@ -1,4 +1,4 @@
-# Governance Enforcement Matrix  
+# Camp Fit Fur Dogs — Governance — Enforcement — Matrix  
 Roles × Responsibilities
 
 This matrix defines **who enforces what** across the entire governance system.  

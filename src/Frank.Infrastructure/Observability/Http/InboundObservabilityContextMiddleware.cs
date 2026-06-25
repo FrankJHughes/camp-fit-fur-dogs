@@ -7,11 +7,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Frank.Infrastructure.Observability.Http;
 
-public sealed class InboundTraceContextMiddleware
+public sealed class InboundObservabilityContextMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public InboundTraceContextMiddleware(RequestDelegate next)
+    public InboundObservabilityContextMiddleware(RequestDelegate next)
     {
         _next = next;
     }

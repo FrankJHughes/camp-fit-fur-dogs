@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Frank.Infrastructure.Tests.Observability.Http;
 
-public class OutboundTraceContextHandlerTests
+public class OutboundObservabilityContextHandlerTests
 {
     private sealed class TestObservabilityContext : IRequestObservabilityContext
     {
@@ -37,7 +37,7 @@ public class OutboundTraceContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundTraceContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         await client.GetAsync("http://example.com");
@@ -52,7 +52,7 @@ public class OutboundTraceContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundTraceContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         var request = new HttpRequestMessage(HttpMethod.Get, "http://example.com");
@@ -72,7 +72,7 @@ public class OutboundTraceContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundTraceContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         await client.GetAsync("http://example.com");
@@ -85,7 +85,7 @@ public class OutboundTraceContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundTraceContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         const string existing = "00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01";

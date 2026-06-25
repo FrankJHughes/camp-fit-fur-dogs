@@ -1,11 +1,11 @@
-# Frank User Guide  
+# Frank — Guides — User  
 Authoritative handbook for developers building applications with Frank
 
 Welcome to the **Frank User Guide** — the handbook for developers, engineers, and teams who *use* the Frank Framework to build applications.  
 This guide explains how to work with Frank’s capabilities, how to structure applications using Frank’s conventions, and how to leverage Frank’s deterministic, governed architecture in your own products.
 
-If you are building or maintaining the Frank Framework itself, see the **[Frank Developer Guide](ca://s?q=Open_Frank_Developer_Guide)**.  
-If you are testing Frank or using Frank.Testing, see the **[Frank Tester Guide](ca://s?q=Open_Frank_Tester_Guide)**.
+If you are building or maintaining the Frank Framework itself, see the **Frank Developer Guide**.  
+If you are testing Frank or using Frank.Testing, see the **Frank Tester Guide**.
 
 This guide is for **users of Frank**, not contributors to Frank.
 
@@ -71,7 +71,8 @@ Examples:
 
 Frank provides several core concepts that you will use in every application.
 
-## **3.1 Capabilities**
+## 3.1 Capabilities
+
 Frank is organized into **capabilities**, each representing a cohesive subsystem:
 
 - Hosting  
@@ -97,7 +98,8 @@ As a user, you interact with the **public surface** of each capability.
 
 ---
 
-## **3.2 Deterministic Startup**
+## 3.2 Deterministic Startup
+
 Frank applications start the same way every time:
 
 - hosting provider selection  
@@ -111,8 +113,9 @@ You do not write your own startup pipeline — Frank handles it.
 
 ---
 
-## **3.3 Hosting Providers**
-Frank supports multiple hosting providers (e.g., local, preview, production).  
+## 3.3 Hosting Providers
+
+Frank supports multiple hosting providers (local, preview, production).  
 Your application does not choose the provider — Frank does.
 
 You configure hosting via:
@@ -121,11 +124,10 @@ You configure hosting via:
 - configuration  
 - hosting metadata  
 
-See the **[Hosting User Guide](ca://s?q=Open_hosting_user_guide)**.
-
 ---
 
-## **3.4 Environment Abstraction**
+## 3.4 Environment Abstraction
+
 Frank replaces environment variables with a pure interface:
 
 ```csharp
@@ -142,7 +144,8 @@ You never access `Environment.GetEnvironmentVariable`.
 
 ---
 
-## **3.5 Configuration**
+## 3.5 Configuration
+
 Frank provides deterministic configuration layering:
 
 1. defaults  
@@ -159,7 +162,8 @@ IConfiguration config
 
 ---
 
-## **3.6 Dependency Injection**
+## 3.6 Dependency Injection
+
 Frank auto‑registers services using attributes:
 
 ```csharp
@@ -167,11 +171,16 @@ Frank auto‑registers services using attributes:
 public class MyService : IMyService { }
 ```
 
-You can still register services manually when needed.
+Manual registration is still available:
+
+```csharp
+services.AddSingleton<IMyService, MyService>();
+```
 
 ---
 
-## **3.7 Validation**
+## 3.7 Validation
+
 Frank automatically discovers validators and enforces validation rules before handlers run.
 
 You write validators using:
@@ -182,7 +191,8 @@ public class CreateCustomerValidator : AbstractValidator<CreateCustomer> { }
 
 ---
 
-## **3.8 Dispatcher Pipeline**
+## 3.8 Dispatcher Pipeline
+
 Frank provides a deterministic request pipeline:
 
 - validation  
@@ -196,14 +206,15 @@ You write handlers, not controllers.
 
 ---
 
-## **3.9 Security Headers**
-Frank automatically applies secure HTTP headers to all responses.
+## 3.9 Security Headers
 
+Frank automatically applies secure HTTP headers to all responses.  
 No configuration required.
 
 ---
 
-## **3.10 Error Boundaries**
+## 3.10 Error Boundaries
+
 Frank ensures consistent error handling:
 
 - validation errors  
@@ -215,7 +226,7 @@ You do not write your own exception middleware.
 
 ---
 
-## **3.11 Observability (NEW)**
+## 3.11 Observability (NEW)
 
 Frank provides structured, correlated observability:
 
@@ -233,13 +244,12 @@ As a user, you:
 - never log secrets, tokens, or PII  
 - never use vendor‑specific logging or metrics  
 
-See the **[Observability User Guide](ca://s?q=Open_observability_user_guide)**.
-
 ---
 
 # 4. Building Applications With Frank
 
-## **4.1 Project Structure**
+## 4.1 Project Structure
+
 A typical Frank application follows this structure:
 
 ```
@@ -254,12 +264,9 @@ docs/
   <product>/guides/
 ```
 
-Frank does not enforce this structure, but it is strongly recommended.
-
 ---
 
-## **4.2 Writing Handlers**
-Handlers are the core of Frank’s application layer:
+## 4.2 Writing Handlers
 
 ```csharp
 public class CreateCustomerHandler : IRequestHandler<CreateCustomer, CustomerDto>
@@ -283,15 +290,14 @@ You focus on business logic.
 
 ---
 
-## **4.3 Working With DI**
-Frank auto‑registers services using attributes:
+## 4.3 Working With DI
 
 ```csharp
 [RegisterScoped]
 public class CustomerService : ICustomerService { }
 ```
 
-Manual registration is still available:
+Manual registration:
 
 ```csharp
 services.AddSingleton<IMyService, MyService>();
@@ -299,19 +305,17 @@ services.AddSingleton<IMyService, MyService>();
 
 ---
 
-## **4.4 Working With Configuration**
-You consume configuration via:
+## 4.4 Working With Configuration
 
 ```csharp
 var value = config["MySection:MyKey"];
 ```
 
-Frank ensures deterministic configuration layering.
+Frank ensures deterministic layering.
 
 ---
 
-## **4.5 Working With Environment**
-You consume environment via:
+## 4.5 Working With Environment
 
 ```csharp
 env.Get("MY_SETTING");
@@ -325,17 +329,10 @@ Frank ensures:
 
 ---
 
-## **4.6 Working With Observability (NEW)**
-
-You emit events using:
+## 4.6 Working With Observability (NEW)
 
 ```csharp
 events.Info("orders.create.started", new { OrderId = id });
-```
-
-You emit metrics using:
-
-```csharp
 metrics.Increment("orders.create.count");
 ```
 
@@ -345,8 +342,6 @@ You **never**:
 - log secrets, tokens, or PII  
 - use Stopwatch or real‑time timers  
 - use vendor‑specific logging/metrics APIs  
-
-Frank ensures deterministic observability behavior.
 
 ---
 
@@ -362,17 +357,9 @@ Frank.Testing provides:
 - startup module mutation  
 - observability test sinks (NEW)  
 
-You write tests using:
-
 ```csharp
 var factory = new MutatedWebApplicationFactory();
 var client = factory.CreateClient();
-```
-
-See:
-
-```
-docs/frank/guides/user/testing/README.md
 ```
 
 ---
@@ -387,19 +374,19 @@ docs/frank/guides/user/<capability>/README.md
 
 Examples:
 
-- `testing/` — how to write tests using Frank.Testing  
-- `hosting/` — how hosting providers work  
-- `environment/` — how to use the environment abstraction  
-- `configuration/` — how to consume configuration  
-- `validation/` — how to write validators  
-- `dispatching/` — how to write handlers  
-- `observability/` — how to emit events and metrics (NEW)  
+- `testing/`  
+- `hosting/`  
+- `environment/`  
+- `configuration/`  
+- `validation/`  
+- `dispatching/`  
+- `observability/`  
 
 ---
 
 # 7. What Frank Users Should *Not* Do
 
-As a Frank user, you should **not**:
+You should **not**:
 
 - bypass the environment abstraction  
 - bypass DI auto‑registration  

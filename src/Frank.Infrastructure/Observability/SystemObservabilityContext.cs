@@ -1,6 +1,5 @@
 namespace Frank.Infrastructure.Observability;
 
-using Frank.Abstractions.Observability;
 using Microsoft.Extensions.Hosting;
 
 /// <summary>

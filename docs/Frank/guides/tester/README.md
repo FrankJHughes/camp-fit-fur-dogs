@@ -1,4 +1,4 @@
-# Frank Tester Guide  
+# Frank — Guides — Tester  
 Authoritative handbook for testers validating the Frank Framework
 
 Welcome to the **Frank Tester Guide** — the handbook for testers responsible for validating the correctness, determinism, guardrails, observability, and capabilities of the Frank Framework itself.  
@@ -53,9 +53,10 @@ Frank testers validate the **framework**, not the applications built on it.
 
 # 3. Types of Tests in Frank
 
-Frank uses a layered testing strategy:
+Frank uses a layered testing strategy.
 
-## **3.1 Unit Tests**
+## 3.1 Unit Tests
+
 Located in:
 
 ```
@@ -81,7 +82,8 @@ Unit tests must be:
 
 ---
 
-## **3.2 Integration Tests**
+## 3.2 Integration Tests
+
 Located in:
 
 ```
@@ -103,7 +105,7 @@ Integration tests validate:
 
 Integration tests must:
 
-- use MutatedWebApplicationFactory  
+- use `MutatedWebApplicationFactory`  
 - avoid real infrastructure  
 - avoid external dependencies  
 - validate deterministic startup  
@@ -111,7 +113,8 @@ Integration tests must:
 
 ---
 
-## **3.3 Guardrail Tests**
+## 3.3 Guardrail Tests
+
 Guardrail tests ensure that Frank rejects invalid configurations.
 
 Examples:
@@ -123,7 +126,7 @@ Examples:
 - invalid configuration layering  
 - invalid observability usage (NEW)  
 
-Guardrail tests ensure Frank fails **loudly and predictably**.
+Guardrail tests ensure Frank fails **early**, **loudly**, and **predictably**.
 
 ---
 

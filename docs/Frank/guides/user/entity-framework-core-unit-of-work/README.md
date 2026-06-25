@@ -1,4 +1,4 @@
-# Entity Framework Core Unit of Work — User Guide
+# Frank — Guides — User — Entity Framework Core Unit of Work
 
 This guide explains how users of the Frank platform should work with the **Unit of Work** capability today, and how the experience will evolve in the future.
 
@@ -40,9 +40,9 @@ public sealed class EfUnitOfWork<TContext> : IUnitOfWork
 
 ### What this means for you today
 
-- **You can inject `IUnitOfWork` anywhere you need a transactional boundary.**
-- **You can call `CommitAsync` to persist changes.**
-- **All repositories and DbContext instances must share the same DI scope.**
+- **You can inject `IUnitOfWork` anywhere you need a transactional boundary.**  
+- **You call `CommitAsync` to persist changes.**  
+- **All repositories and DbContext instances must share the same DI scope.**  
 - **The UoW is a thin wrapper around EF Core’s `SaveChangesAsync`.**
 
 ### What the Unit of Work does today
@@ -72,36 +72,36 @@ As the platform evolves, the Unit of Work capability will expand beyond EF Core.
 
 ### Future enhancements may include:
 
-- **Multiple persistence providers**
-  - Dapper  
-  - MongoDB  
-  - Cosmos DB  
-  - Redis  
-  - EventStore  
-  - File‑based stores  
+### **Multiple persistence providers**
+- Dapper  
+- MongoDB  
+- Cosmos DB  
+- Redis  
+- EventStore  
+- File‑based stores  
 
-- **Transaction orchestration**
-  - Pre‑commit hooks  
-  - Post‑commit hooks  
-  - Domain event dispatching after commit  
-  - Outbox message persistence  
-  - Cross‑aggregate consistency  
+### **Transaction orchestration**
+- Pre‑commit hooks  
+- Post‑commit hooks  
+- Domain event dispatching after commit  
+- Outbox message persistence  
+- Cross‑aggregate consistency  
 
-- **Observability**
-  - Logging commit attempts  
-  - Metrics for commit duration  
-  - Failure tracking  
-  - Tracing integration  
+### **Observability**
+- Logging commit attempts  
+- Metrics for commit duration  
+- Failure tracking  
+- Tracing integration  
 
-- **Resilience**
-  - Retry policies  
-  - Circuit breakers  
-  - Provider‑specific exception translation  
+### **Resilience**
+- Retry policies  
+- Circuit breakers  
+- Provider‑specific exception translation  
 
-- **Ambient UoW scopes**
-  - Nested scopes  
-  - Automatic enlistment of repositories  
-  - Scope propagation  
+### **Ambient UoW scopes**
+- Nested scopes  
+- Automatic enlistment of repositories  
+- Scope propagation  
 
 These features will make UoW a full transactional orchestration capability rather than a thin wrapper.
 
@@ -155,11 +155,11 @@ await _uow.CommitAsync(ct);
 # 4. What Will Become Easier in the Future
 
 ### Today
-- You must manually manage transactional boundaries  
-- You must handle exceptions yourself  
-- You must coordinate repositories manually  
-- You must handle domain events separately  
-- You must implement outbox behavior yourself  
+- You manually manage transactional boundaries  
+- You handle exceptions yourself  
+- You coordinate repositories manually  
+- You handle domain events separately  
+- You implement outbox behavior yourself  
 
 ### After future enhancements
 - UoW will orchestrate transactions automatically  
@@ -196,5 +196,4 @@ The capability will expand to support:
 As a user of this capability:
 
 - Today, you use UoW as a thin EF Core wrapper  
-- In the future, UoW will become a full transactional orchestration mechanism  
-
+- In the future, UoW will become a full transactional orchestration mechanism

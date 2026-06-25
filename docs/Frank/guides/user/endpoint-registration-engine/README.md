@@ -1,4 +1,4 @@
-# Frank Endpoint Registration Engine — User Guide
+# Frank — Guides — User — Endpoint Registration Engine
 
 This guide explains how users of the Frank platform should work with the **Endpoint Registration Engine** today, and how the experience will evolve in the future.
 
@@ -30,21 +30,21 @@ As a user of this capability:
 
 ### What the engine does today
 
-- Discovers endpoint classes automatically
-- Instantiates each endpoint
-- Calls `Map` on each endpoint to register routes
-- Keeps Startup clean and declarative
+- Discovers endpoint classes automatically  
+- Instantiates each endpoint  
+- Calls `Map` on each endpoint to register routes  
+- Keeps Startup clean and declarative  
 - Supports modular API design (one endpoint per class)
 
 ### What the engine does *not* do today
 
-- No dependency injection for endpoints
-- No constructor injection
-- No endpoint ordering
-- No grouping or versioning conventions
-- No automatic assembly scanning
-- No metadata conventions (OpenAPI, authorization, validation)
-- No diagnostics or logging
+- No dependency injection for endpoints  
+- No constructor injection  
+- No endpoint ordering  
+- No grouping or versioning conventions  
+- No automatic assembly scanning  
+- No metadata conventions (OpenAPI, authorization, validation)  
+- No diagnostics or logging  
 
 The current capability is intentionally minimal and predictable.
 
@@ -53,8 +53,6 @@ The current capability is intentionally minimal and predictable.
 # 2. Future Intent (After Capability Expansion)
 
 As the platform evolves, the Endpoint Registration Engine will become more powerful and more automated.
-
-### Future enhancements may include:
 
 ### **2.1 Dependency Injection Support**
 - Constructor injection for endpoints  
@@ -118,7 +116,7 @@ app.MapEndpoints();
 app.Run();
 ```
 
-### What you get:
+### What you get
 
 - Automatic discovery  
 - Automatic mapping  
@@ -200,10 +198,10 @@ This gives you:
 **Current State:**  
 You use the Endpoint Registration Engine to:
 
-- Define endpoints via `IEndpoint`
-- Discover endpoints via `AddEndpoints`
-- Register endpoints via `MapEndpoints`
-- Keep Startup clean and modular
+- Define endpoints via `IEndpoint`  
+- Discover endpoints via `AddEndpoints`  
+- Register endpoints via `MapEndpoints`  
+- Keep Startup clean and modular  
 
 **Future Intent:**  
 The engine will evolve to support:
@@ -218,4 +216,3 @@ As a user of this capability:
 
 - Today, you define endpoints and let the engine register them  
 - In the future, Frank will automate more of the endpoint lifecycle
-

@@ -1,4 +1,4 @@
-# Governance Enforcement Checklist
+# Camp Fit Fur Dogs — Governance — Enforcement — Checklist
 
 A unified checklist for reviewers, CI, Product Owner, and automation to ensure all governance rules are upheld across the repository.  
 This checklist is the **operational enforcement layer** for the entire Governance Hub.
@@ -25,7 +25,7 @@ This checklist defines **how governance is verified**.
 - Story does not violate product boundaries  
 - Story does not duplicate existing functionality  
 - Story is testable and vertical‑slice compatible  
-- Story is linked in PR via **[Story Reference](ca://s?q=Show_story_reference_rules)**  
+- Story is linked in PR via **Story Reference**  
 - Story includes observability acceptance criteria when applicable (NEW)
 
 ---
@@ -58,7 +58,7 @@ This checklist defines **how governance is verified**.
 - No forbidden directory structures  
 - No missing or invalid metadata  
 - Hygiene scripts pass before merge  
-- CI validates hygiene via **[repo-hygiene rules](ca://s?q=Open_repo_hygiene_governance)**  
+- CI validates hygiene via repo‑hygiene rules  
 - Observability conventions remain consistent across code, docs, and events (NEW)
 
 ---
@@ -91,7 +91,7 @@ This checklist defines **how governance is verified**.
 - CI uses pinned versions  
 - CI enforces deterministic behavior  
 - CI enforces preview‑safe rules  
-- CI enforces governance via **[ci-governance.md](ca://s?q=Open_ci_governance)**  
+- CI enforces governance via ci‑governance.md  
 - CI validates observability propagation, event emission, and metric emission (NEW)  
 - CI blocks merges on forbidden observability patterns (NEW)
 
@@ -166,7 +166,7 @@ This checklist defines **how governance is verified**.
 
 - No manual DI registration of slice services  
 - All slice services use `[AutoRegister]`  
-- No Scrutor or suffix-based scanning  
+- No Scrutor or suffix‑based scanning  
 - Frank DI auto‑registration must pass  
 - EF Core configuration scanning must pass  
 - Endpoint discovery must pass  

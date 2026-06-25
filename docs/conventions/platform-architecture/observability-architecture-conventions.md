@@ -1,4 +1,4 @@
-# CampFitFurDogs Observability Architecture Conventions
+# CampFitFurDogs - Observability - Architecture Conventions
 
 CampFitFurDogs uses the Frank Observability platform.  
 These conventions define how CampFitFurDogs must integrate with the platform at the architectural level.

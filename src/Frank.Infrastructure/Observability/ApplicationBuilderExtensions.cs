@@ -8,7 +8,7 @@ public static class ApplicationBuilderExtensions
 {
     public static IApplicationBuilder UseFrankObservability(this IApplicationBuilder app)
     {
-        return app.UseMiddleware<InboundTraceContextMiddleware>()
-            .UseMiddleware<ObservabilityMiddleware>();
+        return app.UseMiddleware<InboundObservabilityContextMiddleware>()
+            .UseMiddleware<ObservabilityInstrumentationMiddleware>();
     }
 }

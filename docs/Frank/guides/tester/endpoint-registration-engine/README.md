@@ -1,9 +1,10 @@
-# Frank Endpoint Registration Engine — Tester Guide
+# Frank — Tester Guide — Endpoint Registration Engine  
+*How to test the current and future Endpoint Registration Engine.*
 
 This guide documents the **current state** of the Frank Endpoint Registration Engine and the **intended future state** as the platform evolves.
 
 The Endpoint Registration Engine provides a **convention‑based mechanism** for discovering, instantiating, and mapping API endpoints.  
-Testers validate the *behavior* of the engine — not the behavior of the endpoints themselves.
+Testers validate the *behavior of the engine itself* — **not** the behavior of the endpoints.
 
 ---
 
@@ -16,46 +17,54 @@ The engine currently consists of:
 - `EndpointRegistrationEngine.MapEndpoints(app)` — instantiates and maps endpoints  
 - `app.MapEndpoints()` — convenience extension  
 
-### What exists today (testable behavior)
+---
 
-- **Discovery**  
-  - Only non‑abstract types implementing `IEndpoint` are discovered  
-  - Discovery is assembly‑based  
-  - Discovery is explicit (developer must call `AddEndpoints`)  
-  - Discovered types are cached in a thread‑safe dictionary  
+## What exists today (testable behavior)
 
-- **Instantiation**  
-  - Endpoints are instantiated via `Activator.CreateInstance`  
-  - Endpoints must have parameterless constructors  
-  - Endpoints must be stateless  
+### **Discovery**
+- only non‑abstract types implementing `IEndpoint` are discovered  
+- discovery is assembly‑based  
+- discovery is explicit (developer must call `AddEndpoints`)  
+- discovered types are cached in a thread‑safe dictionary  
 
-- **Mapping**  
-  - Each discovered endpoint has its `Map` method invoked  
-  - Mapping order is not guaranteed  
-  - Mapping is synchronous  
-  - Mapping is idempotent (calling twice does not break the system)  
+### **Instantiation**
+- endpoints are instantiated via `Activator.CreateInstance`  
+- endpoints must have parameterless constructors  
+- endpoints must be stateless  
 
-### What does *not* exist today (not testable)
+### **Mapping**
+- each discovered endpoint has its `Map` method invoked  
+- mapping order is not guaranteed  
+- mapping is synchronous  
+- mapping is idempotent (calling twice does not break the system)  
 
-- No DI activation  
-- No constructor injection  
-- No endpoint ordering  
-- No grouping or versioning  
-- No metadata conventions  
-- No automatic assembly scanning  
-- No diagnostics or logging  
-- No filtering by namespace or attribute  
+---
 
-### What testers validate today
+## What does *not* exist today (not testable)
 
-- The engine discovers the correct endpoint types  
-- The engine instantiates endpoints successfully  
-- The engine invokes `Map` on each endpoint  
-- The engine ignores abstract types  
-- The engine ignores non‑`IEndpoint` types  
-- The engine handles duplicate discovery safely  
-- The engine does not throw when mapping endpoints  
-- The engine does not persist state between runs (beyond the static cache)  
+- no DI activation  
+- no constructor injection  
+- no endpoint ordering  
+- no grouping or versioning  
+- no metadata conventions  
+- no automatic assembly scanning  
+- no diagnostics or logging  
+- no namespace/attribute filtering  
+
+---
+
+## What testers validate today
+
+Testers validate:
+
+- correct endpoint discovery  
+- correct instantiation  
+- correct invocation of `Map`  
+- ignoring abstract types  
+- ignoring non‑`IEndpoint` types  
+- safe handling of duplicate discovery  
+- mapping does not throw  
+- mapping does not persist state between runs (beyond static cache)  
 
 The current capability is intentionally minimal and deterministic.
 
@@ -65,51 +74,61 @@ The current capability is intentionally minimal and deterministic.
 
 As the platform evolves, testers will validate richer engine behavior.
 
-### 2.1 Dependency Injection Support
+---
+
+## 2.1 Dependency Injection Support
 
 Future tests will validate:
 
-- Constructor injection  
-- Scoped and transient endpoint lifetimes  
+- constructor injection  
+- scoped and transient endpoint lifetimes  
 - DI‑aware activation failures  
 - DI‑based endpoint dependencies  
 
-### 2.2 Endpoint Grouping and Versioning
+---
+
+## 2.2 Endpoint Grouping and Versioning
 
 Future tests will validate:
 
-- Namespace‑based grouping  
-- Versioning conventions  
-- Route prefix conventions  
-- Tag conventions  
+- namespace‑based grouping  
+- versioning conventions  
+- route prefix conventions  
+- tag conventions  
 
-### 2.3 Assembly Scanning Enhancements
+---
 
-Future tests will validate:
-
-- Automatic scanning of all loaded assemblies  
-- Attribute‑based filtering  
-- Module‑based endpoint registration  
-
-### 2.4 Metadata and Conventions
+## 2.3 Assembly Scanning Enhancements
 
 Future tests will validate:
 
-- Automatic OpenAPI metadata  
-- Automatic authorization conventions  
-- Automatic validation conventions  
-- Automatic logging conventions  
+- automatic scanning of all loaded assemblies  
+- attribute‑based filtering  
+- module‑based endpoint registration  
 
-### 2.5 Diagnostics and Observability
+---
+
+## 2.4 Metadata and Conventions
 
 Future tests will validate:
 
-- Discovery diagnostics  
-- Mapping logs  
-- Endpoint registration metrics  
-- Failure reporting  
+- automatic OpenAPI metadata  
+- automatic authorization conventions  
+- automatic validation conventions  
+- automatic logging conventions  
 
-These enhancements will expand the testing surface significantly.
+---
+
+## 2.5 Diagnostics and Observability
+
+Future tests will validate:
+
+- discovery diagnostics  
+- mapping logs  
+- endpoint registration metrics  
+- failure reporting  
+
+These enhancements will significantly expand the testing surface.
 
 ---
 
@@ -119,18 +138,18 @@ These enhancements will expand the testing surface significantly.
 
 Validate:
 
-- Only types implementing `IEndpoint` are discovered  
-- Abstract classes are ignored  
-- Types without parameterless constructors are ignored or fail predictably  
-- Duplicate types do not cause errors  
-- Discovery is deterministic  
+- only types implementing `IEndpoint` are discovered  
+- abstract classes are ignored  
+- types without parameterless constructors are ignored or fail predictably  
+- duplicate types do not cause errors  
+- discovery is deterministic  
 
 ### Example
 
-```csharp
+````csharp
 EndpointRegistrationEngine.AddEndpoints(typeof(TestEndpoint).Assembly);
 Assert.Contains(typeof(TestEndpoint), DiscoveredTypes());
-```
+````
 
 ---
 
@@ -138,16 +157,16 @@ Assert.Contains(typeof(TestEndpoint), DiscoveredTypes());
 
 Validate:
 
-- Endpoints are instantiated via `Activator.CreateInstance`  
-- Missing parameterless constructors cause predictable failures  
-- Endpoints remain stateless  
+- endpoints are instantiated via `Activator.CreateInstance`  
+- missing parameterless constructors cause predictable failures  
+- endpoints remain stateless  
 
 ### Example
 
-```csharp
+````csharp
 var endpoint = Activator.CreateInstance(typeof(TestEndpoint));
 Assert.NotNull(endpoint);
-```
+````
 
 ---
 
@@ -156,17 +175,17 @@ Assert.NotNull(endpoint);
 Validate:
 
 - `Map` is called exactly once per endpoint  
-- Mapping order is not guaranteed  
-- Mapping does not throw  
-- Mapping is idempotent  
+- mapping order is not guaranteed  
+- mapping does not throw  
+- mapping is idempotent  
 
 ### Example
 
-```csharp
+````csharp
 var endpoint = new TestEndpoint();
 endpoint.Map(app);
 Assert.True(endpoint.WasMapped);
-```
+````
 
 ---
 
@@ -174,48 +193,47 @@ Assert.True(endpoint.WasMapped);
 
 Validate:
 
-- Endpoints register routes correctly  
-- Routes appear in the endpoint data source  
-- No duplicate routes are created  
-- Mapping does not break other middleware  
+- endpoints register routes correctly  
+- routes appear in the endpoint data source  
+- no duplicate routes are created  
+- mapping does not break other middleware  
 
 ---
 
 # 4. Anti‑Patterns (Tests Must Reject)
 
-- Tests that assume DI activation  
-- Tests that assume constructor injection  
-- Tests that assume endpoint ordering  
-- Tests that assume grouping or versioning  
-- Tests that assume metadata conventions  
-- Tests that assume automatic assembly scanning  
-- Tests that assume logging or diagnostics  
-- Tests that assume endpoint statefulness  
+Tests must reject assumptions about features that **do not exist today**:
 
-These features do **not** exist today.
+- DI activation  
+- constructor injection  
+- endpoint ordering  
+- grouping or versioning  
+- metadata conventions  
+- automatic assembly scanning  
+- logging or diagnostics  
+- endpoint statefulness  
+
+Tests must reflect the **current minimal engine**, not the future one.
 
 ---
 
 # 5. Summary
 
-**Current State:**  
-Testers validate:
+**Current State — Testers validate:**
 
-- Endpoint discovery  
-- Endpoint instantiation  
-- Endpoint mapping  
-- Idempotency  
-- Statelessness  
-- Correct handling of invalid endpoint types  
+- endpoint discovery  
+- endpoint instantiation  
+- endpoint mapping  
+- idempotency  
+- statelessness  
+- correct handling of invalid endpoint types  
 
-**Future Intent:**  
-Testers will validate:
+**Future Intent — Testers will validate:**
 
 - DI activation  
-- Grouping and versioning  
-- Automatic assembly scanning  
-- Metadata conventions  
-- Diagnostics and observability  
+- grouping and versioning  
+- automatic assembly scanning  
+- metadata conventions  
+- diagnostics and observability  
 
 This Tester Guide prepares testers for both the current minimal engine and the richer future Endpoint Registration Engine.
-

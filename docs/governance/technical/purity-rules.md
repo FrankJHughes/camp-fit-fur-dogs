@@ -1,4 +1,4 @@
-# Architecture Purity Rules  
+# Camp Fit Fur Dogs — Governance — Technical — Architecture Purity Rules  
 Authoritative companion to ADR‑0002 (Layered Architecture)
 
 Purity rules define the **non‑negotiable architectural boundaries** of Camp Fit Fur Dogs.  
@@ -70,13 +70,13 @@ The Domain layer is the innermost, most protected layer.
 
 All mutations go through aggregate root methods.
 
-````csharp
+```csharp
 // Correct
 dog.UpdateName("Buddy");
 
 // Violation
 dog.Name = "Buddy";
-````
+```
 
 Domain is **observable through** Application/Infrastructure, not directly.
 
@@ -179,7 +179,7 @@ The API layer is the outermost shell.
 
 ### Identity Resolution Pattern
 
-````csharp
+```csharp
 // Correct — identity resolved server-side
 app.MapPost("/dogs", async (
     RegisterDogRequest request,
@@ -201,7 +201,7 @@ app.MapPost("/dogs", async (RegisterDogCommand command, ICommandDispatcher dispa
     await dispatcher.DispatchAsync(command);
     return Results.Created();
 });
-````
+```
 
 ---
 
@@ -393,7 +393,7 @@ Local `pre-push` runs `make test`.
 ### Layer 4: Code Review  
 Reviewers check purity violations.
 
-### Layer 5: Observability Tests (NEW)  
+### Layer 5: Observability Tests  
 Validate correlation propagation, event emission, metric emission.
 
 ### Layer 6: This Document  
@@ -473,4 +473,4 @@ If a test requires violating purity, the design is wrong.
 
 - Convention‑changing PRs update this file  
 - Reviewed during retrospectives  
-- “We got burned” moments update immediately  
+- “We got burned” moments update immediately

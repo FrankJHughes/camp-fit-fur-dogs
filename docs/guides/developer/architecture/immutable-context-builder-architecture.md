@@ -1,15 +1,15 @@
-# Immutable Context Builder Architecture
+# Immutable Context Builder Architecture — Developer Guide
 
 `ImmutableContextBuilder<TRequest, TContext, TResult>` is a deterministic, pure, invariant‑checked pipeline primitive used to implement multi‑stage transformations without mutable state, step engines, or dispatcher pipelines.
 
 It is a core architectural mechanism used across:
 
-- Frank Authentication Callback Pipeline (protocol)
-- Application Authentication Callback Pipeline (business)
-- Identity Mapping
-- Session Creation
-- Redirect Computation
-- Any multi‑stage transformation requiring purity and determinism
+- Frank Authentication Callback Pipeline (protocol)  
+- Application Authentication Callback Pipeline (business)  
+- Identity Mapping  
+- Session Creation  
+- Redirect Computation  
+- Any multi‑stage transformation requiring purity and determinism  
 
 This guide defines the builder pattern, lifecycle, invariants, purity rules, and usage guidelines.
 
@@ -23,20 +23,20 @@ ImmutableContextBuilder exists to solve a specific architectural need:
 
 Builders replace:
 
-- Step engines  
-- Mutable context objects  
-- Ordered step lists  
-- Ad‑hoc orchestration logic  
-- Dispatcher pipelines for non‑CQRS flows  
+- step engines  
+- mutable context objects  
+- ordered step lists  
+- ad‑hoc orchestration logic  
+- dispatcher pipelines for non‑CQRS flows  
 
 Builders provide:
 
-- Determinism  
-- Purity  
-- Immutability  
-- Strong typing  
-- Testability  
-- Governance alignment  
+- determinism  
+- purity  
+- immutability  
+- strong typing  
+- testability  
+- governance alignment  
 
 Builders are orchestration primitives, not business logic containers.
 
@@ -44,7 +44,7 @@ Builders are orchestration primitives, not business logic containers.
 
 # 2. Conceptual Model
 
-```
+````text
 TRequest
     ↓
 ImmutableContextBuilder
@@ -52,7 +52,7 @@ ImmutableContextBuilder
 TContext (immutable snapshots)
     ↓
 TResult
-```
+````
 
 ## TRequest  
 Immutable input parameters for the pipeline.
@@ -70,17 +70,18 @@ Immutable final output.
 
 A builder must:
 
-- Accept an immutable request  
-- Create an initial immutable context  
-- Apply a deterministic sequence of transformations  
-- Produce an immutable result  
-- Never mutate state  
-- Never depend on runtime ordering  
-- Never depend on environment variables  
-- Never perform HTTP (Application builders)  
-- Never perform persistence (Frank builders)  
+- accept an immutable request  
+- create an initial immutable context  
+- apply a deterministic sequence of transformations  
+- validate invariants at each step  
+- produce an immutable result  
+- never mutate state  
+- never depend on runtime ordering  
+- never depend on environment variables  
+- never perform HTTP (Application builders)  
+- never perform persistence (Frank builders)  
 
-Builders are pure orchestration.
+Builders are **pure orchestration**, not logic containers.
 
 ---
 
@@ -88,11 +89,11 @@ Builders are pure orchestration.
 
 Builders replace:
 
-- Step engines  
-- Mutable contexts  
-- Ordered step lists  
-- Dispatcher pipelines for non‑CQRS flows  
-- Large procedural “god methods”  
+- step engines  
+- mutable contexts  
+- ordered step lists  
+- dispatcher pipelines for non‑CQRS flows  
+- large procedural “god methods”  
 
 Builders eliminate ordering bugs, mutation bugs, and state corruption.
 
@@ -103,11 +104,11 @@ Builders eliminate ordering bugs, mutation bugs, and state corruption.
 Builders do **not** replace:
 
 - CQRS handlers  
-- Domain logic  
-- Infrastructure logic  
+- domain logic  
+- infrastructure logic  
 - API endpoints  
-- Hosting modules  
-- Startup modules  
+- hosting modules  
+- startup modules  
 
 Builders are for **pure, deterministic, synchronous transformations**.
 
@@ -117,24 +118,24 @@ Builders are for **pure, deterministic, synchronous transformations**.
 
 A builder implements:
 
-```csharp
+````csharp
 public interface IImmutableContextBuilder<TRequest, TContext, TResult>
 {
     Task<TResult> BuildAsync(TRequest request, CancellationToken ct);
 }
-```
+````
 
 Internally, a builder:
 
-1. Creates an initial context  
-2. Applies a sequence of pure transformations  
-3. Produces a final result  
+1. creates an initial context  
+2. applies a sequence of pure transformations  
+3. produces a final result  
 
 Each transformation:
 
-- Accepts a context  
-- Returns a new context  
-- Never mutates the old one  
+- accepts a context  
+- returns a new context  
+- never mutates the old one  
 
 ---
 
@@ -142,22 +143,22 @@ Each transformation:
 
 The builder lifecycle is:
 
-```
+````text
 1. Validate request
 2. Create initial context
 3. Apply transformations in deterministic order
 4. Validate invariants at each step
 5. Produce final result
-```
+````
 
 Each step produces a new immutable context snapshot.
 
 Builders must not:
 
-- Skip steps  
-- Reorder steps  
-- Conditionally remove steps  
-- Mutate previous contexts  
+- skip steps  
+- reorder steps  
+- conditionally remove steps  
+- mutate previous contexts  
 
 ---
 
@@ -182,10 +183,10 @@ Domain invariants must hold at every stage.
 
 These invariants prevent:
 
-- Ordering bugs  
-- Step bugs  
-- Accidental data loss  
-- Inconsistent state  
+- ordering bugs  
+- step bugs  
+- accidental data loss  
+- inconsistent state  
 
 ---
 
@@ -193,17 +194,17 @@ These invariants prevent:
 
 Builders must:
 
-- Fail fast  
-- Fail deterministically  
-- Fail with invariant‑specific errors  
-- Never swallow exceptions  
-- Never return partial contexts  
+- fail fast  
+- fail deterministically  
+- fail with invariant‑specific errors  
+- never swallow exceptions  
+- never return partial contexts  
 
 Errors must be:
 
-- Contextual  
-- Immutable  
-- Predictable  
+- contextual  
+- immutable  
+- predictable  
 
 ---
 
@@ -211,35 +212,37 @@ Errors must be:
 
 ## 10.1 Frank Authentication Callback Pipeline
 
-```
+````text
 FrankAuthCallbackRequest
     → OidcAuthCallbackContext
         → FrankAuthCallbackResult
-```
+````
 
 Frank pipeline performs:
 
-- Configuration validation  
-- Token exchange  
-- Userinfo retrieval  
-- Claims normalization  
+- configuration validation  
+- token exchange  
+- userinfo retrieval  
+- claims normalization  
 
 All pure protocol logic.
 
+---
+
 ## 10.2 Application Authentication Callback Pipeline
 
-```
+````text
 ApplicationAuthCallbackRequest
     → ApplicationAuthCallbackContext
         → ApplicationAuthCallbackResult
-```
+````
 
 Application pipeline performs:
 
-- Identity resolution  
-- Session creation  
-- Cookie value computation  
-- Redirect computation  
+- identity resolution  
+- session creation  
+- cookie value computation  
+- redirect computation  
 
 All pure business logic.
 
@@ -256,11 +259,11 @@ Test the full builder end‑to‑end.
 ## 11.3 Guardrail Tests  
 Ensure:
 
-- Immutability  
-- No mutation  
-- No overwriting  
-- No clearing  
-- Deterministic behavior  
+- immutability  
+- no mutation  
+- no overwriting  
+- no clearing  
+- deterministic behavior  
 
 ## 11.4 Integration Tests  
 Used when builders participate in API flows (e.g., authentication callback).
@@ -271,23 +274,23 @@ Used when builders participate in API flows (e.g., authentication callback).
 
 Use a builder when:
 
-- You have a multi‑stage transformation  
-- Each stage is pure  
-- Each stage depends on the previous stage  
-- You want deterministic, testable behavior  
-- You want strong typing  
-- You want to avoid dispatcher pipelines  
+- you have a multi‑stage transformation  
+- each stage is pure  
+- each stage depends on the previous stage  
+- you want deterministic, testable behavior  
+- you want strong typing  
+- you want to avoid dispatcher pipelines  
 
 Examples:
 
-- Authentication callback  
-- Payment provider callback  
-- Webhook processing  
-- Multi‑stage validation  
-- Multi‑stage enrichment  
-- Multi‑stage normalization  
-- Multi‑stage session creation  
-- Multi‑stage redirect logic  
+- authentication callback  
+- payment provider callback  
+- webhook processing  
+- multi‑stage validation  
+- multi‑stage enrichment  
+- multi‑stage normalization  
+- multi‑stage session creation  
+- multi‑stage redirect logic  
 
 ---
 
@@ -295,13 +298,13 @@ Examples:
 
 Do **not** use a builder when:
 
-- You are performing CQRS  
-- You are performing domain logic  
-- You are performing Infrastructure logic  
-- You are performing HTTP in Application  
-- You are performing persistence in Frank  
-- You need branching or workflow semantics  
-- You need long‑running processes  
+- performing CQRS  
+- performing domain logic  
+- performing infrastructure logic  
+- performing HTTP in Application  
+- performing persistence in Frank  
+- needing branching or workflow semantics  
+- needing long‑running processes  
 
 Builders are for **pure, deterministic, synchronous transformations**.
 
@@ -313,13 +316,12 @@ Builders are for **pure, deterministic, synchronous transformations**.
 
 It provides:
 
-- Determinism  
-- Purity  
-- Immutability  
-- Strong typing  
-- Testability  
-- Safety  
-- Governance alignment  
+- determinism  
+- purity  
+- immutability  
+- strong typing  
+- testability  
+- safety  
+- governance alignment  
 
-It replaces the step engine and is the foundation for all new multi‑stage flows.
-
+It is the foundation for all new multi‑stage flows.

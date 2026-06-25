@@ -1,4 +1,4 @@
-# CI Governance
+# Camp Fit Fur Dogs — Governance — Technical — CI
 
 This document defines how Continuous Integration (CI) behaves across the repository.  
 It complements (but does not duplicate) the Workflow Conventions and the CI baseline established in US‑015.
@@ -10,7 +10,7 @@ CI governance ensures:
 - No silent regressions  
 - No drift between code, stories, and workflows  
 - Deterministic behavior across all contributors  
-- Deterministic observability validation (NEW)  
+- Deterministic observability validation  
 
 CI is a governance mechanism, not just automation.
 
@@ -26,7 +26,7 @@ CI must be:
 - **Comprehensive** — full coverage when required  
 - **Transparent** — developers can see what ran and why  
 - **Safe** — no skipped tests on `main`, no silent failures  
-- **Observable** — CI behavior must be fully traceable and diagnosable (NEW)  
+- **Observable** — CI behavior must be fully traceable and diagnosable  
 
 CI is a product surface.
 
@@ -58,7 +58,7 @@ Backend tests validate:
 - Integration behavior  
 - Frank dispatcher integration  
 - Frank endpoint discovery integration  
-- **Observability propagation and emission (NEW)**  
+- Observability propagation and emission  
 
 ## Frontend Zone
 Paths:
@@ -75,7 +75,7 @@ Frontend tests validate:
 - Hooks  
 - API client behavior  
 - Preview‑safe assumptions  
-- **Frontend observability boundaries (NEW)**  
+- Frontend observability boundaries  
 
 ## Frank Zone
 Paths:
@@ -99,8 +99,8 @@ Frank tests validate:
 - Security headers middleware  
 - Hosting provider abstractions  
 - Guardrail enforcement  
-- **Observability primitives (`IObservabilityContext`, `ITraceEvents`, `IMetrics`) (NEW)**  
-- **Correlation propagation middleware (NEW)**  
+- Observability primitives (`IObservabilityContext`, `ITraceEvents`, `IMetrics`)  
+- Correlation propagation middleware  
 
 ## Infra Zone
 Paths:
@@ -115,7 +115,7 @@ Triggers:
 - **All** test suites  
 - CI workflow logic validation  
 - Dependency graph validation  
-- **Observability workflow validation (NEW)**  
+- Observability workflow validation  
 
 Infra changes affect the entire system.
 
@@ -151,7 +151,7 @@ Skipped suites must be logged in the workflow summary.
 
 All PRs must run:
 
-- **Observability tests for affected zones (NEW)**  
+- Observability tests for affected zones  
 
 ## 3.2 Merges to `main`
 Merges to `main` always run:
@@ -159,7 +159,7 @@ Merges to `main` always run:
 - Backend tests  
 - Frontend tests  
 - Frank tests  
-- **Observability tests (NEW)**  
+- Observability tests  
 
 No skipping is allowed on the default branch.
 
@@ -171,7 +171,7 @@ This ensures:
 - No long‑term drift  
 - No missed regressions  
 - No dependency surprises  
-- **No observability regressions (NEW)**  
+- No observability regressions  
 
 ---
 
@@ -185,7 +185,7 @@ Branch protection requires:
 
 If a job is omitted entirely, GitHub treats it as missing and blocks the merge.
 
-Observability checks are **required** for:
+Observability checks are required for:
 
 - Correlation propagation  
 - Event emission correctness  
@@ -203,7 +203,7 @@ Each suite must be:
 - Isolated  
 - Parallelizable where possible  
 - Free of external dependencies except those defined in conventions  
-- **Fully observable (NEW)**  
+- Fully observable  
 
 Suites:
 
@@ -211,8 +211,7 @@ Suites:
 - **Frontend** — Vitest + React Testing Library, frontend observability tests  
 - **Frank** — primitives, dispatchers, validators, guardrails, DI auto‑registration, endpoint discovery, EF Core scanning, security headers, observability primitives  
 
-Frank failures block backend merges.
-
+Frank failures block backend merges.  
 Observability failures block **all** merges.
 
 ---
@@ -226,7 +225,7 @@ CI must enforce:
 - No drift between story metadata and code  
 - No missing acceptance criteria in sprint stories  
 - No untested behavior changes  
-- **Observability acceptance criteria must be validated (NEW)**  
+- Observability acceptance criteria must be validated  
 
 CI is a gatekeeper for story completeness.
 
@@ -242,7 +241,7 @@ CI enforces:
 - No duplicate story IDs  
 - No missing story files  
 - No drift between catalog and story frontmatter  
-- **No drift between observability conventions and emitted events/metrics (NEW)**  
+- No drift between observability conventions and emitted events/metrics  
 
 CI is the first line of defense against repository drift.
 
@@ -260,7 +259,7 @@ Workflows must:
 - Use consistent naming for jobs and steps  
 - Use script‑first logic (no complex inline shell)  
 - Use Make targets for deterministic behavior  
-- Emit structured CI events (NEW)  
+- Emit structured CI events  
 
 Workflows must not:
 
@@ -284,9 +283,9 @@ A PR must fail if:
 - A dependency direction is reversed  
 - Frank guardrails fail  
 - Endpoint discovery or security header enforcement fails  
-- **Observability propagation fails (NEW)**  
-- **Event/metric naming conventions are violated (NEW)**  
-- **Forbidden observability patterns are detected (NEW)**  
+- Observability propagation fails  
+- Event/metric naming conventions are violated  
+- Forbidden observability patterns are detected  
 
 CI failures are governance failures.
 
@@ -299,6 +298,6 @@ CI failures are governance failures.
 - Product Owner enforces EG/LG alignment  
 - Scripts enforce metadata correctness  
 - Frank guardrails enforce architectural boundaries  
-- Observability tests enforce correlation, event, and metric correctness (NEW)  
+- Observability tests enforce correlation, event, and metric correctness  
 
 No PR may merge if CI governance is violated.

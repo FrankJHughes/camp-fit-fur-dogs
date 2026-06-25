@@ -28,17 +28,17 @@ You do **not** need to handle any OIDC protocol details yourself — the capabil
 
 You use this capability when implementing the **OIDC login callback endpoint**, typically something like:
 
-```
+````text
 GET /auth/callback?code=123
-```
+````
 
 Your endpoint:
 
-1. Extracts the `code`
-2. Passes it to the callback builder
-3. Receives a normalized identity result
-4. Resolves or creates the internal user identity
-5. Issues a session token
+1. Extracts the `code`  
+2. Passes it to the callback builder  
+3. Receives a normalized identity result  
+4. Resolves or creates the internal user identity  
+5. Issues a session token  
 
 ---
 
@@ -98,17 +98,10 @@ public sealed record FrankAuthCallbackResult
 
 ### Key fields
 
-- **SubjectId**  
-  The stable, provider‑assigned user identifier (e.g., Auth0 `sub` claim).
-
-- **Claims**  
-  All string claims extracted from the ID token or UserInfo endpoint.
-
-- **Email / GivenName / FamilyName / Picture**  
-  Convenience fields for common profile data.
-
-- **Provider**  
-  Always `"auth0"` for this implementation.
+- **SubjectId** — the stable provider‑assigned user identifier  
+- **Claims** — all string claims extracted from ID token or UserInfo  
+- **Email / GivenName / FamilyName / Picture** — common profile fields  
+- **Provider** — `"auth0"` for this implementation  
 
 This object is safe to use for identity resolution and session creation.
 
@@ -120,14 +113,20 @@ Once you have a `FrankAuthCallbackResult`, you typically:
 
 1. Pass it to your **identity resolver**:
 
-   ```
+   ````csharp
    var userId = await _identityResolver.ResolveAsync(result, ct);
-   ```
+   ````
 
-2. Issue a session token for the resolved user
-3. Redirect the owner to the application
+2. Issue a session token for the resolved user  
+3. Redirect the owner to the application  
 
-The Authentication Callback capability does **not** create users, issue tokens, or manage sessions — those responsibilities belong to other capabilities.
+The Authentication Callback capability does **not**:
+
+- create users  
+- issue tokens  
+- manage sessions  
+
+Those responsibilities belong to other capabilities.
 
 ---
 
@@ -135,16 +134,16 @@ The Authentication Callback capability does **not** create users, issue tokens, 
 
 The capability reads its settings from:
 
-```
+````text
 Authentication:Callback:Oidc
-```
+````
 
 You must configure:
 
-- `Authority` (your Auth0 domain)
-- `ClientId`
-- `ClientSecret`
-- `CallbackUrl`
+- `Authority`  
+- `ClientId`  
+- `ClientSecret`  
+- `CallbackUrl`  
 
 These must match your Auth0 application settings.
 

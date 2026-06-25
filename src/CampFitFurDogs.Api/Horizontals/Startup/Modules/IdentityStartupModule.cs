@@ -1,6 +1,5 @@
 using Frank.Abstractions.Startup;
 using Frank.Infrastructure.Identity;
-using Frank.Infrastructure.Observability;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 

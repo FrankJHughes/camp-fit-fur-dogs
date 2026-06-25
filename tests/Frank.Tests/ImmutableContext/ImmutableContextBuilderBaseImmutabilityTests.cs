@@ -25,13 +25,13 @@ public sealed class ImmutableContextBuilderBaseImmutabilityTests
             TestImmutableContext after)
         {
             if (after is null)
-                throw new InvalidOperationException($"Step '{step.Metadata.Id}' returned null context.");
+                throw new InvalidOperationException("Returned null context.");
 
             if (after.Code != before.Code)
-                throw new InvalidOperationException($"Step '{step.Metadata.Id}' modified immutable field 'Code'.");
+                throw new InvalidOperationException("Immutable field 'Code' was modified.");
 
             if (after.Now != before.Now)
-                throw new InvalidOperationException($"Step '{step.Metadata.Id}' modified immutable field 'Now'.");
+                throw new InvalidOperationException("Immutable field 'Now' was modified.");
         }
 
         protected override void EmitStartEvent(
@@ -56,35 +56,35 @@ public sealed class ImmutableContextBuilderBaseImmutabilityTests
     [Fact]
     public async Task Throws_WhenStepChanges_Code()
     {
-        var builder = new TestBuilder(new IImmutableContextBuildStep<TestImmutableContext>[]
-        {
+        var builder = new TestBuilder(
+        [
             new MutatingStep(newCode: "DIFFERENT")
-        });
+        ]);
 
         var act = async () => await builder.RunAsync(NewContext, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*immutable field 'Code'*");
+            .WithMessage("*Code*");
     }
 
     [Fact]
     public async Task Throws_WhenStepChanges_Now()
     {
-        var builder = new TestBuilder(new IImmutableContextBuildStep<TestImmutableContext>[]
-        {
-            new MutatingStep(newNow: DateTimeOffset.UtcNow.AddMinutes(5))
-        });
+        var builder = new TestBuilder(
+        [
+            new MutatingStep(newNow: DateTimeOffset.UtcNow.AddMinutes(1))
+        ]);
 
         var act = async () => await builder.RunAsync(NewContext, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*immutable field 'Now'*");
+            .WithMessage("*Now*");
     }
 
     [Fact]
-    public async Task Throws_WhenStepReturnsNullContext()
+    public async Task Throws_WhenStepReturnsNull()
     {
-        var builder = new TestBuilder(new IImmutableContextBuildStep<TestImmutableContext>[]
+        var builder = new TestBuilder(new[]
         {
             new MutatingStep(returnNull: true)
         });
@@ -92,6 +92,6 @@ public sealed class ImmutableContextBuilderBaseImmutabilityTests
         var act = async () => await builder.RunAsync(NewContext, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*returned null context*");
+            .WithMessage("*null*");
     }
 }

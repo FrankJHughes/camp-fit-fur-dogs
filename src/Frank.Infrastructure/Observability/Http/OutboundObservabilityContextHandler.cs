@@ -3,11 +3,11 @@ using Frank.Abstractions.Observability;
 
 namespace Frank.Infrastructure.Observability.Http;
 
-public sealed class OutboundTraceContextHandler : DelegatingHandler
+public sealed class OutboundObservabilityContextHandler : DelegatingHandler
 {
     private readonly IRequestObservabilityContext _context;
 
-    public OutboundTraceContextHandler(IRequestObservabilityContext context)
+    public OutboundObservabilityContextHandler(IRequestObservabilityContext context)
     {
         _context = context;
     }

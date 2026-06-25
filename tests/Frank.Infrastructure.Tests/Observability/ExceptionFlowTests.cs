@@ -1,5 +1,5 @@
 using System.Net;
-using Frank.Api.Tests.Helpers;
+using Frank.Infrastructure.Tests.Observability.Helpers;
 using Xunit;
 
 namespace Frank.Api.Tests.Observability;

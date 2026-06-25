@@ -1,4 +1,4 @@
-# API Governance
+# CampFitFurDogs — Governance — Technical — API
 
 This document defines the boundary rules, guarantees, and enforcement mechanisms for all API surfaces in the repository.  
 It complements (but does not duplicate) architecture governance, security governance, and conventions.
@@ -327,9 +327,9 @@ The API must emit structured events using `ITraceEvents` for:
 
 Event names must follow:
 
-````  
-slice.module.action  
-````
+```
+slice.module.action
+```
 
 Events must include:
 
@@ -357,9 +357,9 @@ The API must emit metrics using `IMetrics` for:
 
 Metric names must follow:
 
-````  
-slice.module.metric_name  
-````
+```
+slice.module.metric_name
+```
 
 Metrics must be deterministic and must not rely on real time.
 

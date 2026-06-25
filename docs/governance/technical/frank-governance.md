@@ -1,4 +1,4 @@
-# Frank (Shared Kernel) Governance  
+# Camp Fit Fur Dogs — Governance — Technical — Frank  
 Authoritative companion to ADR‑0002 (Layered Architecture)
 
 Frank is the **Shared Kernel** of Camp Fit Fur Dogs.  
@@ -16,14 +16,14 @@ Violations of Frank’s boundaries are architectural defects.
 
 Frank exists to provide:
 
-- **Cross‑cutting domain primitives**  
-- **Cross‑cutting technical primitives**  
-- **Stable abstractions** used across all slices  
-- **Layer‑agnostic infrastructure**  
-- **Deterministic startup and hosting orchestration**  
-- **Strict DI governance**  
-- **Predictable dependency direction**  
-- **Deterministic, structured observability across all layers**  
+- Cross‑cutting domain primitives  
+- Cross‑cutting technical primitives  
+- Stable abstractions used across all slices  
+- Layer‑agnostic infrastructure  
+- Deterministic startup and hosting orchestration  
+- Strict DI governance  
+- Predictable dependency direction  
+- Deterministic, structured observability across all layers  
 
 Frank prevents duplication, enforces consistency, and ensures that Domain and Application remain pure and stable.
 
@@ -170,15 +170,15 @@ CampFitFurDogs provides modules such as:
 - `ApplicationStartupModule`  
 - `InfrastructureStartupModule`  
 
-CampFitFurDogs **invokes** StartupEngine:
+CampFitFurDogs invokes StartupEngine:
 
-````  
+```
 StartupEngine.Run(builder, [
     new ApiStartupModule(),
     new ApplicationStartupModule(),
     new InfrastructureStartupModule()
 ]);
-````
+```
 
 StartupEngine is **never modified** by CampFitFurDogs.
 
@@ -203,15 +203,15 @@ CampFitFurDogs provides hosting modules such as:
 - `RenderHostingModule`  
 - `TestHostingModule`  
 
-CampFitFurDogs **invokes** HostingEngine:
+CampFitFurDogs invokes HostingEngine:
 
-````  
+```
 var hosting = HostingEngine.Select([
     new DevelopmentHostingModule(),
     new RenderHostingModule(),
     new TestHostingModule()
 ]);
-````
+```
 
 HostingEngine is **never modified** by CampFitFurDogs.
 
@@ -243,9 +243,9 @@ This system ensures:
 
 Frank registers validators from all participating assemblies:
 
-````  
+```
 services.AddValidatorsFromAssembly(assembly);
-````
+```
 
 Validators remain in Application.  
 Integration remains in Frank.  
@@ -284,9 +284,9 @@ These abstractions:
 
 ---
 
-# 3.7 Observability Primitives (NEW)
+# 3.7 Observability Primitives
 
-Frank provides the **observability foundation** for the entire system:
+Frank provides the observability foundation for the entire system:
 
 - `IObservabilityContext` — immutable, correlated execution context  
 - `ITraceEvents` — structured event emitter  
@@ -326,7 +326,7 @@ Frank must **never** contain:
 - Queries  
 - DTOs  
 - Pipeline behaviors  
-- Observability emission logic (only primitives belong here)
+- Observability emitters  
 
 ## 4.2 Infrastructure Concerns
 
@@ -369,15 +369,15 @@ If it’s not domain‑specific or cross‑cutting infrastructure, it does not b
 
 | Layer | May depend on Frank? |
 |-------|-----------------------|
-| Domain | ✅ Yes |
-| Application | ✅ Yes |
-| Infrastructure | ⚠️ Yes — only for domain primitives + Frank infrastructure |
-| API | ⚠️ Yes — only for domain primitives + Frank infrastructure |
-| Frank | ❌ Must not depend on any other layer |
+| Domain | Yes |
+| Application | Yes |
+| Infrastructure | Yes — only for domain primitives + Frank infrastructure |
+| API | Yes — only for domain primitives + Frank infrastructure |
+| Frank | No — must not depend on any other layer |
 
 ## 5.2 Forbidden Dependencies
 
-Frank must **never** depend on:
+Frank must never depend on:
 
 - Domain  
 - Application  
@@ -467,12 +467,12 @@ When unsure, default to **Domain**, not Frank.
 
 # Related Documents
 
-- **Purity Rules Governance**  
-- **Dependency Injection Architecture**  
-- **Domain Events Architecture**  
-- **Dispatcher Pipeline Guide**  
-- **API Endpoint Purity Guide**  
-- **Architecture Governance**  
-- **Security Governance**  
-- **Operations Governance**  
-- **Observability Governance** (NEW)
+- Purity Rules Governance  
+- Dependency Injection Architecture  
+- Domain Events Architecture  
+- Dispatcher Pipeline Guide  
+- API Endpoint Purity Guide  
+- Architecture Governance  
+- Security Governance  
+- Operations Governance  
+- Observability Governance

@@ -1,4 +1,4 @@
-# Operations Governance
+# Camp Fit Fur Dogs — Governance — Technical — Operations
 
 This document defines how the system is operated in hosted environments, how deployments behave, how reliability is maintained, how observability is surfaced, and how incidents are handled.  
 It complements (but does not duplicate) Security Governance, CI Governance, Observability Governance, and the hosting stories (US‑139, US‑140, US‑141, US‑142).
@@ -39,12 +39,12 @@ Operations is governed by process, not improvisation.
 
 Hosting is defined by the M2 infrastructure stories:
 
-- **US‑139** — Frontend Hosting  
-- **US‑140** — API Hosting  
-- **US‑141** — Database Hosting  
-- **US‑142** — Custom Domain & SSL  
+- US‑139 — Frontend Hosting  
+- US‑140 — API Hosting  
+- US‑141 — Database Hosting  
+- US‑142 — Custom Domain & SSL  
 
-Governance rules:
+Hosting governance rules:
 
 - Hosting platforms must be free‑tier or zero‑cost unless approved otherwise  
 - Hosting must support HTTPS  
@@ -54,19 +54,18 @@ Governance rules:
 - Hosting must expose logs for debugging  
 - Hosting must expose structured, correlated observability output  
 - Hosting must not expose internal ports or services  
-- Hosting providers must be **hardened** and must **abort startup** if configuration cannot be applied  
-- Hosting provider selection must follow **first‑active‑wins** semantics  
-- Hosting provider infrastructure must be implemented in **Frank**  
+- Hosting providers must be hardened and must abort startup if configuration cannot be applied  
+- Hosting provider selection must follow first‑active‑wins semantics  
+- Hosting provider infrastructure must be implemented in Frank  
 - Hosting providers must use Frank’s injected abstractions:
   - `IEnvironment`  
   - `IRenderPrParser`  
   - `IGitHubArtifactClient`  
   - `IRenderConfigurationWriter`  
-  - `IObservabilityContext` (NEW)  
+  - `IObservabilityContext`  
 
-Frontend and API hosting must be independent but coordinated.
-
-Hosting provider behavior must be **fully observable**.
+Frontend and API hosting must be independent but coordinated.  
+Hosting provider behavior must be fully observable.
 
 ---
 
@@ -87,10 +86,9 @@ Deployments must:
 - Validate DI auto‑registration and EF Core configuration scanning at startup  
 - Validate security headers middleware is active  
 - Validate StartupModule Engine ordering and startup behavior  
-- Validate observability context propagation at startup (NEW)  
+- Validate observability context propagation at startup  
 
-Pull requests must generate preview deployments when supported by the platform.
-
+Pull requests must generate preview deployments when supported by the platform.  
 Rollback must be possible without code changes.
 
 ---
@@ -117,9 +115,8 @@ Configuration categories:
 - OIDC authentication settings  
 - Render PR preview artifact settings  
 
-Configuration drift is prohibited.
-
-Configuration validation must emit **structured configuration events**.
+Configuration drift is prohibited.  
+Configuration validation must emit structured configuration events.
 
 ---
 
@@ -150,7 +147,7 @@ Database operations must emit:
 - Failure events  
 - Retry events  
 
-All database observability must be **structured and correlated**.
+All database observability must be structured and correlated.
 
 ---
 
@@ -183,9 +180,9 @@ Operational logs must include:
 - EF Core configuration scanning failures  
 - Security header validation failures  
 - StartupModule Engine ordering and execution logs  
-- Observability context creation and propagation (NEW)  
-- External call failures (NEW)  
-- Outbox processing failures (NEW)  
+- Observability context creation and propagation  
+- External call failures  
+- Outbox processing failures  
 
 Observability output must follow Frank’s conventions:
 
@@ -214,7 +211,7 @@ Reliability expectations:
 - Hosted environments must remain within free‑tier limits  
 - Hosting provider failures must be surfaced immediately  
 - Misconfigured preview environments must fail fast rather than run partially configured  
-- Observability must surface failures deterministically (NEW)  
+- Observability must surface failures deterministically  
 
 Operational risks must be documented and mitigated.
 
@@ -232,8 +229,8 @@ Hosting providers must:
 - Use Frank hosting provider infrastructure  
 - Use Frank’s injected abstractions exclusively  
 - Never perform HTTP, JSON, or ZIP operations directly  
-- Emit structured hosting provider events (NEW)  
-- Emit configuration validation events (NEW)  
+- Emit structured hosting provider events  
+- Emit configuration validation events  
 
 ## 8.1 Render Hosting Provider Requirements
 
@@ -275,7 +272,7 @@ PR preview environments must:
 - Use Frank hosting provider abstractions for configuration  
 - Use Frank security headers and error boundary middleware  
 - Use StartupModule Engine for startup ordering and validation  
-- Emit structured preview environment events (NEW)  
+- Emit structured preview environment events  
 
 Preview environments must be fully reproducible and observable.
 
@@ -290,21 +287,21 @@ When an incident occurs:
 - Disable affected features if necessary  
 - Revoke compromised tokens  
 - Block deployments if needed  
-- Emit an incident‑start event (NEW)  
+- Emit an incident‑start event  
 
 ## 10.2 Diagnosis
 - Identify root cause  
 - Identify affected users  
 - Identify affected systems  
 - Determine severity  
-- Emit structured diagnostic events (NEW)  
+- Emit structured diagnostic events  
 
 ## 10.3 Remediation
 - Patch the issue  
 - Add tests to prevent regression  
 - Update documentation  
 - Update changelog  
-- Emit incident‑resolved event (NEW)  
+- Emit incident‑resolved event  
 
 ## 10.4 Communication
 - Notify stakeholders  
@@ -353,7 +350,7 @@ All operational changes must be:
 - Frank enforces startup validation  
 - Frank guardrails enforce architectural boundaries  
 - Security header enforcement tests validate API safety  
-- Observability tests validate correlation, event emission, and metric emission (NEW)  
+- Observability tests validate correlation, event emission, and metric emission  
 
 No PR may merge if it violates operational governance.
 

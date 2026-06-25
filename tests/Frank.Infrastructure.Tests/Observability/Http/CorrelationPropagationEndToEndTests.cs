@@ -1,11 +1,12 @@
 #nullable enable
 using System.Net;
 using System.Net.Http.Json;
+using Frank.Infrastructure.Tests.Observability.Helpers;
 using Xunit;
 
 namespace Frank.Infrastructure.Tests.Observability.Http;
 
-public class CorrelationPropagationEndToEndTests : ObservabilityPipelineTestBase
+public class CorrelationPropagationEndToEndTests : ObservabilityTestBase
 {
     private sealed record CorrelationResponse(string CorrelationId);
 

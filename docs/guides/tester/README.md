@@ -1,4 +1,4 @@
-# Camp Fit Fur Dogs — Tester Guide  
+# Camp Fit Fur Dogs — Guides - Tester  
 Product‑specific testing handbook
 
 Welcome to the **Camp Fit Fur Dogs Tester Guide** — the handbook for testers validating the behavior, correctness, and stability of the Camp Fit Fur Dogs product **built on top of the Frank Framework**.

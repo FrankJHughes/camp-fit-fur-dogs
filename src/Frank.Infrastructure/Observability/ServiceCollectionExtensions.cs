@@ -33,10 +33,10 @@ public static class ServiceCollectionExtensions
             return new DefaultRequestObservabilityContext(env);
         });
 
-        services.AddTransient<OutboundTraceContextHandler>();
+        services.AddTransient<OutboundObservabilityContextHandler>();
 
         services.AddHttpClient("*")
-                .AddHttpMessageHandler<OutboundTraceContextHandler>();
+                .AddHttpMessageHandler<OutboundObservabilityContextHandler>();
 
         return services;
     }

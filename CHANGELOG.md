@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - Improved post‑login behavior so owners are always returned to the correct page after signing in, even when navigating from deep links or bookmarked pages.
 - Strengthened session stability to reduce unexpected logouts and keep owners signed in during normal use.
 - Introduced the first phase of our new **Observability Foundation**, enabling deeper insight into authentication, request handling, error boundaries, and platform behavior. This groundwork improves stability today and unlocks richer diagnostics in future releases.
+- **Improved end‑to‑end traceability through unified correlation IDs**, ensuring every request and background operation can be followed consistently across the platform. This enhances support investigations and improves reliability without changing any customer workflows.
+- **More consistent and structured system events**, providing clearer visibility into how the platform processes requests and handles errors. These improvements strengthen system reliability and help us detect issues earlier.
+- **Enhanced visibility into multi‑step operations**, with clearer start/end signals for complex internal workflows. This results in faster diagnosis and more predictable system behavior.
 - Increased product reliability through the migration of our **test harness into the Frank platform**, reducing regressions and improving confidence in new releases.
 - Clearer and more structured **Frank documentation**, now separated into platform‑level and product‑level guides for easier navigation and onboarding.
 - Added foundational improvements to the Frank platform, including upgrades to the **Hosting Engine**, **Startup Engine**, **Dependency Registration Engine**, and the new **Endpoint Registration Engine**, ensuring a more consistent and predictable backend architecture.

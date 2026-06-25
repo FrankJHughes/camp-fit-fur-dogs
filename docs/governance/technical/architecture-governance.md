@@ -1,4 +1,4 @@
-# Architecture Governance
+# Camp Fit Fur Dogs — Governance — Architecture
 
 This document defines the architectural boundaries, dependency rules, and enforcement mechanisms for all products in the repository.  
 It complements (but does not duplicate) code conventions, security governance, observability governance, and operational governance.
@@ -47,6 +47,8 @@ All layers → Frank
 Frank is the **only allowed cross‑cutting dependency**.  
 Frank provides primitives, DI auto‑registration, endpoint discovery, validator scanning, hosting provider abstractions, environment abstraction, security headers, observability context propagation, and test seams.
 
+---
+
 ## 2.1 Domain Layer
 
 The Domain layer:
@@ -55,7 +57,7 @@ The Domain layer:
 - Owns aggregates, entities, value objects  
 - Owns domain events  
 - Must not depend on any other layer  
-- Must not reference infrastructure, API, or external libraries except:  
+- Must not reference infrastructure, API, or external libraries except:
   - BCL  
   - Frank primitives  
 
@@ -67,7 +69,9 @@ Forbidden:
 - Logging  
 - Configuration access  
 - External service calls  
-- Observability emission (Domain must be observable *through* Application/Infrastructure, not directly)
+- Observability emission (Domain is observable *through* Application/Infrastructure, not directly)
+
+---
 
 ## 2.2 Application Layer
 
@@ -93,6 +97,8 @@ Forbidden:
 - Manual DI registration of slice services  
 - Manual correlation ID creation  
 - Ad‑hoc logging  
+
+---
 
 ## 2.3 Infrastructure Layer
 
@@ -121,6 +127,8 @@ Forbidden:
 - Vendor‑specific logging or metrics APIs  
 - Stopwatch timing  
 
+---
+
 ## 2.4 API Layer
 
 The API layer:
@@ -144,7 +152,7 @@ Forbidden:
 - Domain mutation outside Application layer  
 - Direct handler invocation (must use dispatchers)  
 - Infrastructure dependencies  
-- Bypassing Frank middleware (security headers, correlation, error boundary)  
+- Bypassing Frank middleware  
 - Ad‑hoc logging  
 
 ---
@@ -180,7 +188,7 @@ CQRS is mandatory.
 
 Commands:
 
-- Must mutate state  
+- Mutate state  
 - Must not return domain entities  
 - Must not return arbitrary data  
 - Must be deterministic  
@@ -268,11 +276,13 @@ Identity resolution:
 - Must use Frank’s identity seam  
 - Must propagate correlation IDs  
 
+---
+
 ## 6.1 Authentication Callback Architecture Governance (NEW)
 
 The authentication callback flow must follow a **three‑layer architecture**:
 
-### **1. Frank Pipeline (Protocol Layer)**  
+### 1. Frank Pipeline (Protocol Layer)
 - Handles OIDC protocol logic  
 - Exchanges authorization codes  
 - Extracts claims  
@@ -280,7 +290,7 @@ The authentication callback flow must follow a **three‑layer architecture**:
 - Emits protocol‑level observability events  
 - Contains **no business logic**
 
-### **2. Application Pipeline (Business Layer)**  
+### 2. Application Pipeline (Business Layer)
 - Resolves identity  
 - Creates or loads customer  
 - Creates session  
@@ -289,7 +299,7 @@ The authentication callback flow must follow a **three‑layer architecture**:
 - Emits business‑level observability events  
 - Contains **no protocol logic**
 
-### **3. API Callback Endpoint (Infrastructure Boundary)**  
+### 3. API Callback Endpoint (Infrastructure Boundary)
 The API endpoint must:
 
 - Extract the `code` query parameter  

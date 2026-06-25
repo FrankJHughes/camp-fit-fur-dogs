@@ -1,4 +1,4 @@
-# Camp Fit Fur Dogs — User Guide  
+# Camp Fit Fur Dogs — Guides - User  
 Product‑specific usage handbook
 
 Welcome to the **Camp Fit Fur Dogs User Guide** — the handbook for developers, engineers, and teams who *use* the Camp Fit Fur Dogs API and system **built on top of the Frank Framework**.
@@ -60,7 +60,7 @@ Camp Fit Fur Dogs uses:
 - Session cookies issued by the API  
 - Role‑based authorization for staff endpoints  
 
-### 3.1 Owner Authentication
+## 3.1 Owner Authentication
 
 Owners authenticate via:
 
@@ -68,14 +68,14 @@ Owners authenticate via:
 2. Frank session cookie issuance  
 3. Product‑specific identity mapping  
 
-### 3.2 Staff Authentication
+## 3.2 Staff Authentication
 
 Staff authenticate via:
 
 - Staff identity provider  
 - Staff roles (`Admin`, `Staff`)  
 
-### 3.3 Authorization Rules
+## 3.3 Authorization Rules
 
 - Owners may only access their own data  
 - Staff may access operational endpoints  
@@ -104,7 +104,7 @@ Each slice exposes:
 - Updates (PUT/PATCH)  
 - Deletions (DELETE)  
 
-### 4.1 Request/Response Shapes
+## 4.1 Request/Response Shapes
 
 All API endpoints use:
 
@@ -113,7 +113,7 @@ All API endpoints use:
 - Frank’s error shaping  
 - Frank’s validation pipeline  
 
-### 4.2 Example: Create Booking
+## 4.2 Example: Create Booking
 
 **POST** `/bookings`
 
@@ -135,7 +135,7 @@ Response:
 }
 ```
 
-### 4.3 Error Handling
+## 4.3 Error Handling
 
 Errors follow Frank’s error boundary rules:
 
@@ -158,7 +158,7 @@ The Camp Fit Fur Dogs UI provides:
 
 UI behavior is product‑specific but built on Frank’s API.
 
-### 5.1 Owner UI
+## 5.1 Owner UI
 
 Owners can:
 
@@ -168,7 +168,7 @@ Owners can:
 - Create bookings  
 - Manage bookings  
 
-### 5.2 Staff UI
+## 5.2 Staff UI
 
 Staff can:
 
@@ -184,7 +184,7 @@ Staff can:
 Frank provides observability primitives.  
 Camp Fit Fur Dogs defines **product‑specific events and metrics**.
 
-### 6.1 Event Naming
+## 6.1 Event Naming
 
 All events follow:
 
@@ -199,7 +199,7 @@ Examples:
 - `cffd.owners.register.started`  
 - `cffd.owners.register.failed`  
 
-### 6.2 Metric Naming
+## 6.2 Metric Naming
 
 All metrics follow:
 
@@ -212,7 +212,7 @@ Examples:
 - `cffd.bookings.count`  
 - `cffd.owners.registration.count`  
 
-### 6.3 Observability Rules
+## 6.3 Observability Rules
 
 - No secrets, tokens, or PII in payloads  
 - No manual correlation ID creation  

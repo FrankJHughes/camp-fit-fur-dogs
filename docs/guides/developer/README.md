@@ -1,4 +1,4 @@
-# Camp Fit Fur Dogs — Developer Guide  
+# Camp Fit Fur Dogs — Guides — Developer
 Product‑specific development handbook
 
 Welcome to the **Camp Fit Fur Dogs Developer Guide** — the handbook for developers building and maintaining the Camp Fit Fur Dogs product **using the Frank Framework**.
@@ -18,7 +18,7 @@ This guide provides:
 - Product conventions  
 - Product‑specific DI/config rules  
 - Product‑specific observability events  
-- How to use Frank capabilities *inside* CFFD  
+- How to use Frank capabilities inside Camp Fit Fur Dogs  
 - Developer workflow for adding new slices/features  
 
 This guide does **not** restate Frank’s capabilities or internal architecture.
@@ -39,7 +39,7 @@ src/
 
 ## 2.1 Bounded Contexts
 
-CFFD is organized into the following bounded contexts:
+Camp Fit Fur Dogs is organized into the following bounded contexts:
 
 - Authentication  
 - Owners  
@@ -101,8 +101,7 @@ Each feature slice follows this structure:
     Responses/
 ```
 
-Slices must be vertical, isolated, self‑contained, and testable.
-
+Slices must be vertical, isolated, self‑contained, and testable.  
 Slices must not depend on each other unless explicitly required by the domain.
 
 ---
@@ -152,7 +151,7 @@ Slices must not depend on each other unless explicitly required by the domain.
 
 # 5. Using Frank in Camp Fit Fur Dogs
 
-Frank provides the framework; CFFD provides the product logic.
+Frank provides the framework; Camp Fit Fur Dogs provides the product logic.
 
 ## 5.1 Dependency Injection
 
@@ -162,7 +161,7 @@ Frank provides the framework; CFFD provides the product logic.
 
 ## 5.2 Configuration
 
-CFFD uses product‑specific configuration keys:
+Camp Fit Fur Dogs uses product‑specific configuration keys:
 
 ```
 CFFD__Database__ConnectionString
@@ -175,7 +174,7 @@ All configuration is consumed through Frank’s environment abstractions.
 
 ## 5.3 Hosting
 
-CFFD uses Frank’s hosting provider selection.  
+Camp Fit Fur Dogs uses Frank’s hosting provider selection.  
 Product‑specific hosting metadata lives in:
 
 ```
@@ -184,7 +183,7 @@ Api/Hosting/
 
 ## 5.4 Observability (Product‑Specific)
 
-Frank provides observability primitives; CFFD defines product‑specific events.
+Frank provides observability primitives; Camp Fit Fur Dogs defines product‑specific events.
 
 Examples:
 
@@ -236,7 +235,7 @@ Rules:
 
 ---
 
-# 7. What Camp Fit Fur Dogs Developers Should *Not* Do
+# 7. What Camp Fit Fur Dogs Developers Should Not Do
 
 - Do not bypass Frank’s environment abstraction  
 - Do not bypass DI auto‑registration  
@@ -255,12 +254,12 @@ Rules:
 
 The Camp Fit Fur Dogs Developer Guide explains:
 
-- how to build product features  
-- how to structure slices  
-- how to use Frank capabilities correctly  
-- how to follow product‑specific conventions  
-- how to emit product‑specific observability events  
-- how to maintain product architecture  
+- How to build product features  
+- How to structure slices  
+- How to use Frank capabilities correctly  
+- How to follow product‑specific conventions  
+- How to emit product‑specific observability events  
+- How to maintain product architecture  
 
 Frank provides the deterministic foundation.  
 Camp Fit Fur Dogs provides the product logic built on top of it.

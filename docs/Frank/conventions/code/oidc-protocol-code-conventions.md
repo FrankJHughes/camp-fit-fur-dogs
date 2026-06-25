@@ -1,9 +1,7 @@
 # OIDC Protocol Code Conventions (Frank)
 
-Frank provides a **pure OIDC protocol pipeline** that performs all protocol‑level
-mechanics required for OpenID Connect authentication. This pipeline is consumed
-by product authentication layers (e.g., CampFitFurDogs) but does not perform any
-business logic, persistence, session creation, or redirect computation.
+Frank provides a **pure OIDC protocol pipeline** that performs all protocol‑level mechanics required for OpenID Connect authentication.  
+This pipeline is consumed by product authentication layers (e.g., CampFitFurDogs) but does **not** perform any business logic, persistence, session creation, or redirect computation.
 
 These conventions define **how the OIDC protocol pipeline must be implemented**.
 
@@ -20,20 +18,19 @@ The OIDC protocol pipeline in Frank exists to:
 - enforce required claims  
 - produce a **protocol‑normalized result**  
 
-It must remain **pure**, **deterministic**, and **side‑effect‑free**.
+The pipeline must remain **pure**, **deterministic**, and **side‑effect‑free**.
 
 ---
 
 ## Immutable Context Builder Requirements
 
-The OIDC protocol pipeline must be implemented using Frank’s
-`ImmutableContextBuilder` pattern.
+The OIDC protocol pipeline must be implemented using Frank’s `ImmutableContextBuilder` pattern.
 
 Each builder defines:
 
-- `TRequest` — immutable input  
-- `TContext` — immutable working context  
-- `TResult` — immutable output  
+- **TRequest** — immutable input  
+- **TContext** — immutable working context  
+- **TResult** — immutable output  
 
 All types must:
 
@@ -42,6 +39,8 @@ All types must:
 - contain no behavior  
 - contain no side effects  
 - contain no product dependencies  
+
+The pipeline must operate exclusively through **immutable context transitions** and **step‑level observability**.
 
 ---
 
@@ -58,7 +57,7 @@ The OIDC protocol pipeline must:
   - expiry  
   - nonce  
   - state  
-- extract claims from ID token  
+- extract claims from the ID token  
 - normalize provider‑specific claim formats  
 - enforce required claims (e.g., subject, email if required)  
 - produce a **protocol context** containing:
@@ -67,7 +66,7 @@ The OIDC protocol pipeline must:
   - token metadata  
   - protocol status  
 
-The pipeline must not:
+The pipeline must **not**:
 
 - create or load users  
 - create sessions  
@@ -76,6 +75,8 @@ The pipeline must not:
 - perform persistence  
 - call product services  
 - depend on product types  
+
+Frank is the **protocol layer only**.
 
 ---
 
@@ -92,6 +93,8 @@ Tests must replace HttpClient with:
 
 - `FakeHttpMessageHandler`  
 - `WithServiceOverride`  
+
+This ensures deterministic, isolated, fully testable protocol behavior.
 
 ---
 
@@ -121,7 +124,7 @@ The pipeline must validate:
 - nonce matches expected value  
 - required claims exist  
 
-Missing or invalid values must result in a protocol failure.
+Missing or invalid values must result in a **protocol failure**.
 
 ---
 
@@ -147,6 +150,8 @@ The OIDC protocol pipeline:
 - must not depend on product DI  
 - must expose only protocol‑level abstractions  
 
+Frank remains isolated from product concerns.
+
 ---
 
 ## Testability Requirements
@@ -170,6 +175,8 @@ Tests must not:
 - require real environment variables  
 - require real network calls  
 
+The protocol pipeline must be **fully deterministic and hermetic**.
+
 ---
 
 ## Prohibitions
@@ -187,4 +194,3 @@ The OIDC protocol pipeline must not:
 - load users  
 
 It is strictly a **protocol‑only** component.
-

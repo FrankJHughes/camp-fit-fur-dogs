@@ -1,7 +1,5 @@
 using System.Security.Claims;
-using CampFitFurDogs.Infrastructure.Identity;
 using FluentAssertions;
-using Frank.Abstractions;
 using Frank.Abstractions.Identity;
 using Frank.Infrastructure.Identity;
 using Microsoft.AspNetCore.Http;

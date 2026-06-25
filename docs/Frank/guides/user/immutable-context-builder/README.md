@@ -1,4 +1,4 @@
-# Frank ImmutableContextBuilderBase — User Guide
+# Frank ImmutableContextBuilder — User Guide
 
 The `ImmutableContextBuilderBase<TContext, TStep>` capability is how Frank runs a **multi‑step, rule‑driven pipeline** that transforms an immutable context through a sequence of conditional build steps.
 
@@ -21,7 +21,7 @@ This guide explains how to use the capability correctly and safely.
 - evaluates which steps can run  
 - executes each eligible step once  
 - validates each transition  
-- emits diagnostic events  
+- **emits diagnostic events for observability**  
 - returns the final immutable context  
 
 It guarantees:
@@ -29,9 +29,9 @@ It guarantees:
 - **deterministic execution**  
 - **strict immutability**  
 - **safe, validated transitions**  
-- **traceable step execution**  
+- **traceable step execution** via diagnostics  
 
-You use this when you need a **predictable, multi‑stage processing pipeline**.
+Use this when you need a **predictable, multi‑stage processing pipeline**.
 
 ---
 
@@ -39,42 +39,54 @@ You use this when you need a **predictable, multi‑stage processing pipeline**.
 
 You interact with this capability by providing:
 
-1. **A context type**  
-   ```csharp
-   public sealed record MyContext : ImmutableContextBase;
-   ```
+---
 
-2. **One or more build steps**  
-   Each step decides:
-   - whether it can run (`CanExecute`)
-   - how it transforms the context (`ExecuteAsync`)
-   - how it identifies itself (`Metadata`)
+## 2.1 A context type
 
-   Example:
-   ```csharp
-   public sealed class ValidateRequestStep : IImmutableContextBuildStep<MyContext>
-   {
-       public IImmutableContextBuildStepMetadata Metadata { get; }
-           = new ImmutableContextBuildStepMetadata("validate", "Validate Request");
+````csharp
+public sealed record MyContext : ImmutableContextBase;
+````
 
-       public bool CanExecute(MyContext ctx) => true;
+---
 
-       public Task<MyContext> ExecuteAsync(MyContext ctx, CancellationToken ct)
-       {
-           // return a NEW context instance
-           return Task.FromResult(ctx with { /* updated fields */ });
-       }
-   }
-   ```
+## 2.2 One or more build steps
 
-3. **A concrete builder**  
-   You typically do not inherit from `ImmutableContextBuilderBase` yourself —  
-   you use a builder that *already* inherits from it.
+Each step decides:
 
-   Example pattern:
-   ```csharp
-   var result = await myBuilder.BuildAsync(request, ct);
-   ```
+- whether it can run (`CanExecute`)
+- how it transforms the context (`ExecuteAsync`)
+- how it identifies itself (`Metadata`)
+
+Example:
+
+````csharp
+public sealed class ValidateRequestStep : IImmutableContextBuildStep<MyContext>
+{
+    public IImmutableContextBuildStepMetadata Metadata { get; }
+        = new ImmutableContextBuildStepMetadata("validate", "Validate Request");
+
+    public bool CanExecute(MyContext ctx) => true;
+
+    public Task<MyContext> ExecuteAsync(MyContext ctx, CancellationToken ct)
+    {
+        // return a NEW context instance
+        return Task.FromResult(ctx with { /* updated fields */ });
+    }
+}
+````
+
+---
+
+## 2.3 A concrete builder
+
+You typically do not inherit from `ImmutableContextBuilderBase` yourself —  
+you use a builder that *already* inherits from it.
+
+Example pattern:
+
+````csharp
+var result = await myBuilder.BuildAsync(request, ct);
+````
 
 ---
 
@@ -82,18 +94,18 @@ You interact with this capability by providing:
 
 When you call:
 
-```csharp
+````csharp
 await builder.BuildAsync(request, ct);
-```
+````
 
 The builder:
 
 1. Creates the initial context  
 2. Runs `ProcessAsync`  
 3. Selects the next step whose `CanExecute` returns true  
-4. Emits a start event  
+4. **Emits a Start diagnostic event**  
 5. Executes the step  
-6. Emits an end event  
+6. **Emits an End diagnostic event with duration**  
 7. Validates the transition  
 8. Removes the step from the remaining set  
 9. Repeats until no steps can execute  
@@ -123,6 +135,9 @@ You can subscribe to diagnostic events to trace:
 - which steps ran  
 - how long they took  
 - what the before/after contexts were  
+- the exact transition path  
+
+This is the core of **Frank’s observability model**.
 
 ---
 
@@ -149,7 +164,7 @@ Use `ImmutableContextBuilderBase` when you need:
 - conditional execution of steps  
 - strict immutability  
 - deterministic behavior  
-- traceable transitions  
+- **step‑level observability**  
 - invariant enforcement  
 
 Common examples:
@@ -182,7 +197,7 @@ As a user:
 - You call a concrete builder  
 - The builder executes steps deterministically  
 - Each step transforms the context immutably  
-- Diagnostics give you full visibility  
+- **Diagnostics give you full visibility**  
 - Transition validation keeps pipelines safe  
 
 `ImmutableContextBuilderBase` is the foundation for all multi‑step, rule‑driven pipelines in Frank.
