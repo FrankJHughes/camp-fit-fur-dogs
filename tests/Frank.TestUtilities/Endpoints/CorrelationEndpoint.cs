@@ -10,7 +10,7 @@ public sealed class CorrelationEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/__test__/correlation", (IObservabilityContext observabilityContext) =>
+        endpoints.MapGet("/__test__/correlation", (IRequestObservabilityContext observabilityContext) =>
         {
             var correlationId = observabilityContext.CorrelationId;
 
@@ -18,6 +18,7 @@ public sealed class CorrelationEndpoint : IEndpoint
             {
                 correlationId
             });
-        });
+        })
+        .AllowAnonymous();
     }
 }

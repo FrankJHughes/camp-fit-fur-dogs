@@ -183,7 +183,7 @@ The API layer is the outermost shell.
 // Correct — identity resolved server-side
 app.MapPost("/dogs", async (
     RegisterDogRequest request,
-    ICurrentUserService currentUser,
+    ICurrentUser currentUser,
     ICommandDispatcher dispatcher) =>
 {
     var command = new RegisterDogCommand(
@@ -253,7 +253,7 @@ Dependency injection wiring happens **exclusively** in the API composition root.
    - Validators → Scoped  
    - Repositories → Scoped  
    - DbContext → Scoped  
-   - `ICurrentUserService` → Scoped  
+   - `ICurrentUser` → Scoped  
 4. No service locator  
 5. No DI attributes in Domain  
 6. No manual DI registration of slice services  
@@ -446,7 +446,7 @@ Is it observability emission?
 |---------|-----|
 | EF Core attributes in Domain | Move to Infrastructure configuration |
 | Returning entities from API | Map to DTO |
-| Accepting `OwnerId` in request DTO | Remove; resolve via `ICurrentUserService` |
+| Accepting `OwnerId` in request DTO | Remove; resolve via `ICurrentUser` |
 | Business logic in repository | Move to Domain |
 | `SaveChangesAsync()` in repository | Move to handler/pipeline |
 | Catching domain exceptions in handler | Let middleware map to HTTP |

@@ -14,7 +14,7 @@ public abstract class ObservabilityTestBase : IDisposable, IAsyncDisposable
     protected ObservabilityTestBase()
     {
         Context = new ApiContext()
-            .WithFake<ITraceEvents>(new FakeTraceEvents())
+            .WithFake<IObservabilitySink>(new FakeTraceEvents())
             .WithFake<IMetrics>(new FakeMetrics())
             .WithFake<IErrorBoundaryObserver>(new FakeErrorBoundaryObserver())
             .WithEndpointAssembly(typeof(Frank.TestUtilities.AssemblyMarker).Assembly);
@@ -23,7 +23,7 @@ public abstract class ObservabilityTestBase : IDisposable, IAsyncDisposable
         Client = Factory.CreateClient(new ApiClientContext());
     }
 
-    protected FakeTraceEvents Trace => (FakeTraceEvents)Context.GetFake<ITraceEvents>();
+    protected FakeTraceEvents Trace => (FakeTraceEvents)Context.GetFake<IObservabilitySink>();
     protected FakeMetrics Metrics => (FakeMetrics)Context.GetFake<IMetrics>();
     protected FakeErrorBoundaryObserver Errors => (FakeErrorBoundaryObserver)Context.GetFake<IErrorBoundaryObserver>();
 

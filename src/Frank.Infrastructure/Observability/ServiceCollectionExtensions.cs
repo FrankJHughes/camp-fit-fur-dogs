@@ -9,28 +9,28 @@ namespace Frank.Infrastructure.Observability;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddObservability(this IServiceCollection services)
+    public static IServiceCollection AddFrankObservability(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
 
-        services.AddSingleton<ITraceEvents, TraceEvents>();
+        services.AddSingleton<IObservabilitySink, ObservabilitySink>();
         services.AddSingleton<IMetrics, Metrics>();
         services.AddSingleton<ICorrelationContext, CorrelationContext>();
         services.AddSingleton<IErrorBoundaryObserver, ErrorBoundaryObserver>();
 
         // Make ObservabilityContext available per-request
-        services.AddScoped<IObservabilityContext>(provider =>
+        services.AddScoped<IRequestObservabilityContext>(provider =>
         {
             var http = provider.GetRequiredService<IHttpContextAccessor>();
-            var context = http.HttpContext?.Items[nameof(IObservabilityContext)]
-                as IObservabilityContext;
+            var context = http.HttpContext?.Items[nameof(IRequestObservabilityContext)]
+                as IRequestObservabilityContext;
 
             if (context is not null)
                 return context;
 
             // Fallback for startup/test/background contexts
             var env = provider.GetRequiredService<IHostEnvironment>();
-            return new DefaultObservabilityContext(env);
+            return new DefaultRequestObservabilityContext(env);
         });
 
         services.AddTransient<OutboundTraceContextHandler>();

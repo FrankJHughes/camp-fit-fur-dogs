@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.Observability;
 
 namespace Frank.ImmutableContextBuilder;
 
@@ -8,14 +9,17 @@ public abstract class ImmutableContextBuilderBase<TContext, TStep>
     where TStep : IImmutableContextBuildStep<TContext>
 {
     private readonly IReadOnlyList<TStep> _steps;
-    private readonly Action<ImmutableContextBuilderDiagnosticEvent>? _trace;
+    protected IObservabilitySink Sink { get; }
+    protected IObservabilityContext SystemContext { get; }
 
     protected ImmutableContextBuilderBase(
         IEnumerable<TStep> steps,
-        Action<ImmutableContextBuilderDiagnosticEvent>? trace = null)
+        IObservabilitySink sink,
+        IObservabilityContext systemContext)
     {
         _steps = steps.ToList();
-        _trace = trace;
+        Sink = sink;
+        SystemContext = systemContext;
     }
 
     protected async Task<TContext> ProcessAsync(TContext ctx, CancellationToken ct)
@@ -38,10 +42,48 @@ public abstract class ImmutableContextBuilderBase<TContext, TStep>
 
     protected abstract void AssertValidTransition(TStep step, TContext before, TContext after);
 
-    protected abstract void EmitStartEvent(TStep step, TContext before);
+    // ------------------------------------------------------------
+    // OBSERVABILITY HOOKS
+    // ------------------------------------------------------------
+    protected virtual void EmitStartEvent(TStep step, TContext before)
+    {
+        Sink.Emit(
+            eventName: "ImmutableContextBuilder.StepStart",
+            category: "ImmutableContextBuilder",
+            severity: "Info",
+            payload: new
+            {
+                StepId = step.Metadata.Id,
+                StepName = step.Metadata.DisplayName,
+                StepType = step.GetType().FullName,
+                ContextType = typeof(TContext).FullName,
+                BeforeType = before.GetType().FullName
+            },
+            context: SystemContext);
+    }
 
-    protected abstract void EmitEndEvent(TStep step, TContext before, TContext after, long durationMs);
+    protected virtual void EmitEndEvent(TStep step, TContext before, TContext after, long durationMs)
+    {
+        Sink.Emit(
+            eventName: "ImmutableContextBuilder.StepEnd",
+            category: "ImmutableContextBuilder",
+            severity: "Info",
+            payload: new
+            {
+                StepId = step.Metadata.Id,
+                StepName = step.Metadata.DisplayName,
+                StepType = step.GetType().FullName,
+                ContextType = typeof(TContext).FullName,
+                BeforeType = before.GetType().FullName,
+                AfterType = after.GetType().FullName,
+                DurationMs = durationMs
+            },
+            context: SystemContext);
+    }
 
+    // ------------------------------------------------------------
+    // INTERNAL EXECUTION
+    // ------------------------------------------------------------
     private static bool TrySelectNextStep(
         HashSet<TStep> remaining,
         TContext ctx,
@@ -66,7 +108,4 @@ public abstract class ImmutableContextBuilderBase<TContext, TStep>
 
         return after;
     }
-
-    protected void Trace(ImmutableContextBuilderDiagnosticEvent evt)
-        => _trace?.Invoke(evt);
 }

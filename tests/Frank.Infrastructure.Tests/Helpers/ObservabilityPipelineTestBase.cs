@@ -15,7 +15,7 @@ public abstract class ObservabilityPipelineTestBase : IDisposable, IAsyncDisposa
     protected ObservabilityPipelineTestBase()
     {
         Context = new ApiContext()
-            .WithFake<ITraceEvents>(new FakeTraceEvents())
+            .WithFake<IObservabilitySink>(new FakeTraceEvents())
             .WithFake<IMetrics>(new FakeMetrics())
             .WithFake<IErrorBoundaryObserver>(new FakeErrorBoundaryObserver())
             .WithEndpointAssembly(typeof(Frank.TestUtilities.AssemblyMarker).Assembly);

@@ -82,7 +82,7 @@ Authentication failures must:
 
 Identity resolution must:
 
-- Use `ICurrentUserService`  
+- Use `ICurrentUser`  
 - Never accept identity from request bodies  
 - Never rely on frontend checks  
 - Never bypass Frank’s authentication seams  

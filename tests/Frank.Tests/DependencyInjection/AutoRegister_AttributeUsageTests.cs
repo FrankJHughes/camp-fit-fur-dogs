@@ -15,7 +15,7 @@ public class AutoRegister_AttributeUsageTests
         typeof(Frank.Abstractions.ICommandDispatcher),
         typeof(Frank.Abstractions.ICommandHandler<>),
         typeof(Frank.Abstractions.ICommandHandler<,>),
-        typeof(Frank.Abstractions.ICurrentUser),
+        typeof(Frank.Abstractions.Identity.ICurrentUser),
         typeof(Frank.Abstractions.IQueryDispatcher),
         typeof(Frank.Abstractions.IQueryHandler<,>),
         typeof(Frank.Abstractions.IUnitOfWork),

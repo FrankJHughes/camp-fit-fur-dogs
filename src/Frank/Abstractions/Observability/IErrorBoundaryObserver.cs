@@ -9,5 +9,5 @@ public interface IErrorBoundaryObserver
     /// <summary>
     /// Called when an unhandled exception occurs within an error boundary.
     /// </summary>
-    void OnError(Exception exception, IObservabilityContext context);
+    void OnError(Exception exception, IRequestObservabilityContext context);
 }

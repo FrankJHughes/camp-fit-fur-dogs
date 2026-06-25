@@ -5,9 +5,9 @@ namespace Frank.Infrastructure.Observability.Http;
 
 public sealed class OutboundTraceContextHandler : DelegatingHandler
 {
-    private readonly IObservabilityContext _context;
+    private readonly IRequestObservabilityContext _context;
 
-    public OutboundTraceContextHandler(IObservabilityContext context)
+    public OutboundTraceContextHandler(IRequestObservabilityContext context)
     {
         _context = context;
     }

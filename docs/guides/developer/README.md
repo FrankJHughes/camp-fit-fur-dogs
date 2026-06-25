@@ -120,7 +120,7 @@ Slices must not depend on each other unless explicitly required by the domain.
 
 ## 4.2 DTO Conventions
 
-- DTOs never contain identity fields like `OwnerId` (resolved via `ICurrentUserService`)  
+- DTOs never contain identity fields like `OwnerId` (resolved via `ICurrentUser`)  
 - DTOs never contain domain invariants  
 - DTOs never contain domain events  
 

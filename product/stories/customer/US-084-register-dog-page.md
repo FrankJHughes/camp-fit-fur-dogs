@@ -53,17 +53,17 @@ As a **customer**, I can register a new dog by filling out a form with my dog's 
 >
 > **Why it was dropped (April 15):** A customer registers *their own* dog — their identity comes from their authenticated session, not from the client. Exposing an owner ID in the route or request body is a security risk (path/body manipulation → registering dogs under another customer). A staff-managed registration flow would be a separate story with its own authorization model.
 
-### ICurrentUserService
+### ICurrentUser
 
-The backend introduces an `ICurrentUserService` abstraction to decouple identity resolution from the endpoint:
+The backend introduces an `ICurrentUser` abstraction to decouple identity resolution from the endpoint:
 
-- **Interface (`ICurrentUserService`):** Application layer. Single method returning the current user's identity.
-- **`DummyCurrentUserService`:** Infrastructure layer. Returns a hardcoded placeholder identity for Sprint 4 (pre-auth).
-- **When auth lands:** Swap `DummyCurrentUserService` for a real implementation that reads identity from the session/token. No endpoint or handler changes required.
+- **Interface (`ICurrentUser`):** Application layer. Single method returning the current user's identity.
+- **`DummyCurrentUser`:** Infrastructure layer. Returns a hardcoded placeholder identity for Sprint 4 (pre-auth).
+- **When auth lands:** Swap `DummyCurrentUser` for a real implementation that reads identity from the session/token. No endpoint or handler changes required.
 
 ### Contract Changes
 
-- **Backend:** Create a `RegisterDogRequest` DTO with only `Name`, `Breed`, `DateOfBirth`, `Sex` — no `OwnerId`. The endpoint injects `ICurrentUserService`, reads the current user's identity, and constructs the full `RegisterDogCommand`.
+- **Backend:** Create a `RegisterDogRequest` DTO with only `Name`, `Breed`, `DateOfBirth`, `Sex` — no `OwnerId`. The endpoint injects `ICurrentUser`, reads the current user's identity, and constructs the full `RegisterDogCommand`.
 - **Frontend:** Remove `customerId` from the form data, API client payload, and all tests. The client never sends identity — the server owns it.
 
 ## Notes
@@ -76,4 +76,4 @@ The backend introduces an `ICurrentUserService` abstraction to decouple identity
 ## AC Revision History
 
 - **April 14:** Form fields updated from name, breed, weight, notes to name, breed, dateOfBirth, sex to match the RegisterDogCommand backend contract (US-028)
-- **April 15:** AC 6 (customerId as route param) dropped. Customer identity must not come from the client. Introduced `ICurrentUserService` abstraction — `DummyCurrentUserService` pre-auth, real implementation post-auth. Backend needs `RegisterDogRequest` DTO excluding `OwnerId`. Frontend removes `customerId` from the entire chain.
+- **April 15:** AC 6 (customerId as route param) dropped. Customer identity must not come from the client. Introduced `ICurrentUser` abstraction — `DummyCurrentUser` pre-auth, real implementation post-auth. Backend needs `RegisterDogRequest` DTO excluding `OwnerId`. Frontend removes `customerId` from the entire chain.

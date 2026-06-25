@@ -19,7 +19,7 @@ As an **owner**, I must have my authenticated identity available to all handlers
 
 ## Acceptance Criteria
 
-- [ ] AC‑1: AuthenticatedUserService exposes a single method to retrieve the authenticated user’s identity  
+- [ ] AC‑1: AuthenticatedUser exposes a single method to retrieve the authenticated user’s identity  
 - [ ] AC‑2: Service returns a strongly‑typed user identity (OwnerId, Email, Claims)  
 - [ ] AC‑3: Service returns `Unauthenticated` state when no identity is present  
 - [ ] AC‑4: Service integrates with the callback engine and OIDC middleware  

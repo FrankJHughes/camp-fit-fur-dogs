@@ -1,9 +1,13 @@
+namespace Frank.Infrastructure.Observability;
+
 using Frank.Abstractions.Observability;
 using Microsoft.Extensions.Hosting;
 
-namespace Frank.Infrastructure.Observability;
-
-public sealed class ObservabilityContext : IObservabilityContext
+/// <summary>
+/// Base class for all observability contexts (request-scope and system-scope).
+/// Provides the unified metadata model used by ITraceEvents.
+/// </summary>
+public abstract class ObservabilityContextBase : IObservabilityContext
 {
     public string CorrelationId { get; }
     public string Channel { get; }
@@ -12,8 +16,10 @@ public sealed class ObservabilityContext : IObservabilityContext
     public DateTimeOffset Timestamp { get; }
     public IReadOnlyDictionary<string, object?> Metadata { get; }
 
-    // Primary constructor — explicit, canonical
-    public ObservabilityContext(
+    /// <summary>
+    /// Canonical constructor.
+    /// </summary>
+    protected ObservabilityContextBase(
         string correlationId,
         string channel,
         string agent,
@@ -29,8 +35,10 @@ public sealed class ObservabilityContext : IObservabilityContext
         Metadata = metadata;
     }
 
-    // Secondary convenience constructor — uses IHostEnvironment
-    public ObservabilityContext(
+    /// <summary>
+    /// Convenience constructor using IHostEnvironment. Timestamp defaults to UtcNow.
+    /// </summary>
+    protected ObservabilityContextBase(
         string correlationId,
         string channel,
         string agent,

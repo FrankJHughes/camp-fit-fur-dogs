@@ -2,7 +2,7 @@ using Frank.Abstractions.Observability;
 
 namespace Frank.Infrastructure.Observability;
 
-public sealed class TraceEvents : ITraceEvents
+public sealed class ObservabilitySink : IObservabilitySink
 {
     public void Emit(
         string eventName,

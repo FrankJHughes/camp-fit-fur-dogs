@@ -12,6 +12,7 @@ public sealed class HealthEndpoint : IEndpoint
         endpoints.MapGet("/__test__/health", () =>
         {
             return Results.Ok(new { status = "ok" });
-        });
+        })
+        .AllowAnonymous();
     }
 }

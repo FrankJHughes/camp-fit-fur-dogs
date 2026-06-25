@@ -10,7 +10,7 @@ public class ListDogsByOwnerQueryValidatorTests
     public async Task Validate_OwnerIdMatchesCurrentUser_IsValid()
     {
         var userId = Guid.NewGuid();
-        var currentUser = new FakeCurrentUserService(userId);
+        var currentUser = new FakeCurrentUser(userId);
         var validator = new ListDogsByOwnerQueryValidator(currentUser);
 
         var query = new ListDogsByOwnerQuery(userId);
@@ -23,7 +23,7 @@ public class ListDogsByOwnerQueryValidatorTests
     [Fact]
     public async Task Validate_OwnerIdDoesNotMatchCurrentUser_IsInvalid()
     {
-        var currentUser = new FakeCurrentUserService(Guid.NewGuid());
+        var currentUser = new FakeCurrentUser(Guid.NewGuid());
         var validator = new ListDogsByOwnerQueryValidator(currentUser);
 
         var query = new ListDogsByOwnerQuery(Guid.NewGuid());
@@ -36,7 +36,7 @@ public class ListDogsByOwnerQueryValidatorTests
     [Fact]
     public async Task Validate_OwnerIdIsEmpty_IsInvalid()
     {
-        var currentUser = new FakeCurrentUserService(Guid.Empty);
+        var currentUser = new FakeCurrentUser(Guid.Empty);
         var validator = new ListDogsByOwnerQueryValidator(currentUser);
 
         var query = new ListDogsByOwnerQuery(Guid.Empty);

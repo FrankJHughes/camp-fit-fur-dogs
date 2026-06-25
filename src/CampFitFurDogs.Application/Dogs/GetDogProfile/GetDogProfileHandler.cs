@@ -8,5 +8,5 @@ public sealed class GetDogProfileHandler(IGetDogProfileReader reader)
 {
     public async Task<GetDogProfileResponse?> HandleAsync(
         GetDogProfileQuery query, CancellationToken ct)
-        => await reader.GetDogProfileAsync(query.DogId, query.CustomerId, ct);
+        => await reader.GetDogProfileAsync(query.DogId, query.OwnerId, ct);
 }

@@ -3,24 +3,28 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Frank.Abstractions.Observability;
+using Frank.Abstractions.Identity;
+
 namespace Frank.Infrastructure.Observability.Http;
 
 public sealed class ObservabilityMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ITraceEvents _trace;
+    private readonly IObservabilitySink _trace;
     private readonly IMetrics _metrics;
     private readonly ICorrelationContext _correlation;
     private readonly IErrorBoundaryObserver _errors;
     private readonly IHostEnvironment _environment;
+    private readonly ICurrentUser _currentUser;
 
     public ObservabilityMiddleware(
         RequestDelegate next,
-        ITraceEvents trace,
+        IObservabilitySink trace,
         IMetrics metrics,
         ICorrelationContext correlation,
         IErrorBoundaryObserver errors,
-        IHostEnvironment environment)
+        IHostEnvironment environment,
+        ICurrentUser currentUser)
     {
         _next = next;
         _trace = trace;
@@ -28,6 +32,7 @@ public sealed class ObservabilityMiddleware
         _correlation = correlation;
         _errors = errors;
         _environment = environment;
+        _currentUser = currentUser;
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -38,7 +43,19 @@ public sealed class ObservabilityMiddleware
 
         var correlationId = _correlation.Propagate(incomingCorrelation);
 
-        var context = new ObservabilityContext(
+        string? userId = null;
+        try
+        {
+            Guid? userGuid = _currentUser.Id;
+            userId = userGuid.ToString();
+        }
+        catch
+        {
+            // User is not authenticated — leave userId = null
+        }
+
+        var context = new RequestObservabilityContext(
+            userId: userId,
             correlationId: correlationId,
             channel: "http",
             agent: "pipeline",

@@ -1,4 +1,6 @@
+#nullable enable
 using System.Text.RegularExpressions;
+using Frank.Abstractions.Identity;
 using Frank.Abstractions.Observability;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
@@ -14,17 +16,36 @@ public sealed class InboundTraceContextMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext, IHostEnvironment env)
+    public async Task InvokeAsync(
+        HttpContext httpContext,
+        IHostEnvironment env,
+        ICurrentUser currentUser,
+        ICorrelationContext correlation)
     {
         // -----------------------------
         // 1. Extract correlation ID
         // -----------------------------
-        var correlationId = ExtractCorrelationId(httpContext);
+        var incomingCorrelationId = ExtractCorrelationId(httpContext);
+        var correlationId = correlation.Propagate(incomingCorrelationId);
 
         // -----------------------------
-        // 2. Build ObservabilityContext
+        // 2. Safely extract user ID
         // -----------------------------
-        var context = new ObservabilityContext(
+        string? userId = null;
+        try
+        {
+            userId = currentUser.Id.ToString();
+        }
+        catch
+        {
+            // User is not authenticated — leave userId = null
+        }
+
+        // -----------------------------
+        // 3. Build RequestObservabilityContext
+        // -----------------------------
+        var context = new RequestObservabilityContext(
+            userId: userId,
             correlationId: correlationId,
             channel: "http",
             agent: "pipeline",
@@ -35,8 +56,10 @@ public sealed class InboundTraceContextMiddleware
                 ["method"] = httpContext.Request.Method
             });
 
-        // Store for downstream
-        httpContext.Items[nameof(IObservabilityContext)] = context;
+        // -----------------------------
+        // 4. Store for downstream
+        // -----------------------------
+        httpContext.Items[nameof(IRequestObservabilityContext)] = context;
 
         await _next(httpContext);
     }
@@ -61,20 +84,15 @@ public sealed class InboundTraceContextMiddleware
 
     private static string? ParseTraceId(string traceparent)
     {
-        // W3C format: version-traceid-spanid-flags
-        // Example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
-
         var parts = traceparent.Split('-');
         if (parts.Length != 4)
             return null;
 
         var traceId = parts[1];
 
-        // Must be 32 hex chars
         if (traceId.Length != 32)
             return null;
 
-        // Must be valid hex
         if (!Regex.IsMatch(traceId, "^[0-9a-fA-F]{32}$"))
             return null;
 

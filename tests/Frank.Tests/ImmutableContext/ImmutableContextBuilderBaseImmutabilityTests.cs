@@ -2,6 +2,7 @@ using Frank.Abstractions.ImmutableContextBuilder;
 using Frank.ImmutableContextBuilder;
 using Frank.Tests.Fakes.ImmutableContext;
 using Frank.Tests.Fakes.ImmutableContext.Steps;
+using Frank.TestUtilities.Fakes.Observability;
 
 namespace Frank.Tests.ImmutableContext;
 
@@ -11,7 +12,9 @@ public sealed class ImmutableContextBuilderBaseImmutabilityTests
         : ImmutableContextBuilderBase<TestImmutableContext, IImmutableContextBuildStep<TestImmutableContext>>
     {
         public TestBuilder(IEnumerable<IImmutableContextBuildStep<TestImmutableContext>> steps)
-            : base(steps) { }
+            : base(steps, new FakeObservabilitySink(), new FakeObservabilityContext())
+        {
+        }
 
         public Task<TestImmutableContext> RunAsync(TestImmutableContext ctx, CancellationToken ct)
             => ProcessAsync(ctx, ct);

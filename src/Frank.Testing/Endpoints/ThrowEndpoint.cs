@@ -11,6 +11,7 @@ public sealed class ThrowEndpoint : IEndpoint
         endpoints.MapGet("/__test__/throw", () =>
         {
             throw new InvalidOperationException("Test exception");
-        });
+        })
+        .AllowAnonymous();
     }
 }

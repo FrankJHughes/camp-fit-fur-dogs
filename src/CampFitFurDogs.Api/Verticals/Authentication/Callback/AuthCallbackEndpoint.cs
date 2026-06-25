@@ -15,7 +15,8 @@ public class AuthCallbackEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/auth/callback", HandleAsync);
+        app.MapGet("/api/auth/callback", HandleAsync)
+            .AllowAnonymous();
     }
 
     private static async Task<IResult> HandleAsync(

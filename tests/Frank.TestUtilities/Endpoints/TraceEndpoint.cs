@@ -10,7 +10,7 @@ public sealed class TraceEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/__test__/trace", (ITraceEvents trace, IObservabilityContext ctx) =>
+        endpoints.MapGet("/__test__/trace", (IObservabilitySink trace, IRequestObservabilityContext ctx) =>
         {
             trace.Emit(
                 "test_trace_event",   // name
@@ -21,6 +21,7 @@ public sealed class TraceEndpoint : IEndpoint
             );
 
             return Results.Ok(new { message = "trace emitted" });
-        });
+        })
+        .AllowAnonymous();
     }
 }

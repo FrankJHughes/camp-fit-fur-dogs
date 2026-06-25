@@ -82,7 +82,7 @@ Authentication must:
 - Never store plaintext credentials  
 - Never bypass validation pipelines  
 - Fail fast on misconfiguration  
-- Resolve identity via `ICurrentUserService`  
+- Resolve identity via `ICurrentUser`  
 - Issue session cookies via `ISessionService`  
 - Integrate with Frank’s authentication seams  
 - Emit structured authentication events (non‑PII) (NEW)  

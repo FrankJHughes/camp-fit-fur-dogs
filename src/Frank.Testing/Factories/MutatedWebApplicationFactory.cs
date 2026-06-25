@@ -1,11 +1,11 @@
 using System.Net.Http.Json;
 using Frank.Api.Endpoints;
 using Frank.Testing.Contexts;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -61,16 +61,10 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     // ------------------------------------------------------------
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // Environment must be set here, not in CreateHost, to avoid breaking host resolution.
         builder.UseEnvironment(_ctx.Environment);
 
         builder.ConfigureAppConfiguration((context, cfg) =>
         {
-            cfg.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ASPNETCORE_ENVIRONMENT"] = _ctx.Environment
-            });
-
             foreach (var apply in _ctx.ConfigOverrides)
                 apply(cfg);
         });
@@ -78,8 +72,20 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
         builder.ConfigureServices((context, services) =>
         {
             // ------------------------------------------------------------
-            // COOKIE AUTH ADJUSTMENTS FOR TESTING
+            // AUTH SCHEME ADJUSTMENTS FOR TESTING
+            // Force challenges to use the cookie scheme, not OIDC
             // ------------------------------------------------------------
+            services.PostConfigure<AuthenticationOptions>(opts =>
+            {
+                opts.DefaultAuthenticateScheme = "cfd.session";
+                opts.DefaultChallengeScheme = "cfd.session";
+            });
+
+            // ------------------------------------------------------------
+            // COOKIE AUTH ADJUSTMENTS FOR TESTING (MERGE, DO NOT OVERWRITE)
+            // ------------------------------------------------------------
+
+            // Test environment may relax SameSite/SecurePolicy
             services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
             {
                 opts.Cookie.SecurePolicy = CookieSecurePolicy.None;
@@ -133,7 +139,7 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
             }
 
             // ------------------------------------------------------------
-            // ENDPOINT DISCOVERY (FROM CONTEXT)
+            // ENDPOINT DISCOVERY
             // ------------------------------------------------------------
             foreach (var asm in _ctx.EndpointAssemblies)
                 EndpointDiscovery.AddEndpoints(asm);

@@ -2,26 +2,28 @@ using System.Security.Claims;
 using CampFitFurDogs.Infrastructure.Identity;
 using FluentAssertions;
 using Frank.Abstractions;
+using Frank.Abstractions.Identity;
+using Frank.Infrastructure.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
-public class CurrentUserServiceGuardrailTests
+public class CurrentUserGuardrailTests
 {
     private static ServiceProvider BuildProvider()
     {
         var services = new ServiceCollection();
         services.AddHttpContextAccessor();
-        services.AddScoped<ICurrentUser, AuthenticatedUserService>();
+        services.AddScoped<ICurrentUser, AuthenticatedUser>();
         return services.BuildServiceProvider();
     }
 
     // ------------------------------------------------------------
-    // GUARDRAIL 1 — Should resolve AuthenticatedUserService
+    // GUARDRAIL 1 — Should resolve AuthenticatedUser
     // ------------------------------------------------------------
     [Fact]
-    public void ShouldResolveAuthenticatedUserService()
+    public void ShouldResolveAuthenticatedUser()
     {
         using var provider = BuildProvider();
         using var scope = provider.CreateScope();
@@ -29,7 +31,7 @@ public class CurrentUserServiceGuardrailTests
         scope.ServiceProvider
             .GetRequiredService<ICurrentUser>()
             .Should()
-            .BeOfType<AuthenticatedUserService>();
+            .BeOfType<AuthenticatedUser>();
     }
 
     // ------------------------------------------------------------
@@ -81,7 +83,7 @@ public class CurrentUserServiceGuardrailTests
         };
 
         var accessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new AuthenticatedUserService(accessor);
+        var service = new AuthenticatedUser(accessor);
 
         service.Id.Should().Be(userId);
     }

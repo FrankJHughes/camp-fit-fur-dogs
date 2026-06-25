@@ -6,6 +6,7 @@ using Frank.Abstractions.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Frank.Testing.Endpoints;
@@ -17,7 +18,7 @@ public sealed class SignInEndpoint : IEndpoint
         endpoints.MapPost("/__test__/sign-in", async (
             SignInRequest req,
             HttpContext http,
-            IIdentityResolver identityResolver) =>
+            [FromServices] IIdentityResolver identityResolver) =>
         {
             var authUser = new FrankAuthCallbackResult
             {
@@ -44,7 +45,8 @@ public sealed class SignInEndpoint : IEndpoint
             await http.SignInAsync(req.Scheme, principal);
 
             return Results.Json(new { UserId = userId });
-        });
+        })
+        .AllowAnonymous();
     }
 
     public sealed record SignInRequest(string Sub, string Scheme);

@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using Frank.Abstractions;
+using Frank.Abstractions.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
@@ -12,14 +13,14 @@ public class EditDogProfileEndpoint : IEndpoint
         app.MapPut("/api/dogs/{id}", async (
             [FromRoute] Guid id,
             EditDogProfileRequest request,
-            ICurrentUser currentUserService,
+            [FromServices] ICurrentUser currentUser,
             IQueryDispatcher queryDispatcher,
             ICommandDispatcher commandDispatcher,
             HttpContext httpContext) =>
         {
-            var customerId = currentUserService.Id;
+            var ownerId = currentUser.Id!.Value;
 
-            var query = new GetDogProfileQuery(id, customerId);
+            var query = new GetDogProfileQuery(id, ownerId);
             var response = await queryDispatcher.DispatchAsync(query, CancellationToken.None);
             if (response is null)
             {
@@ -28,7 +29,7 @@ public class EditDogProfileEndpoint : IEndpoint
 
             var command = new EditDogProfileCommand(
                 id,
-                customerId,
+                ownerId,
                 request.Name,
                 request.Breed,
                 DateOnly.Parse(request.DateOfBirth),

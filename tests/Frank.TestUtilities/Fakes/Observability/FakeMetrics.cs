@@ -14,7 +14,7 @@ public sealed class FakeMetrics : IMetrics
 
     public int Count => Increments.Count + Gauges.Count + Timers.Count;
 
-    public void Increment(string name, long value, IObservabilityContext? context = null)
+    public void Increment(string name, long value, IRequestObservabilityContext? context = null)
     {
         if (!Increments.ContainsKey(name))
             Increments[name] = 0;
@@ -22,12 +22,12 @@ public sealed class FakeMetrics : IMetrics
         Increments[name] += value;
     }
 
-    public void Gauge(string name, double value, IObservabilityContext? context = null)
+    public void Gauge(string name, double value, IRequestObservabilityContext? context = null)
     {
         Gauges[name] = value;
     }
 
-    public IDisposable Timer(string name, IObservabilityContext? context = null)
+    public IDisposable Timer(string name, IRequestObservabilityContext? context = null)
     {
         Timers.Add(name);
 

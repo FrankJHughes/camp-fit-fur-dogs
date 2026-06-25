@@ -1,6 +1,6 @@
-# AuthenticatedUserService Guide
+# AuthenticatedUser Guide
 
-`AuthenticatedUserService` provides the **current authenticated user’s ID** to the Application and API layers.  
+`AuthenticatedUser` provides the **current authenticated user’s ID** to the Application and API layers.  
 It is the concrete implementation of `ICurrentUser` and is the **only allowed mechanism** for retrieving the authenticated Owner’s identity.
 
 This service is part of the **Infrastructure** layer and is registered automatically via Frank’s auto‑registration.
@@ -9,7 +9,7 @@ This service is part of the **Infrastructure** layer and is registered automatic
 
 # Purpose
 
-`AuthenticatedUserService` bridges the gap between:
+`AuthenticatedUser` bridges the gap between:
 
 - **ASP.NET Core authentication** (ClaimsPrincipal)  
 - **Application layer identity requirements** (`ICurrentUser`)  
@@ -36,11 +36,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace CampFitFurDogs.Infrastructure.Identity;
 
-public sealed class AuthenticatedUserService : ICurrentUser
+public sealed class AuthenticatedUser : ICurrentUser
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthenticatedUserService(IHttpContextAccessor httpContextAccessor)
+    public AuthenticatedUser(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
@@ -143,7 +143,7 @@ When session validation middleware is implemented:
 2. Middleware resolves the Owner ID  
 3. Middleware creates a `ClaimsPrincipal` with:  
    - `ClaimTypes.NameIdentifier = <OwnerId>`  
-4. `AuthenticatedUserService` reads that claim  
+4. `AuthenticatedUser` reads that claim  
 5. Application handlers receive the correct Owner ID  
 
 This ensures:
@@ -216,7 +216,7 @@ Do not test this service — it is covered by API tests.
 
 # Summary
 
-`AuthenticatedUserService` is the **single source of truth** for the authenticated Owner ID.  
+`AuthenticatedUser` is the **single source of truth** for the authenticated Owner ID.  
 It enforces:
 
 - Authentication  

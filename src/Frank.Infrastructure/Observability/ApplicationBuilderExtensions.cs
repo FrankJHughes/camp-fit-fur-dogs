@@ -6,7 +6,7 @@ namespace Frank.Infrastructure.Observability;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseObservability(this IApplicationBuilder app)
+    public static IApplicationBuilder UseFrankObservability(this IApplicationBuilder app)
     {
         return app.UseMiddleware<InboundTraceContextMiddleware>()
             .UseMiddleware<ObservabilityMiddleware>();

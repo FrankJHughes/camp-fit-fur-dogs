@@ -11,14 +11,14 @@ public class TraceEventTests
     public async Task EmitsTraceEvents_OnSuccessfulRequest()
     {
         var ctx = new ApiContext()
-            .WithFake<ITraceEvents>(new FakeTraceEvents());
+            .WithFake<IObservabilitySink>(new FakeObservabilitySink());
 
         await using var api = new ApiFactory(ctx);
         var client = api.CreateClient(new ApiClientContext());
 
         await client.GetAsync("/__test__/health");
 
-        var trace = (FakeTraceEvents)ctx.GetFake<ITraceEvents>();
+        var trace = (FakeObservabilitySink)ctx.GetFake<IObservabilitySink>();
 
         Assert.NotEmpty(trace.Events);
         Assert.Contains(trace.Events, e => e.EventName != null);
@@ -28,14 +28,14 @@ public class TraceEventTests
     public async Task EmitsTraceEvents_OnErrorRequest()
     {
         var ctx = new ApiContext()
-            .WithFake<ITraceEvents>(new FakeTraceEvents());
+            .WithFake<IObservabilitySink>(new FakeObservabilitySink());
 
         await using var api = new ApiFactory(ctx);
         var client = api.CreateClient(new ApiClientContext());
 
         await client.GetAsync("/__test__/throw");
 
-        var trace = (FakeTraceEvents)ctx.GetFake<ITraceEvents>();
+        var trace = (FakeObservabilitySink)ctx.GetFake<IObservabilitySink>();
 
         Assert.NotEmpty(trace.Events);
 

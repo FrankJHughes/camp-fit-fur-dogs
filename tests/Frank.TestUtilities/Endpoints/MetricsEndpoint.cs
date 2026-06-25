@@ -10,10 +10,11 @@ public sealed class MetricsEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/__test__/metrics", (IMetrics metrics, IObservabilityContext ctx) =>
+        endpoints.MapGet("/__test__/metrics", (IMetrics metrics, IRequestObservabilityContext ctx) =>
         {
             metrics.Increment("test_metric", 1, ctx);
             return Results.Ok(new { message = "metric incremented" });
-        });
+        })
+        .AllowAnonymous();
     }
 }

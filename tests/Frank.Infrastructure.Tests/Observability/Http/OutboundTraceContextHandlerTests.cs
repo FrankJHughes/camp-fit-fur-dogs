@@ -8,8 +8,9 @@ namespace Frank.Infrastructure.Tests.Observability.Http;
 
 public class OutboundTraceContextHandlerTests
 {
-    private sealed class TestObservabilityContext : IObservabilityContext
+    private sealed class TestObservabilityContext : IRequestObservabilityContext
     {
+        public string? UserId { get; init; } = "test-user-id";
         public string CorrelationId { get; init; } = "11111111-2222-3333-4444-555555555555";
         public string Channel { get; init; } = "test-channel";
         public string Agent { get; init; } = "test-agent";

@@ -3,15 +3,22 @@ using Frank.Abstractions.ImmutableContextBuilder;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc.Steps;
+using Frank.TestUtilities.Fakes.Observability;
 
 namespace Frank.Tests.Authentication.Callback.Oidc;
 
 public sealed class OidcAuthCallbackContextBuilderTests
 {
+    private static OidcAuthCallbackContextBuilder CreateBuilder(
+        params IImmutableContextBuildStep<OidcAuthCallbackContext>[] steps)
+        => new OidcAuthCallbackContextBuilder(
+            steps,
+            new FakeObservabilitySink(),
+            new FakeObservabilityContext());
+
     [Fact]
     public async Task ProcessAsync_WithValidFlow_ProducesFrankAuthCallbackResult()
     {
-        // Arrange: a full fake pipeline
         var steps = new IImmutableContextBuildStep<OidcAuthCallbackContext>[]
         {
             new FakeExchangeCodeStep("access-token"),
@@ -19,17 +26,15 @@ public sealed class OidcAuthCallbackContextBuilderTests
             new FakeValidateTokensStep()
         };
 
-        var engine = new OidcAuthCallbackContextBuilder(steps);
+        var engine = CreateBuilder(steps);
 
         var request = new FrankAuthCallbackRequest
         {
             Code = "abc123"
         };
 
-        // Act
         var result = await engine.BuildAsync(request, CancellationToken.None);
 
-        // Assert
         result.Should().NotBeNull();
         result.SubjectId.Should().Be("user-123");
         result.GivenName.Should().Be("Test");
@@ -46,7 +51,7 @@ public sealed class OidcAuthCallbackContextBuilderTests
             new ThrowingStep()
         };
 
-        var engine = new OidcAuthCallbackContextBuilder(steps);
+        var engine = CreateBuilder(steps);
 
         var request = new FrankAuthCallbackRequest
         {
@@ -65,12 +70,12 @@ public sealed class OidcAuthCallbackContextBuilderTests
 
         var steps = new IImmutableContextBuildStep<OidcAuthCallbackContext>[]
         {
-        new RecordingStep("1", recorder),
-        new RecordingStep("2", recorder),
-        new RecordingStep("3", recorder)
+            new RecordingStep("1", recorder),
+            new RecordingStep("2", recorder),
+            new RecordingStep("3", recorder)
         };
 
-        var engine = new OidcAuthCallbackContextBuilder(steps);
+        var engine = CreateBuilder(steps);
 
         var request = new FrankAuthCallbackRequest
         {
@@ -81,7 +86,6 @@ public sealed class OidcAuthCallbackContextBuilderTests
 
         await act.Should().ThrowAsync<InvalidOperationException>();
 
-        // Only the first step runs before the exception
         recorder.Should().Equal(new[] { "1" });
     }
 }

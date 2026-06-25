@@ -194,7 +194,7 @@ Endpoints do **not**:
 
 Identity is resolved via:
 
-- `ICurrentUserService` (Application abstraction)
+- `ICurrentUser` (Application abstraction)
 
 Authorization is enforced by:
 

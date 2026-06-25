@@ -12,55 +12,58 @@ public class AuthLoginEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/auth/login", (
-            HttpContext http,
-            [FromServices] IOptionsMonitor<AuthCallbackOidcSettings> oidcOptionsMonitor,
-            [FromServices] IOptionsMonitor<FrontendSettings> frontendOptionsMonitor,
-            IConfiguration config) =>
+        app.MapGet("/api/auth/login", HandleAsync)
+        .AllowAnonymous();
+    }
+
+    private async Task<IResult> HandleAsync(
+        HttpContext http,
+        [FromServices] IOptionsMonitor<AuthCallbackOidcSettings> oidcOptionsMonitor,
+        [FromServices] IOptionsMonitor<FrontendSettings> frontendOptionsMonitor,
+        IConfiguration config)
+    {
+        var oidcOptions = oidcOptionsMonitor.CurrentValue;
+
+        var authority = oidcOptions.Authority;
+        var clientId = oidcOptions.ClientId;
+        var callback = oidcOptions.CallbackUrl;
+
+        if (string.IsNullOrWhiteSpace(authority) ||
+            string.IsNullOrWhiteSpace(clientId) ||
+            string.IsNullOrWhiteSpace(callback))
         {
-            var oidcOptions = oidcOptionsMonitor.CurrentValue;
+            throw new BadConfigurationException("Authentication configuration is missing or incomplete.");
+        }
 
-            var authority = oidcOptions.Authority;
-            var clientId = oidcOptions.ClientId;
-            var callback = oidcOptions.CallbackUrl;
+        var frontendBaseUrl = frontendOptionsMonitor.CurrentValue?.BaseUrl;
 
-            if (string.IsNullOrWhiteSpace(authority) ||
-                string.IsNullOrWhiteSpace(clientId) ||
-                string.IsNullOrWhiteSpace(callback))
-            {
-                throw new BadConfigurationException("Authentication configuration is missing or incomplete.");
-            }
+        if (string.IsNullOrWhiteSpace(frontendBaseUrl))
+        {
+            throw new BadConfigurationException("Frontend configuration is missing or incomplete.");
+        }
 
-            var frontendBaseUrl = frontendOptionsMonitor.CurrentValue?.BaseUrl;
+        // Capture returnUrl (PR preview URL)
+        var returnUrl = http.Request.Query["returnUrl"].ToString();
+        if (string.IsNullOrWhiteSpace(returnUrl))
+        {
+            returnUrl = frontendBaseUrl;
+        }
 
-            if (string.IsNullOrWhiteSpace(frontendBaseUrl))
-            {
-                throw new BadConfigurationException("Frontend configuration is missing or incomplete.");
-            }
+        // Encode state as JSON
+        var stateObj = new { r = returnUrl };
+        var stateJson = JsonSerializer.Serialize(stateObj);
+        var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
 
-            // Capture returnUrl (PR preview URL)
-            var returnUrl = http.Request.Query["returnUrl"].ToString();
-            if (string.IsNullOrWhiteSpace(returnUrl))
-            {
-                returnUrl = frontendBaseUrl;
-            }
+        var scope = "openid profile email";
 
-            // Encode state as JSON
-            var stateObj = new { r = returnUrl };
-            var stateJson = JsonSerializer.Serialize(stateObj);
-            var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
+        var redirectUrl =
+            $"{authority.TrimEnd('/')}/authorize" +
+            $"?response_type=code" +
+            $"&client_id={Uri.EscapeDataString(clientId)}" +
+            $"&redirect_uri={Uri.EscapeDataString(callback)}" +
+            $"&scope={Uri.EscapeDataString(scope)}" +
+            $"&state={Uri.EscapeDataString(state)}";
 
-            var scope = "openid profile email";
-
-            var redirectUrl =
-                $"{authority.TrimEnd('/')}/authorize" +
-                $"?response_type=code" +
-                $"&client_id={Uri.EscapeDataString(clientId)}" +
-                $"&redirect_uri={Uri.EscapeDataString(callback)}" +
-                $"&scope={Uri.EscapeDataString(scope)}" +
-                $"&state={Uri.EscapeDataString(state)}";
-
-            return Results.Redirect(redirectUrl);
-        });
+        return Results.Redirect(redirectUrl);
     }
 }

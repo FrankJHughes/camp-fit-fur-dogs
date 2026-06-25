@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using Frank.Abstractions.Observability;
 
-namespace Frank.TestUtilities.Fakes.Observability;
+namespace CampFitFurDogs.TestUtilities.Fakes.Observability;
 
 public sealed class FakeObservabilityContext : IObservabilityContext
 {

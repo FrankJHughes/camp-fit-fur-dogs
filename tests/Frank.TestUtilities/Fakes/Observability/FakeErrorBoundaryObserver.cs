@@ -8,7 +8,7 @@ public sealed class FakeErrorBoundaryObserver : IErrorBoundaryObserver
 {
     public List<Exception> Errors { get; } = [];
 
-    public void OnError(Exception exception, IObservabilityContext context)
+    public void OnError(Exception exception, IRequestObservabilityContext context)
     {
         Errors.Add(exception);
     }

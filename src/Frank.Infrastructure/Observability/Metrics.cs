@@ -4,17 +4,17 @@ namespace Frank.Infrastructure.Observability;
 
 public sealed class Metrics : IMetrics
 {
-    public void Increment(string name, long value = 1, IObservabilityContext? context = null)
+    public void Increment(string name, long value = 1, IRequestObservabilityContext? context = null)
     {
         // TODO: Implement counter metric
     }
 
-    public void Gauge(string name, double value, IObservabilityContext? context = null)
+    public void Gauge(string name, double value, IRequestObservabilityContext? context = null)
     {
         // TODO: Implement gauge metric
     }
 
-    public IDisposable Timer(string name, IObservabilityContext? context = null)
+    public IDisposable Timer(string name, IRequestObservabilityContext? context = null)
     {
         // TODO: Implement timer metric
         return new NoOpTimer();
