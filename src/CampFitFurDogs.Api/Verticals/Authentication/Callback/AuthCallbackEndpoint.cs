@@ -22,11 +22,11 @@ public class AuthCallbackEndpoint : IEndpoint
     private static async Task<IResult> HandleAsync(
         HttpContext http,
         IHostEnvironment env,
-        [FromServices] IImmutableContextBuilder<
+            IImmutableContextBuilder<
             FrankAuthCallbackRequest,
             OidcAuthCallbackContext,
             FrankAuthCallbackResult> frankEngine,
-        [FromServices] IImmutableContextBuilder<
+            IImmutableContextBuilder<
             ApplicationAuthCallbackRequest,
             ApplicationAuthCallbackContext,
             ApplicationAuthCallbackContextBuilderResult> appEngine)

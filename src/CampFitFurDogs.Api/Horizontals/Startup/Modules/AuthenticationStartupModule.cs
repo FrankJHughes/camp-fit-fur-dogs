@@ -13,28 +13,14 @@ public class AuthenticationStartupModule : IStartupModule
         var services = builder.Services;
         var config = builder.Configuration;
 
-        var authority = config["Authentication:Callback:Oidc:Authority"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
-        var clientId = config["Authentication:Callback:Oidc:ClientId"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
-        var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
-        var callbackUrl = config["Authentication:Callback:Oidc:CallbackUrl"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl");
-        var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
+        var oidcDisabled = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
 
-        var disableOidc = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
-
-        //
-        // ⭐ Authentication configuration
-        //
         var auth = services
             .AddAuthentication(options =>
             {
                 options.DefaultScheme = "cfd.session";
                 options.DefaultAuthenticateScheme = "cfd.session";
-                options.DefaultChallengeScheme = disableOidc
+                options.DefaultChallengeScheme = oidcDisabled
                     ? "cfd.session"
                     : OpenIdConnectDefaults.AuthenticationScheme;
             })
@@ -72,11 +58,38 @@ public class AuthenticationStartupModule : IStartupModule
                 };
             });
 
-        //
-        // ⭐ Optional OIDC (disabled in local dev)
-        //
-        if (!disableOidc)
+        if (!oidcDisabled)
         {
+            var authority = config["Authentication:Callback:Oidc:Authority"];
+            if (string.IsNullOrWhiteSpace(authority))
+            {
+                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
+            }
+
+            var clientId = config["Authentication:Callback:Oidc:ClientId"];
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
+            }
+
+            var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"];
+            if (string.IsNullOrWhiteSpace(clientSecret))
+            {
+                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
+            }
+
+            var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"];
+            if (string.IsNullOrWhiteSpace(postLoginRedirectUrl))
+            {
+                throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
+            }
+
+            string callbackUrl = CalculateCallbackUrl(config);
+            if (string.IsNullOrWhiteSpace(callbackUrl))
+            {
+                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl or incorrect ASPNETCORE_URLS");
+            }
+
             auth.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.Authority = authority;
@@ -95,6 +108,22 @@ public class AuthenticationStartupModule : IStartupModule
                 // You may add events here later for claim mapping, etc.
             });
         }
+    }
+
+    private static string CalculateCallbackUrl(ConfigurationManager config)
+    {
+        var callbackUrl = config["Authentication:Callback:Oidc:CallbackUrl"];
+
+        if (string.IsNullOrWhiteSpace(callbackUrl))
+        {
+            var serverUrl = config["ASPNETCORE_URLS"]
+                ?? "https://localhost:5001";
+
+            serverUrl = serverUrl.Split(';', StringSplitOptions.RemoveEmptyEntries)[0];
+            callbackUrl = $"{serverUrl.TrimEnd('/')}/api/auth/callback";
+        }
+
+        return callbackUrl;
     }
 
     public void Use(WebApplication app)

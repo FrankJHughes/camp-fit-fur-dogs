@@ -26,11 +26,8 @@ public class AuthLoginEndpoint : IEndpoint
 
         var authority = oidcOptions.Authority;
         var clientId = oidcOptions.ClientId;
-        var callback = oidcOptions.CallbackUrl;
-
         if (string.IsNullOrWhiteSpace(authority) ||
-            string.IsNullOrWhiteSpace(clientId) ||
-            string.IsNullOrWhiteSpace(callback))
+            string.IsNullOrWhiteSpace(clientId))
         {
             throw new BadConfigurationException("Authentication configuration is missing or incomplete.");
         }
@@ -40,6 +37,17 @@ public class AuthLoginEndpoint : IEndpoint
         if (string.IsNullOrWhiteSpace(frontendBaseUrl))
         {
             throw new BadConfigurationException("Frontend configuration is missing or incomplete.");
+        }
+
+        var callback = oidcOptions.CallbackUrl;
+        if (string.IsNullOrWhiteSpace(callback))
+        {
+            // Build callback from current request domain
+            var scheme = http.Request.Scheme;
+            var host = http.Request.Host.Value;
+            var pathBase = http.Request.PathBase.Value?.TrimEnd('/') ?? "";
+
+            callback = $"{scheme}://{host}{pathBase}/api/auth/callback";
         }
 
         // Capture returnUrl (PR preview URL)
