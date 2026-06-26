@@ -1,9 +1,15 @@
-# Frank Endpoint Registration Engine — Developer Guide
-
-This guide documents the **current state** of the Frank Endpoint Registration Engine and the **intended future state** as the platform evolves.
+# Frank — Developer Guide — Endpoint Registration Engine  
+*Current state and future direction of Frank’s endpoint discovery and mapping engine.*
 
 The Endpoint Registration Engine provides a **convention‑based mechanism** for discovering, instantiating, and mapping API endpoints without requiring manual registration.  
-It is a first‑class engine in the Frank architecture, aligned with the Startup Engine, Registration Engine, and Domain Event Dispatcher.
+It is a first‑class engine in the Frank architecture, aligned with:
+
+- StartupEngine  
+- RegistrationEngine  
+- Domain Event Dispatcher  
+- HostingEngine  
+
+This guide documents the **current state** and the **intended future state** of the engine.
 
 ---
 
@@ -11,14 +17,14 @@ It is a first‑class engine in the Frank architecture, aligned with the Startup
 
 Frank currently provides the following components:
 
-```csharp
+````csharp
 public interface IEndpoint
 {
     void Map(IEndpointRouteBuilder app);
 }
-```
+````
 
-```csharp
+````csharp
 public static class EndpointRegistrationEngine
 {
     private static readonly ConcurrentDictionary<Type, byte> _endpointTypes = new();
@@ -44,9 +50,9 @@ public static class EndpointRegistrationEngine
         }
     }
 }
-```
+````
 
-```csharp
+````csharp
 public static class EndpointMappingExtensions
 {
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
@@ -55,90 +61,106 @@ public static class EndpointMappingExtensions
         return app;
     }
 }
-```
+````
 
-### What exists today
+---
+
+## What exists today
 
 - A simple **contract** (`IEndpoint`) for defining endpoint modules  
 - A **discovery mechanism** that scans assemblies for endpoint types  
 - A **registration engine** that instantiates and maps endpoints  
-- A **fluent extension** (`app.MapEndpoints()`) for convenience  
-- A **modular endpoint model** (each endpoint is its own class)  
-- No DI required for endpoints (constructed via `Activator.CreateInstance`)  
+- A **fluent extension** (`app.MapEndpoints()`)  
+- A **modular endpoint model** (one class per endpoint)  
+- No DI required (constructed via `Activator.CreateInstance`)  
 - Deterministic, convention‑based endpoint registration  
 
-### What does *not* exist today
+---
 
-- No dependency injection support for endpoints  
-- No constructor injection  
-- No endpoint ordering  
-- No grouping or versioning conventions  
-- No filtering by namespace or attribute  
-- No automatic assembly scanning  
-- No startup module integration  
-- No diagnostics or logging  
-- No endpoint metadata conventions  
+## What does *not* exist today
 
-### Developer implications today
+- no dependency injection support  
+- no constructor injection  
+- no endpoint ordering  
+- no grouping or versioning conventions  
+- no namespace/attribute filtering  
+- no automatic assembly scanning  
+- no StartupEngine integration  
+- no diagnostics or logging  
+- no metadata conventions (OpenAPI, authorization, validation)  
 
-- Endpoints must have **parameterless constructors**  
-- Endpoints must implement `IEndpoint`  
-- Developers must call `EndpointRegistrationEngine.AddEndpoints(assembly)` during startup  
-- Developers must call `app.MapEndpoints()` to map discovered endpoints  
-- All endpoint logic must be inside the `Map` method  
-- Endpoints must be stateless  
+---
 
-The current capability is intentionally minimal and focused on convention‑based discovery.
+## Developer implications today
+
+- endpoints must have **parameterless constructors**  
+- endpoints must implement `IEndpoint`  
+- developers must call `EndpointRegistrationEngine.AddEndpoints(assembly)`  
+- developers must call `app.MapEndpoints()`  
+- all routing logic must be inside `Map`  
+- endpoints must be **stateless**  
+
+The current capability is intentionally minimal and convention‑driven.
 
 ---
 
 # 2. Future Intent (After Capability Expansion)
 
-As the platform evolves, the Endpoint Registration Engine will expand to support richer API composition and engine‑level conventions.
+As the platform evolves, the Endpoint Registration Engine will expand into a full Frank engine with richer conventions and integration points.
 
-### 2.1 Dependency Injection Support
+---
+
+## 2.1 Dependency Injection Support
 
 Future enhancements may include:
 
-- Constructor injection for endpoints  
-- Scoped and transient endpoint instances  
+- constructor injection for endpoints  
+- scoped and transient endpoint instances  
 - DI‑aware endpoint activation  
 
-### 2.2 Endpoint Grouping and Versioning
+---
+
+## 2.2 Endpoint Grouping and Versioning
 
 Potential improvements:
 
-- Automatic grouping by namespace  
-- Versioning conventions  
-- Route prefix conventions  
-- Tag conventions  
+- automatic grouping by namespace  
+- versioning conventions  
+- route prefix conventions  
+- tag conventions  
 
-### 2.3 Assembly Scanning Enhancements
+---
+
+## 2.3 Assembly Scanning Enhancements
 
 Future support may include:
 
-- Automatic scanning of all loaded assemblies  
-- Attribute‑based filtering  
-- Module‑based endpoint registration  
+- automatic scanning of all loaded assemblies  
+- attribute‑based filtering  
+- module‑based endpoint registration  
 
-### 2.4 Metadata and Conventions
+---
+
+## 2.4 Metadata and Conventions
 
 Potential additions:
 
-- Automatic OpenAPI metadata  
-- Automatic authorization conventions  
-- Automatic validation conventions  
-- Automatic logging conventions  
+- automatic OpenAPI metadata  
+- automatic authorization conventions  
+- automatic validation conventions  
+- automatic logging conventions  
 
-### 2.5 Diagnostics and Observability
+---
+
+## 2.5 Diagnostics and Observability
 
 Future capabilities may include:
 
-- Endpoint discovery diagnostics  
-- Mapping logs  
-- Endpoint registration metrics  
+- endpoint discovery diagnostics  
+- mapping logs  
+- endpoint registration metrics  
 
-These enhancements will transform the subsystem from a simple discovery helper into a full‑featured **Endpoint Registration Engine**.
+These enhancements will transform the subsystem into a full‑featured **Endpoint Registration Engine** aligned with other Frank engines.
 
 ---
 
@@ -148,58 +170,64 @@ These enhancements will transform the subsystem from a simple discovery helper i
 
 Developers must:
 
-- Implement `IEndpoint` for each endpoint  
-- Provide a parameterless constructor  
-- Implement the `Map` method  
-- Call `EndpointRegistrationEngine.AddEndpoints(assembly)` during startup  
-- Call `app.MapEndpoints()` to map endpoints  
-- Ensure endpoints do not require DI  
-- Ensure endpoint mapping is idempotent  
-- Keep endpoints stateless  
+- implement `IEndpoint`  
+- provide a parameterless constructor  
+- implement the `Map` method  
+- call `AddEndpoints(assembly)`  
+- call `app.MapEndpoints()`  
+- ensure endpoints do not require DI  
+- ensure mapping is idempotent  
+- keep endpoints stateless  
+
+---
 
 ## Future Responsibilities
 
 Once the capability expands, developers will:
 
-- Use constructor injection in endpoints  
-- Rely on automatic assembly scanning  
-- Use grouping and versioning conventions  
-- Use metadata conventions for OpenAPI and authorization  
-- Use diagnostics to validate endpoint registration  
-- Follow engine‑level conventions for endpoint structure  
+- use constructor injection  
+- rely on automatic assembly scanning  
+- use grouping and versioning conventions  
+- use metadata conventions (OpenAPI, authorization, validation)  
+- use diagnostics to validate endpoint registration  
+- follow engine‑level conventions for endpoint structure  
 
 ---
 
 # 4. Architecture and Invariants
 
-### 4.1 Endpoint Invariants
+## 4.1 Endpoint Invariants
 
-- Endpoints must implement `IEndpoint`  
-- Endpoints must have a parameterless constructor  
-- Endpoints must define all routing inside `Map`  
-- Endpoints must be stateless (no instance fields)  
+- endpoints must implement `IEndpoint`  
+- endpoints must have a parameterless constructor  
+- endpoints must define all routing inside `Map`  
+- endpoints must be stateless  
 
-### 4.2 Discovery Invariants
+---
 
-- Only non‑abstract types implementing `IEndpoint` are discovered  
-- Discovery is explicit (developer calls `AddEndpoints`)  
-- Discovery is assembly‑based  
-- Discovery is cached in a thread‑safe dictionary  
+## 4.2 Discovery Invariants
 
-### 4.3 Mapping Invariants
+- only non‑abstract types implementing `IEndpoint` are discovered  
+- discovery is explicit (developer calls `AddEndpoints`)  
+- discovery is assembly‑based  
+- discovery is cached in a thread‑safe dictionary  
 
-- Endpoints are instantiated via `Activator.CreateInstance`  
-- Mapping is performed once per endpoint type  
-- Mapping order is not guaranteed  
-- Mapping is synchronous  
+---
+
+## 4.3 Mapping Invariants
+
+- endpoints are instantiated via `Activator.CreateInstance`  
+- mapping is performed once per endpoint type  
+- mapping order is not guaranteed  
+- mapping is synchronous  
 
 ---
 
 # 5. Example Usage (Developer Perspective)
 
-### 5.1 Define an endpoint
+## 5.1 Define an endpoint
 
-```csharp
+````csharp
 public sealed class GetCustomerEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
@@ -210,11 +238,11 @@ public sealed class GetCustomerEndpoint : IEndpoint
         });
     }
 }
-```
+````
 
-### 5.2 Register endpoints during startup
+## 5.2 Register endpoints during startup
 
-```csharp
+````csharp
 var builder = WebApplication.CreateBuilder(args);
 
 EndpointRegistrationEngine.AddEndpoints(typeof(GetCustomerEndpoint).Assembly);
@@ -224,14 +252,14 @@ var app = builder.Build();
 app.MapEndpoints();
 
 app.Run();
-```
+````
 
 This demonstrates:
 
-- Defining an endpoint  
-- Discovering endpoints  
-- Mapping endpoints  
-- Running the application  
+- defining an endpoint  
+- discovering endpoints  
+- mapping endpoints  
+- running the application  
 
 ---
 
@@ -240,22 +268,21 @@ This demonstrates:
 **Current State:**  
 The Endpoint Registration Engine provides:
 
-- A simple contract (`IEndpoint`)  
-- Assembly‑based endpoint discovery  
-- Convention‑based endpoint registration  
-- A clean, modular endpoint model  
+- a simple contract (`IEndpoint`)  
+- assembly‑based endpoint discovery  
+- convention‑based endpoint registration  
+- a clean, modular endpoint model  
 
 **Future Intent:**  
 The engine will evolve to support:
 
-- Dependency injection  
-- Grouping and versioning  
-- Automatic assembly scanning  
-- Metadata conventions  
-- Diagnostics and observability  
+- dependency injection  
+- grouping and versioning  
+- automatic assembly scanning  
+- metadata conventions  
+- diagnostics and observability  
 
 As a developer:
 
-- Today, you implement `IEndpoint` and rely on discovery  
-- In the future, Frank will automate more of the endpoint lifecycle  
-
+- today, you implement `IEndpoint` and rely on discovery  
+- in the future, Frank will automate more of the endpoint lifecycle  

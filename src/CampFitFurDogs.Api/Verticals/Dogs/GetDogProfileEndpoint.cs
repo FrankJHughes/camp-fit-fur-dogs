@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using Frank.Abstractions;
-using Frank.Api;
+using Frank.Abstractions.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 
@@ -10,10 +11,10 @@ public class GetDogProfileEndpoint : IEndpoint
     {
         app.MapGet("/api/dogs/{id}", async (
             Guid id,
-            ICurrentUser currentUser,
+            [FromServices] ICurrentUser currentUser,
             IQueryDispatcher dispatcher) =>
         {
-            var query = new GetDogProfileQuery(id, currentUser.Id);
+            var query = new GetDogProfileQuery(id, currentUser.Id!.Value);
             var result = await dispatcher.DispatchAsync(query, CancellationToken.None);
 
             return result is null

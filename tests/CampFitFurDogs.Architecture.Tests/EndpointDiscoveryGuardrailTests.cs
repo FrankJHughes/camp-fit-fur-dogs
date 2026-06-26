@@ -13,7 +13,7 @@ public class EndpointDiscoveryGuardrailTests
     {
         var implementations = ApiAssembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface
-                        && typeof(Frank.Api.IEndpoint).IsAssignableFrom(t))
+                        && typeof(Frank.Abstractions.IEndpoint).IsAssignableFrom(t))
             .ToList();
 
         implementations.Should().NotBeEmpty(
@@ -27,7 +27,7 @@ public class EndpointDiscoveryGuardrailTests
         var nonConforming = ApiAssembly.GetTypes()
             .Where(t => !t.IsInterface
                         && t.Name.EndsWith("Endpoint", StringComparison.Ordinal)
-                        && !typeof(Frank.Api.IEndpoint).IsAssignableFrom(t))
+                        && !typeof(Frank.Abstractions.IEndpoint).IsAssignableFrom(t))
             .Select(t => t.FullName)
             .ToList();
 

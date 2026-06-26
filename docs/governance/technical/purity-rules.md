@@ -1,4 +1,4 @@
-# Architecture Purity Rules  
+# Camp Fit Fur Dogs — Governance — Technical — Architecture Purity Rules  
 Authoritative companion to ADR‑0002 (Layered Architecture)
 
 Purity rules define the **non‑negotiable architectural boundaries** of Camp Fit Fur Dogs.  
@@ -11,7 +11,10 @@ These rules ensure:
 - Testability  
 - Maintainability  
 - Governance alignment  
+- Deterministic observability  
 - Prevention of architectural drift  
+
+Purity is a contract. Violations are defects.
 
 ---
 
@@ -58,6 +61,7 @@ The Domain layer is the innermost, most protected layer.
 - References to Application, Infrastructure, or Api  
 - DTOs  
 - I/O, HTTP, DB, logging  
+- Observability emission (`ITraceEvents`, `IMetrics`)  
 - DI attributes  
 - Async/await  
 - Service locators  
@@ -73,6 +77,8 @@ dog.UpdateName("Buddy");
 // Violation
 dog.Name = "Buddy";
 ```
+
+Domain is **observable through** Application/Infrastructure, not directly.
 
 ---
 
@@ -92,6 +98,8 @@ It references **Domain only**.
 - Validators  
 - CancellationToken propagation  
 - Application exceptions  
+- Observability emission at use‑case boundaries (`ITraceEvents`, `IMetrics`)  
+- Propagation of `IObservabilityContext`  
 
 ### Forbidden
 
@@ -100,6 +108,8 @@ It references **Domain only**.
 - Direct persistence  
 - HTTP concepts  
 - Identity from request bodies  
+- Manual correlation ID creation  
+- Ad‑hoc logging  
 
 ### Abstractions Folder Convention
 
@@ -123,6 +133,8 @@ Infrastructure implements interfaces from Application and Domain.
 - External service integrations  
 - Migrations  
 - SDKs and NuGet packages  
+- Observability emission for external calls, retries, failures  
+- Correlation propagation to external systems  
 
 ### Forbidden
 
@@ -131,6 +143,8 @@ Infrastructure implements interfaces from Application and Domain.
 - Endpoint awareness  
 - Domain event creation  
 - New public interfaces  
+- Stopwatch timing  
+- Vendor‑specific logging/metrics APIs  
 
 ### Repository Rule
 
@@ -150,6 +164,8 @@ The API layer is the outermost shell.
 - Auth configuration  
 - Request binding  
 - Response shaping  
+- Observability emission for request boundaries  
+- Use of Frank correlation middleware  
 
 ### Forbidden
 
@@ -158,6 +174,8 @@ The API layer is the outermost shell.
 - DbContext  
 - Identity in request bodies  
 - Infrastructure references in endpoints  
+- Manual correlation ID creation  
+- Ad‑hoc logging  
 
 ### Identity Resolution Pattern
 
@@ -165,7 +183,7 @@ The API layer is the outermost shell.
 // Correct — identity resolved server-side
 app.MapPost("/dogs", async (
     RegisterDogRequest request,
-    ICurrentUserService currentUser,
+    ICurrentUser currentUser,
     ICommandDispatcher dispatcher) =>
 {
     var command = new RegisterDogCommand(
@@ -204,6 +222,8 @@ It must remain **pure, minimal, and product‑agnostic**.
 - Hosting abstractions  
 - Security header + CORS middleware  
 - Validation pipeline primitives  
+- Observability primitives (`IObservabilityContext`, `ITraceEvents`, `IMetrics`)  
+- Correlation propagation middleware  
 
 ### Forbidden
 
@@ -214,6 +234,7 @@ It must remain **pure, minimal, and product‑agnostic**.
 - Business rules  
 - Persistence logic  
 - HTTP/JSON/ZIP operations  
+- Observability exporters or vendor integrations  
 
 Frank is the lowest‑level dependency.
 
@@ -232,13 +253,15 @@ Dependency injection wiring happens **exclusively** in the API composition root.
    - Validators → Scoped  
    - Repositories → Scoped  
    - DbContext → Scoped  
-   - `ICurrentUserService` → Scoped  
+   - `ICurrentUser` → Scoped  
 4. No service locator  
 5. No DI attributes in Domain  
 6. No manual DI registration of slice services  
 7. No Scrutor or suffix‑based scanning  
 8. No DI logic in slices  
 9. Frank owns all auto‑registration  
+
+DI must be **observable** through structured startup events.
 
 ---
 
@@ -256,6 +279,7 @@ DTOs are transport shapes only.
 6. DTOs never contain identity fields like `OwnerId`  
 7. DTOs never contain domain invariants  
 8. DTOs never contain domain events  
+9. DTOs never contain observability primitives  
 
 ---
 
@@ -275,6 +299,7 @@ Handlers execute exactly one use case.
 8. Do not perform validation  
 9. Do not perform HTTP, I/O, or persistence directly  
 10. Do not reference Infrastructure types  
+11. Emit observability events/metrics only at use‑case boundaries  
 
 ---
 
@@ -292,6 +317,7 @@ Validators enforce **shape correctness**, not business rules.
 6. No Infrastructure references  
 7. No domain logic  
 8. No cross‑validator dependencies  
+9. No observability emission  
 
 ---
 
@@ -310,6 +336,7 @@ Repositories are the persistence gateway.
 7. No IQueryable exposure  
 8. No DTOs returned  
 9. No domain events raised  
+10. Observability emission only for external calls, retries, failures  
 
 ---
 
@@ -331,6 +358,7 @@ Repositories are the persistence gateway.
 - Configuration objects never enter Domain or Application  
 - Domain events never cross the API boundary  
 - Identity never comes from the client  
+- Observability primitives never enter Domain  
 
 ---
 
@@ -345,6 +373,7 @@ Circular dependencies are architectural defects.
 3. No circular handler invocations  
 4. No bidirectional entity navigation across aggregates  
 5. No cross‑aggregate domain mutations  
+6. No circular observability dependencies  
 
 ---
 
@@ -364,7 +393,10 @@ Local `pre-push` runs `make test`.
 ### Layer 4: Code Review  
 Reviewers check purity violations.
 
-### Layer 5: This Document  
+### Layer 5: Observability Tests  
+Validate correlation propagation, event emission, metric emission.
+
+### Layer 6: This Document  
 This file is the reference.
 
 ### Future Guardrails
@@ -374,6 +406,7 @@ This file is the reference.
 | NetArchTest suite | Planned | Automated purity checks |
 | Roslyn analyzer | Considered | Compile‑time warnings |
 | `dotnet format` | Active | Style consistency |
+| Observability analyzer | Considered | Enforce structured events/metrics |
 
 ---
 
@@ -402,6 +435,9 @@ Is it wiring DI?
 
 Is it a reusable primitive?
   → Frank
+
+Is it observability emission?
+  → Application or Infrastructure only
 ```
 
 ### Common Mistakes and Fixes
@@ -410,7 +446,7 @@ Is it a reusable primitive?
 |---------|-----|
 | EF Core attributes in Domain | Move to Infrastructure configuration |
 | Returning entities from API | Map to DTO |
-| Accepting `OwnerId` in request DTO | Remove; resolve via `ICurrentUserService` |
+| Accepting `OwnerId` in request DTO | Remove; resolve via `ICurrentUser` |
 | Business logic in repository | Move to Domain |
 | `SaveChangesAsync()` in repository | Move to handler/pipeline |
 | Catching domain exceptions in handler | Let middleware map to HTTP |
@@ -418,6 +454,8 @@ Is it a reusable primitive?
 | Circular feature dependencies | Extract shared concept |
 | Using service locator | Use constructor injection |
 | Validator in Domain | Move to Application |
+| Observability emission in Domain | Move to Application/Infrastructure |
+| Stopwatch timing | Use Frank metrics timers |
 
 ### TDD and Purity
 
@@ -427,6 +465,7 @@ TDD naturally enforces purity:
 2. Application test → Handler  
 3. Infrastructure test → Repository  
 4. API test → Endpoint  
+5. Observability test → Event/metric correctness  
 
 If a test requires violating purity, the design is wrong.
 
@@ -435,4 +474,3 @@ If a test requires violating purity, the design is wrong.
 - Convention‑changing PRs update this file  
 - Reviewed during retrospectives  
 - “We got burned” moments update immediately
-

@@ -1,8 +1,9 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Application.Authentication.Callback;
-using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 using CampFitFurDogs.Application.Tests.Fakes.Authentication.Callback;
 using Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
+using CampFitFurDogs.TestUtilities.Fakes.Observability;
 
 namespace CampFitFurDogs.Application.Tests.Authentication.Callback;
 
@@ -15,6 +16,13 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
         RequestedRedirectUrl = "/dashboard"
     };
 
+    private static ApplicationAuthCallbackContextBuilder CreateBuilder(
+        params IImmutableContextBuildStep<ApplicationAuthCallbackContext>[] steps)
+        => new ApplicationAuthCallbackContextBuilder(
+            steps,
+            new FakeObservabilitySink(),
+            new FakeObservabilityContext());
+
     // -------------------------------------------------------------
     // 1. INITIAL CONTEXT CREATION
     // -------------------------------------------------------------
@@ -24,18 +32,15 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
         var steps = new IImmutableContextBuildStep<ApplicationAuthCallbackContext>[]
         {
             new NoOpStep(),
-
-            // REQUIRED so the builder can produce a result
             new SetFinalValuesStep(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "hash",
                 "cookie",
-                "/dashboard"
-            )
+                "/dashboard")
         };
 
-        var builder = new ApplicationAuthCallbackContextBuilder(steps);
+        var builder = CreateBuilder(steps);
 
         var result = await builder.BuildAsync(NewRequest, CancellationToken.None);
 
@@ -54,7 +59,7 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
             new MutatingStep(modifyExternal: true)
         };
 
-        var builder = new ApplicationAuthCallbackContextBuilder(steps);
+        var builder = CreateBuilder(steps);
 
         var act = async () => await builder.BuildAsync(NewRequest, CancellationToken.None);
 
@@ -70,7 +75,7 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
             new MutatingStep(modifyNow: true)
         };
 
-        var builder = new ApplicationAuthCallbackContextBuilder(steps);
+        var builder = CreateBuilder(steps);
 
         var act = async () => await builder.BuildAsync(NewRequest, CancellationToken.None);
 
@@ -86,7 +91,7 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
             new MutatingStep(returnNull: true)
         };
 
-        var builder = new ApplicationAuthCallbackContextBuilder(steps);
+        var builder = CreateBuilder(steps);
 
         var act = async () => await builder.BuildAsync(NewRequest, CancellationToken.None);
 
@@ -110,11 +115,10 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
                 sessionId,
                 tokenHash: "hash-abc",
                 cookieValue: "cookie-xyz",
-                redirectUrl: "/final"
-            )
+                redirectUrl: "/final")
         };
 
-        var builder = new ApplicationAuthCallbackContextBuilder(steps);
+        var builder = CreateBuilder(steps);
 
         var result = await builder.BuildAsync(NewRequest, CancellationToken.None);
 
@@ -138,18 +142,15 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
             new RecordingStep("1", recorder),
             new RecordingStep("2", recorder),
             new RecordingStep("3", recorder),
-
-            // REQUIRED
             new SetFinalValuesStep(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "hash",
                 "cookie",
-                "/redirect"
-            )
+                "/redirect")
         };
 
-        var builder = new ApplicationAuthCallbackContextBuilder(steps);
+        var builder = CreateBuilder(steps);
 
         await builder.BuildAsync(NewRequest, CancellationToken.None);
 
@@ -167,7 +168,7 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
             new ThrowingStep()
         };
 
-        var builder = new ApplicationAuthCallbackContextBuilder(steps);
+        var builder = CreateBuilder(steps);
 
         var act = async () => await builder.BuildAsync(NewRequest, CancellationToken.None);
 

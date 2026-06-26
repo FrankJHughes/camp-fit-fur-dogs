@@ -1,4 +1,4 @@
-# Folder Structure & Slice Anatomy  
+# Folder Structure & Slice Anatomy - Developer Guide
 *A developer‑facing guide to how the solution is structured and how vertical slices cut through it.*
 
 This guide describes the high‑level folder structure of the Camp Fit Fur Dogs solution and the anatomy of a vertical slice.  
@@ -15,7 +15,7 @@ This is an **architecture guide**. It explains the model; governance documents d
 
 ## 1. Top‑Level Solution Structure
 
-```text
+````text
 .devcontainer/
 .github/
 .vscode/
@@ -28,7 +28,7 @@ product/
 scripts/
 src/
 tests/
-```
+````
 
 High‑level intent:
 
@@ -46,13 +46,13 @@ High‑level intent:
 
 ### 2.1 CampFitFurDogs Projects
 
-```text
+````text
 src/
   CampFitFurDogs.Api/
   CampFitFurDogs.Application/
   CampFitFurDogs.Domain/
   CampFitFurDogs.Infrastructure/
-```
+````
 
 **CampFitFurDogs.Api**  
 HTTP endpoints, routing, request/response DTOs, middleware wiring.
@@ -73,18 +73,18 @@ Persistence, external systems, repositories, readers, EF Core configuration.
 Frank is a **separate product**, not a layer.  
 It provides reusable architectural primitives and eliminates boilerplate.
 
-```text
+````text
 src/
   Frank/
   Frank.Api/
   Frank.Infrastructure/
   Frank.Infrastructure.EntityFrameworkCore/
   Frank.Testing/
-```
+````
 
 Key Frank areas:
 
-```text
+````text
 Frank/
   Abstractions/
   Authentication/
@@ -95,32 +95,32 @@ Frank/
   ImmutableContext/
   Modules/
   Settings/
-```
+````
 
-```text
+````text
 Frank.Api/
   ExceptionHandling/
   Hosting/
   SecurityHeaders/
   Startup/
-```
+````
 
-```text
+````text
 Frank.Infrastructure/
   Environment/
-```
+````
 
-```text
+````text
 Frank.Infrastructure.EntityFrameworkCore/
   Configurations/
-```
+````
 
-```text
+````text
 Frank.Testing/
   Contexts/
   Endpoints/
   Factories/
-```
+````
 
 Frank provides:
 
@@ -139,17 +139,17 @@ CampFitFurDogs **consumes** Frank.
 
 ## 3. CampFitFurDogs.Api Structure
 
-```text
+````text
 CampFitFurDogs.Api/
   Horizontals/
   Verticals/
   Validation/
   Properties/
-```
+````
 
 ### 3.1 Horizontals
 
-```text
+````text
 Horizontals/
   Cors/
   ExceptionHandling/
@@ -159,19 +159,19 @@ Horizontals/
     Modules/
   Startup/
     Modules/
-```
+````
 
 Horizontals = cross‑cutting concerns.
 
 ### 3.2 Verticals
 
-```text
+````text
 Verticals/
   Authentication/
     Callback/
     Login/
   Dogs/
-```
+````
 
 Verticals = API slices.  
 Endpoints map HTTP → Application commands/queries.
@@ -180,7 +180,7 @@ Endpoints map HTTP → Application commands/queries.
 
 ## 4. CampFitFurDogs.Application Structure
 
-```text
+````text
 CampFitFurDogs.Application/
   Abstractions/
   Authentication/
@@ -189,11 +189,11 @@ CampFitFurDogs.Application/
   Errors/
   Exceptions/
   Settings/
-```
+````
 
 ### 4.1 Abstractions
 
-```text
+````text
 Abstractions/
   Audit/
   Authentication/
@@ -207,7 +207,7 @@ Abstractions/
     ListDogsByOwner/
     RegisterDog/
     RemoveDog/
-```
+````
 
 Abstractions define:
 
@@ -218,7 +218,7 @@ Abstractions define:
 
 ### 4.2 Feature Folders
 
-```text
+````text
 Authentication/
   Callback/
     Steps/
@@ -232,7 +232,7 @@ Dogs/
   ListDogsByOwner/
   RegisterDog/
   RemoveDog/
-```
+````
 
 Each use case folder contains:
 
@@ -244,7 +244,7 @@ Each use case folder contains:
 
 ## 5. CampFitFurDogs.Domain Structure
 
-```text
+````text
 CampFitFurDogs.Domain/
   Authentication/
     Sessions/
@@ -253,7 +253,7 @@ CampFitFurDogs.Domain/
     Errors/
   Dogs/
   Errors/
-```
+````
 
 Domain contains:
 
@@ -268,7 +268,7 @@ Domain has **no dependencies** on Application, Infrastructure, or Api.
 
 ## 6. CampFitFurDogs.Infrastructure Structure
 
-```text
+````text
 CampFitFurDogs.Infrastructure/
   Audit/
   Authentication/
@@ -279,7 +279,7 @@ CampFitFurDogs.Infrastructure/
   Identity/
   Migrations/
   Time/
-```
+````
 
 Infrastructure:
 
@@ -294,7 +294,7 @@ Infrastructure:
 
 ### 7.1 Unit + Architecture Tests
 
-```text
+````text
 tests/
   CampFitFurDogs.Api.Tests/
   CampFitFurDogs.Application.Tests/
@@ -303,32 +303,32 @@ tests/
   CampFitFurDogs.Infrastructure.Tests/
   CampFitFurDogs.Integration.Tests/
   CampFitFurDogs.TestUtilities/
-```
+````
 
 ### 7.2 Frank Tests
 
-```text
+````text
 tests/
   Frank.Api.Tests/
   Frank.Infrastructure.Tests/
   Frank.Infrastructure.EntityFrameworkCore.Tests/
   Frank.Tests/
   Frank.TestUtilities/
-```
+````
 
 ### 7.3 Integration Tests
 
-```text
+````text
 integration-tests/
   CampFitFurDogs.Api.IntegrationTests/
   CampFitFurDogs.Infrastructure.IntegrationTests/
-```
+````
 
 ---
 
 ## 8. Frontend Structure
 
-```text
+````text
 frontend/src/
   api/
   app/
@@ -336,11 +336,11 @@ frontend/src/
   hooks/
   lib/
   test/
-```
+````
 
 ### 8.1 Frontend Aggregates
 
-```text
+````text
 api/
   dogs/
   health/
@@ -363,11 +363,11 @@ app/
   (auth)/login/
   dogs/[id]/edit/
   dogs/register/success/
-```
+````
 
 ### 8.2 Frontend Test Structure
 
-```text
+````text
 frontend/src/test/
   api/
   app/
@@ -376,7 +376,7 @@ frontend/src/test/
   hooks/
   lib/
   ui/
-```
+````
 
 ---
 
@@ -386,7 +386,7 @@ Example slice: **Dogs**
 
 ### Backend
 
-```text
+````text
 Api/
   Verticals/Dogs/
 
@@ -399,30 +399,30 @@ Domain/
 
 Infrastructure/
   Dogs/
-```
+````
 
 ### Frontend
 
-```text
+````text
 frontend/src/
   api/dogs/
   components/dogs/
   hooks/dogs/
   lib/dogs/
   app/dogs/
-```
+````
 
 ### Backend Slice Diagram
 
-```text
+````text
 [Api] → [Application] → [Domain] → [Infrastructure]
-```
+````
 
 ### Frontend Slice Diagram
 
-```text
+````text
 [app] → [components] → [hooks] → [api] → [lib]
-```
+````
 
 ---
 

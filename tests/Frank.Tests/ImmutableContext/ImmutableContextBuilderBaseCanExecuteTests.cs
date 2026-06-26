@@ -1,5 +1,4 @@
-using Frank.Abstractions.ImmutableContext;
-using Frank.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 using Frank.Tests.Fakes.ImmutableContext;
 using Frank.Tests.Fakes.ImmutableContext.Steps;
 
@@ -14,14 +13,14 @@ public sealed class ImmutableContextBuilderBaseCanExecuteTests
 
         var steps = new IImmutableContextBuildStep<TestImmutableContext>[]
         {
-            new GatedRecordingStep<TestImmutableContext>("1", recorder, canExecute: true),
-            new GatedRecordingStep<TestImmutableContext>("2", recorder, canExecute: false),
-            new GatedRecordingStep<TestImmutableContext>("3", recorder, canExecute: true)
+            new GatedRecordingStep<TestImmutableContext>("1", recorder, true),
+            new GatedRecordingStep<TestImmutableContext>("2", recorder, false),
+            new GatedRecordingStep<TestImmutableContext>("3", recorder, true)
         };
 
         var builder = new TestImmutableContextBuilder(steps);
 
-        var ctx = new TestImmutableContext { Code = "initial" };
+        var ctx = new TestImmutableContext { Code = "initial", Now = DateTimeOffset.UtcNow };
 
         await builder.RunAsync(ctx, CancellationToken.None);
 
@@ -29,24 +28,23 @@ public sealed class ImmutableContextBuilderBaseCanExecuteTests
     }
 
     [Fact]
-    public async Task ExecutesOnlyStepsWithTrueCanExecute_InOrder()
+    public async Task ExecutesStepsInDeterministicOrder()
     {
         var recorder = new List<string>();
 
         var steps = new IImmutableContextBuildStep<TestImmutableContext>[]
         {
-            new GatedRecordingStep<TestImmutableContext>("A", recorder, true),
-            new GatedRecordingStep<TestImmutableContext>("B", recorder, false),
-            new GatedRecordingStep<TestImmutableContext>("C", recorder, false),
-            new GatedRecordingStep<TestImmutableContext>("D", recorder, true)
+            new RecordingStep<TestImmutableContext>("A", recorder),
+            new RecordingStep<TestImmutableContext>("B", recorder),
+            new RecordingStep<TestImmutableContext>("C", recorder)
         };
 
         var builder = new TestImmutableContextBuilder(steps);
 
-        var ctx = new TestImmutableContext { Code = "initial" };
+        var ctx = new TestImmutableContext { Code = "initial", Now = DateTimeOffset.UtcNow };
 
         await builder.RunAsync(ctx, CancellationToken.None);
 
-        recorder.Should().Equal(new[] { "A", "D" });
+        recorder.Should().Equal(new[] { "A", "B", "C" });
     }
 }

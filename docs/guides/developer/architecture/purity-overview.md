@@ -1,15 +1,15 @@
-# Purity Overview  
+# Purity Overview — Developer Guide  
 *A developer‑friendly explanation of architectural purity in CampFitFurDogs and Frank.*
 
 Purity is one of the core architectural values of the CampFitFurDogs system.  
 It ensures that each layer, slice, and component has a **single, clear responsibility**, enabling:
 
-- Predictable behavior  
-- Deterministic testing  
-- Safe refactoring  
-- Stable hosting behavior  
-- Clear operational boundaries  
-- High developer velocity  
+- predictable behavior  
+- deterministic testing  
+- safe refactoring  
+- stable hosting behavior  
+- clear operational boundaries  
+- high developer velocity  
 
 This document explains **what purity means**, **why it matters**, and **how to apply it** — without defining rules.  
 For rules, see **Architecture Governance → Purity Rules**.
@@ -20,14 +20,14 @@ For rules, see **Architecture Governance → Purity Rules**.
 
 Purity means:
 
-- Each layer does only what it is designed to do  
-- No layer leaks responsibilities into another  
-- No layer depends on details it shouldn’t know about  
-- No layer performs work that belongs elsewhere  
-- Behavior is deterministic and testable  
+- each layer does only what it is designed to do  
+- no layer leaks responsibilities into another  
+- no layer depends on details it shouldn’t know about  
+- no layer performs work that belongs elsewhere  
+- behavior is deterministic and testable  
 
-Purity is not about “functional programming purity.”  
-It’s about **architectural cleanliness**.
+Purity is not “functional programming purity.”  
+It is **architectural cleanliness**.
 
 Purity ensures that:
 
@@ -41,49 +41,61 @@ Purity ensures that:
 
 # 2. Why Purity Matters
 
-Purity is the backbone of:
+Purity is the backbone of the system’s reliability and maintainability.
 
-## **2.1 Testability**
+---
+
+## 2.1 Testability
+
 Pure layers are easy to test because:
 
-- They have no hidden dependencies  
-- They don’t reach across boundaries  
-- They don’t mutate global state  
-- They don’t depend on infrastructure  
+- they have no hidden dependencies  
+- they don’t reach across boundaries  
+- they don’t mutate global state  
+- they don’t depend on infrastructure  
 
 This enables:
 
-- Deterministic unit tests  
-- Fast integration tests  
-- Predictable behavior in CI  
-- Reliable PR preview environments  
+- deterministic unit tests  
+- fast integration tests  
+- predictable CI behavior  
+- reliable PR preview environments  
 
-## **2.2 Replaceability**
+---
+
+## 2.2 Replaceability
+
 Pure components can be replaced without cascade failures.
 
 Examples:
 
-- Swap a repository implementation  
-- Replace a hosting provider  
-- Change authentication flows  
-- Add new slices without touching existing ones  
+- swap a repository implementation  
+- replace a hosting provider  
+- change authentication flows  
+- add new slices without touching existing ones  
 
-## **2.3 Developer Velocity**
+---
+
+## 2.3 Developer Velocity
+
 Purity reduces cognitive load:
 
-- Developers know where code belongs  
-- Slices are self‑contained  
-- Layers behave consistently  
-- Onboarding is faster  
-- Refactoring is safer  
+- developers know where code belongs  
+- slices are self‑contained  
+- layers behave consistently  
+- onboarding is faster  
+- refactoring is safer  
 
-## **2.4 Operational Safety**
+---
+
+## 2.4 Operational Safety
+
 Pure layers prevent:
 
-- Leaking secrets  
-- Leaking internal exceptions  
-- Inconsistent error shapes  
-- Infrastructure failures affecting domain logic  
+- leaking secrets  
+- leaking internal exceptions  
+- inconsistent error shapes  
+- infrastructure failures affecting domain logic  
 
 ---
 
@@ -91,99 +103,114 @@ Pure layers prevent:
 
 Purity is applied differently in each layer.
 
-## **3.1 API Purity**
+---
+
+## 3.1 API Purity
+
 The API layer is a **boundary**, not a business layer.
 
 It should:
 
-- Map HTTP → Application  
-- Validate requests  
-- Shape responses  
-- Apply authentication & authorization  
-- Use dispatchers  
-- Use Frank middleware  
+- map HTTP → Application  
+- validate requests  
+- shape responses  
+- apply authentication & authorization  
+- use dispatchers  
+- use Frank middleware  
 
 It should **not**:
 
-- Contain business logic  
-- Access the database  
-- Construct domain entities  
-- Call external services  
+- contain business logic  
+- access the database  
+- construct domain entities  
+- call external services  
 
-## **3.2 Application Purity**
+---
+
+## 3.2 Application Purity
+
 The Application layer is the **orchestrator**.
 
 It should:
 
-- Coordinate use cases  
-- Invoke domain logic  
-- Dispatch domain events  
-- Use abstractions (readers, repositories)  
-- Remain deterministic  
+- coordinate use cases  
+- invoke domain logic  
+- dispatch domain events  
+- use abstractions (readers, repositories)  
+- remain deterministic  
 
 It should **not**:
 
-- Perform persistence  
-- Perform HTTP calls  
-- Contain UI logic  
-- Contain hosting logic  
-- Contain protocol logic (e.g., OIDC)  
+- perform persistence  
+- perform HTTP calls  
+- contain UI logic  
+- contain hosting logic  
+- contain protocol logic (e.g., OIDC)  
 
-## **3.3 Domain Purity**
+---
+
+## 3.3 Domain Purity
+
 The Domain layer is the **heart of the business**.
 
 It should:
 
-- Contain business rules  
-- Contain invariants  
-- Contain aggregates, entities, value objects  
-- Raise domain events  
+- contain business rules  
+- contain invariants  
+- contain aggregates, entities, value objects  
+- raise domain events  
 
 It should **not**:
 
-- Know about HTTP  
-- Know about databases  
-- Know about hosting  
-- Know about authentication providers  
-- Know about infrastructure  
+- know about HTTP  
+- know about databases  
+- know about hosting  
+- know about authentication providers  
+- know about infrastructure  
 
-## **3.4 Infrastructure Purity**
+---
+
+## 3.4 Infrastructure Purity
+
 Infrastructure is the **integration layer**.
 
 It should:
 
-- Implement repositories  
-- Implement readers  
-- Integrate with databases  
-- Integrate with external services  
-- Implement hosting providers  
+- implement repositories  
+- implement readers  
+- integrate with databases  
+- integrate with external services  
+- implement hosting providers  
 
 It should **not**:
 
-- Contain business rules  
-- Construct domain entities incorrectly  
-- Leak infrastructure types into Application or Domain  
+- contain business rules  
+- construct domain entities incorrectly  
+- leak infrastructure types into Application or Domain  
 
-## **3.5 Frank Purity**
+---
+
+## 3.5 Frank Purity
+
 Frank is the **cross‑cutting backbone**.
 
 It should:
 
-- Provide reusable primitives  
-- Provide DI auto‑registration  
-- Provide endpoint discovery  
-- Provide validator scanning  
-- Provide hosting provider abstractions  
-- Provide security headers  
-- Provide error boundaries  
-- Provide dispatcher pipeline  
+- provide reusable primitives  
+- provide DI auto‑registration  
+- provide endpoint discovery  
+- provide validator scanning  
+- provide hosting provider abstractions  
+- provide security headers  
+- provide error boundaries  
+- provide dispatcher pipeline  
 
 It should **not**:
 
-- Contain product‑specific logic  
-- Depend on CampFitFurDogs  
-- Contain domain rules  
-- Contain business logic  
+- contain product‑specific logic  
+- depend on CampFitFurDogs  
+- contain domain rules  
+- contain business logic  
 
 ---
 
@@ -191,21 +218,21 @@ It should **not**:
 
 Purity enables slices to be:
 
-- Self‑contained  
-- Predictable  
-- Easy to navigate  
-- Easy to test  
-- Easy to extend  
+- self‑contained  
+- predictable  
+- easy to navigate  
+- easy to test  
+- easy to extend  
 
 A pure slice spans:
 
-```
+````text
 Api → Application → Domain → Infrastructure
-```
+````
 
 Each layer contributes only what it is responsible for.
 
-This prevents:
+Purity prevents:
 
 - API doing Application work  
 - Application doing Domain work  
@@ -218,19 +245,19 @@ This prevents:
 
 Purity is enforced through:
 
-- Dispatcher pipeline  
-- Validation pipeline  
-- Domain event pipeline  
+- dispatcher pipeline  
+- validation pipeline  
+- domain event pipeline  
 - ImmutableContextBuilder pipelines  
-- Hosting provider pipeline  
-- StartupModule Engine  
+- hosting provider pipeline  
+- StartupModule engine  
 
 Each pipeline isolates responsibilities and ensures:
 
-- Deterministic behavior  
-- Clear ordering  
-- Clear failure semantics  
-- Testability  
+- deterministic behavior  
+- clear ordering  
+- clear failure semantics  
+- testability  
 
 ---
 
@@ -238,18 +265,18 @@ Each pipeline isolates responsibilities and ensures:
 
 Pure architecture enables:
 
-- Unit tests for Domain  
-- Handler tests for Application  
-- Endpoint tests for API  
-- Integration tests for Infrastructure  
-- Full‑stack tests for slices  
+- unit tests for Domain  
+- handler tests for Application  
+- endpoint tests for API  
+- integration tests for Infrastructure  
+- full‑stack tests for slices  
 
 Because layers are pure:
 
-- Tests don’t require real infrastructure  
-- Tests don’t require real HTTP  
-- Tests don’t require real hosting  
-- Tests don’t require real identity providers  
+- tests don’t require real infrastructure  
+- tests don’t require real HTTP  
+- tests don’t require real hosting  
+- tests don’t require real identity providers  
 
 ---
 
@@ -257,19 +284,19 @@ Because layers are pure:
 
 Purity improves DX by:
 
-- Making code predictable  
-- Making slices consistent  
-- Making layers clear  
-- Making onboarding faster  
-- Making refactoring safer  
-- Making debugging easier  
+- making code predictable  
+- making slices consistent  
+- making layers clear  
+- making onboarding faster  
+- making refactoring safer  
+- making debugging easier  
 
 Developers always know:
 
-- Where code belongs  
-- Where code does *not* belong  
-- How layers interact  
-- How slices are structured  
+- where code belongs  
+- where code does *not* belong  
+- how layers interact  
+- how slices are structured  
 
 ---
 
@@ -283,7 +310,7 @@ A developer can use this mental checklist:
 - **Infrastructure**: Am I integrating external systems without leaking them upward?  
 - **Frank**: Am I building reusable primitives, not product logic?  
 
-If the answer is “no,” purity is preserved.
+If the answer is “yes,” purity is preserved.
 
 ---
 
@@ -291,17 +318,17 @@ If the answer is “no,” purity is preserved.
 
 Purity is the foundation of:
 
-- Testability  
-- Replaceability  
-- Developer velocity  
-- Operational safety  
-- Architectural clarity  
+- testability  
+- replaceability  
+- developer velocity  
+- operational safety  
+- architectural clarity  
 
 This guide explains **why purity matters** and **how to think about it**.  
 For enforceable rules, see:
 
-```
+````text
 docs/governance/technical/purity-rules.md
-```
+````
 
 Purity is not a restriction — it’s a superpower.

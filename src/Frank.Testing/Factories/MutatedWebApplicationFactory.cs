@@ -1,14 +1,13 @@
-using System.Net.Http;
 using System.Net.Http.Json;
-using Frank.Api;
+using Frank.Api.Endpoints;
 using Frank.Testing.Contexts;
-using Frank.Testing.Endpoints;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Testcontainers.PostgreSql;
 
@@ -58,28 +57,14 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     }
 
     // ------------------------------------------------------------
-    // FIXED: Environment only — config overrides now applied in ConfigureWebHost
-    // ------------------------------------------------------------
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
-        builder.UseEnvironment(_ctx.Environment);
-        return base.CreateHost(builder);
-    }
-
-    // ------------------------------------------------------------
-    // FIXED: Configuration overrides applied BEFORE StartupEngine runs
+    // CONFIGURATION + SERVICES
     // ------------------------------------------------------------
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment(_ctx.Environment);
+
         builder.ConfigureAppConfiguration((context, cfg) =>
         {
-            // Ensure environment is set early
-            cfg.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ASPNETCORE_ENVIRONMENT"] = _ctx.Environment
-            });
-
-            // Apply all config overrides BEFORE StartupEngine.AddAll executes
             foreach (var apply in _ctx.ConfigOverrides)
                 apply(cfg);
         });
@@ -87,8 +72,20 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
         builder.ConfigureServices((context, services) =>
         {
             // ------------------------------------------------------------
-            // COOKIE AUTH ADJUSTMENTS FOR TESTING
+            // AUTH SCHEME ADJUSTMENTS FOR TESTING
+            // Force challenges to use the cookie scheme, not OIDC
             // ------------------------------------------------------------
+            services.PostConfigure<AuthenticationOptions>(opts =>
+            {
+                opts.DefaultAuthenticateScheme = "cfd.session";
+                opts.DefaultChallengeScheme = "cfd.session";
+            });
+
+            // ------------------------------------------------------------
+            // COOKIE AUTH ADJUSTMENTS FOR TESTING (MERGE, DO NOT OVERWRITE)
+            // ------------------------------------------------------------
+
+            // Test environment may relax SameSite/SecurePolicy
             services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
             {
                 opts.Cookie.SecurePolicy = CookieSecurePolicy.None;
@@ -114,8 +111,20 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
             foreach (var apply in _ctx.CookieOptionsOverrides)
                 services.PostConfigureAll(apply);
 
+            // ------------------------------------------------------------
+            // SERVICE OVERRIDES
+            // ------------------------------------------------------------
             foreach (var apply in _ctx.ServiceOverrides)
                 apply(services);
+
+            // ------------------------------------------------------------
+            // FAKE SERVICE REGISTRATIONS
+            // ------------------------------------------------------------
+            foreach (var kvp in _ctx.Fakes)
+            {
+                services.RemoveAll(kvp.Key);
+                services.AddSingleton(kvp.Key, kvp.Value);
+            }
 
             // ------------------------------------------------------------
             // DATABASE HANDLING
@@ -132,8 +141,8 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
             // ------------------------------------------------------------
             // ENDPOINT DISCOVERY
             // ------------------------------------------------------------
-            var assembly = typeof(SignInEndpoint).Assembly;
-            EndpointDiscovery.AddEndpoints(assembly);
+            foreach (var asm in _ctx.EndpointAssemblies)
+                EndpointDiscovery.AddEndpoints(asm);
 
             // ------------------------------------------------------------
             // ALLOW SUBCLASSES TO MUTATE SERVICES

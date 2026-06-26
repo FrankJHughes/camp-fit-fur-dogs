@@ -118,7 +118,7 @@ src/Frank/
   Application/                         (NEW subfatcher.cs
     IDomainEventHandler.cs
     IUnitOfWork.cs
-    ICurrentUserService.cs
+    ICurrentUser.cs
     CommandDispatcher.cs
     QueryDispatcher.cs
     DomainEventDispatcher.cs
@@ -132,7 +132,7 @@ src/Frank/
     IDomainEventDispatcher.cs
     IDomainEventHandler.cs
     IUnitOfWork.cs
-    ICurrentUserService.cs
+    ICurrentUser.cs
     CommandDispatcher.cs
     QueryDispatcher.cs
     DomainEventDispatcher.cs
@@ -341,9 +341,9 @@ After extraction, product projects contain only product code:
 After extraction, product projects contain only product code:
 
 - **Application** — handlers, commands, queries, DTOs, validators, reader interfaces.
-- **Infrastructure** — AppDbContext, EF configurations, migrations, repositories, readers, DummyCurrentUserService, product DI registrations.
+- **Infrastructure** — AppDbContext, EF configurations, migrations, repositories, readers, DummyCurrentUser, product DI registrations.
 - **Api** — endpoints, request, commands, queries, DTOs, validators, reader interfaces.
-- **Infrastructure** — AppDbContext, EF configurations, migrations, repositories, readers, DummyCurrentUserService, product DTOs, Program.cs, appsettings.
+- **Infrastructure** — AppDbContext, EF configurations, migrations, repositories, readers, DummyCurrentUser, product DTOs, Program.cs, appsettings.
 
 ### Part G: Update reference graph
 
@@ -508,12 +508,12 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 | Application | `Abstractions/IDomainEventDispatcher.cs` | `Frank/Application/` |
 | Application | `Abstractions/IDomainEventHandler.cs` | `Frank/Application/` |
 | Application | `Abstractions/IUnitOfWork.cs` | `Frank/Application/` |
-| Application | `Abstractions/ICurrentUserService.cs` | `Frank/Application/` |
+| Application | `Abstractions/ICurrentUser.cs` | `Frank/Application/` |
 | Application | `CommandDispatcher.cs` | `Frank/Application/` |
 | Application | `QueryDispatcher.cs` | `Frank/Application/` |
 | `Abstractions/IDomainEventHandler.cs` | `Frank/Application/` |
 | Application | `Abstractions/IUnitOfWork.cs` | `Frank/Application/` |
-| Application | `Abstractions/ICurrentUserService.cs` | `Frank/Application/` |
+| Application | `Abstractions/ICurrentUser.cs` | `Frank/Application/` |
 | Application | `CommandDispatcher.cs` | `Frank/Application/` |
 | Application | `QueryDispatcher.cs` | `Frank/Application/` |
 | Application | `DomainEvents/DomainEventDispatcher.cs` | `Frank/Application/` |

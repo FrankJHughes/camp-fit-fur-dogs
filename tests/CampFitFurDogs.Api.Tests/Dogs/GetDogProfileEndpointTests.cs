@@ -8,7 +8,6 @@ using Testcontainers.PostgreSql;
 using Frank.Testing.Contexts;
 
 using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
-using Microsoft.Extensions.Configuration;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 

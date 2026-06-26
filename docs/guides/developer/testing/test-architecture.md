@@ -146,19 +146,19 @@ They no longer use:
 | `NoManualInfrastructureRegistrationGuardrailTests.cs` | Infra types registered via Scrutor only |
 | `NoDuplicateServiceRegistrationGuardrailTests.cs` | No duplicate DI registrations |
 | `DomainEventHandlerRegistrationGuardrailTests.cs` | Domain event handlers registered |
-| `CurrentUserServiceGuardrailTests.cs` | **Updated: now uses DefaultHttpContext, no Testcontainers** |
+| `CurrentUserGuardrailTests.cs` | **Updated: now uses DefaultHttpContext, no Testcontainers** |
 | `DbContextGuardrailTests.cs` | Npgsql + single DbContext registration |
 | `EndpointConventionGuardrailTests.cs` | Every `*Endpoint` implements `IEndpoint` |
 | `RouteMappingGuardrailTests.cs` | Route smoke test |
 | `TestcontainersGuardrailTests.cs` | Database connectivity smoke test |
 
 **Important recent change:**  
-`CurrentUserServiceGuardrailTests` no longer uses `/__test__/sign-in` or a running API host.  
+`CurrentUserGuardrailTests` no longer uses `/__test__/sign-in` or a running API host.  
 It now uses:
 
 - `DefaultHttpContext`  
 - `HttpContextAccessor`  
-- `AuthenticatedUserService`  
+- `AuthenticatedUser`  
 
 This aligns with the new identity model and guardrail boundaries.
 

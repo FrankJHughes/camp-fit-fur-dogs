@@ -2,7 +2,6 @@ using Frank.Authentication.Callback.Oidc;
 using Frank.Authentication.Callback.Oidc.Steps;
 using Frank.Settings;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc;
-using Xunit;
 
 namespace Frank.Tests.Authentication.Callback.Oidc.Steps;
 

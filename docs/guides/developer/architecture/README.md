@@ -17,21 +17,21 @@ Authentication and session flows now use the **ImmutableContextBuilder** archite
 
 Use these guides to understand:
 
-- How API, Application, and Domain layers interact  
-- How purity rules constrain each layer  
-- How commands and queries flow through the dispatcher pipeline  
-- How domain events propagate  
-- How vertical slices are structured  
-- How validation boundaries are enforced  
-- How the **builder‑based authentication callback architecture** works  
-- How identity mapping, session creation, and cookie issuance integrate with the architecture  
-- How Infrastructure integrates with Application and Domain  
-- How **StartupEngine** composes startup modules  
-- How **HostingEngine** selects and configures hosting providers  
-- How environment seams and hosting seams work  
-- How tests map to architectural layers and seams  
-- How Frank provides cross‑cutting primitives and discovery mechanisms  
-- How ImmutableContextBuilder enables pure, deterministic multi‑stage transformations  
+- how API, Application, and Domain layers interact  
+- how purity rules constrain each layer  
+- how commands and queries flow through the dispatcher pipeline  
+- how domain events propagate  
+- how vertical slices are structured  
+- how validation boundaries are enforced  
+- how the **builder‑based authentication callback architecture** works  
+- how identity mapping, session creation, and cookie issuance integrate with the architecture  
+- how Infrastructure integrates with Application and Domain  
+- how **StartupEngine** composes startup modules  
+- how **HostingEngine** selects and configures hosting providers  
+- how environment seams and hosting seams work  
+- how tests map to architectural layers and seams  
+- how Frank provides cross‑cutting primitives and discovery mechanisms  
+- how ImmutableContextBuilder enables pure, deterministic multi‑stage transformations  
 
 These guides evolve as the system evolves.
 
@@ -45,7 +45,7 @@ These guides evolve as the system evolves.
   How to keep endpoints thin, pure, and free of domain logic.
 
 - **Dispatcher Pipeline**  
-  How commands and queries flow through the application layer.
+  How commands and queries flow through the Application layer.
 
 - **Domain Events**  
   How domain events are raised, dispatched, and handled.
@@ -54,9 +54,9 @@ These guides evolve as the system evolves.
   How vertical slices and layers are organized in the codebase.
 
 - **Purity Rules**  
-  Cross-layer architectural purity constraints.
+  Cross‑layer architectural purity constraints.
 
-- **Shared Kernel**  
+- **Shared Kernel (Frank)**  
   What belongs in Frank and why.
 
 - **Validation Boundaries**  
@@ -136,25 +136,25 @@ These guides evolve as the system evolves.
 
 Update or add new architecture guides when:
 
-- A new subsystem is introduced (e.g., messaging, workflows, caching)  
-- A new architectural pattern is adopted  
-- A purity rule changes  
-- A new pipeline or cross-cutting concern is added  
-- A feature introduces a reusable architectural concept  
-- A developer needs clarification that applies across slices  
-- A hosting provider abstraction changes  
-- A new environment or preview behavior is introduced  
+- a new subsystem is introduced (e.g., messaging, workflows, caching)  
+- a new architectural pattern is adopted  
+- a purity rule changes  
+- a new pipeline or cross‑cutting concern is added  
+- a feature introduces a reusable architectural concept  
+- a developer needs clarification that applies across slices  
+- a hosting provider abstraction changes  
+- a new environment or preview behavior is introduced  
 - StartupEngine or HostingEngine behavior changes  
-- A new ImmutableContextBuilder pipeline is introduced  
+- a new ImmutableContextBuilder pipeline is introduced  
 
 Do **not** update these guides for:
 
-- One-off implementation details  
-- Business logic changes  
-- Story-specific behavior  
-- Temporary constraints  
-- Decisions that belong in ADRs  
-- Conventions or governance rules  
+- one‑off implementation details  
+- business logic changes  
+- story‑specific behavior  
+- temporary constraints  
+- decisions that belong in ADRs  
+- conventions or governance rules  
 
 ---
 

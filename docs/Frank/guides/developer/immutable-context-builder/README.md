@@ -58,28 +58,28 @@ The orchestrator that:
 
 Pipeline execution is performed by:
 
-```csharp
+````csharp
 await ProcessAsync(TContext ctx, CancellationToken ct)
-```
+````
 
 ### 3.1 Step Selection
 
-```csharp
+````csharp
 TrySelectNextStep(remaining, ctx, out var step)
-```
+````
 
 Rules:
 
-- Steps are executed **only if `CanExecute(ctx)` returns true**
-- Steps are executed **at most once**
+- Steps execute **only if `CanExecute(ctx)` returns true**
+- Steps execute **at most once**
 - Order is determined by the order of the `_steps` list
 - Execution stops when no remaining step can execute
 
 ### 3.2 Step Execution
 
-```csharp
+````csharp
 var after = await step.ExecuteAsync(before, ct);
-```
+````
 
 Each step:
 
@@ -89,11 +89,9 @@ Each step:
 
 ### 3.3 Transition Validation
 
-After each step:
-
-```csharp
+````csharp
 AssertValidTransition(step, before, after);
-```
+````
 
 This enforces invariants such as:
 
@@ -103,12 +101,10 @@ This enforces invariants such as:
 
 ### 3.4 Diagnostics
 
-Two events are emitted:
-
-```csharp
+````csharp
 EmitStartEvent(step, before);
 EmitEndEvent(step, before, after, durationMs);
-```
+````
 
 These produce:
 
@@ -160,13 +156,11 @@ Unless explicitly injected.
 
 ## 5.1 Implementing a Build Step
 
-A step must implement:
-
-```csharp
+````csharp
 bool CanExecute(TContext context);
 Task<TContext> ExecuteAsync(TContext context, CancellationToken ct);
 IImmutableContextBuildStepMetadata Metadata { get; }
-```
+````
 
 Rules:
 
@@ -196,9 +190,9 @@ Builders typically:
 
 Diagnostics are emitted via:
 
-```csharp
+````csharp
 ImmutableContextBuilderDiagnosticEvent
-```
+````
 
 Fields:
 

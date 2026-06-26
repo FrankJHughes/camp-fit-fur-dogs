@@ -1,5 +1,5 @@
-# Authentication Guide  
-**Aligned With Exclusive OIDC Authentication, De‑featured Local Identity, and ImmutableContextBuilder Architecture**
+# Authentication — Developer Guide  
+**Aligned with Exclusive OIDC Authentication, De‑featured Local Identity, and ImmutableContextBuilder Architecture**
 
 Authentication in CampFitFurDogs is implemented using **OIDC (OpenID Connect)** with an external identity provider (Auth0).  
 All authentication logic is backend‑driven, session‑based, and implemented as a **horizontal cross‑cutting concern**, not a vertical slice.
@@ -14,7 +14,7 @@ This guide explains each part of the system and how they work together.
 
 ---
 
-## Contents
+# Contents
 
 - **[Authentication Configuration](authentication-configuration.md)**  
   Required configuration keys for local, preview, and production environments.
@@ -53,35 +53,54 @@ This guide explains each part of the system and how they work together.
 
 ---
 
-## Summary
+# Summary
 
 - Authentication is **external** — no passwords are stored locally.  
 - Authentication is a **horizontal concern**, not a vertical slice.  
 - Login initiation is **pure** — no domain logic or persistence.  
 - The authentication callback uses a **three‑layer builder‑based architecture**:
 
-### **Frank Pipeline (Protocol Layer)**
-- Authorization code exchange  
-- Userinfo retrieval  
-- Claim normalization  
-- No domain logic  
-- No session logic  
+---
 
-### **Application Pipeline (Business Layer)**
-- Identity mapping  
+## Frank Pipeline (Protocol Layer)
+
+- authorization code exchange  
+- userinfo retrieval  
+- claim normalization  
+- no domain logic  
+- no session logic  
+
+Frank produces a **normalized external identity**.
+
+---
+
+## Application Pipeline (Business Layer)
+
+- identity mapping  
 - Owner creation or lookup  
-- Session creation  
-- Token hashing  
-- Cookie value computation  
-- Redirect computation  
-- No protocol logic  
-- No HTTP logic  
+- session creation  
+- token hashing  
+- cookie value computation  
+- redirect computation  
+- no protocol logic  
+- no HTTP logic  
 
-### **API Callback Endpoint (Boundary Layer)**
-- Cookie issuance  
-- Redirect to frontend  
-- No business logic  
-- No protocol logic  
+Application produces a **fully authenticated internal identity**.
+
+---
+
+## API Callback Endpoint (Boundary Layer)
+
+- cookie issuance  
+- redirect to frontend  
+- no business logic  
+- no protocol logic  
+
+The API boundary performs the final HTTP‑level responsibilities.
+
+---
+
+# Additional Notes
 
 - Session management persists and validates the authenticated Owner identity.  
 - Identity mapping ensures stable linkage between Auth0 users and internal Owners.  
@@ -92,7 +111,7 @@ This guide explains each part of the system and how they work together.
 
 ---
 
-## Related Stories
+# Related Stories
 
 - US‑110 — Authentication: Owner Login  
 - US‑111 — Authentication: Session Management  

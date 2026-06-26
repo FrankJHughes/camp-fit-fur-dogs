@@ -1,20 +1,15 @@
-# exception-to-problem-architecture.md
+# CampFitFurDogs — Exception‑to‑Problem - Architecture Conventions
 
-# CampFitFurDogs — Exception‑to‑Problem Architecture
-
-The **Exception‑to‑Problem Architecture** in **CampFitFurDogs.Api** defines how
-exceptions thrown inside the application are captured, classified, translated,
-and surfaced as **Problem** responses at the HTTP boundary.
+The **Exception‑to‑Problem Architecture** in **CampFitFurDogs.Api** defines how exceptions thrown inside the application are captured, classified, translated, and surfaced as **Problem** responses at the HTTP boundary.
 
 Internally, CampFitFurDogs uses **exceptions** to signal failure.  
-Externally, it returns **ProblemDetails**-style responses to clients.
+Externally, it returns **ProblemDetails‑style** responses to clients.
 
-This is a **product‑level** architecture — it is implemented in
-CampFitFurDogs, not in the Frank platform.
+This is a **product‑level architecture** — implemented in CampFitFurDogs, not in Frank.
 
 ---
 
-## Purpose
+# Purpose
 
 The CampFitFurDogs Exception‑to‑Problem pipeline exists to:
 
@@ -29,39 +24,30 @@ Problems are the **public contract**.
 
 ---
 
-## High‑Level Flow
+# High‑Level Flow
 
-1. **Application code throws an exception**  
-   - validation failure  
-   - domain rule violation  
-   - authentication/authorization failure  
-   - infrastructure failure  
-   - unexpected failure  
+````text
+1. Application code throws an exception
+2. CampFitFurDogs exception middleware catches it
+3. Exception registry maps exception → error code / category
+4. Category maps → ProblemDetails / ValidationProblemDetails
+5. Problem is shaped into an HTTP response
+6. Response is returned to the client (no exception details)
+````
 
-2. **CampFitFurDogs exception handling middleware catches the exception**  
-   No exception escapes past this middleware.
+### Exception sources include:
 
-3. **Exception registry maps the exception to an error code / category**  
-   This classifies the failure.
+- validation failures  
+- domain rule violations  
+- authentication/authorization failures  
+- infrastructure failures  
+- unexpected failures  
 
-4. **Error code/category maps to a Problem**  
-   - `ProblemDetails`  
-   - `ValidationProblemDetails`  
-   - domain‑specific problem  
-   - infrastructure problem  
-   - authentication/authorization problem  
-
-5. **Problem is shaped into an HTTP response**  
-   - status code  
-   - content type  
-   - body  
-
-6. **Response is returned to the client**  
-   No exception details are exposed.
+No exception escapes past the middleware.
 
 ---
 
-## Exception Categories (CampFitFurDogs)
+# Exception Categories (CampFitFurDogs)
 
 CampFitFurDogs classifies exceptions into categories such as:
 
@@ -80,10 +66,14 @@ Each category maps to:
 
 ---
 
-## Problem Shaping
+# Problem Shaping
 
-Problems are shaped into safe, consistent responses, typically following
-`ProblemDetails` / `ValidationProblemDetails` patterns:
+Problems are shaped into safe, consistent responses, typically following:
+
+- `ProblemDetails`  
+- `ValidationProblemDetails`  
+
+Fields include:
 
 - `type` — problem identifier URI or code  
 - `title` — human‑readable summary  
@@ -101,7 +91,7 @@ CampFitFurDogs must **not** include:
 
 ---
 
-## HTTP Mapping (CampFitFurDogs)
+# HTTP Mapping (CampFitFurDogs)
 
 Typical mappings:
 
@@ -116,63 +106,132 @@ These mappings are enforced by the exception handling middleware and registry.
 
 ---
 
-## Integration Points
+# Integration Points
 
-The Exception‑to‑Problem pipeline in CampFitFurDogs:
+The Exception‑to‑Problem pipeline:
 
-- wraps all API endpoints  
+- wraps **all API endpoints**  
 - sees exceptions thrown from:
   - command handlers  
   - query handlers  
   - domain services  
   - infrastructure services  
-- shapes them into Problems before they reach the client  
 
 Endpoints in CampFitFurDogs:
 
 - do **not** handle exceptions directly  
 - do **not** shape Problems manually  
-- rely on the middleware to do so consistently  
-
----
-
-## Observability
-
-When an exception is translated into a Problem, CampFitFurDogs:
-
-- logs the exception with correlation information  
-- records structured error events for diagnostics  
-- ensures that logs contain enough context for debugging  
-- keeps client‑visible responses safe and minimal  
-
----
-
-## Prohibitions
-
-In CampFitFurDogs.Api:
-
-- endpoints must not:
-  - catch and swallow exceptions  
-  - return raw exception messages  
-  - construct ad‑hoc error responses  
-
-- application code must not:
-  - shape HTTP responses directly for failures  
-  - bypass the exception handling middleware  
+- rely entirely on the middleware  
 
 All failure paths must flow through the **Exception‑to‑Problem** pipeline.
 
 ---
 
-## Scope
+# Observability
+
+When an exception is translated into a Problem, CampFitFurDogs:
+
+- logs the exception with correlation information  
+- emits structured error events using `ITraceEvents`  
+- ensures logs contain enough context for debugging  
+- ensures client‑visible responses remain safe and minimal  
+
+Observability must follow:
+
+- **structured payloads**  
+- **no embedded JSON**  
+- **no ad‑hoc logging**  
+- **no vendor logging APIs**  
+- **automatic correlation propagation**  
+
+---
+
+# Code Conventions
+
+## API Layer
+
+API endpoints must **not**:
+
+- catch and swallow exceptions  
+- return raw exception messages  
+- construct ad‑hoc error responses  
+- bypass the exception middleware  
+
+API endpoints must:
+
+- allow exceptions to bubble to the middleware  
+- rely on the registry for classification  
+- rely on the middleware for shaping  
+
+---
+
+## Application Layer
+
+Application code must **not**:
+
+- shape HTTP responses  
+- translate exceptions into Problems  
+- catch exceptions unless rethrowing with context  
+- leak infrastructure or domain details  
+
+Application code must:
+
+- throw exceptions to signal failure  
+- rely on the API boundary to translate them  
+
+---
+
+## Domain Layer
+
+Domain code must:
+
+- throw domain exceptions for invariant violations  
+- avoid HTTP concerns  
+- avoid ProblemDetails concerns  
+
+Domain exceptions are mapped by the registry.
+
+---
+
+## Infrastructure Layer
+
+Infrastructure code must:
+
+- throw exceptions for external failures  
+- avoid shaping Problems  
+- avoid HTTP concerns  
+
+Infrastructure exceptions are mapped to **Infrastructure** or **Unexpected** categories.
+
+---
+
+# Prohibitions
+
+CampFitFurDogs must **never**:
+
+- manually construct ProblemDetails in endpoints  
+- return exception messages to clients  
+- leak stack traces  
+- bypass the exception middleware  
+- use ad‑hoc logging  
+- mutate observability context  
+- generate correlation IDs manually  
+
+---
+
+# Scope
 
 This architecture:
 
 - is **specific to CampFitFurDogs**  
-- is **not yet a Frank platform primitive**  
-- may be promoted to a Frank‑level convention in the future if:
+- is **not** a Frank primitive (yet)  
+- may be promoted to Frank if:
   - multiple products adopt it  
   - a shared Frank exception/Problem layer is introduced  
 
-For now, it remains a **product‑level architecture** documented under
-`/docs/CampFitFurDogs/architecture`.
+For now, it remains a **product‑level architecture** documented under:
+
+````text
+/docs/CampFitFurDogs/architecture
+````
+

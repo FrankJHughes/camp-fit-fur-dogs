@@ -1,314 +1,265 @@
-# Developer Guide
+# Camp Fit Fur Dogs — Guides — Developer
+Product‑specific development handbook
 
-> Onboarding guide and central reference for contributors.
+Welcome to the **Camp Fit Fur Dogs Developer Guide** — the handbook for developers building and maintaining the Camp Fit Fur Dogs product **using the Frank Framework**.
 
-## Quick Links
-
-- [Actions Index](ca://s?q=Open_Actions_Index)
-- [Action README Template](ca://s?q=Open_Action_README_Template)
-- [Workflow Conventions](ca://s?q=Open_Workflow_Conventions)
-- [Architecture Conventions](ca://s?q=Open_Architecture_Conventions)
-- [Code Conventions](ca://s?q=Open_Code_Conventions)
-- [Documentation Conventions](ca://s?q=Open_Documentation_Conventions)
-- [Authentication Callback Architecture](ca://s?q=Open_Authentication_Callback_Architecture)
-- [Scrum Master Guide](ca://s?q=Open_Scrum_Master_Guide)
-- [Product Owner Guide](ca://s?q=Open_Product_Owner_Guide)
+This guide documents **product‑specific architecture, conventions, and workflows**.  
+Frank’s capabilities (DI, hosting, startup, validation, observability, testing harness, etc.) are documented separately in the Frank guides.
 
 ---
 
-# Developer Documentation Structure
+# 1. Purpose of This Guide
 
-The `developer` folder contains several focused sub‑areas:
+This guide provides:
 
-### Architecture  
-Core architectural explanations and subsystem architecture  
-→ [Architecture Guides](ca://s?q=Open_Architecture_Guides)
+- Product‑specific architecture  
+- Product slice structure  
+- Product domain model overview  
+- Product conventions  
+- Product‑specific DI/config rules  
+- Product‑specific observability events  
+- How to use Frank capabilities inside Camp Fit Fur Dogs  
+- Developer workflow for adding new slices/features  
 
-### Authentication  
-OIDC login, **builder‑based callback flow**, identity mapping, session creation, session tokens, session cookies  
-→ [Authentication Guides](ca://s?q=Open_Authentication_Guides)
-
-> Note: The previous step‑engine authentication pipeline has been fully replaced by the ImmutableContextBuilder architecture (ADR‑0054).
-
-### Testing  
-Testing strategy across API, Application, Domain, and frontend  
-→ [Testing Guides](ca://s?q=Open_Testing_Guides)
-
-### Operations  
-Local development, hosting, troubleshooting, secrets  
-→ [Operations Guides](ca://s?q=Open_Operations_Guides)
-
-### CI/CD  
-GitHub Actions, dependency graph, workflow documentation  
-→ [CI/CD Guides](ca://s?q=Open_CI_CD_Guides)
-
-### Forms  
-Frontend form architecture and validation  
-→ [Form Guides](ca://s?q=Open_Form_Guides)
-
-### Feature Guides  
-Vertical slice walkthroughs and slice‑level abstractions  
-→ [Feature Guides](ca://s?q=Open_Feature_Guides)
+This guide does **not** restate Frank’s capabilities or internal architecture.
 
 ---
 
-# Getting Started
+# 2. Product Architecture
 
-1. Clone the repository and install dependencies according to the root README.md.
-2. Review the conventions listed under Quick Links before making changes.
-3. Understand the PR Preview lifecycle via the Workflow Conventions.
-4. Review the Architecture Conventions to understand the system’s DDD layering and cross‑cutting primitives.
-5. Understand the Story → Task → PR workflow described below.
-6. Explore the Architecture Guides to understand vertical slices, CQRS, Frank primitives, and ImmutableContextBuilder pipelines.
-7. Run the system locally using the Operations Guides.
-
----
-
-# Repository Layout
+Camp Fit Fur Dogs follows a **clean, vertical‑slice architecture** built on Frank.
 
 ```
-.github/
-  actions/          # Reusable composite actions
-  workflows/        # CI/CD workflow definitions
-
-docs/
-  conventions/      # Project-wide conventions and standards
-  guides/
-    developer/      # Developer documentation (this folder)
-      architecture/
-      authentication/
-      testing/
-      operations/
-      ci-cd/
-      forms/
-      feature-guides/
-
-product/
-  stories/          # Backlog stories (source of truth)
-
 src/
-  ...               # Backend, frontend, and Frank source code
-
-integration-tests/
-  ...               # Infrastructure and API integration test suites
+  CampFitFurDogs.Api/
+  CampFitFurDogs.Application/
+  CampFitFurDogs.Domain/
+  CampFitFurDogs.Infrastructure/
 ```
 
+## 2.1 Bounded Contexts
+
+Camp Fit Fur Dogs is organized into the following bounded contexts:
+
+- Authentication  
+- Owners  
+- Bookings  
+- Dogs  
+- Staff  
+- Operations  
+
+Each context contains:
+
+- Domain entities  
+- Application commands/queries  
+- Validators  
+- Repositories  
+- API endpoints  
+
+## 2.2 Aggregates
+
+Key aggregates include:
+
+- Owner  
+- Dog  
+- Booking  
+- StaffMember  
+
+Aggregates enforce product‑specific invariants.
+
+## 2.3 Domain Model Rules
+
+- All domain invariants live in the Domain layer  
+- All mutations occur through aggregate root methods  
+- Domain events are allowed but remain product‑specific  
+- No Frank types appear in the Domain layer  
+
 ---
 
-# Stories, Tasks, and PRs
+# 3. Product Slice Structure
 
-This project uses a three-artifact execution model:
+Each feature slice follows this structure:
 
 ```
-Story (repo file)
-    ↓ decomposed into
-Tasks (GitHub Issues)
-    ↓ implemented by
-PRs (one per Task)
+<Feature>/
+  Domain/
+    Entities/
+    Events/
+    ValueObjects/
+    Rules/
+  Application/
+    Commands/
+    Queries/
+    Validators/
+    Abstractions/
+  Infrastructure/
+    Repositories/
+    Mappers/
+  Api/
+    Endpoints/
+    Requests/
+    Responses/
 ```
 
-## Stories
-
-- Live in the repo (`product/stories/`)
-- Represent user outcomes
-- Contain acceptance criteria
-- Are durable product artifacts
-- Are never created as GitHub Issues
-- Must follow Story Grammar and Story Governance
-
-## Tasks
-
-- Live as GitHub Issues
-- Represent vertical slices of a story
-- Small enough to complete in 1–2 days
-- Unit of sprint commitment
-- Created using the Task Issue Template
-- Must reference exactly one story
-- Must include labels:
-  - `task`
-  - `sprint:N`
-  - domain labels (`backend`, `frontend`, `infra`, etc.)
-- Must be independently mergeable and testable
-
-## Pull Requests
-
-- Implement exactly one Task
-- Close the Task
-- Reference the Story
-- List acceptance criteria covered
-- List remaining acceptance criteria
-- Follow the PR template
-- Pass CI
-- Follow architecture and code conventions
-- Include only changes relevant to the Task
+Slices must be vertical, isolated, self‑contained, and testable.  
+Slices must not depend on each other unless explicitly required by the domain.
 
 ---
 
-# Creating Tasks
+# 4. Product Conventions
 
-Tasks are created during sprint planning or when new work is discovered.
+## 4.1 Naming Conventions
 
-A Task must:
+- Commands end with `Command`  
+- Queries end with `Query`  
+- Validators end with `Validator`  
+- Repositories end with `Repository`  
+- API request DTOs end with `Request`  
+- API response DTOs end with `Response`  
 
-- reference exactly one Story  
-- cover one or more acceptance criteria  
-- be mergeable independently  
-- be testable independently  
-- be small enough for a single PR  
+## 4.2 DTO Conventions
 
-Use the Task Issue Template in:
+- DTOs never contain identity fields like `OwnerId` (resolved via `ICurrentUser`)  
+- DTOs never contain domain invariants  
+- DTOs never contain domain events  
+
+## 4.3 Endpoint Conventions
+
+- Endpoints live in `Api/<Feature>/`  
+- Endpoints use Frank’s dispatcher  
+- Endpoints never call handlers directly  
+- Endpoints never return domain entities  
+- Endpoints must follow the **API Endpoint Purity Guide**  
+
+## 4.4 Validation Conventions
+
+- Syntactic validation occurs in API  
+- Business validation occurs in Application  
+- Invariants live in Domain  
+- No validation in Infrastructure  
+- No validation in endpoints beyond shape validation  
+
+## 4.5 Mapping Conventions
+
+- Request DTO → Command/Query  
+- Result → Response DTO  
+- No domain entities in responses  
+- No domain entities in API layer  
+- No business logic in mapping  
+
+---
+
+# 5. Using Frank in Camp Fit Fur Dogs
+
+Frank provides the framework; Camp Fit Fur Dogs provides the product logic.
+
+## 5.1 Dependency Injection
+
+- Use Frank’s `[AutoRegister]` attributes  
+- Product‑specific services may be manually registered in `Api/Program.cs`  
+- No DI logic in slices  
+
+## 5.2 Configuration
+
+Camp Fit Fur Dogs uses product‑specific configuration keys:
 
 ```
-.github/ISSUE_TEMPLATE/task.md
+CFFD__Database__ConnectionString
+CFFD__Auth__Authority
+CFFD__Auth__ClientId
+CFFD__Auth__Audience
 ```
 
----
+All configuration is consumed through Frank’s environment abstractions.
 
-# Branching & PR Workflow
+## 5.3 Hosting
 
-## Branch Naming
-
-```
-task/<issue-number>-short-description
-```
-
-Example:
+Camp Fit Fur Dogs uses Frank’s hosting provider selection.  
+Product‑specific hosting metadata lives in:
 
 ```
-task/312-login-api-endpoint
+Api/Hosting/
 ```
 
-## PR Requirements
+## 5.4 Observability (Product‑Specific)
 
-Every PR must:
+Frank provides observability primitives; Camp Fit Fur Dogs defines product‑specific events.
 
-- Close the Task  
-- Reference the Story  
-- List acceptance criteria covered  
-- List remaining acceptance criteria  
-- Follow the PR template  
-- Pass CI  
-- Follow architecture and code conventions  
+Examples:
 
-## PR Size
+- `cffd.bookings.create.started`  
+- `cffd.bookings.create.completed`  
+- `cffd.owners.register.started`  
+- `cffd.owners.register.failed`  
 
-A PR should:
+Rules:
 
-- be reviewable in under 20 minutes  
-- touch only one vertical slice  
-- avoid unrelated changes  
-- avoid refactors unless explicitly part of the Task  
+- No secrets, tokens, or PII in event payloads  
+- Use Frank’s `ITraceEvents` and `IMetrics`  
+- Never create correlation IDs manually  
 
 ---
 
-# Composite Actions
+# 6. Developer Workflow
 
-- All new custom actions must include a README created from the Action README Template.
-- All new actions must be registered in the Actions Index.
-- Composite actions must:
-  - Use `using: composite`
-  - Pin dependencies to full SHAs
-  - Have minimal surface area
-  - Include clear inputs, outputs, and failure modes
-  - Be testable in isolation
-  - Avoid inline shell logic
-  - Follow script‑first patterns
+## 6.1 Adding a New Feature Slice
 
----
+1. Create slice folder under each layer  
+2. Define domain entities and invariants  
+3. Add commands/queries  
+4. Add validators  
+5. Add repository interfaces  
+6. Implement repositories in Infrastructure  
+7. Add API endpoints  
+8. Add product‑specific observability events  
+9. Add tests  
+10. Update documentation if needed  
 
-# Workflows
+## 6.2 Adding a New Endpoint
 
-All workflow changes must be documented in Workflow Conventions.
+1. Create request/response DTOs  
+2. Create command/query  
+3. Create handler  
+4. Create validator  
+5. Add endpoint using Frank’s dispatcher  
+6. Emit product‑specific observability events  
+7. Add tests  
+8. Follow the **API Endpoint Purity Guide**  
 
-Workflows must follow:
+## 6.3 Adding a New Domain Rule
 
-- Universal Patch Rule  
-- Deterministic behavior  
-- Correct teardown/readiness rules  
-- Correct use of composite actions  
-- UTF‑8 without BOM  
-- Script‑first execution  
-- Minimal permissions  
-- Stable artifact naming  
-
----
-
-# Code & Architecture
-
-Backend code must respect:
-
-- Domain purity  
-- CQRS pipelines  
-- Frank primitives  
-- ImmutableContextBuilder pipelines  
-- Strict separation of protocol (Frank) vs business (Application)  
-- Repository and reader boundaries  
-- Handler purity  
-- Endpoint purity  
-
-Frontend code must follow:
-
-- Layer + aggregate structure  
-- Purity rules  
-- Architecture conventions  
-- Form architecture  
-- Query architecture  
-- API client conventions  
-
-See the [Architecture Guides](ca://s?q=Open_Architecture_Guides) for deeper explanations.
+1. Add rule to Domain  
+2. Add tests  
+3. Update validators if needed  
+4. Update handlers if needed  
 
 ---
 
-# Core Architectural Primitives
+# 7. What Camp Fit Fur Dogs Developers Should Not Do
 
-CampFitFurDogs uses several cross‑cutting primitives that appear throughout the system:
-
-- Frank HostingEngine  
-- Frank StartupEngine  
-- ImmutableContextBuilder (protocol and business pipelines)  
-- CQRS dispatcher  
-- Repository + Unit of Work  
-- Environment abstraction  
-- Endpoint discovery  
-
-These primitives define the backbone of the system’s architecture.
-
----
-
-# Documentation
-
-All documentation must follow Documentation Conventions:
-
-- UTF‑8 without BOM  
-- Universal Patch Rule  
-- No drift between guides and conventions  
-- Clear separation between governance, conventions, and guides  
-- Script‑safe fencing and quoting rules  
+- Do not bypass Frank’s environment abstraction  
+- Do not bypass DI auto‑registration  
+- Do not bypass the dispatcher pipeline  
+- Do not write custom startup logic  
+- Do not write custom hosting providers  
+- Do not access environment variables directly  
+- Do not use static state  
+- Do not modify Frank internals  
+- Do not create correlation IDs manually  
+- Do not emit ad‑hoc logs or vendor‑specific metrics  
 
 ---
 
-# Additional Developer References
+# 8. Summary
 
-- [Preview Troubleshooting](ca://s?q=Open_Preview_Troubleshooting)
-- [CI Dependency Graph](ca://s?q=Open_CI_Dependency_Graph)
-- [Frank Architecture](ca://s?q=Open_Frank_Architecture)
-- [Vertical Slice Index](ca://s?q=Open_Vertical_Slice_Index)
-- [Dispatcher Pipeline Guide](ca://s?q=Open_Dispatcher_Pipeline_Guide)
-- [Authentication Callback Architecture](ca://s?q=Open_Authentication_Callback_Architecture)
+The Camp Fit Fur Dogs Developer Guide explains:
 
----
+- How to build product features  
+- How to structure slices  
+- How to use Frank capabilities correctly  
+- How to follow product‑specific conventions  
+- How to emit product‑specific observability events  
+- How to maintain product architecture  
 
-# Summary
-
-This Developer Guide provides the entry point for contributors.
-
-All development work follows:
-
-- Stories → Tasks → PRs  
-- System architecture rules  
-- Workflow and automation conventions  
-- Composite action standards  
-- Documentation and patching rules  
-- ImmutableContextBuilder‑based authentication architecture  
-
-The developer documentation, conventions, and governance together ensure a stable, predictable, and maintainable system.
+Frank provides the deterministic foundation.  
+Camp Fit Fur Dogs provides the product logic built on top of it.

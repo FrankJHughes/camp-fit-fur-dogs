@@ -1,4 +1,3 @@
-using Frank.AutoRegistration;
 namespace Frank.Tests.DependencyInjection;
 
 public sealed class AutoRegistration_MultiAssemblyTests

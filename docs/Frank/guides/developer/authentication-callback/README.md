@@ -11,14 +11,14 @@ This guide documents the architecture, invariants, and extension points for deve
 
 The Authentication Callback pipeline:
 
-1. Receives an authorization code from an external identity provider (Auth0).
-2. Exchanges the code for tokens.
-3. Validates the ID token cryptographically.
-4. Fetches user profile information from the UserInfo endpoint.
-5. Normalizes identity into a Frank‑specific result object.
+1. Receives an authorization code from the identity provider (Auth0).  
+2. Exchanges the code for tokens.  
+3. Validates the ID token cryptographically.  
+4. Fetches user profile information from the UserInfo endpoint.  
+5. Normalizes identity into a Frank‑specific result object.  
 6. Returns a `FrankAuthCallbackResult` for downstream identity resolution.
 
-This pipeline is **pure**, **deterministic**, and **side‑effect free** except for HTTP calls to the identity provider.
+The pipeline is **pure**, **deterministic**, and **side‑effect‑free** except for HTTP calls to the identity provider.
 
 ---
 
@@ -93,11 +93,11 @@ public sealed record OidcAuthCallbackContext : ImmutableContextBase
 
 ### Invariants
 
-- `Code` and `Now` are **immutable**.
+- `Code` and `Now` are **immutable**.  
 - Pipeline steps may add:
-  - tokens
-  - claims
-  - userinfo fields
+  - tokens  
+  - claims  
+  - userinfo fields  
 - Steps may **not** modify immutable fields.
 
 ---
@@ -110,9 +110,9 @@ Responsible for exchanging the authorization code for tokens.
 
 Key behaviors:
 
-- POSTs to `/oauth/token`
-- Extracts `access_token` and `id_token`
-- Throws on failure
+- POSTs to `/oauth/token`  
+- Extracts `access_token` and `id_token`  
+- Throws mapped exceptions on failure  
 
 ---
 
@@ -122,13 +122,13 @@ Responsible for retrieving user profile information.
 
 Key behaviors:
 
-- GET `/userinfo` with Bearer token
+- GET `/userinfo` with Bearer token  
 - Extracts:
-  - subject
-  - email
-  - given/family name
-  - picture
-  - all string claims
+  - subject  
+  - email  
+  - given/family name  
+  - picture  
+  - all string claims  
 
 ---
 
@@ -146,10 +146,10 @@ Steps execute in order, each transforming the context.
 
 ## 5.1 ExchangeCodeStep
 
-- Executes if `ctx.Code` is present.
+- Executes if `ctx.Code` is present.  
 - Exchanges the authorization code for:
   - `AccessToken`
-  - `IdToken`
+  - `IdToken`  
 
 Failure → `OidcProtocolException`.
 
@@ -157,16 +157,16 @@ Failure → `OidcProtocolException`.
 
 ## 5.2 ValidateTokensStep
 
-- Executes if `ctx.IdToken` is present.
-- Downloads JWKS.
+- Executes if `ctx.IdToken` is present.  
+- Downloads JWKS.  
 - Validates:
-  - issuer
-  - audience
-  - signature
-  - lifetime
+  - issuer  
+  - audience  
+  - signature  
+  - lifetime  
 - Extracts:
-  - subject
-  - string claims
+  - subject  
+  - string claims  
 
 Failure → `OidcProtocolException`.
 
@@ -174,14 +174,14 @@ Failure → `OidcProtocolException`.
 
 ## 5.3 FetchUserInfoStep
 
-- Executes if `ctx.AccessToken` is present.
-- Calls UserInfo endpoint.
+- Executes if `ctx.AccessToken` is present.  
+- Calls UserInfo endpoint.  
 - Extracts:
-  - subject
-  - claims
-  - email
-  - given/family name
-  - picture
+  - subject  
+  - claims  
+  - email  
+  - given/family name  
+  - picture  
 
 ---
 
@@ -198,18 +198,18 @@ public sealed class OidcAuthCallbackContextBuilder
 - Initialize context with:
   - `Code`
   - `Now = UtcNow`
-- Execute all steps in order.
-- Enforce immutability invariants.
-- Emit diagnostic events.
+- Execute all steps in order.  
+- Enforce immutability invariants.  
+- Emit diagnostic events.  
 - Produce a `FrankAuthCallbackResult`.
 
 ### Critical invariant
 
 If the pipeline completes without a `SubjectId`, the builder throws:
 
-```
+````text
 OidcProtocolException("OIDC pipeline completed without a SubjectId.")
-```
+````
 
 ---
 
@@ -236,8 +236,8 @@ public static IServiceCollection AddFrankAuthCallback(this IServiceCollection se
 
 ### Notes
 
-- Steps are registered as **transient**.
-- The builder is registered as **transient**.
+- Steps are registered as **transient**.  
+- The builder is registered as **transient**.  
 - Settings are validated on startup.
 
 ---
@@ -269,14 +269,14 @@ This is where:
 
 Developers must ensure:
 
-- Pipeline steps **never mutate immutable fields** (`Code`, `Now`).
-- Steps must return a **new context** via `with`.
-- Steps must be **pure** except for HTTP calls.
-- Steps must throw `OidcProtocolException` on protocol violations.
+- Steps **never mutate immutable fields** (`Code`, `Now`).  
+- Steps must return a **new context** via `with`.  
+- Steps must be **pure** except for HTTP calls.  
+- Steps must throw `OidcProtocolException` on protocol violations.  
 - The builder must enforce:
-  - non‑null context transitions
-  - immutability checks
-  - diagnostic events
+  - non‑null context transitions  
+  - immutability checks  
+  - diagnostic events  
 
 ---
 
@@ -284,12 +284,12 @@ Developers must ensure:
 
 Avoid:
 
-- Mutating the context directly.
-- Returning `null` from a step.
-- Swallowing OIDC protocol errors.
-- Adding side effects (database writes, logging to external systems).
-- Mixing domain logic into the callback pipeline.
-- Persisting identity provider tokens.
+- Mutating the context directly  
+- Returning `null` from a step  
+- Swallowing OIDC protocol errors  
+- Adding side effects (database writes, external logging systems)  
+- Mixing domain logic into the callback pipeline  
+- Persisting identity provider tokens  
 
 ---
 
@@ -297,12 +297,12 @@ Avoid:
 
 The Authentication Callback capability provides:
 
-- A deterministic, immutable OIDC callback pipeline.
-- Strict validation of tokens and claims.
-- A normalized identity result for downstream systems.
+- A deterministic, immutable OIDC callback pipeline  
+- Strict validation of tokens and claims  
+- A normalized identity result for downstream systems  
 - A clean separation between:
-  - protocol handling
-  - identity resolution
-  - application logic
+  - protocol handling  
+  - identity resolution  
+  - application logic  
 
 This Developer Guide documents everything needed to extend or integrate with the Authentication Callback capability.

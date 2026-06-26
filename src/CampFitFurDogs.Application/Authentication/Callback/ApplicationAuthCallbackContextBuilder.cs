@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
-using Frank.Abstractions.ImmutableContext;
-using Frank.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.Observability;
+using Frank.ImmutableContextBuilder;
 
 namespace CampFitFurDogs.Application.Authentication.Callback;
 
@@ -10,8 +11,9 @@ public sealed class ApplicationAuthCallbackContextBuilder
 {
     public ApplicationAuthCallbackContextBuilder(
         IEnumerable<IImmutableContextBuildStep<ApplicationAuthCallbackContext>> steps,
-        Action<ImmutableContextBuilderDiagnosticEvent>? trace = null)
-        : base(steps, trace)
+        IObservabilitySink sink,
+        IObservabilityContext systemContext)
+        : base(steps, sink, systemContext)
     {
     }
 
@@ -60,27 +62,39 @@ public sealed class ApplicationAuthCallbackContextBuilder
         IImmutableContextBuildStep<ApplicationAuthCallbackContext> step,
         ApplicationAuthCallbackContext before)
     {
-        Trace(new ImmutableContextBuilderDiagnosticEvent(
-            StepId: step.Metadata.Id,
-            StepName: step.Metadata.DisplayName,
-            Phase: "Start",
-            DurationMs: null,
-            Before: before,
-            After: before));
+        Sink.Emit(
+            eventName: "ApplicationAuthCallback.StepStart",
+            category: "ApplicationAuthCallback",
+            severity: "Info",
+            payload: new
+            {
+                StepId = step.Metadata.Id,
+                StepName = step.Metadata.DisplayName,
+                StepType = step.GetType().FullName,
+                BeforeType = before.GetType().FullName
+            },
+            context: SystemContext);
     }
 
     protected override void EmitEndEvent(
         IImmutableContextBuildStep<ApplicationAuthCallbackContext> step,
         ApplicationAuthCallbackContext before,
-        ApplicationAuthCallbackContext after,
+        ApplicationAuthCallbackContext? after,
         long durationMs)
     {
-        Trace(new ImmutableContextBuilderDiagnosticEvent(
-            StepId: step.Metadata.Id,
-            StepName: step.Metadata.DisplayName,
-            Phase: "End",
-            DurationMs: durationMs,
-            Before: before,
-            After: after));
+        Sink.Emit(
+            eventName: "ApplicationAuthCallback.StepEnd",
+            category: "ApplicationAuthCallback",
+            severity: "Info",
+            payload: new
+            {
+                StepId = step.Metadata.Id,
+                StepName = step.Metadata.DisplayName,
+                StepType = step.GetType().FullName,
+                BeforeType = before.GetType().FullName,
+                AfterType = after?.GetType().FullName,
+                DurationMs = durationMs
+            },
+            context: SystemContext);
     }
 }

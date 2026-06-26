@@ -1,50 +1,54 @@
-# authentication-architecture.md
+# Authentication Architecture Conventions
 
-# Authentication Architecture
+CampFitFurDogs uses **exclusive OIDC authentication** implemented as a **strictly layered, immutable‑pipeline architecture**.  
+Authentication is divided into **three architectural layers**, each with a single responsibility and non‑overlapping boundaries:
 
-CampFitFurDogs uses **exclusive OIDC authentication**.  
-Authentication is split into **three layers**, each with strict boundaries:
+1. **Frank Protocol Pipeline** — OIDC protocol mechanics  
+2. **Application Authentication Pipeline** — identity, onboarding, and session creation  
+3. **API Endpoint** — delivery boundary  
 
-1. **Frank Protocol Pipeline** — handles OIDC protocol mechanics  
-2. **Application Authentication Pipeline** — resolves identity, onboarding, and session creation  
-3. **Api Endpoint** — thin orchestration boundary  
-
-This separation ensures clarity, testability, and security.
+These layers must remain **pure, isolated, and independently testable**.
 
 ---
 
 ## Authentication Flow Overview
 
-1. The Api endpoint receives the OIDC callback.  
-2. The request is passed to the **Frank protocol pipeline**, which:
+1. The API endpoint receives the OIDC callback request.  
+2. The request is passed to the **Frank Protocol Pipeline**, which:
    - exchanges the authorization code  
-   - retrieves tokens  
-   - validates tokens  
+   - retrieves and validates tokens  
    - extracts claims  
    - normalizes provider output  
+   - produces a **protocol context**  
 
-3. The resulting protocol context is passed to the **Application pipeline**, which:
+3. The protocol context is passed to the **Application Authentication Pipeline**, which:
    - resolves the owner identity  
-   - performs onboarding if needed  
+   - performs onboarding if required  
    - creates a session  
    - determines the redirect target  
+   - produces the **final authentication result**  
 
-4. The Api endpoint returns the final redirect.
+4. The API endpoint returns the redirect to the client.
 
 Each layer has a **single responsibility** and must not leak concerns into the others.
 
 ---
 
-## Frank Protocol Pipeline (Summary)
+## Frank Protocol Pipeline (Architecture Conventions)
 
-Frank handles:
+Frank is the **protocol layer**.  
+It uses the immutable context builder pattern to ensure deterministic execution and step‑level observability.
 
-- authorization‑code exchange  
-- token retrieval  
-- token validation  
-- claims extraction  
-- provider normalization  
-- required‑claim enforcement  
+### Responsibilities
+
+- Authorization‑code exchange  
+- Token retrieval  
+- Token validation  
+- Claims extraction  
+- Provider normalization  
+- Required‑claim enforcement  
+
+### Prohibitions
 
 Frank must not:
 
@@ -52,30 +56,34 @@ Frank must not:
 - perform persistence  
 - determine redirects  
 - create sessions  
+- resolve owners  
+- perform onboarding  
 
-Frank is the **protocol layer only**.
+Frank produces a **pure protocol context** only.
 
 ---
 
-## Application Authentication Pipeline
+## Application Authentication Pipeline (Architecture Conventions)
 
 The Application layer handles **business‑level authentication behavior**.
 
-It uses an immutable context builder:
+It is implemented using:
 
-````markdown
-IImmutableContextBuilder<
-    ApplicationAuthCallbackRequest,
-    ApplicationAuthCallbackContext,
-    ApplicationAuthCallbackContextBuilderResult>
-````
-  
+`IImmutableContextBuilder<ApplicationAuthCallbackRequest, ApplicationAuthCallbackContext, ApplicationAuthCallbackContextBuilderResult>`
+
+This pipeline uses:
+
+- immutable context transitions  
+- deterministic step execution  
+- step‑level observability  
+
 ### Responsibilities
 
-- identity resolution  
-- owner onboarding  
-- session creation  
-- redirect selection  
+- Identity resolution  
+- Owner onboarding  
+- Session creation  
+- Redirect selection  
+- Producing the final authentication result  
 
 ### Prohibitions
 
@@ -91,20 +99,20 @@ The Application pipeline is the **business authentication layer**, not the proto
 
 ---
 
-## Api Authentication Endpoint
+## API Authentication Endpoint (Architecture Conventions)
 
-The Api endpoint is intentionally thin.
+The API endpoint is intentionally thin and non‑authoritative.
 
 ### Responsibilities
 
-- receive the callback  
-- bind the request  
-- invoke the Application pipeline  
-- return the redirect  
+- Receive the callback  
+- Bind the request  
+- Invoke the Application pipeline  
+- Return the redirect  
 
 ### Prohibitions
 
-The Api endpoint must not:
+The API endpoint must not:
 
 - contain protocol logic  
 - contain business logic  
@@ -112,18 +120,19 @@ The Api endpoint must not:
 - orchestrate onboarding  
 - validate tokens  
 - parse claims  
+- construct or mutate contexts  
 
-The Api endpoint is the **delivery boundary**, not the decision‑maker.
+The API endpoint is the **delivery boundary**, not the decision‑maker.
 
 ---
 
-## Enforcement
+## Enforcement (Architecture Conventions)
 
 Authentication boundaries are enforced through:
 
-- guardrail tests  
+- architectural guardrail tests  
 - dependency analysis  
 - code review  
 - conventions governance  
 
-Authentication is a **multi‑layered pipeline**, and each layer must remain pure.
+Authentication is a **multi‑layered, immutable pipeline**, and each layer must remain pure.

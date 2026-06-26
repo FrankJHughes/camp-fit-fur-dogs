@@ -505,6 +505,12 @@
           "System.IdentityModel.Tokens.Jwt": "[8.1.0, )"
         }
       },
+      "frank.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "Frank": "[1.0.0, )"
+        }
+      },
       "frank.infrastructure.entityframeworkcore": {
         "type": "Project",
         "dependencies": {

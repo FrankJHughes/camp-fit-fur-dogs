@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Frank.Tests.DependencyInjection.DuplicateCommandHandlers\Frank.Tests.DependencyInjection.DuplicateCommandHandlers.csproj" />
     <ProjectReference Include="..\Frank.Tests.DependencyInjection.Fakes\Frank.Tests.DependencyInjection.Fakes.csproj" />
     <ProjectReference Include="..\Frank.Tests.EmptyAssembly\Frank.Tests.EmptyAssembly.csproj" />
+    <ProjectReference Include="..\Frank.TestUtilities\Frank.TestUtilities.csproj" />
   </ItemGroup>
 
 </Project>

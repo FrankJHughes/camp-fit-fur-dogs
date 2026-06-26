@@ -2,12 +2,12 @@ using System.Security.Claims;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using Frank.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Domain.Errors;
-using Frank.Api;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Frank.Authentication.Callback.Oidc;
-using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 using System.Text.Json;
+using Frank.Abstractions;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication.Callback;
 
@@ -15,7 +15,8 @@ public class AuthCallbackEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/auth/callback", HandleAsync);
+        app.MapGet("/api/auth/callback", HandleAsync)
+            .AllowAnonymous();
     }
 
     private static async Task<IResult> HandleAsync(

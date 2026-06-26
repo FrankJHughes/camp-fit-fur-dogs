@@ -1,6 +1,7 @@
 using Frank.Abstractions.Authentication.Callback;
-using Frank.Abstractions.ImmutableContext;
-using Frank.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.Observability;
+using Frank.ImmutableContextBuilder;
 
 namespace Frank.Authentication.Callback.Oidc;
 
@@ -10,8 +11,9 @@ public sealed class OidcAuthCallbackContextBuilder
 {
     public OidcAuthCallbackContextBuilder(
         IEnumerable<IImmutableContextBuildStep<OidcAuthCallbackContext>> steps,
-        Action<ImmutableContextBuilderDiagnosticEvent>? trace = null)
-        : base(steps, trace)
+        IObservabilitySink sink,
+        IObservabilityContext systemContext)
+        : base(steps, sink, systemContext)
     {
     }
 
@@ -64,13 +66,18 @@ public sealed class OidcAuthCallbackContextBuilder
         IImmutableContextBuildStep<OidcAuthCallbackContext> step,
         OidcAuthCallbackContext before)
     {
-        Trace(new ImmutableContextBuilderDiagnosticEvent(
-            StepId: step.Metadata.Id,
-            StepName: step.Metadata.DisplayName,
-            Phase: "Start",
-            DurationMs: null,
-            Before: before,
-            After: before));
+        Sink.Emit(
+            eventName: "OidcAuthCallback.StepStart",
+            category: "OidcAuthCallback",
+            severity: "Info",
+            payload: new
+            {
+                StepId = step.Metadata.Id,
+                StepName = step.Metadata.DisplayName,
+                StepType = step.GetType().FullName,
+                BeforeType = before.GetType().FullName
+            },
+            context: SystemContext);
     }
 
     protected override void EmitEndEvent(
@@ -79,12 +86,19 @@ public sealed class OidcAuthCallbackContextBuilder
         OidcAuthCallbackContext after,
         long durationMs)
     {
-        Trace(new ImmutableContextBuilderDiagnosticEvent(
-            StepId: step.Metadata.Id,
-            StepName: step.Metadata.DisplayName,
-            Phase: "End",
-            DurationMs: durationMs,
-            Before: before,
-            After: after));
+        Sink.Emit(
+            eventName: "OidcAuthCallback.StepEnd",
+            category: "OidcAuthCallback",
+            severity: "Info",
+            payload: new
+            {
+                StepId = step.Metadata.Id,
+                StepName = step.Metadata.DisplayName,
+                StepType = step.GetType().FullName,
+                BeforeType = before.GetType().FullName,
+                AfterType = after?.GetType().FullName,
+                DurationMs = durationMs
+            },
+            context: SystemContext);
     }
 }

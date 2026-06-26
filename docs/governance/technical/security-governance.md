@@ -1,7 +1,7 @@
-# Security Governance
+# Camp Fit Fur Dogs — Governance — Technical — Security
 
 This document defines the security posture, responsibilities, and governance rules for all products in the repository.  
-It complements (but does not duplicate) code conventions, CI workflows, and operational documentation.
+It complements (but does not duplicate) code conventions, CI workflows, Observability Governance, and operational documentation.
 
 Security governance ensures:
 
@@ -9,6 +9,7 @@ Security governance ensures:
 - Clear ownership and escalation paths  
 - No accidental weakening of protections  
 - Compliance with legal and operational guarantees  
+- Deterministic, observable security behavior  
 - A stable foundation for customer trust  
 
 Security is not optional. It is a first‑class product requirement.
@@ -25,6 +26,7 @@ All products must follow these principles:
 - **Fail Safe** — failures must not expose data  
 - **Zero Trust** — no implicit trust between components  
 - **Auditability** — all security‑relevant actions must be traceable  
+- **Observability** — all security‑relevant actions must be structured, correlated, and diagnosable  
 
 Security is a product feature, not a technical afterthought.
 
@@ -33,6 +35,7 @@ Security is a product feature, not a technical afterthought.
 # 2. Product Security Boundaries
 
 ## Camp Fit Fur Dogs
+
 Security responsibilities include:
 
 - Authentication and authorization  
@@ -47,8 +50,10 @@ Security responsibilities include:
 - Account lockout (US‑133)  
 - Email verification (US‑148)  
 - Password reset flows (US‑146)  
+- Emission of structured, correlated security events  
 
 ## Frank
+
 Security responsibilities include:
 
 - Cryptographic primitives  
@@ -58,12 +63,13 @@ Security responsibilities include:
 - Guardrails for dispatching and error shaping  
 - DI auto‑registration enforcement  
 - EF Core configuration scanning  
-- **Security headers middleware (US‑134)**  
-- **CORS policy enforcement seams (US‑135)**  
+- Security headers middleware (US‑134)  
+- CORS policy enforcement seams (US‑135)  
 - Hosting provider selection and hardening infrastructure  
 - Startup validation for configuration safety  
 - Environment abstraction (no direct env var access)  
 - Artifact client abstraction (no direct HTTP/JSON/ZIP)  
+- Observability primitives for security events and correlation  
 
 Frank must never depend on product‑specific security logic.
 
@@ -78,9 +84,11 @@ Authentication must:
 - Never store plaintext credentials  
 - Never bypass validation pipelines  
 - Fail fast on misconfiguration  
-- Resolve identity via `ICurrentUserService`  
+- Resolve identity via `ICurrentUser`  
 - Issue session cookies via `ISessionService`  
 - Integrate with Frank’s authentication seams  
+- Emit structured authentication events (non‑PII)  
+- Emit correlated authentication failures  
 
 Authorization must:
 
@@ -88,6 +96,7 @@ Authorization must:
 - Be enforced at the API boundary  
 - Never rely on frontend checks  
 - Never be implemented in the UI  
+- Emit authorization failure events  
 
 All endpoints must declare:
 
@@ -106,6 +115,7 @@ Secrets must:
 - Never appear in the repository  
 - Never appear in commit messages  
 - Never appear in logs  
+- Never appear in observability payloads  
 - Never be stored in committed `.env` files  
 
 Secrets must be stored in:
@@ -117,6 +127,8 @@ Secrets must be stored in:
 Scripts must not print secrets under any circumstances.
 
 PR Preview artifacts (`db-conn.txt`, `frontend-url.txt`) must be treated as sensitive.
+
+Secrets must be validated at startup and failures must emit structured, correlated events.
 
 ---
 
@@ -135,6 +147,7 @@ Data must never be:
 - Exported without explicit authorization  
 - Stored in browser localStorage if sensitive  
 - Exposed through error messages  
+- Included in observability payloads  
 
 Error messages must be generic and non‑revealing.
 
@@ -162,6 +175,7 @@ DI governance:
 - Manual DI registration of slice services is prohibited  
 - Scrutor/suffix scanning is prohibited  
 - DI auto‑registration violations must fail startup  
+- DI failures must emit structured, correlated events  
 
 ---
 
@@ -175,6 +189,7 @@ Hosting must:
 - Avoid exposing internal ports  
 - Restrict database access to the API only  
 - Enforce CORS policy (US‑135)  
+- Emit structured hosting security events  
 
 Deployment must:
 
@@ -184,6 +199,7 @@ Deployment must:
 - Validate hosting provider configuration before startup  
 - Validate DI auto‑registration and EF Core scanning before startup  
 - Validate security headers middleware is active  
+- Emit structured deployment security events  
 
 Infrastructure changes must trigger all test suites.
 
@@ -199,25 +215,29 @@ Hosting providers must:
 - Use Frank hosting provider infrastructure  
 - Use Frank’s injected abstractions exclusively  
 - Never perform HTTP, JSON, or ZIP operations directly  
+- Emit structured, correlated hosting provider events  
 
 ## 7.2 Render Hosting Provider Requirements
 
 Render PR preview environments must:
 
-- Provide required environment variables:  
-  - `IS_PULL_REQUEST`  
-  - `RENDER_GIT_REPO_SLUG`  
-  - `RENDER_SERVICE_NAME`  
-  - `GITHUB_PAT`  
+### Provide required environment variables:
 
-- Provide required GitHub artifacts:  
-  - `pr-XXX-db/db-conn.txt`  
-  - `pr-XXX-frontend/frontend-url.txt`  
+- `IS_PULL_REQUEST`  
+- `RENDER_GIT_REPO_SLUG`  
+- `RENDER_SERVICE_NAME`  
+- `GITHUB_PAT`  
+
+### Provide required GitHub artifacts:
+
+- `pr-XXX-db/db-conn.txt`  
+- `pr-XXX-frontend/frontend-url.txt`  
 
 If any required artifact or variable is missing:
 
 - Startup must abort  
 - A clear, actionable error must be thrown  
+- A structured, correlated failure event must be emitted  
 - No partial configuration is allowed  
 
 ---
@@ -237,12 +257,14 @@ API endpoints must:
 - Use Frank validation pipeline  
 - Apply Frank security headers middleware  
 - Apply Frank CORS policy  
+- Emit structured, correlated API security events  
 
 Endpoints must not:
 
 - Trust client‑provided IDs  
 - Accept unvalidated JSON  
 - Expose internal exceptions  
+- Emit unstructured logs  
 
 Frank guardrails must be used for:
 
@@ -251,6 +273,7 @@ Frank guardrails must be used for:
 - Dispatching  
 - Error shaping  
 - Security headers  
+- Observability context propagation  
 
 ---
 
@@ -263,6 +286,7 @@ Frontend must:
 - Avoid inline scripts  
 - Use framework‑provided escaping  
 - Avoid exposing internal API details  
+- Emit structured client‑side security events where applicable  
 
 Frontend must not:
 
@@ -282,6 +306,7 @@ Session cookies must:
 - Use strict SameSite rules  
 - Contain only opaque identifiers (never PII)  
 - Be signed and validated by the server  
+- Emit structured session lifecycle events  
 
 Session cookies must not:
 
@@ -301,19 +326,22 @@ Audit logs must record:
 - Failed logins  
 - Security‑relevant actions  
 - Identity resolution events (non‑PII)  
+- Authorization failures  
+- Session lifecycle events  
 
 Audit logs must:
 
 - Never contain secrets  
 - Never contain tokens  
 - Never contain PII beyond external ID  
+- Always include correlation IDs  
+- Always be structured and machine‑readable  
 
 Audit logs must be:
 
-- Structured  
-- Machine‑readable  
 - Immutable  
 - Queryable  
+- Deterministic  
 
 ---
 
@@ -326,6 +354,7 @@ CI must:
 - Use pinned action versions  
 - Use least‑privilege tokens  
 - Block merges on security violations  
+- Emit structured CI security events  
 
 Security scanning must run:
 
@@ -344,16 +373,19 @@ If a security issue is discovered:
 - Disable affected features  
 - Revoke compromised tokens  
 - Block deployments if necessary  
+- Emit an incident‑start security event  
 
 ## 13.2 Assess Impact
 - Identify affected users  
 - Identify affected systems  
 - Determine severity  
+- Emit structured diagnostic events  
 
 ## 13.3 Fix the Issue
 - Patch the vulnerability  
 - Add tests to prevent regression  
 - Update documentation  
+- Emit incident‑resolved event  
 
 ## 13.4 Communication
 - Notify stakeholders  
@@ -373,6 +405,7 @@ Incidents must be treated as top‑priority work.
 - Frank enforces startup validation  
 - DI auto‑registration enforces service correctness  
 - Security header enforcement tests validate API safety  
+- Observability tests validate structured, correlated security events  
 
 No PR may merge if:
 
@@ -380,5 +413,6 @@ No PR may merge if:
 - It bypasses guardrails  
 - It introduces insecure patterns  
 - It violates hosting or deployment rules  
+- It violates observability security rules  
 
 Security governance is non‑negotiable.

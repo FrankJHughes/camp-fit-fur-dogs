@@ -1,7 +1,8 @@
-# Governance Hub
+# Governance Hub  
+The complete governance system for the repository
 
-This directory contains the complete governance system for the repository.  
-Governance defines **process**, **responsibilities**, **boundaries**, and **enforcement** across all products.
+This directory contains the **full governance framework** for the repository.  
+Governance defines **process**, **responsibilities**, **boundaries**, and **enforcement** across all products and all contributors.
 
 Governance is the **highest‑level rule system**.  
 Conventions define *how work is implemented*; governance defines *how decisions are made, constrained, and upheld*.
@@ -11,48 +12,123 @@ Conventions and guides evolve more frequently.
 
 ---
 
-# Governance Documents
+# Governance Domains
 
-Governance documents are organized into three categories:
+Governance documents are organized into **five domains**, each with a distinct scope:
 
 ```
-docs/governance/product/
-docs/governance/technical/
-docs/governance/enforcement/
+docs/governance/
+├── repo/         # Cross-product, repository-wide governance
+├── product/      # Product-specific governance (Camp Fit Fur Dogs)
+├── technical/    # Architecture, API, CI, operations, purity
+├── security/     # Security-specific governance
+└── enforcement/  # How governance is enforced and evolved
 ```
 
 Below is the canonical index.
 
 ---
 
-## 🟦 Product Governance  
-Rules that govern product‑level processes, story lifecycle, changelog behavior, contributor expectations, and cross‑product boundaries.
+## 🟦 Repo Governance  
+Cross‑product rules that apply to **every product** in the repository (Frank, CFFD, SharedKernel, future products).
 
-- [story-governance.md](product/story-governance.md)  
-- [changelog-governance.md](product/changelog-governance.md)  
-- [repo-hygiene.md](product/repo-hygiene.md)  
-- [multi-product-governance.md](product/multi-product-governance.md)  
-- [contributor-governance.md](product/contributor-governance.md)  
+These govern:
+
+- Story structure  
+- Contributor expectations  
+- Repository hygiene  
+- Changelog behavior  
+- Multi‑product boundaries  
+
+**Documents:**
+
+- [story-governance.md](repo/story-governance.md)  
+- [repo-hygiene.md](repo/repo-hygiene.md)  
+- [contributor-governance.md](repo/contributor-governance.md)  
+- [changelog-governance.md](repo/changelog-governance.md)  
+- [multi-product-governance.md](repo/multi-product-governance.md)  
+
+Repo governance is **horizontal** — it applies everywhere.
 
 ---
 
-## 🟩 Technical Governance  
-Rules that govern architecture, API behavior, CI behavior, security, and operational constraints.
+## 🟩 Product Governance  
+Rules that govern **how the Camp Fit Fur Dogs product is defined**, including:
+
+- Capability governance  
+- Milestone governance  
+- Emotional guarantees  
+- Story lifecycle  
+- Backlog governance  
+- Refinement governance  
+- Product decision governance  
+
+**Documents:**
+
+- [README.md](product/README.md) *(Product Governance Guide)*
+
+Product governance is **vertical** — it applies only to CFFD.
+
+---
+
+## 🟥 Technical Governance  
+Rules that govern **how the system is architected and built**, including:
+
+- Architecture boundaries  
+- API behavior  
+- CI/CD behavior  
+- Operational constraints  
+- Purity rules  
+- Frank governance  
+
+**Documents:**
 
 - [api-governance.md](technical/api-governance.md)  
 - [architecture-governance.md](technical/architecture-governance.md)  
 - [ci-governance.md](technical/ci-governance.md)  
-- [security-governance.md](technical/security-governance.md)  
 - [operations-governance.md](technical/operations-governance.md)  
+- [purity-rules.md](technical/purity-rules.md)  
+- [frank-governance.md](technical/frank-governance.md)  
+- [security-governance.md](technical/security-governance.md)  
+
+Technical governance is **cross‑cutting** — it applies to all code.
 
 ---
 
-## 🟥 Enforcement Governance  
+## 🟨 Security Governance  
+Rules that govern **security‑specific behavior**, including:
+
+- CORS  
+- Authentication boundaries  
+- Secrets handling  
+- Session rules  
+- Security headers  
+
+**Documents:**
+
+- [cors-governance.md](security/cors-governance.md)
+
+Security governance is **cross‑cutting** — it applies to all products and all surfaces.
+
+---
+
+## 🟪 Enforcement Governance  
 Rules that define **how governance is enforced**, who enforces it, and how governance evolves.
+
+These govern:
+
+- Governance enforcement matrix  
+- Governance enforcement checklist  
+- Governance change process  
+- Drift detection  
+
+**Documents:**
 
 - [governance-enforcement-checklist.md](enforcement/governance-enforcement-checklist.md)  
 - [governance-enforcement-matrix.md](enforcement/governance-enforcement-matrix.md)  
 - [governance-process.md](enforcement/governance-process.md)  
+
+Enforcement governance is **meta‑governance** — rules about rules.
 
 ---
 
@@ -76,11 +152,13 @@ Governance is **binding** and overrides conventions when conflicts arise.
 
 Governance follows a strict hierarchy:
 
-1. **Product Governance** — story lifecycle, contributor rules, changelog rules  
-2. **Technical Governance** — architecture, API, CI, security, operations  
-3. **Enforcement Governance** — how governance is applied and evolved  
-4. **Conventions** — implementation rules  
-5. **Guides** — how‑to documents  
+1. **Repo Governance** — cross‑product rules  
+2. **Product Governance** — product‑specific rules  
+3. **Technical Governance** — architecture, API, CI, operations  
+4. **Security Governance** — security constraints  
+5. **Enforcement Governance** — how governance is applied  
+6. **Conventions** — implementation rules  
+7. **Guides** — how‑to documents  
 
 Higher levels override lower levels.
 
@@ -94,14 +172,14 @@ All governance documents must remain:
 - **Minimal** — only rules, no implementation details  
 - **Enforceable** — must be testable or reviewable  
 - **Non‑overlapping** — no duplication across governance files  
-- **Cross‑product** — rules apply to all products unless explicitly scoped  
+- **Cross‑product** unless explicitly scoped  
 
 Governance must never contain:
 
 - Code conventions  
 - Workflow implementation details  
 - How‑to instructions  
-- Examples or tutorials  
+- Tutorials or examples  
 - ADR‑style rationale  
 
 Governance defines **rules**, not explanations.
@@ -222,26 +300,6 @@ Conventions must remain aligned with governance.
 - **Scripts** — deterministic file generation and governance enforcement  
 
 Governance changes require **Product Owner approval**.
-
----
-
-# Updating Governance
-
-Governance must be updated via:
-
-1. A PR modifying the relevant governance file  
-2. Clear rationale and consequences  
-3. Full reviewer discussion  
-4. Product Owner approval  
-5. Updates to conventions, guides, or scripts if required  
-
-Governance must remain:
-
-- Stable  
-- Intentional  
-- Minimal  
-- Enforceable  
-- Aligned with product boundaries  
 
 ---
 

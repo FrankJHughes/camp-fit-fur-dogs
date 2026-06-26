@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.ImmutableContextBuilder;
 using Frank.Settings;
 
 namespace Frank.Authentication.Callback.Oidc.Steps;

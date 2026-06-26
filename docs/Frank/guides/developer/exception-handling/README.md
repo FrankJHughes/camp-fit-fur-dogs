@@ -108,7 +108,7 @@ The API layer later converts this into ASP.NET Core’s `ProblemDetails`.
 
 ---
 
-# 2. API Runtime Layer (Frank.Api.ExceptionHandling)
+# 2. API Runtime Layer (Frank.Integration.ExceptionHandling)
 
 This layer integrates the abstractions into the HTTP pipeline.
 

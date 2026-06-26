@@ -1,7 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using CampFitFurDogs.Application.Abstractions.Dogs.RemoveDog;
 using Frank.Abstractions;
-using Frank.Api;
+using Frank.Abstractions.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 
@@ -11,13 +12,13 @@ public class RemoveDogEndpoint : IEndpoint
     {
         app.MapDelete("/api/dogs/{id:guid}", async (
             Guid id,
-            ICurrentUser currentUser,
+            [FromServices] ICurrentUser currentUser,
             ICommandDispatcher commandDispatcher,
             IQueryDispatcher queryDispatcher) =>
         {
-            var userId = currentUser.Id;
+            var userId = currentUser.Id!.Value;
 
-            var query = new GetDogProfileQuery(DogId: id, CustomerId: userId);
+            var query = new GetDogProfileQuery(DogId: id, OwnerId: userId);
             var response = await queryDispatcher.DispatchAsync(query, CancellationToken.None);
             if (response is null)
             {

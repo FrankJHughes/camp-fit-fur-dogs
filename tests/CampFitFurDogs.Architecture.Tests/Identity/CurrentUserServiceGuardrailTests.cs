@@ -1,14 +1,14 @@
-using Frank.Abstractions;
+using Frank.Abstractions.Identity;
 
 namespace CampFitFurDogs.Architecture.Tests.Identity;
 
-public class CurrentUserServiceGuardrailTests
+public class CurrentUserGuardrailTests
 {
     [Fact]
-    public void OnlyOne_ICurrentUserService_Implementation_Should_Exist_In_Infrastructure()
+    public void OnlyOne_ICurrentUser_Implementation_Should_Exist_In_Infrastructure()
     {
         // Arrange
-        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly;
+        var infraAssembly = typeof(Frank.Infrastructure.AssemblyMarker).Assembly;
 
         // Act
         var implementations = infraAssembly

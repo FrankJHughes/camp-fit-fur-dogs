@@ -1,4 +1,4 @@
-# ADR-0013: Server-Side Identity Resolution via ICurrentUserService
+# ADR-0013: Server-Side Identity Resolution via ICurrentUser
 
 | Field     | Value                              |
 |-----------|-------------------------------------|
@@ -30,15 +30,15 @@ The team needed a pattern that:
 ## Decision
 
 We will resolve the current user's identity server-side via an
-`ICurrentUserService` abstraction. Endpoints never accept identity
+`ICurrentUser` abstraction. Endpoints never accept identity
 fields (e.g., `OwnerId`, `UserId`, `CustomerId`) in the request body.
 
 ### Pattern Structure
 
-**Abstraction** (`Application/Abstractions/ICurrentUserService.cs`):
+**Abstraction** (`Application/Abstractions/ICurrentUser.cs`):
 
 ```csharp
-public interface ICurrentUserService
+public interface ICurrentUser
 {
     Guid GetCurrentUserId();
 }
@@ -51,9 +51,9 @@ is authenticated (fail-closed).
 
 1. Bind a DTO (e.g., `RegisterDogRequest`) containing only user-submitted
    data — no identity fields.
-2. Inject `ICurrentUserService` into the endpoint.
+2. Inject `ICurrentUser` into the endpoint.
 3. Construct the command by combining the DTO fields with the identity
-   from `ICurrentUserService.GetCurrentUserId()`.
+   from `ICurrentUser.GetCurrentUserId()`.
 
 This keeps the API layer responsible for *assembling* the command, while
 the Application layer owns the *contract* for identity.
@@ -62,9 +62,9 @@ the Application layer owns the *contract* for identity.
 
 | Implementation | Layer | Lifetime | Purpose |
 |----------------|-------|----------|---------|
-| `DummyCurrentUserService` | Infrastructure | Singleton | Pre-auth placeholder; returns a hardcoded GUID. Replaced when authentication lands. |
-| `TestCurrentUserService` | Api.Tests | — | Test double with a settable `CurrentUserId`. The `CampFitFurDogsApiFactory` overrides the DI registration so each test controls which user the endpoint sees. |
-| *(future)* `HttpContextCurrentUserService` | Infrastructure | Scoped | Reads identity from `HttpContext.User` claims. Ships with the authentication story. |
+| `DummyCurrentUser` | Infrastructure | Singleton | Pre-auth placeholder; returns a hardcoded GUID. Replaced when authentication lands. |
+| `TestCurrentUser` | Api.Tests | — | Test double with a settable `CurrentUserId`. The `CampFitFurDogsApiFactory` overrides the DI registration so each test controls which user the endpoint sees. |
+| *(future)* `HttpContextCurrentUser` | Infrastructure | Scoped | Reads identity from `HttpContext.User` claims. Ships with the authentication story. |
 
 ### DI Lifetime Transition
 
@@ -75,13 +75,13 @@ is per-request. This transition requires only a one-line change in
 
 ### Testing Strategy
 
-Integration tests control identity through `TestCurrentUserService`:
+Integration tests control identity through `TestCurrentUser`:
 
-1. `CampFitFurDogsApiFactory` creates a singleton `TestCurrentUserService`
-   and overrides the `ICurrentUserService` registration.
-2. Each test sets `_testUserService.CurrentUserId = ownerId` before
+1. `CampFitFurDogsApiFactory` creates a singleton `TestCurrentUser`
+   and overrides the `ICurrentUser` registration.
+2. Each test sets `_testUser.CurrentUserId = ownerId` before
    calling the endpoint.
-3. The endpoint calls `ICurrentUserService.GetCurrentUserId()` and gets
+3. The endpoint calls `ICurrentUser.GetCurrentUserId()` and gets
    the test-controlled value.
 
 This eliminates the need for fake auth middleware, bearer tokens, or
@@ -89,7 +89,7 @@ claims manipulation in tests.
 
 ### Scope
 
-`ICurrentUserService` answers one question: *who is the current user?*
+`ICurrentUser` answers one question: *who is the current user?*
 It does not answer *what can this user do?* Authorization (role checks,
 permission guards, resource ownership validation) is a separate concern
 that will build on top of this identity seam when needed.
@@ -130,7 +130,7 @@ that will build on top of this identity seam when needed.
 
 ### Negative
 
-- `DummyCurrentUserService` returns a hardcoded GUID, meaning the
+- `DummyCurrentUser` returns a hardcoded GUID, meaning the
   running application does not enforce real identity until
   authentication lands. This is acceptable for the current development
   phase but must not ship to production.

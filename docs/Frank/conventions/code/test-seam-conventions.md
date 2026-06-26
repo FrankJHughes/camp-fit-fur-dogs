@@ -36,7 +36,7 @@ Tests supply fakes for all of these.
 Identity is resolved via:
 
 ````csharp
-ICurrentUserService
+ICurrentUser
 ````
 
 Tests use `FakeCurrentUser`.

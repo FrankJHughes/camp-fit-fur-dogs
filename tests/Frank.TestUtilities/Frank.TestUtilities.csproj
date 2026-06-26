@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,8 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\CampFitFurDogs.Api\CampFitFurDogs.Api.csproj" />
     <ProjectReference Include="..\..\src\Frank\Frank.csproj" />
     <ProjectReference Include="..\..\src\Frank.Api\Frank.Api.csproj" />
+    <ProjectReference Include="..\..\src\Frank.Testing\Frank.Testing.csproj" />
   </ItemGroup>
 
 </Project>

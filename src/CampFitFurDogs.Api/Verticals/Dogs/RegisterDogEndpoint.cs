@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Abstractions;
-using Frank.Api;
+using Frank.Abstractions.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 
@@ -11,16 +12,16 @@ public class RegisterDogEndpoint : IEndpoint
     {
         app.MapPost("/api/dogs", async (
             RegisterDogRequest request,
-            ICurrentUser currentUserService,
+            [FromServices] ICurrentUser currentUser,
             ICommandDispatcher dispatcher,
             HttpContext httpContext) =>
         {
             Debug.WriteLine("IsAuthenticated = {Auth}", httpContext.User.Identity?.IsAuthenticated.ToString());
             Debug.WriteLine("Name = {Name}", httpContext.User.Identity?.Name);
 
-            Console.WriteLine($"Received RegisterDogRequest from user {currentUserService.Id}");
+            Console.WriteLine($"Received RegisterDogRequest from user {currentUser.Id}");
             var command = new RegisterDogCommand(
-                currentUserService.Id,
+                currentUser.Id!.Value,
                 request.Name,
                 request.Breed,
                 DateOnly.Parse(request.DateOfBirth),
@@ -29,6 +30,7 @@ public class RegisterDogEndpoint : IEndpoint
             var result = await dispatcher.DispatchAsync(command, CancellationToken.None);
 
             return Results.Created($"/api/dogs/{result}", new { DogId = result });
-        });
+        })
+        .DisableCookieRedirect();
     }
 }

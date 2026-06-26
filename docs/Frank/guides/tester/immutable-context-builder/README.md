@@ -1,4 +1,4 @@
-# Frank ImmutableContextBuilderBase — Tester Guide
+# Frank ImmutableContextBuilder — Tester Guide
 
 This guide explains how to test the `ImmutableContextBuilderBase<TContext, TStep>` capability.  
 This capability is a **deterministic, rule‑driven, multi‑step pipeline executor** that transforms an immutable context through a sequence of conditional build steps.
@@ -46,8 +46,8 @@ Validate that:
 
 **Patterns:**
 
-- Build twice → deep equality.
-- Snapshot test the final context.
+- Build twice → deep equality.  
+- Snapshot test the final context.  
 - Ensure no timestamps, GUIDs, or environment values appear unless provided.
 
 ---
@@ -56,15 +56,15 @@ Validate that:
 
 Validate:
 
-- Steps execute only when `CanExecute(ctx)` is true.
-- Steps that cannot execute are skipped.
-- Execution stops when no remaining step can execute.
+- Steps execute only when `CanExecute(ctx)` is true.  
+- Steps that cannot execute are skipped.  
+- Execution stops when no remaining step can execute.  
 - Steps execute in the order they appear in the `_steps` list.
 
 **Patterns:**
 
-- Provide contexts that enable/disable specific steps.
-- Assert that only the expected steps run.
+- Provide contexts that enable/disable specific steps.  
+- Assert that only the expected steps run.  
 - Assert that no step runs twice.
 
 ---
@@ -75,14 +75,14 @@ Validate:
 
 Testers must ensure:
 
-- Illegal transitions fail.
-- Required fields are present after certain steps.
-- Immutable fields remain unchanged.
+- Illegal transitions fail.  
+- Required fields are present after certain steps.  
+- Immutable fields remain unchanged.  
 - Steps cannot regress state.
 
 **Patterns:**
 
-- Provide a step that attempts an illegal change → expect exception.
+- Provide a step that attempts an illegal change → expect exception.  
 - Provide a step that omits required fields → expect exception.
 
 ---
@@ -91,13 +91,13 @@ Testers must ensure:
 
 Validate:
 
-- `before` and `after` contexts are different instances.
-- `before` remains unchanged after step execution.
+- `before` and `after` contexts are different instances.  
+- `before` remains unchanged after step execution.  
 - Steps do not mutate shared objects.
 
 **Patterns:**
 
-- Capture `before` → run step → assert `before` unchanged.
+- Capture `before` → run step → assert `before` unchanged.  
 - Assert `ReferenceEquals(before, after)` is false.
 
 ---
@@ -106,15 +106,15 @@ Validate:
 
 Validate:
 
-- `EmitStartEvent` fires before execution.
-- `EmitEndEvent` fires after execution.
-- Duration is measured correctly.
-- Metadata (StepId, StepName, Phase) is correct.
+- `EmitStartEvent` fires before execution.  
+- `EmitEndEvent` fires after execution.  
+- Duration is measured correctly.  
+- Metadata (StepId, StepName, Phase) is correct.  
 - Before/After snapshots match the actual contexts.
 
 **Patterns:**
 
-- Capture emitted events → assert ordering and correctness.
+- Capture emitted events → assert ordering and correctness.  
 - Assert duration is non‑negative and reasonable.
 
 ---
@@ -123,15 +123,15 @@ Validate:
 
 Testers must ensure:
 
-- Steps throwing exceptions propagate correctly.
-- Invalid transitions fail loudly.
-- Null contexts or null steps are rejected.
+- Steps throwing exceptions propagate correctly.  
+- Invalid transitions fail loudly.  
+- Null contexts or null steps are rejected.  
 - Builders do not allow re‑entrancy or reuse during execution.
 
 **Patterns:**
 
-- Step throws → pipeline throws.
-- Step returns null → expect failure.
+- Step throws → pipeline throws.  
+- Step returns null → expect failure.  
 - Reuse builder concurrently → expect failure.
 
 ---
@@ -140,9 +140,9 @@ Testers must ensure:
 
 Testers must ensure:
 
-- No test shares a builder instance.
-- No test shares a context instance unless explicitly intended.
-- No test relies on environment variables or system time.
+- No test shares a builder instance.  
+- No test shares a context instance unless explicitly intended.  
+- No test relies on environment variables or system time.  
 - No test uses static/global state.
 
 This ensures tests validate **pure, deterministic behavior**.
@@ -173,13 +173,13 @@ Ensure invalid transitions and illegal states fail loudly.
 
 Tests must fail if they detect:
 
-- Mutation of `TContext`.
-- Steps running more than once.
-- Steps executing when `CanExecute` is false.
-- Nondeterministic behavior.
-- Hidden side effects.
-- Global/static state usage.
-- Missing or incorrect diagnostic events.
+- Mutation of `TContext`.  
+- Steps running more than once.  
+- Steps executing when `CanExecute` is false.  
+- Nondeterministic behavior.  
+- Hidden side effects.  
+- Global/static state usage.  
+- Missing or incorrect diagnostic events.  
 - Weak or missing transition validation.
 
 ---

@@ -1,4 +1,5 @@
-# Frank Developer Guide
+# Frank — Developer Guide  
+Authoritative handbook for contributors to the Frank Framework
 
 Welcome to the **Frank Developer Guide** — the authoritative handbook for developers who build, extend, or maintain the Frank Framework.  
 This guide explains how Frank works internally, how to contribute safely, and how to extend the framework while preserving its architectural guarantees.
@@ -12,13 +13,14 @@ As a Frank developer, you are responsible for maintaining these guarantees.
 
 This guide provides:
 
-- A high‑level understanding of Frank’s architecture  
-- Rules and expectations for Frank contributors  
-- How to extend Frank safely  
-- How to maintain Frank’s purity and determinism  
-- How to work with Frank’s capabilities  
-- How to write tests for Frank itself  
-- How to reason about Frank’s guardrails  
+- a high‑level understanding of Frank’s architecture  
+- rules and expectations for Frank contributors  
+- how to extend Frank safely  
+- how to maintain Frank’s purity and determinism  
+- how to work with Frank’s capabilities  
+- how to write tests for Frank itself  
+- how to reason about Frank’s guardrails  
+- how to integrate and extend **Frank Observability** (NEW)  
 
 This guide is **not** about using Frank in a product.  
 That belongs in the **Frank User Guide**.
@@ -29,9 +31,10 @@ This guide is about **building Frank itself**.
 
 # 2. Frank’s Architectural Principles
 
-Frank is built on a set of strict architectural principles:
+Frank is built on a set of strict architectural principles.
 
-## **2.1 Determinism**
+## 2.1 Determinism
+
 Frank must behave the same way every time:
 
 - deterministic startup  
@@ -39,10 +42,14 @@ Frank must behave the same way every time:
 - deterministic environment resolution  
 - deterministic DI auto‑registration  
 - deterministic pipeline execution  
+- deterministic observability output (NEW)  
 
 No randomness. No implicit behavior. No hidden state.
 
-## **2.2 Purity**
+---
+
+## 2.2 Purity
+
 Frank enforces purity at multiple levels:
 
 - no direct environment variable access  
@@ -50,10 +57,14 @@ Frank enforces purity at multiple levels:
 - no ambient state  
 - no global singletons  
 - no hidden dependencies  
+- no ad‑hoc logging or metrics (NEW)  
 
 Everything must be explicit, injectable, and testable.
 
-## **2.3 Capability‑Oriented Design**
+---
+
+## 2.3 Capability‑Oriented Design
+
 Frank is composed of **capabilities**, each with:
 
 - a clear purpose  
@@ -61,10 +72,14 @@ Frank is composed of **capabilities**, each with:
 - a clear extension model  
 - a clear set of invariants  
 - a clear set of guardrails  
+- a clear observability surface (NEW)  
 
 Capabilities must remain isolated and composable.
 
-## **2.4 Guardrails**
+---
+
+## 2.4 Guardrails
+
 Frank enforces correctness through:
 
 - startup validation  
@@ -73,10 +88,14 @@ Frank enforces correctness through:
 - environment validation  
 - configuration validation  
 - pipeline validation  
+- observability validation (NEW)  
 
 Guardrails must never be bypassed.
 
-## **2.5 Product‑Agnosticism**
+---
+
+## 2.5 Product‑Agnosticism
+
 Frank must never contain:
 
 - product logic  
@@ -84,6 +103,7 @@ Frank must never contain:
 - product hosting assumptions  
 - product‑specific DI  
 - product‑specific environment variables  
+- product‑specific observability events (NEW)  
 
 Frank is a framework — not an application.
 
@@ -102,6 +122,7 @@ Frank is composed of several major subsystems:
 - **Validation Scanner** — discovers validators and enforces validation rules  
 - **Security Headers Middleware** — enforces standard security headers  
 - **Error Boundary Middleware** — ensures safe error handling  
+- **Observability Primitives** — structured events, metrics, correlation (NEW)  
 - **Test Harness (Frank.Testing)** — deterministic test hosting and mutation  
 
 Each subsystem is documented in its own capability guide:
@@ -116,14 +137,15 @@ docs/frank/guides/developer/<capability>/README.md
 
 As a Frank developer, you must:
 
-- Preserve determinism  
-- Preserve purity  
-- Preserve guardrails  
-- Preserve capability boundaries  
-- Preserve product‑agnosticism  
-- Maintain backward compatibility when possible  
-- Add tests for every change  
-- Document every new capability  
+- preserve determinism  
+- preserve purity  
+- preserve guardrails  
+- preserve capability boundaries  
+- preserve product‑agnosticism  
+- maintain backward compatibility when possible  
+- add tests for every change  
+- document every new capability  
+- emit structured, correlated observability events for all capability boundaries (NEW)  
 
 Frank is a **governed framework** — not a free‑for‑all.
 
@@ -133,13 +155,14 @@ Frank is a **governed framework** — not a free‑for‑all.
 
 When adding or modifying a capability, you must:
 
-1. Understand the capability’s invariants  
-2. Preserve its extension model  
-3. Maintain its guardrails  
-4. Add developer documentation  
-5. Add user documentation (if applicable)  
-6. Add tests in `Frank.*.Tests`  
-7. Ensure no product‑specific logic leaks into Frank  
+1. understand the capability’s invariants  
+2. preserve its extension model  
+3. maintain its guardrails  
+4. add developer documentation  
+5. add user documentation (if applicable)  
+6. add tests in `Frank.*.Tests`  
+7. ensure no product‑specific logic leaks into Frank  
+8. ensure observability is integrated correctly (NEW)  
 
 Every capability must remain:
 
@@ -147,14 +170,53 @@ Every capability must remain:
 - deterministic  
 - composable  
 - testable  
+- observable (NEW)  
 
 ---
 
-# 6. Testing Frank
+# 6. Observability in Frank (NEW)
 
-Frank has two test layers:
+Observability is a **Frank capability**, not a governance domain.  
+It must be implemented consistently across all Frank subsystems.
 
-## **6.1 Unit Tests**
+Frank provides:
+
+- `IObservabilityContext` — immutable correlation context  
+- `ITraceEvents` — structured event emission  
+- `IMetrics` — deterministic metrics  
+- correlation propagation middleware  
+- test sinks for deterministic observability testing  
+
+## Observability Rules for Frank Developers
+
+- no ad‑hoc logging  
+- no vendor‑specific logging or metrics  
+- no Stopwatch or real‑time timers  
+- all events must follow `slice.module.action` naming  
+- all metrics must follow `slice.module.metric_name` naming  
+- no secrets, tokens, or PII in observability payloads  
+- all capability boundaries must emit events  
+- all external calls must emit events and metrics  
+- all errors must emit structured error events  
+
+Observability is required for:
+
+- HostingEngine lifecycle  
+- StartupEngine lifecycle  
+- DI auto‑registration  
+- configuration loading  
+- pipeline execution  
+- error boundaries  
+- test harness execution  
+
+---
+
+# 7. Testing Frank
+
+Frank has two test layers.
+
+## 7.1 Unit Tests
+
 Located in:
 
 ```
@@ -168,8 +230,12 @@ These validate:
 - deterministic behavior  
 - extension points  
 - error conditions  
+- observability emission (NEW)  
 
-## **6.2 Integration Tests**
+---
+
+## 7.2 Integration Tests
+
 Located in:
 
 ```
@@ -185,12 +251,13 @@ These validate:
 - configuration layering  
 - pipeline execution  
 - test harness behavior  
+- observability propagation and determinism (NEW)  
 
 Every capability must have both unit and integration coverage.
 
 ---
 
-# 7. Working With Capabilities
+# 8. Working With Capabilities
 
 Each capability has:
 
@@ -201,6 +268,7 @@ Each capability has:
 - a developer guide  
 - a tester guide (if applicable)  
 - a user guide (if applicable)  
+- an observability surface (NEW)  
 
 Capability guides live here:
 
@@ -214,11 +282,12 @@ Examples:
 - `startup-engine/`  
 - `environment/`  
 - `configuration/`  
+- `observability/` (NEW)  
 - `testing/`  
 
 ---
 
-# 8. Adding a New Capability
+# 9. Adding a New Capability
 
 To add a new capability:
 
@@ -235,9 +304,14 @@ To add a new capability:
    - invariants  
    - extension points  
    - guardrails  
+   - observability surface (NEW)  
    - tests required  
 
-3. Implement the capability in `src/Frank.<Capability>/`
+3. Implement the capability in:
+
+   ```
+   src/Frank.<Capability>/
+   ```
 
 4. Add tests in:
 
@@ -259,7 +333,7 @@ To add a new capability:
 
 ---
 
-# 9. Developer Workflow
+# 10. Developer Workflow
 
 Frank uses a strict workflow:
 
@@ -268,16 +342,17 @@ Frank uses a strict workflow:
 3. **Implement the capability**  
 4. **Test the capability**  
 5. **Validate guardrails**  
-6. **Submit a PR with:**
+6. **Validate observability** (NEW)  
+7. **Submit a PR with:**
    - code  
    - tests  
    - documentation  
 
-No capability is complete without documentation and tests.
+No capability is complete without documentation, tests, and observability.
 
 ---
 
-# 10. Contributing to Frank
+# 11. Contributing to Frank
 
 Contributions must:
 
@@ -286,12 +361,13 @@ Contributions must:
 - include tests  
 - include documentation  
 - preserve architectural principles  
+- preserve observability conventions (NEW)  
 
 PRs that violate guardrails will be rejected.
 
 ---
 
-# 11. Where to Go Next
+# 12. Where to Go Next
 
 Explore the capability guides:
 
@@ -311,9 +387,11 @@ Or read the Frank Tester Guide:
 docs/frank/guides/tester/README.md
 ```
 
+Or explore **[Observability Conventions](ca://s?q=Open_observability_conventions)** (NEW).
+
 ---
 
-# 12. Summary
+# 13. Summary
 
 The Frank Developer Guide is your handbook for:
 
@@ -323,7 +401,7 @@ The Frank Developer Guide is your handbook for:
 - maintaining guardrails  
 - writing tests for Frank  
 - documenting new features  
+- integrating observability correctly (NEW)  
 
 Frank is a governed, deterministic, capability‑oriented framework.  
 As a developer, you are responsible for preserving its integrity.
-

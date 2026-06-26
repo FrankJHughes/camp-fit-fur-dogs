@@ -1,22 +1,25 @@
-# Frank Architecture  
+# Frank Architecture — Developer Guide  
 *The shared architectural backbone that powers CampFitFurDogs.*
 
 Frank is a **product**, not a layer.  
 It provides the **cross‑cutting architectural primitives** that make the CampFitFurDogs system consistent, testable, deterministic, and maintainable.
 
-Frank is the **shared kernel replacement** — but unlike a traditional shared kernel, Frank is:
+Frank is the **shared‑kernel replacement**, but unlike a traditional shared kernel, Frank is:
 
-- Explicit  
-- Modular  
-- Guarded  
-- Versioned  
-- Testable  
-- Free of product‑specific logic  
+- explicit  
+- modular  
+- guarded  
+- versioned  
+- testable  
+- free of product‑specific logic  
 
 This guide explains **what Frank is**, **what belongs in it**, **how it is structured**, and **how CampFitFurDogs consumes it**.
 
-For enforceable rules, see:  
-`docs/governance/technical/architecture-governance.md`
+For enforceable rules, see:
+
+````text
+docs/governance/technical/architecture-governance.md
+````
 
 ---
 
@@ -24,18 +27,18 @@ For enforceable rules, see:
 
 Frank exists to:
 
-- Eliminate boilerplate  
-- Enforce architectural purity  
-- Provide cross‑cutting primitives  
-- Provide deterministic pipelines  
-- Provide hosting provider infrastructure  
-- Provide DI auto‑registration  
-- Provide endpoint discovery  
-- Provide validator scanning  
-- Provide environment abstraction  
-- Provide security headers  
-- Provide error boundaries  
-- Provide testing seams  
+- eliminate boilerplate  
+- enforce architectural purity  
+- provide cross‑cutting primitives  
+- provide deterministic pipelines  
+- provide hosting provider infrastructure  
+- provide DI auto‑registration  
+- provide endpoint discovery  
+- provide validator scanning  
+- provide environment abstraction  
+- provide security headers  
+- provide error boundaries  
+- provide testing seams  
 
 Frank is the **architectural foundation** of the system.
 
@@ -47,13 +50,13 @@ CampFitFurDogs is built **on top of Frank**, not inside it.
 
 Frank contains **reusable architectural primitives** that:
 
-- Apply across all products  
-- Are not domain‑specific  
-- Are not business‑specific  
-- Are not tied to CampFitFurDogs  
-- Are deterministic  
-- Are testable  
-- Are stable across versions  
+- apply across all products  
+- are not domain‑specific  
+- are not business‑specific  
+- are not tied to CampFitFurDogs  
+- are deterministic  
+- are testable  
+- are stable across versions  
 
 Examples:
 
@@ -81,17 +84,17 @@ Frank must never contain:
 - CampFitFurDogs domain logic  
 - CampFitFurDogs application logic  
 - CampFitFurDogs infrastructure logic  
-- Product‑specific hosting behavior  
-- Product‑specific configuration  
-- Product‑specific abstractions  
-- Business rules  
-- Aggregates  
-- Entities  
-- Value objects  
-- Repositories  
-- Readers  
-- Email flows  
-- Authentication business logic  
+- product‑specific hosting behavior  
+- product‑specific configuration  
+- product‑specific abstractions  
+- business rules  
+- aggregates  
+- entities  
+- value objects  
+- repositories  
+- readers  
+- email flows  
+- authentication business logic  
 
 Frank is **pure architecture**, not business logic.
 
@@ -101,14 +104,14 @@ Frank is **pure architecture**, not business logic.
 
 Frank is organized into several sub‑products:
 
-```
+````text
 src/
   Frank/
   Frank.Api/
   Frank.Infrastructure/
   Frank.Infrastructure.EntityFrameworkCore/
   Frank.Testing/
-```
+````
 
 Each sub‑product has a clear purpose.
 
@@ -116,7 +119,7 @@ Each sub‑product has a clear purpose.
 
 # 5. Frank (Core)
 
-```
+````text
 Frank/
   Abstractions/
   Authentication/
@@ -127,9 +130,10 @@ Frank/
   ImmutableContext/
   Modules/
   Settings/
-```
+````
 
-## **5.1 Abstractions**
+## 5.1 Abstractions
+
 Cross‑cutting interfaces:
 
 - `IEnvironment`  
@@ -138,73 +142,83 @@ Cross‑cutting interfaces:
 - `IStartupModule`  
 - `IHostingProvider`  
 
-## **5.2 AutoRegistration**
+## 5.2 AutoRegistration
+
 The DI auto‑registration engine:
 
-- Scans assemblies  
-- Registers services based on attributes  
-- Enforces purity  
-- Prevents manual DI drift  
+- scans assemblies  
+- registers services based on attributes  
+- enforces purity  
+- prevents manual DI drift  
 
-## **5.3 DependencyInjection**
+## 5.3 DependencyInjection
+
 DI helpers and guardrails.
 
-## **5.4 Domain**
+## 5.4 Domain
+
 Domain‑agnostic primitives:
 
-- Domain event base types  
-- Result types  
-- Error types  
+- domain event base types  
+- result types  
+- error types  
 
-## **5.5 Events**
+## 5.5 Events
+
 Domain event dispatch pipeline.
 
-## **5.6 ImmutableContext**
+## 5.6 ImmutableContext
+
 The ImmutableContextBuilder:
 
-- Multi‑stage transformations  
-- Pure, deterministic pipelines  
-- Used heavily in authentication callback flows  
+- multi‑stage transformations  
+- pure, deterministic pipelines  
+- used heavily in authentication callback flows  
 
-## **5.7 Modules**
+## 5.7 Modules
+
 Startup modules:
 
-- Ordered startup execution  
-- Deterministic initialization  
-- Hosting provider integration  
+- ordered startup execution  
+- deterministic initialization  
+- hosting provider integration  
 
-## **5.8 Settings**
+## 5.8 Settings
+
 Configuration primitives.
 
 ---
 
 # 6. Frank.Api
 
-```
+````text
 Frank.Api/
   ExceptionHandling/
   Hosting/
   SecurityHeaders/
   Startup/
-```
+````
 
-## **6.1 ExceptionHandling**
+## 6.1 ExceptionHandling
+
 Error boundary middleware:
 
-- Shapes errors  
-- Prevents leaking internals  
-- Integrates with correlation IDs  
-- Applies consistent error format  
+- shapes errors  
+- prevents leaking internals  
+- integrates with correlation IDs  
+- applies consistent error format  
 
-## **6.2 Hosting**
+## 6.2 Hosting
+
 HostingEngine:
 
-- Selects hosting providers  
-- Validates configuration  
-- Applies environment seams  
-- Ensures deterministic startup  
+- selects hosting providers  
+- validates configuration  
+- applies environment seams  
+- ensures deterministic startup  
 
-## **6.3 SecurityHeaders**
+## 6.3 SecurityHeaders
+
 Security headers middleware:
 
 - HSTS  
@@ -213,72 +227,74 @@ Security headers middleware:
 - Referrer‑Policy  
 - Permissions‑Policy  
 
-## **6.4 Startup**
+## 6.4 Startup
+
 StartupEngine:
 
-- Runs startup modules  
-- Validates ordering  
-- Ensures all modules complete  
-- Fails fast on misconfiguration  
+- runs startup modules  
+- validates ordering  
+- ensures all modules complete  
+- fails fast on misconfiguration  
 
 ---
 
 # 7. Frank.Infrastructure
 
-```
+````text
 Frank.Infrastructure/
   Environment/
-```
+````
 
-## **7.1 Environment**
+## 7.1 Environment
+
 Environment abstraction:
 
-- Safe access to environment variables  
-- No direct `Environment.GetEnvironmentVariable`  
-- Deterministic behavior  
-- Testable seams  
+- safe access to environment variables  
+- no direct `Environment.GetEnvironmentVariable`  
+- deterministic behavior  
+- testable seams  
 
 ---
 
 # 8. Frank.Infrastructure.EntityFrameworkCore
 
-```
+````text
 Frank.Infrastructure.EntityFrameworkCore/
   Configurations/
-```
+````
 
 Provides:
 
 - EF Core configuration scanning  
-- Guardrails for missing configurations  
-- Deterministic model building  
+- guardrails for missing configurations  
+- deterministic model building  
 
 ---
 
 # 9. Frank.Testing
 
-```
+````text
 Frank.Testing/
   Contexts/
   Endpoints/
   Factories/
-```
+````
 
 Provides:
 
-- Fake environment  
-- Fake hosting provider  
-- Fake time provider  
-- Fake external services  
-- Endpoint testing utilities  
-- Test harness primitives  
+- fake environment  
+- fake hosting provider  
+- fake time provider  
+- fake external services  
+- endpoint testing utilities  
+- test harness primitives  
 
 Frank.Testing enables:
 
-- Deterministic tests  
-- No real infrastructure  
-- No real hosting  
-- No real identity providers  
+- deterministic tests  
+- no real infrastructure  
+- no real hosting  
+- no real identity providers  
 
 ---
 
@@ -287,17 +303,17 @@ Frank.Testing enables:
 CampFitFurDogs uses Frank for:
 
 - DI auto‑registration  
-- Endpoint discovery  
-- Validation pipeline  
-- Dispatcher pipeline  
-- Domain event pipeline  
+- endpoint discovery  
+- validation pipeline  
+- dispatcher pipeline  
+- domain event pipeline  
 - ImmutableContextBuilder  
-- Hosting provider selection  
-- Environment abstraction  
-- Security headers  
-- Error boundaries  
+- hosting provider selection  
+- environment abstraction  
+- security headers  
+- error boundaries  
 - EF Core configuration scanning  
-- Test harness utilities  
+- test harness utilities  
 
 CampFitFurDogs **does not modify Frank**.  
 It only **consumes** Frank.
@@ -308,18 +324,18 @@ It only **consumes** Frank.
 
 Frank must be:
 
-- Backward compatible  
-- Stable  
-- Versioned  
-- Tested independently  
-- Updated intentionally  
+- backward compatible  
+- stable  
+- versioned  
+- tested independently  
+- updated intentionally  
 
 Breaking changes require:
 
-- Migration documentation  
-- Updated tests  
-- Updated governance  
-- Updated developer guides  
+- migration documentation  
+- updated tests  
+- updated governance  
+- updated developer guides  
 
 Frank is a **product**, not a folder.
 
@@ -329,15 +345,15 @@ Frank is a **product**, not a folder.
 
 Frank is tested through:
 
-- Unit tests  
-- Integration tests  
-- Architecture tests  
-- Hosting provider seam tests  
+- unit tests  
+- integration tests  
+- architecture tests  
+- hosting provider seam tests  
 - DI auto‑registration tests  
-- Endpoint discovery tests  
-- Validation scanning tests  
-- Error boundary tests  
-- Security header tests  
+- endpoint discovery tests  
+- validation scanning tests  
+- error boundary tests  
+- security header tests  
 
 Frank failures block backend merges.
 
@@ -348,29 +364,29 @@ Frank failures block backend merges.
 Frank is the architectural backbone of the system.  
 It provides:
 
-- Cross‑cutting primitives  
-- Deterministic pipelines  
-- Hosting provider infrastructure  
-- Environment abstraction  
+- cross‑cutting primitives  
+- deterministic pipelines  
+- hosting provider infrastructure  
+- environment abstraction  
 - DI auto‑registration  
-- Endpoint discovery  
-- Validation scanning  
-- Security headers  
-- Error boundaries  
-- Testing seams  
+- endpoint discovery  
+- validation scanning  
+- security headers  
+- error boundaries  
+- testing seams  
 
 Frank must remain:
 
-- Pure  
-- Reusable  
-- Deterministic  
-- Testable  
-- Free of product logic  
+- pure  
+- reusable  
+- deterministic  
+- testable  
+- free of product logic  
 
 CampFitFurDogs is built **on Frank**, not inside it.
 
 For enforceable rules, see:
 
-```
+````text
 docs/governance/technical/architecture-governance.md
-```
+````

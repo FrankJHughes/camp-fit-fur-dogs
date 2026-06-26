@@ -5,16 +5,15 @@
   "files.insertFinalNewline": true,
   "files.encoding": "utf8",
   "files.eol": "\n",
-
   "dotnet.defaultSolution": "CampFitFurDogs.slnx",
-
   "[markdown]": {
     "files.trimTrailingWhitespace": false
   },
-
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "*.cs": "${capture}.Designer.cs, ${capture}.g.cs",
     "*.csproj": "*.csproj.user, Directory.Build.props, Directory.Packages.props"
-  }
+  },
+  "csharp.debug.justMyCode": false,
+  "C_Cpp.workspaceSymbols": "All"
 }

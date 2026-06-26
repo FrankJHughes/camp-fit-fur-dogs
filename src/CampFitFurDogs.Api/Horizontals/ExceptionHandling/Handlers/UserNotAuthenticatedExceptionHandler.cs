@@ -10,7 +10,7 @@ public sealed class UserNotAuthenticatedExceptionHandler : IExceptionHandler
 {
     public bool CanHandle(Exception ex)
     {
-        // Your ICurrentUserService throws InvalidOperationException
+        // Your ICurrentUser throws InvalidOperationException
         // with a specific message when user is not authenticated.
         return ex is UserNotAuthenticatedException;
     }

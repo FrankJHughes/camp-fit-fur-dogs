@@ -1,9 +1,10 @@
 using Frank.Abstractions.Startup;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
-[StartupModule(60)]
+[StartupModule(70)]
 public class AuthenticationStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)
@@ -25,10 +26,12 @@ public class AuthenticationStartupModule : IStartupModule
 
         var disableOidc = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
 
+        //
+        // ⭐ Authentication configuration
+        //
         var auth = services
             .AddAuthentication(options =>
             {
-                // ⭐ These two are critical
                 options.DefaultScheme = "cfd.session";
                 options.DefaultAuthenticateScheme = "cfd.session";
                 options.DefaultChallengeScheme = disableOidc
@@ -37,8 +40,6 @@ public class AuthenticationStartupModule : IStartupModule
             })
             .AddCookie("cfd.session", options =>
             {
-                var env = builder.Environment;
-
                 options.Cookie.Name = "cfd.session";
                 options.Cookie.Path = "/";
                 options.Cookie.HttpOnly = true;
@@ -47,13 +48,33 @@ public class AuthenticationStartupModule : IStartupModule
                     ? CookieSecurePolicy.Always
                     : CookieSecurePolicy.None;
 
-                // OIDC requires SameSite=None
+                // Required for OIDC
                 options.Cookie.SameSite = SameSiteMode.None;
 
                 options.LoginPath = "/api/auth/login";
                 options.LogoutPath = "/api/auth/logout";
+
+                //
+                // Prevent 302 redirects for APIs.
+                //
+                options.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToAccessDenied = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
+        //
+        // ⭐ Optional OIDC (disabled in local dev)
+        //
         if (!disableOidc)
         {
             auth.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
@@ -61,6 +82,7 @@ public class AuthenticationStartupModule : IStartupModule
                 options.Authority = authority;
                 options.ClientId = clientId;
                 options.ClientSecret = clientSecret;
+
                 options.CallbackPath = new PathString(new Uri(callbackUrl).AbsolutePath);
                 options.ResponseType = "code";
                 options.SaveTokens = true;
@@ -69,6 +91,8 @@ public class AuthenticationStartupModule : IStartupModule
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("email");
+
+                // You may add events here later for claim mapping, etc.
             });
         }
     }

@@ -438,6 +438,7 @@
         "dependencies": {
           "CampFitFurDogs.Application": "[1.0.0, )",
           "CampFitFurDogs.Domain": "[1.0.0, )",
+          "Frank.Infrastructure": "[1.0.0, )",
           "Frank.Infrastructure.EntityFrameworkCore": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[10.0.9, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[10.0.9, )",
@@ -459,6 +460,12 @@
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "[8.1.0, )",
           "Scrutor": "[7.0.0, )",
           "System.IdentityModel.Tokens.Jwt": "[8.1.0, )"
+        }
+      },
+      "frank.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "Frank": "[1.0.0, )"
         }
       },
       "frank.infrastructure.entityframeworkcore": {
