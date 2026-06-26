@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Domain.Dogs;
-using Frank.Abstractions;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Dogs.EditDogProfile;
 

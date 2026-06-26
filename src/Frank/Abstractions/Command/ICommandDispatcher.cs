@@ -1,9 +1,5 @@
-using Frank.AutoRegistration;
-using Microsoft.Extensions.DependencyInjection;
+namespace Frank.Abstractions.Command;
 
-namespace Frank.Abstractions;
-
-[AutoRegister(ServiceLifetime.Scoped)]
 public interface ICommandDispatcher
 {
     Task<TResponse> DispatchAsync<TResponse>(ICommand<TResponse> command, CancellationToken ct);

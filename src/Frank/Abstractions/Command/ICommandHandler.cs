@@ -1,7 +1,7 @@
 using Frank.AutoRegistration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.Abstractions;
+namespace Frank.Abstractions.Command;
 
 [AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
 public interface ICommandHandler<in TCommand>

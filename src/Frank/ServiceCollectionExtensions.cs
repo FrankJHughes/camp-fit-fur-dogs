@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank;
 
-public static class FrankExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddFrank(
         this IServiceCollection services,

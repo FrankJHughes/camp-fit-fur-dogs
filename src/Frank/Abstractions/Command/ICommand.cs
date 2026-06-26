@@ -1,6 +1,5 @@
-namespace Frank.Abstractions;
+namespace Frank.Abstractions.Command;
 
-//
 public interface ICommand { }
 
 public interface ICommand<TResponse> { }

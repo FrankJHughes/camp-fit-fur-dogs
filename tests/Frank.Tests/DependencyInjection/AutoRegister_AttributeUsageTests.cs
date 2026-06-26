@@ -1,4 +1,12 @@
 using System.Reflection;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.Environment;
+using Frank.Abstractions.Events;
+using Frank.Abstractions.ExceptionHandling;
+using Frank.Abstractions.Identity;
+using Frank.Abstractions.Query;
+using Frank.Abstractions.Time;
+using Frank.Abstractions.UnitOfWork;
 using Frank.AutoRegistration;
 
 namespace Frank.Tests.DependencyInjection;
@@ -12,18 +20,18 @@ public class AutoRegister_AttributeUsageTests
 
     private static readonly Type[] Known =
     [
-        typeof(Frank.Abstractions.ICommandDispatcher),
-        typeof(Frank.Abstractions.ICommandHandler<>),
-        typeof(Frank.Abstractions.ICommandHandler<,>),
-        typeof(Frank.Abstractions.Identity.ICurrentUser),
-        typeof(Frank.Abstractions.IQueryDispatcher),
-        typeof(Frank.Abstractions.IQueryHandler<,>),
-        typeof(Frank.Abstractions.IUnitOfWork),
-        typeof(Frank.Abstractions.Environment.IEnvironment),
-        typeof(Frank.Abstractions.Events.IDomainEventDispatcher),
-        typeof(Frank.Abstractions.Events.IDomainEventHandler<>),
-        typeof(Frank.Abstractions.ExceptionHandling.IExceptionHandler),
-        typeof(Frank.Abstractions.Time.IClock)
+        typeof(ICommandDispatcher),
+        typeof(ICommandHandler<>),
+        typeof(ICommandHandler<,>),
+        typeof(ICurrentUser),
+        typeof(IQueryDispatcher),
+        typeof(IQueryHandler<,>),
+        typeof(IUnitOfWork),
+        typeof(IEnvironment),
+        typeof(IDomainEventDispatcher),
+        typeof(IDomainEventHandler<>),
+        typeof(IExceptionHandler),
+        typeof(IClock)
     ];
 
     [Fact]

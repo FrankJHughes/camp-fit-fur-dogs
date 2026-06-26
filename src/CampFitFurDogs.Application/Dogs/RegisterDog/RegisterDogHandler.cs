@@ -2,7 +2,8 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
-using Frank.Abstractions;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Dogs.RegisterDog;
 

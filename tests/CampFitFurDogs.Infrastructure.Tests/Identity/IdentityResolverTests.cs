@@ -1,9 +1,9 @@
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
 using CampFitFurDogs.Infrastructure.Identity;
-using Frank.Abstractions;
 using Frank.Abstractions.Authentication.Callback;
 using FluentAssertions;
+using Frank.Abstractions.Command;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Identity;
 

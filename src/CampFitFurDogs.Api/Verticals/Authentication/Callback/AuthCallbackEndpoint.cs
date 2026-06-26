@@ -3,7 +3,6 @@ using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using Frank.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Domain.Errors;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Abstractions.ImmutableContextBuilder;
 using System.Text.Json;

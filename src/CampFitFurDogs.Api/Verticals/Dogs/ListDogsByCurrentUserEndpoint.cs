@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using Frank.Abstractions;
 using Frank.Abstractions.Identity;
+using Frank.Abstractions.Query;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;

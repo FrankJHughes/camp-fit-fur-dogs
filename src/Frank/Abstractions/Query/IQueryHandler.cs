@@ -1,7 +1,7 @@
 using Frank.AutoRegistration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.Abstractions;
+namespace Frank.Abstractions.Query;
 
 [AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
 public interface IQueryHandler<in TQuery, TResponse>

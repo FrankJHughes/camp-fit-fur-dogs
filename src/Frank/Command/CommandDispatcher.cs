@@ -1,8 +1,8 @@
 using FluentValidation;
-using Frank.Abstractions;
+using Frank.Abstractions.Command;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank;
+namespace Frank.Command;
 
 public sealed class CommandDispatcher : ICommandDispatcher
 {

@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Frank.Abstractions;
+using Frank.Abstractions.UnitOfWork;
 using Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +15,12 @@ public sealed class AddFrankEfCoreTests
         var services = new ServiceCollection();
 
         services.AddDbContext<FakeDbContext>(o => o.UseInMemoryDatabase("test"));
-        services.AddFrankEfCore<FakeDbContext>(
-            [typeof(FakeDbContext).Assembly]
-        );
+        services.AddFrankEntityFrameworkCoreInfrastructure<FakeDbContext>();
 
         var provider = services.BuildServiceProvider();
 
         var uow = provider.GetRequiredService<IUnitOfWork>();
 
-        uow.Should().BeOfType<EfUnitOfWork<FakeDbContext>>();
+        uow.Should().BeOfType<EntityFrameworkCoreUnitOfWork<FakeDbContext>>();
     }
 }

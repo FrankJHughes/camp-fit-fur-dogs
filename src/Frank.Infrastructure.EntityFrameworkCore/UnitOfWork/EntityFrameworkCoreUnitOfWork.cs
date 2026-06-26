@@ -1,14 +1,14 @@
-using Frank.Abstractions;
+using Frank.Abstractions.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace Frank.Infrastructure.EntityFrameworkCore;
 
-public sealed class EfUnitOfWork<TContext> : IUnitOfWork
+public sealed class EntityFrameworkCoreUnitOfWork<TContext> : IUnitOfWork
     where TContext : DbContext
 {
     private readonly TContext _dbContext;
 
-    public EfUnitOfWork(TContext dbContext)
+    public EntityFrameworkCoreUnitOfWork(TContext dbContext)
     {
         _dbContext = dbContext;
     }

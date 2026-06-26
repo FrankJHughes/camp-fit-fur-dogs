@@ -1,8 +1,8 @@
 using FluentValidation;
-using Frank.Abstractions;
+using Frank.Abstractions.Query;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank;
+namespace Frank.Query;
 
 public sealed class QueryDispatcher : IQueryDispatcher
 {

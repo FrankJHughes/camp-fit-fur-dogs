@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
-using Frank.Abstractions;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Customers.CreateCustomer;
 

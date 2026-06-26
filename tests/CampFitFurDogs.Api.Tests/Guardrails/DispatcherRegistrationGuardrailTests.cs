@@ -1,12 +1,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
-
-using Frank.Abstractions;
 using Frank.Abstractions.Events;
 
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
+using Frank.Abstractions.Command;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 

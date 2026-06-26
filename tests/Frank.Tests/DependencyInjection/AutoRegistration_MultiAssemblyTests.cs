@@ -1,3 +1,6 @@
+using Frank.Abstractions.Command;
+using Frank.Abstractions.Query;
+
 namespace Frank.Tests.DependencyInjection;
 
 public sealed class AutoRegistration_MultiAssemblyTests

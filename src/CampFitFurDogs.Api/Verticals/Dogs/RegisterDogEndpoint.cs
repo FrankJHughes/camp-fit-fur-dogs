@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Abstractions;
+using Frank.Abstractions.Command;
 using Frank.Abstractions.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 
@@ -12,7 +12,7 @@ public class RegisterDogEndpoint : IEndpoint
     {
         app.MapPost("/api/dogs", async (
             RegisterDogRequest request,
-            [FromServices] ICurrentUser currentUser,
+            ICurrentUser currentUser,
             ICommandDispatcher dispatcher,
             HttpContext httpContext) =>
         {

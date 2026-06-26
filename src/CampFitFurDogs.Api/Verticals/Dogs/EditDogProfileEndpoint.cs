@@ -1,8 +1,13 @@
+using Microsoft.AspNetCore.Mvc;
+
+using Frank.Abstractions;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.Identity;
+using Frank.Abstractions.Query;
+
 using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
-using Frank.Abstractions;
-using Frank.Abstractions.Identity;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace CampFitFurDogs.Api.Verticals.Dogs;
 
@@ -13,7 +18,7 @@ public class EditDogProfileEndpoint : IEndpoint
         app.MapPut("/api/dogs/{id}", async (
             [FromRoute] Guid id,
             EditDogProfileRequest request,
-            [FromServices] ICurrentUser currentUser,
+            ICurrentUser currentUser,
             IQueryDispatcher queryDispatcher,
             ICommandDispatcher commandDispatcher,
             HttpContext httpContext) =>

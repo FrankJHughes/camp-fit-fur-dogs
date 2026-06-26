@@ -1,4 +1,6 @@
 
+using Frank.Abstractions.Command;
+using Frank.Command;
 using Frank.Tests.Fakes;
 
 namespace Frank.Tests.Dispatching;
@@ -7,7 +9,7 @@ public class CommandDispatcherTests : DispatcherTestBase
 {
     public CommandDispatcherTests()
     {
-        WithDispatcher<Frank.CommandDispatcher, ICommandDispatcher>();
+        WithDispatcher<CommandDispatcher, ICommandDispatcher>();
     }
 
     [Fact]

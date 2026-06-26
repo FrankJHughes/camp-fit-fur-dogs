@@ -2,7 +2,7 @@ using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Application.Authentication.Callback.Steps;
 using CampFitFurDogs.Application.Tests.Fakes.Authentication.Callback;
 using CampFitFurDogs.Domain.Authentication.Sessions;
-using Frank.Abstractions;
+using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Tests.Authentication.Callback.Steps;
 

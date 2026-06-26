@@ -1,4 +1,7 @@
 
+using Frank.Abstractions.Command;
+using Frank.Abstractions.Query;
+
 namespace Frank.Tests.TestInfrastructure;
 
 public sealed class TestContainer

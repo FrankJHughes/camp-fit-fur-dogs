@@ -1,4 +1,6 @@
 
+using Frank.Abstractions.Query;
+
 namespace Frank.Tests.Slices;
 
 public sealed class GetMessageQueryHandler
