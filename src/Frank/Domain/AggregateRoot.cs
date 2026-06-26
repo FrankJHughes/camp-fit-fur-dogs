@@ -5,7 +5,7 @@ namespace Frank.Domain;
 public abstract class AggregateRoot<TId> : Entity<TId>
     where TId : AggregateId
 {
-    private readonly List<IDomainEvent> _domainEvents = [];
+    private readonly List<IEvent> _domainEvents = [];
 
     protected AggregateRoot() { }
 
@@ -14,9 +14,9 @@ public abstract class AggregateRoot<TId> : Entity<TId>
         Id = id;
     }
 
-    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public IReadOnlyList<IEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-    protected void RaiseDomainEvent(IDomainEvent domainEvent) =>
+    protected void RaiseDomainEvent(IEvent domainEvent) =>
         _domainEvents.Add(domainEvent);
 
     public void ClearDomainEvents() => _domainEvents.Clear();

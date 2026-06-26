@@ -65,7 +65,7 @@ public sealed class AutoRegistrationTests
 
         using var provider = services.BuildServiceProvider();
 
-        var handlers = provider.GetServices<IDomainEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
+        var handlers = provider.GetServices<IEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
 
         handlers.Should().NotBeEmpty();
     }

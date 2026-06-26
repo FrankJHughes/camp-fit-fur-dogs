@@ -1,6 +1,7 @@
 using Frank.Abstractions.Startup;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
@@ -9,6 +10,16 @@ public class AuthenticationStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)
     {
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor |
+                ForwardedHeaders.XForwardedProto;
+
+            options.KnownIPNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
+
         var env = builder.Environment;
         var services = builder.Services;
         var config = builder.Configuration;
@@ -128,6 +139,7 @@ public class AuthenticationStartupModule : IStartupModule
 
     public void Use(WebApplication app)
     {
+        app.UseForwardedHeaders();
         app.UseAuthentication();
     }
 }

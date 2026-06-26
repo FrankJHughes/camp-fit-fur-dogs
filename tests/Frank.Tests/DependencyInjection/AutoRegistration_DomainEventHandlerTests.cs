@@ -15,7 +15,7 @@ public sealed class AutoRegistration_DomainEventHandlerTests
 
         using var provider = services.BuildServiceProvider();
 
-        var handlers = provider.GetServices<IDomainEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
+        var handlers = provider.GetServices<IEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
 
         handlers.Should().HaveCountGreaterThan(1);
     }
@@ -32,7 +32,7 @@ public sealed class AutoRegistration_DomainEventHandlerTests
         using var provider = services.BuildServiceProvider();
 
         // Get all registered handlers for FakeDomainEvent
-        var handlers = provider.GetServices<IDomainEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
+        var handlers = provider.GetServices<IEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
 
         // Assert that none of the registered handlers are abstract
         handlers.Should().OnlyContain(h => !h.GetType().IsAbstract);

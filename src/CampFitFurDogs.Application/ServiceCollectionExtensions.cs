@@ -6,6 +6,7 @@ using Frank.Query;
 
 using CampFitFurDogs.Application.Authentication.Callback;
 using CampFitFurDogs.Application.Settings;
+using Frank.Event;
 
 namespace CampFitFurDogs.Application;
 
@@ -26,6 +27,7 @@ public static class ServiceCollectionExtensions
 
         services.AddFrankCommand();
         services.AddFrankQuery();
+        services.AddFrankEvent();
 
         services
             .AddOptions<FrontendSettings>()

@@ -18,7 +18,7 @@ public sealed class FakeAggregateWithEvents : AggregateRoot<FakeAggregateId>
     public void RaiseEvent(string message)
         => RaiseDomainEvent(new FakeDomainEvent(message));
 
-    public IReadOnlyCollection<IDomainEvent> DequeueEvents()
+    public IReadOnlyCollection<IEvent> DequeueEvents()
     {
         var events = DomainEvents.ToList();
         ClearDomainEvents();

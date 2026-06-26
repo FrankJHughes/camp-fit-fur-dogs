@@ -28,8 +28,8 @@ public class AutoRegister_AttributeUsageTests
         typeof(IQueryHandler<,>),
         typeof(IUnitOfWork),
         typeof(IEnvironment),
-        typeof(IDomainEventDispatcher),
-        typeof(IDomainEventHandler<>),
+        typeof(IEventDispatcher),
+        typeof(IEventHandler<>),
         typeof(IExceptionHandler),
         typeof(IClock)
     ];

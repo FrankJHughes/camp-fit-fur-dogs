@@ -1,3 +1,3 @@
 namespace Frank.Abstractions.Events;
 
-public interface IDomainEvent { }
+public interface IEvent { }
