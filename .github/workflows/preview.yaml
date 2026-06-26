@@ -266,7 +266,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - preview_context
-    if: needs.preview_context.outputs.should_deploy == 'true' && (github.event.action == 'opened' || github.event.action == 'reopened')
+    if: needs.preview_context.outputs.should_deploy == 'true'
     steps:
       - name: Add preview callback URL to Auth0
         env:
