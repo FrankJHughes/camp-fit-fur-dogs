@@ -45,7 +45,7 @@ public sealed class HostingEngine
             Console.WriteLine("HostingEngine :: {");
             foreach (var @override in overrides)
             {
-                Console.WriteLine($"HostingEngine :: \t[\"{@override.Key}\"] = \"{@override.Value}\",");
+                Console.WriteLine($"HostingEngine :: \t[\"{@override.Key}\"] = \"<masked>\",");
                 merged[@override.Key] = @override.Value; // later modules win
             }
             Console.WriteLine("HostingEngine :: }");
