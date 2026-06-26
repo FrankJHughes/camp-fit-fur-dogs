@@ -37,8 +37,8 @@ jobs:
           echo "api_base_url=https://campfitfurdogsapi-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
 
           action="${{ github.event.action }}"
-          should_destroy=$([[ "$action" != "opened" ]] && echo "true" || echo "false")
-          should_deploy=$([[ "$action" != "closed" ]] && echo "true" || echo "false")
+          should_deploy="${{ github.event.pull_request.state != 'opened' }}"
+          should_deploy="${{ github.event.pull_request.state != 'closed' }}"
           echo "should_destroy=$should_destroy" >> $GITHUB_OUTPUT
           echo "should_deploy=$should_deploy" >> $GITHUB_OUTPUT
 
