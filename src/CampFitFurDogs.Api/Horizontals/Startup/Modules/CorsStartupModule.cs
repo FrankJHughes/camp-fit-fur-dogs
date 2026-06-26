@@ -10,8 +10,8 @@ public sealed class CorsStartupModule : IStartupModule
     private const string FrontendKey = "Frontend:BaseUrl";
     private const string PreflightKey = "Cors:PreflightMaxAgeSeconds";
 
-    private string? _validatedOrigin;
-    private int _validatedPreflightSeconds;
+    private string? _frontendOrigin;
+    private int _preflightSeconds;
 
     public IReadOnlyList<string> AllowedOrigins { get; private set; } = Array.Empty<string>();
 
@@ -20,17 +20,17 @@ public sealed class CorsStartupModule : IStartupModule
     // ---------------------------------------------------------------------
     public void Add(WebApplicationBuilder builder)
     {
-        var services = builder.Services;
         var config = builder.Configuration;
-
         var environment = ResolveEnvironment(config);
 
-        _validatedOrigin = ResolveFrontendBaseUrl(config, environment);
-        _validatedPreflightSeconds = ResolvePreflightMaxAge(config);
+        _frontendOrigin = ResolveFrontendOrigin(config, environment);
+        _preflightSeconds = ResolvePreflightMaxAge(config);
 
-        services.AddCors(options =>
+        AllowedOrigins = new[] { _frontendOrigin };
+
+        builder.Services.AddCors(options =>
         {
-            options.AddDefaultPolicy(DefaultPolicyApply);
+            options.AddDefaultPolicy(ApplyDefaultPolicy);
         });
     }
 
@@ -46,22 +46,23 @@ public sealed class CorsStartupModule : IStartupModule
     // ---------------------------------------------------------------------
     // APPLY POLICY — NO VALIDATION HERE
     // ---------------------------------------------------------------------
-    private void DefaultPolicyApply(CorsPolicyBuilder policy)
+    private void ApplyDefaultPolicy(CorsPolicyBuilder policy)
     {
-        if (_validatedOrigin is null)
+        if (_frontendOrigin is null)
             throw new InvalidOperationException("CORS policy applied before Add() initialized configuration.");
 
-        policy.WithOrigins(_validatedOrigin)
-              .WithMethods("GET", "POST", "PUT", "DELETE")
-              .WithHeaders("Authorization", "Content-Type")
-              .AllowCredentials()
-              .SetPreflightMaxAge(TimeSpan.FromSeconds(_validatedPreflightSeconds));
+        policy
+            .WithOrigins(_frontendOrigin)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .SetPreflightMaxAge(TimeSpan.FromSeconds(_preflightSeconds));
     }
 
     // ---------------------------------------------------------------------
     // VALIDATION HELPERS
     // ---------------------------------------------------------------------
-    private string ResolveFrontendBaseUrl(IConfiguration config, string environment)
+    private static string ResolveFrontendOrigin(IConfiguration config, string environment)
     {
         var raw = config[FrontendKey];
 
@@ -88,7 +89,7 @@ public sealed class CorsStartupModule : IStartupModule
             "CORS cannot be configured safely without a frontend base URL.");
     }
 
-    private int ResolvePreflightMaxAge(IConfiguration config)
+    private static int ResolvePreflightMaxAge(IConfiguration config)
     {
         var raw = config[PreflightKey];
 

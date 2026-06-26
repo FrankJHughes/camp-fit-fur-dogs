@@ -113,8 +113,8 @@ public class CorsStartupModuleTests
         var provider = app.Services.GetRequiredService<ICorsPolicyProvider>();
         var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
 
-        policy!.Methods.Should().BeEquivalentTo("GET", "POST", "PUT", "DELETE");
-        policy.Headers.Should().BeEquivalentTo("Authorization", "Content-Type");
+        policy!.Methods.Should().BeEquivalentTo("*");
+        policy.Headers.Should().BeEquivalentTo("*");
         policy.SupportsCredentials.Should().BeTrue();
     }
 }
