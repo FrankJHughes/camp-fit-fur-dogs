@@ -34,7 +34,7 @@ jobs:
           echo "db_branch=$common_prefix" >> $GITHUB_OUTPUT
           echo "frontend_artifact_name=$common_prefix-frontend" >> $GITHUB_OUTPUT
           echo "frontend_artifact_file_path=frontend-url.txt" >> $GITHUB_OUTPUT
-          echo "api_base_url=https://campfitfurdogs-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
+          echo "api_base_url=https://campfitfurdogsapi-$common_prefix.onrender.com" >> $GITHUB_OUTPUT
 
           action="${{ github.event.action }}"
           should_destroy=$([[ "$action" != "opened" ]] && echo "true" || echo "false")
