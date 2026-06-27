@@ -3,7 +3,7 @@ using Frank.Abstractions.Exceptions;
 using Frank.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.Infrastructure.Problem;
+namespace Frank.Infrastructure.Exceptions;
 
 public static class ServiceCollectionExtensions
 {
@@ -16,12 +16,18 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<ExceptionHandlerRegistry>();
 
-        var types = new Type[]
+        var includeInterfaceTypes = new Type[]
         {
             typeof(IExceptionHandler)
         };
 
-        Orchestrator.Orchestrate(services, types, assemblies);
+        var excludeConcreteTypes = Array.Empty<Type>();
+
+        Orchestrator.Orchestrate(
+            services,
+            includeInterfaceTypes,
+            excludeConcreteTypes,
+            assemblies);
 
         return services;
     }

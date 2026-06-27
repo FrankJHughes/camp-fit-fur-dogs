@@ -4,7 +4,7 @@ using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Frank.Abstractions.Authentication.Callback;
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Testing.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;

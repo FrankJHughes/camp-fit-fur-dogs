@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 using Frank.Abstractions.Observability;
 
-namespace Frank.ImmutableContextBuilder;
+namespace Frank.ImmutableContext;
 
 public abstract class ImmutableContextBuilderBase<TContext, TStep>
     where TContext : ImmutableContextBase

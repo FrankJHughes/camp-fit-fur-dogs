@@ -29,7 +29,7 @@ public class DiGuardrailTests
             from d in descriptors
             where d.ServiceType.IsInterface
             let impl = d.ImplementationType
-            let arAttr = d.ServiceType.GetCustomAttribute<AutoRegisterAttribute>()
+            let arAttr = d.ServiceType.GetCustomAttribute<RegistrationAttribute>()
             where impl is not null
                 && arAttr is not null && arAttr.RegisterConcreteType
                 && !descriptors.Any(x => x.ServiceType == impl)

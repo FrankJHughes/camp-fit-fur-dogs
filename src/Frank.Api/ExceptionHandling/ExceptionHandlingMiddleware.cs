@@ -1,5 +1,5 @@
 using System.Reflection;
-using Frank.Infrastructure.Problem;
+using Frank.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http;
 
 namespace Frank.Api.ExceptionHandling;

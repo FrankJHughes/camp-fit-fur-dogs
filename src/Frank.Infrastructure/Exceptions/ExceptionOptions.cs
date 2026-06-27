@@ -1,4 +1,4 @@
-namespace Frank.Infrastructure.Problem;
+namespace Frank.Infrastructure.Exceptions;
 
 public sealed class ExceptionHandlingOptions
 {

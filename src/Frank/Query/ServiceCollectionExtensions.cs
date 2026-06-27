@@ -15,12 +15,18 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFrankQuery(this IServiceCollection services, Assembly[] assemblies)
     {
         services.AddScoped<IQueryDispatcher, QueryDispatcher>();
-        var types = new Type[]
+        var includeInterfaceTypes = new Type[]
         {
             typeof(IQueryHandler<,>)
         };
 
-        Orchestrator.Orchestrate(services, types, assemblies);
+        var excludeConcreteTypes = Array.Empty<Type>();
+
+        Orchestrator.Orchestrate(
+            services,
+            includeInterfaceTypes,
+            excludeConcreteTypes,
+            assemblies);
 
         return services;
     }

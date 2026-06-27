@@ -1,6 +1,6 @@
 using System.Reflection;
 using Frank.Abstractions.Startup;
-using Frank.Infrastructure.Problem;
+using Frank.Infrastructure.Exceptions;
 using Frank.Api.ExceptionHandling;
 
 namespace CampFitFurDogs.Api.Horizontal.Startup.Modules;

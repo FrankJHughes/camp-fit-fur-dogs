@@ -7,7 +7,7 @@ public class AutoRegister_ConcreteTypeTests
 {
     private static readonly Assembly[] Assemblies =
     [
-        typeof(AutoRegisterAttribute).Assembly
+        typeof(RegistrationAttribute).Assembly
     ];
 
     [Fact]
@@ -22,7 +22,7 @@ public class AutoRegister_ConcreteTypeTests
         var attributed =
             from asm in Assemblies
             from type in asm.DefinedTypes
-            let attr = type.GetCustomAttribute<AutoRegisterAttribute>()
+            let attr = type.GetCustomAttribute<RegistrationAttribute>()
             where type.IsInterface && attr is not null && attr.RegisterConcreteType
             select type.AsType();
 

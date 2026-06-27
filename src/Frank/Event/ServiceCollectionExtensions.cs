@@ -16,12 +16,18 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IEventDispatcher, EventDispatcher>();
 
-        var types = new Type[]
+        var includeInterfaceTypes = new Type[]
         {
             typeof(IEventHandler<>)
         };
 
-        Orchestrator.Orchestrate(services, types, assemblies);
+        var excludeConcreteTypes = Array.Empty<Type>();
+
+        Orchestrator.Orchestrate(
+            services,
+            includeInterfaceTypes,
+            excludeConcreteTypes,
+            assemblies);
 
         return services;
     }

@@ -13,7 +13,7 @@ public class AutoRegister_AttributeUsageTests
 {
     private static readonly Assembly[] Assemblies =
     [
-        typeof(AutoRegisterAttribute).Assembly
+        typeof(RegistrationAttribute).Assembly
     ];
 
     private static readonly Type[] Known =
@@ -33,7 +33,7 @@ public class AutoRegister_AttributeUsageTests
         var offenders =
             (from asm in Assemblies
              from type in asm.DefinedTypes
-             let attr = type.GetCustomAttribute<AutoRegisterAttribute>()
+             let attr = type.GetCustomAttribute<RegistrationAttribute>()
              where type.IsInterface
                    && attr is not null
                    && !Known.Contains(type.AsType())

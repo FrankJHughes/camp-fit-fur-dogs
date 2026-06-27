@@ -1,4 +1,4 @@
-namespace Frank.Abstractions.ImmutableContextBuilder;
+namespace Frank.Abstractions.ImmutableContext;
 
 public sealed record ImmutableContextBuilderDiagnosticEvent(
     string StepId,

@@ -1,4 +1,4 @@
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 using Frank.Tests.Fakes.ImmutableContext;
 using Frank.Tests.Fakes.ImmutableContext.Steps;
 

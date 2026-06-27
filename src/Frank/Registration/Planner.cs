@@ -20,7 +20,7 @@ public static class Planner
     private static IEnumerable<Plan> PlanRelevantInterfaceGroup(RelevantInterfaceGroup group)
     {
         var (relevantInterface, implementations) = group;
-        var autoRegisterAttribute = relevantInterface.GetCustomAttribute<AutoRegisterAttribute>()!;
+        var autoRegisterAttribute = relevantInterface.GetCustomAttribute<RegistrationAttribute>()!;
 
         foreach (var (implementedInterface, implementingClasses) in GroupByImplementedInterface(implementations))
         {

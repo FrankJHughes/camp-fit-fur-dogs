@@ -4,7 +4,7 @@ using Frank.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Domain.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Frank.Authentication.Callback.Oidc;
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 using System.Text.Json;
 using Frank.Abstractions;
 

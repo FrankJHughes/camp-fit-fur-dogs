@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Abstractions.Exceptions;
 
-[AutoRegister(ServiceLifetime.Singleton)]
+[Registration(ServiceLifetime.Singleton)]
 public interface IExceptionHandler
 {
     bool CanHandle(System.Exception exception);

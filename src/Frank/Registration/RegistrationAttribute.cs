@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Frank.Registration;
 
 [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
-public sealed class AutoRegisterAttribute(
+public sealed class RegistrationAttribute(
     ServiceLifetime lifetime) : Attribute
 {
     public ServiceLifetime Lifetime { get; } = lifetime;

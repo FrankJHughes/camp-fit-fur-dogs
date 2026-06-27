@@ -6,12 +6,15 @@ namespace Frank.Registration;
 
 public static class Scanner
 {
-    private static readonly Type AutoRegisterAttributeType = typeof(AutoRegisterAttribute);
+    private static readonly Type RegistrationAttributeType = typeof(RegistrationAttribute);
 
-    public static IEnumerable<RelevantInterfaceGroup> Scan(Type[] types, Assembly[] assemblies) =>
-        GetRelevantInterfaces(types, assemblies)
+    public static IEnumerable<RelevantInterfaceGroup> Scan(
+        IEnumerable<Type> includeInterfaceTypes,
+        IEnumerable<Type> excludeConcreteTypes,
+        IEnumerable<Assembly> assemblies) =>
+        GetRelevantInterfaces(includeInterfaceTypes, assemblies)
         .LeftJoin(
-            GetConcreteImplementations(assemblies), // right side
+            GetConcreteImplementations(assemblies, excludeConcreteTypes), // right side
             GetRelevantInterfaceKey, // key of left side
             GetImplementedInterfaceKey, // key of right side
             (relevantInterface, implementation) =>
@@ -43,19 +46,14 @@ public static class Scanner
         return interfaceType.IsGenericType ? interfaceType.GetGenericTypeDefinition() : interfaceType;
     }
 
-    private static IEnumerable<TypeInfo> GetRelevantInterfaces(IEnumerable<Type> types, IEnumerable<Assembly> assemblies)
+    private static IEnumerable<TypeInfo> GetRelevantInterfaces(
+        IEnumerable<Type> includeInterfaceTypes,
+        IEnumerable<Assembly> assemblies)
     {
-        if (types.Any())
-        {
-            return types
-                .Select(t => t.GetTypeInfo())
-                .Distinct();
-        }
-
-        return assemblies
-            .SelectMany(assembly => assembly.DefinedTypes)
+        return includeInterfaceTypes
+            .Select(t => t.GetTypeInfo())
             .Where(IsRelevantInterface)
-            .Distinct(); // <= IMPORTANT
+            .Distinct();
     }
     private static bool Contains(IEnumerable<Type> types, TypeInfo t)
     {
@@ -68,14 +66,19 @@ public static class Scanner
     {
         return t.IsInterface &&
             t.CustomAttributes.Any(ca =>
-                ca.AttributeType == AutoRegisterAttributeType);
+                ca.AttributeType == RegistrationAttributeType);
     }
 
-    private static IEnumerable<Implementation> GetConcreteImplementations(Assembly[] assemblies)
+    private static IEnumerable<Implementation> GetConcreteImplementations(
+        IEnumerable<Assembly> assemblies,
+        IEnumerable<Type> excludeConcreteTypes)
     {
+        var excludeConcreteTypeInfos = excludeConcreteTypes.Select(ct => ct.GetTypeInfo());
+
         return assemblies
             .SelectMany(a => a.DefinedTypes)
-            .Where(ct => IsConcreteClassType(ct))
+            .Where(IsConcreteClassType)
+            .Where(ct => !excludeConcreteTypeInfos.Contains(ct))
             .Distinct()
             .SelectMany(ct =>
                 ct.ImplementedInterfaces,

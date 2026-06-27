@@ -1,7 +1,7 @@
 using System.Reflection;
 using Frank.Abstractions.Exceptions;
 
-namespace Frank.Infrastructure.Problem;
+namespace Frank.Infrastructure.Exceptions;
 
 public sealed class ExceptionHandlerRegistry
 {

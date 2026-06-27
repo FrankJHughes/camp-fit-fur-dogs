@@ -1,3 +1,3 @@
-namespace Frank.Abstractions.ImmutableContextBuilder;
+namespace Frank.Abstractions.ImmutableContext;
 
 public abstract record ImmutableContextBuilderResultBase;

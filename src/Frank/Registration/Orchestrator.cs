@@ -5,10 +5,14 @@ namespace Frank.Registration;
 
 public sealed class Orchestrator
 {
-    public static void Orchestrate(IServiceCollection services, Type[] types, Assembly[] assemblies)
+    public static void Orchestrate(
+        IServiceCollection services,
+        IEnumerable<Type> includeInterfaceTypes,
+        IEnumerable<Type> excludeConcreteTypes,
+        IEnumerable<Assembly> assemblies)
     {
 
-        var groups = Scanner.Scan(types, assemblies);
+        var groups = Scanner.Scan(includeInterfaceTypes, excludeConcreteTypes, assemblies);
 
         var plans = Planner.Plan(groups);
 
