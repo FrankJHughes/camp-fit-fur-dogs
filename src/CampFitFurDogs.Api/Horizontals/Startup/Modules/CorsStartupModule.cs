@@ -8,25 +8,30 @@ namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 public sealed class CorsStartupModule : IStartupModule
 {
     private const string FrontendKey = "Frontend:BaseUrl";
+    private const string OidcAuthorityKey = "Authentication:Callback:Oidc:Authority";
     private const string PreflightKey = "Cors:PreflightMaxAgeSeconds";
 
     private string? _frontendOrigin;
+    private string? _oidcOrigin;
     private int _preflightSeconds;
 
     public IReadOnlyList<string> AllowedOrigins { get; private set; } = Array.Empty<string>();
 
-    // ---------------------------------------------------------------------
-    // ADD PHASE — VALIDATION MUST HAPPEN HERE
-    // ---------------------------------------------------------------------
     public void Add(WebApplicationBuilder builder)
     {
         var config = builder.Configuration;
         var environment = ResolveEnvironment(config);
 
-        _frontendOrigin = ResolveFrontendOrigin(config, environment);
+        _frontendOrigin = ResolveOrigin(config, FrontendKey, environmentFallback: "http://localhost:3000", environment);
+        _oidcOrigin = ResolveOrigin(config, OidcAuthorityKey, environmentFallback: null, environment);
+
         _preflightSeconds = ResolvePreflightMaxAge(config);
 
-        AllowedOrigins = new[] { _frontendOrigin };
+        AllowedOrigins = new[]
+        {
+            _frontendOrigin!,
+            _oidcOrigin!
+        };
 
         builder.Services.AddCors(options =>
         {
@@ -34,59 +39,49 @@ public sealed class CorsStartupModule : IStartupModule
         });
     }
 
-    // ---------------------------------------------------------------------
-    // USE PHASE
-    // ---------------------------------------------------------------------
     public void Use(WebApplication app)
     {
         app.UseCors();
         app.UseMiddleware<CorsLoggingMiddleware>();
     }
 
-    // ---------------------------------------------------------------------
-    // APPLY POLICY — NO VALIDATION HERE
-    // ---------------------------------------------------------------------
     private void ApplyDefaultPolicy(CorsPolicyBuilder policy)
     {
-        if (_frontendOrigin is null)
+        if (_frontendOrigin is null || _oidcOrigin is null)
             throw new InvalidOperationException("CORS policy applied before Add() initialized configuration.");
 
         policy
-            .WithOrigins(_frontendOrigin)
+            .WithOrigins(_frontendOrigin, _oidcOrigin)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
             .SetPreflightMaxAge(TimeSpan.FromSeconds(_preflightSeconds));
     }
 
-    // ---------------------------------------------------------------------
-    // VALIDATION HELPERS
-    // ---------------------------------------------------------------------
-    private static string ResolveFrontendOrigin(IConfiguration config, string environment)
+    private static string ResolveOrigin(IConfiguration config, string key, string? environmentFallback, string environment)
     {
-        var raw = config[FrontendKey];
+        var raw = config[key];
 
         if (!string.IsNullOrWhiteSpace(raw))
         {
             if (raw.Contains("*", StringComparison.Ordinal))
                 throw new InvalidOperationException(
-                    $"Configuration '{FrontendKey}' must not contain wildcard origins. Value: '{raw}'.");
+                    $"Configuration '{key}' must not contain wildcard origins. Value: '{raw}'.");
 
             if (!Uri.TryCreate(raw, UriKind.Absolute, out var uri))
                 throw new InvalidOperationException(
-                    $"Configuration '{FrontendKey}' must be a valid absolute URI, but was '{raw}'.");
+                    $"Configuration '{key}' must be a valid absolute URI, but was '{raw}'.");
 
             return uri.IsDefaultPort
                 ? $"{uri.Scheme}://{uri.Host}"
                 : $"{uri.Scheme}://{uri.Host}:{uri.Port}";
         }
 
-        if (environment == "Development")
-            return "http://localhost:3000";
+        if (environment == "Development" && environmentFallback is not null)
+            return environmentFallback;
 
         throw new InvalidOperationException(
-            $"Required configuration '{FrontendKey}' is not set. " +
-            "CORS cannot be configured safely without a frontend base URL.");
+            $"Required configuration '{key}' is not set. CORS cannot be configured safely without it.");
     }
 
     private static int ResolvePreflightMaxAge(IConfiguration config)

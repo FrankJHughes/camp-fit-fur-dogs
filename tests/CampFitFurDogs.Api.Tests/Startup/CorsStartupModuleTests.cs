@@ -9,17 +9,19 @@ namespace CampFitFurDogs.Api.Tests.Startup;
 public class CorsStartupModuleTests
 {
     private const string FrontendConfigKey = "Frontend:BaseUrl";
+    private const string OidcConfigKey = "Authentication:Callback:Oidc:Authority";
 
     // ------------------------------------------------------------
     // ORIGIN CONFIGURATION
     // ------------------------------------------------------------
     [Fact]
-    public async Task Cors_policy_uses_frontend_base_url_from_configuration()
+    public async Task Cors_policy_includes_frontend_base_url_and_oidc_authority_from_configuration()
     {
         var config = new Dictionary<string, string?>
         {
             ["ASPNETCORE_ENVIRONMENT"] = "Production",
-            [FrontendConfigKey] = "https://example.com/"
+            [FrontendConfigKey] = "https://frontend.com",
+            [OidcConfigKey] = "https://oidc.com"
         };
 
         var app = await StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
@@ -28,8 +30,8 @@ public class CorsStartupModuleTests
         var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
 
         policy.Should().NotBeNull();
-        policy!.Origins.Should().ContainSingle()
-            .Which.Should().Be("https://example.com");
+        policy!.Origins.Should().Contain("https://frontend.com");
+        policy!.Origins.Should().Contain("https://oidc.com");
     }
 
     [Fact]
@@ -37,7 +39,8 @@ public class CorsStartupModuleTests
     {
         var config = new Dictionary<string, string?>
         {
-            ["ASPNETCORE_ENVIRONMENT"] = "Development"
+            ["ASPNETCORE_ENVIRONMENT"] = "Development",
+            [OidcConfigKey] = "https://oidc.com"
         };
 
         var app = await StartupModuleTestHostWebApp.CreateAsync<CorsStartupModule>(config);
@@ -45,8 +48,7 @@ public class CorsStartupModuleTests
         var provider = app.Services.GetRequiredService<ICorsPolicyProvider>();
         var policy = await provider.GetPolicyAsync(new DefaultHttpContext(), null);
 
-        policy!.Origins.Should().ContainSingle()
-            .Which.Should().Be("http://localhost:3000");
+        policy!.Origins.Should().Contain("http://localhost:3000");
     }
 
     // ------------------------------------------------------------
