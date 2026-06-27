@@ -116,6 +116,16 @@ public class AuthenticationStartupModule : IStartupModule
                 options.Scope.Add("profile");
                 options.Scope.Add("email");
 
+                options.Events.OnRedirectToIdentityProvider = context =>
+                {
+                    var req = context.Request;
+
+                    context.ProtocolMessage.RedirectUri =
+                        $"{req.Scheme}://{req.Host}/api/auth/callback";
+
+                    return Task.CompletedTask;
+                };
+
                 // You may add events here later for claim mapping, etc.
             });
         }
