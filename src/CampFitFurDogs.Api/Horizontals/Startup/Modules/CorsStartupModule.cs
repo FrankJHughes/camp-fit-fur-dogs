@@ -41,6 +41,7 @@ public sealed class CorsStartupModule : IStartupModule
 
     public void Use(WebApplication app)
     {
+        app.UseRouting();
         app.UseCors();
         app.UseMiddleware<CorsLoggingMiddleware>();
     }
