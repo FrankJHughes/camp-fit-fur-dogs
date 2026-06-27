@@ -1,6 +1,10 @@
 using Frank.Abstractions.Command;
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
 using Frank.Abstractions.Query;
+using Frank.Command;
+using Frank.Event;
+using Frank.Query;
+
 using Frank.Tests.DependencyInjection.Fakes;
 
 namespace Frank.Tests.DependencyInjection;
@@ -12,7 +16,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankCommand(
             [typeof(FakeCommand).Assembly]
         );
 
@@ -27,7 +31,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankQuery(
             [typeof(Fakes.AssemblyMarker).Assembly]
         );
 
@@ -59,9 +63,9 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
-            new[] { typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
-        );
+        services.AddFrankEvent([
+            typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly
+        ]);
 
         using var provider = services.BuildServiceProvider();
 

@@ -1,4 +1,5 @@
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
+using Frank.Event;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -9,9 +10,9 @@ public sealed class AutoRegistration_DomainEventHandlerTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
-            [typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly]
-        );
+        services.AddFrankEvent([
+            typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly
+        ]);
 
         using var provider = services.BuildServiceProvider();
 

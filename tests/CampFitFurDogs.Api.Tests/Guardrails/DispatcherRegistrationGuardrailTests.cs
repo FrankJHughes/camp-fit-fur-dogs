@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
 
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;

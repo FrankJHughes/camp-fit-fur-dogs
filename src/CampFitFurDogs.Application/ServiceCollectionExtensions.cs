@@ -25,9 +25,15 @@ public static class ServiceCollectionExtensions
 
         services.AddApplicationAuthCallback();
 
-        services.AddFrankCommand();
-        services.AddFrankQuery();
-        services.AddFrankEvent();
+        services.AddFrankCommand([
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+        ]);
+
+        services.AddFrankQuery([
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+        ]);
+
+        services.AddFrankEvent(); // none implemented yet
 
         services
             .AddOptions<FrontendSettings>()

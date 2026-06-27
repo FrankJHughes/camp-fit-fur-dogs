@@ -1,8 +1,5 @@
-using Frank.AutoRegistration;
-using Microsoft.Extensions.DependencyInjection;
 namespace CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
 
-[AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
 public interface IFindCustomerByExternalIdReader
 {
     Task<FindCustomerByExternalIdResponse?> FindByExternalIdAsync(

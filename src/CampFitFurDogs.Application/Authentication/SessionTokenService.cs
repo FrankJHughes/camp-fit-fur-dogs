@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using CampFitFurDogs.Application.Abstractions.Authentication;
-using CampFitFurDogs.Domain.Authentication.Sessions;
+using CampFitFurDogs.Domain.Sessions;
 
 namespace CampFitFurDogs.Application.Authentication;
 

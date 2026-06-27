@@ -1,6 +1,8 @@
-using Frank;
+using System.Reflection;
+using FluentValidation;
 using Frank.Abstractions.Startup;
 using Frank.Api.Endpoints;
+using Frank.Infrastructure.Problem;
 
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
@@ -12,13 +14,16 @@ public class ApiStartupModule : IStartupModule
     {
         var services = builder.Services;
 
-        // Register API-layer validators, request DTO conventions, etc.
-        services.AddFrank([
+        var assemblies = new Assembly[]
+        {
             typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
             typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
             typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
             typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly
-        ]);
+        };
+
+        services.AddValidatorsFromAssemblies(assemblies);
+
     }
 
     public void Use(WebApplication app)

@@ -1,13 +1,17 @@
+using Microsoft.Extensions.DependencyInjection;
+
+using FluentValidation;
+
+using Frank;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.UnitOfWork;
+using Frank.Command;
+
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
-using FluentValidation;
-using Frank;
-using Frank.Abstractions.Command;
-using Frank.Abstractions.UnitOfWork;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 
@@ -19,8 +23,9 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddFrank(
-            [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
+        services.AddFrankCommand([
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+        ]);
 
 
         // Stub dependencies so handlers can be constructed

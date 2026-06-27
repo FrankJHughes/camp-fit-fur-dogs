@@ -1,13 +1,11 @@
 using System.Reflection;
 using Frank.Abstractions.Command;
-using Frank.Abstractions.Environment;
-using Frank.Abstractions.Events;
-using Frank.Abstractions.ExceptionHandling;
+using Frank.Abstractions.Event;
+using Frank.Abstractions.Problem;
 using Frank.Abstractions.Identity;
 using Frank.Abstractions.Query;
 using Frank.Abstractions.Time;
-using Frank.Abstractions.UnitOfWork;
-using Frank.AutoRegistration;
+using Frank.Registration;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -20,18 +18,13 @@ public class AutoRegister_AttributeUsageTests
 
     private static readonly Type[] Known =
     [
-        typeof(ICommandDispatcher),
+        typeof(IClock),
         typeof(ICommandHandler<>),
         typeof(ICommandHandler<,>),
         typeof(ICurrentUser),
-        typeof(IQueryDispatcher),
-        typeof(IQueryHandler<,>),
-        typeof(IUnitOfWork),
-        typeof(IEnvironment),
-        typeof(IEventDispatcher),
         typeof(IEventHandler<>),
         typeof(IExceptionHandler),
-        typeof(IClock)
+        typeof(IQueryHandler<,>)
     ];
 
     [Fact]

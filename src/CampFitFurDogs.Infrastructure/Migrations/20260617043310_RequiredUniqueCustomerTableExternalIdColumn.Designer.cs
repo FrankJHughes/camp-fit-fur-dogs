@@ -25,7 +25,7 @@ namespace CampFitFurDogs.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CampFitFurDogs.Domain.Authentication.Sessions.Session", b =>
+            modelBuilder.Entity("CampFitFurDogs.Domain.Sessions.Session", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")

@@ -1,7 +1,7 @@
-using CampFitFurDogs.Domain.Authentication.Sessions.Errors;
+using CampFitFurDogs.Domain.Sessions.Errors;
 using Frank.Domain;
 
-namespace CampFitFurDogs.Domain.Authentication.Sessions;
+namespace CampFitFurDogs.Domain.Sessions;
 
 public sealed class SessionId : AggregateId
 {

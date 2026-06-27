@@ -1,5 +1,7 @@
 using Frank.Abstractions.Command;
 using Frank.Abstractions.Query;
+using Frank.Command;
+using Frank.Query;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -10,9 +12,13 @@ public sealed class AutoRegistration_MultiAssemblyTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
-            new[] { typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
-        );
+        services.AddFrankCommand([
+            typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly
+        ]);
+
+        services.AddFrankQuery([
+            typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly
+        ]);
 
         using var provider = services.BuildServiceProvider();
 

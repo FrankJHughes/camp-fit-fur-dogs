@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Errors;
 using Frank.Abstractions.Errors;
-using Frank.Abstractions.ExceptionHandling;
+using Frank.Abstractions.Problem;
 
 [ExceptionHandler(int.MaxValue)]
 public sealed class UnexpectedExceptionHandler : IExceptionHandler

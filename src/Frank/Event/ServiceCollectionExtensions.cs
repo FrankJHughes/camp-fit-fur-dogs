@@ -1,4 +1,6 @@
-using Frank.Abstractions.Events;
+using System.Reflection;
+using Frank.Abstractions.Event;
+using Frank.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Event;
@@ -7,7 +9,20 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddFrankEvent(this IServiceCollection services)
     {
-        return services.AddScoped<IEventDispatcher, EventDispatcher>();
+        return AddFrankEvent(services, []);
     }
 
+    public static IServiceCollection AddFrankEvent(this IServiceCollection services, Assembly[] assemblies)
+    {
+        services.AddScoped<IEventDispatcher, EventDispatcher>();
+
+        var types = new Type[]
+        {
+            typeof(IEventHandler<>)
+        };
+
+        Orchestrator.Orchestrate(services, types, assemblies);
+
+        return services;
+    }
 }

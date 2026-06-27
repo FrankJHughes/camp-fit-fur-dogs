@@ -1,6 +1,6 @@
 using System.Reflection;
 using Frank;
-using Frank.AutoRegistration;
+using Frank.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;

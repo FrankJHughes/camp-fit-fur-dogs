@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Errors;
 using CampFitFurDogs.Application.Exceptions;
 using Frank.Abstractions.Errors;
-using Frank.Abstractions.ExceptionHandling;
+using Frank.Abstractions.Problem;
 
 [ExceptionHandler(1001)] // Runs before UnexpectedExceptionHandler
 public sealed class UserIdClaimNotFoundExceptionHandler : IExceptionHandler

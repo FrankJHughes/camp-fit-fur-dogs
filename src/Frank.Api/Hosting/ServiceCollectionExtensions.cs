@@ -4,7 +4,7 @@ namespace Frank.Api.Hosting;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddHostingEngine(this IServiceCollection services)
+    public static IServiceCollection AddFrankHosting(this IServiceCollection services)
     {
         services.AddSingleton<HostingEngine>();
         return services;

@@ -1,4 +1,4 @@
-using CampFitFurDogs.Domain.Authentication.Sessions;
+using CampFitFurDogs.Domain.Sessions;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.TestUtilities.Builders;
 

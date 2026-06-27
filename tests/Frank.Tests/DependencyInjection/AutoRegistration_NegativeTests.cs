@@ -1,3 +1,5 @@
+using Frank.Command;
+
 namespace Frank.Tests.DependencyInjection;
 
 public sealed class AutoRegistration_NegativeTests
@@ -9,11 +11,9 @@ public sealed class AutoRegistration_NegativeTests
 
         var services = new ServiceCollection();
 
-        Action act = () => services.AddFrank(
-            [
-                typeof(Frank.Tests.DependencyInjection.DuplicateCommandHandlers.AssemblyMarker).Assembly
-            ]
-        );
+        Action act = () => services.AddFrankCommand([
+            typeof(Frank.Tests.DependencyInjection.DuplicateCommandHandlers.AssemblyMarker).Assembly
+        ]);
 
         act.Should().Throw<InvalidOperationException>();
     }

@@ -1,4 +1,4 @@
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
 
 namespace Frank.Tests.Events;
 

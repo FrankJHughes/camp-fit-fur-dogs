@@ -42,7 +42,7 @@ public class NoManualInfrastructureRegistrationGuardrailTests : IAsyncLifetime
     {
         var factory = CreateFactory();
 
-        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.InfrastructureExtensions).Assembly;
+        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.ServiceCollectionExtensions).Assembly;
 
         var infraTypes =
             DiRegistrationScanner.FindTypesWithInterfaces(

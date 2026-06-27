@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
-using CampFitFurDogs.Domain.Authentication.Sessions;
+using CampFitFurDogs.Domain.Sessions;
 using CampFitFurDogs.Domain.Customers;
 using Frank.Abstractions.ImmutableContextBuilder;
 using Frank.Abstractions.UnitOfWork;
