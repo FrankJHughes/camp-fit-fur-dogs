@@ -1,6 +1,6 @@
 using System.IO.Compression;
 using System.Net;
-using CampFitFurDogs.Api.Horizontals.Hosting.Modules;
+using CampFitFurDogs.Api.Horizontal.Hosting.Modules;
 using CampFitFurDogs.TestUtilities.Fakes;
 using FluentAssertions;
 

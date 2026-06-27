@@ -2,7 +2,7 @@ using Frank.Abstractions.Errors;
 using Frank.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.Abstractions.Problem;
+namespace Frank.Abstractions.Exceptions;
 
 [AutoRegister(ServiceLifetime.Singleton)]
 public interface IExceptionHandler

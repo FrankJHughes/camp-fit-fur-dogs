@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using CampFitFurDogs.Domain.Dogs;
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
-using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
+using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;
 

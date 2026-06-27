@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CampFitFurDogs.Infrastructure.Sessions;
 
-public sealed class SessionConfiguration : AggregateRootConfiguration<Session, SessionId>
+public sealed class SessionConfiguration : AggregateRootConfiguration<Domain.Sessions.Session, SessionId>
 {
     protected override string TableName => "sessions";
 
-    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Session> builder)
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Domain.Sessions.Session> builder)
     {
         //
         // ID (SessionId VO)

@@ -13,15 +13,15 @@ public sealed class SessionRepository : ISessionRepository
         _db = db;
     }
 
-    public async Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash)
+    public async Task<Domain.Sessions.Session?> GetByTokenHashAsync(SessionTokenHash tokenHash)
     {
         return await _db.Set<Session>()
             .FirstOrDefaultAsync(s => s.TokenHash == tokenHash);
     }
 
-    public Task CreateAsync(Session session)
+    public Task CreateAsync(Domain.Sessions.Session session)
     {
-        _db.Set<Session>().Add(session);
+        _db.Set<Domain.Sessions.Session>().Add(session);
         return Task.CompletedTask;
     }
 

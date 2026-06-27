@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
 using Frank.Abstractions.Query;
 
 namespace CampFitFurDogs.Application.Dogs.GetDogProfile;

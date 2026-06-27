@@ -1,7 +1,7 @@
 using System.Reflection;
 using Frank.Abstractions.Command;
 using Frank.Abstractions.Event;
-using Frank.Abstractions.Problem;
+using Frank.Abstractions.Exceptions;
 using Frank.Abstractions.Identity;
 using Frank.Abstractions.Query;
 using Frank.Abstractions.Time;

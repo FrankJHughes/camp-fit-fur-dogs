@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.RemoveDog;
+using CampFitFurDogs.Application.Abstractions.Dog.RemoveDog;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Abstractions.Command;
 using Frank.Abstractions.UnitOfWork;

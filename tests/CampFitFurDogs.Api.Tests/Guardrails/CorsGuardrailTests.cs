@@ -20,7 +20,7 @@ public class CorsGuardrailTests
         var offenders = ApiAssembly
             .GetTypes()
             .Where(t =>
-                t.FullName != "CampFitFurDogs.Api.Horizontals.Startup.CorsStartupModule" &&
+                t.FullName != "CampFitFurDogs.Api.Horizontal.Startup.CorsStartupModule" &&
                 t.FullName != "Program")
             .SelectMany(t => t.GetMethods(
                 BindingFlags.Public |

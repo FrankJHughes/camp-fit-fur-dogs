@@ -1,5 +1,4 @@
 using System.Reflection;
-using FluentValidation;
 using Frank.Abstractions.Command;
 using Frank.Registration;
 using Microsoft.Extensions.DependencyInjection;

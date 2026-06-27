@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
+using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.TestUtilities.Fixtures;
 

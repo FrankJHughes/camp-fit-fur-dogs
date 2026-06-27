@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CampFitFurDogs.Infrastructure.Customers;
 
-public sealed class CustomerConfiguration : AggregateRootConfiguration<Customer, CustomerId>
+public sealed class CustomerConfiguration : AggregateRootConfiguration<Domain.Customers.Customer, CustomerId>
 {
     protected override string TableName => "customers";
 
-    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Customer> builder)
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Domain.Customers.Customer> builder)
     {
         builder.Property(c => c.Id)
             .HasConversion(

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
+using CampFitFurDogs.Application.Abstractions.Customer.FindCustomerByExternalId;
 
 namespace CampFitFurDogs.Infrastructure.Customers;
 

@@ -1,5 +1,7 @@
-using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
+using CampFitFurDogs.Application.Abstractions.Customer.CreateCustomer;
 using FluentValidation;
+
+namespace CampFitFurDogs.Application.Customers.CreateCustomer;
 
 public sealed class CreateCustomerCommandValidator
     : AbstractValidator<CreateCustomerCommand>

@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dog.EditDogProfile;
 using CampFitFurDogs.Application.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Customers;

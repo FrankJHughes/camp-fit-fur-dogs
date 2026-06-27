@@ -2,7 +2,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Api.Horizontals.Startup.Modules;
+using CampFitFurDogs.Api.Horizontal.Startup.Modules;
 
 namespace CampFitFurDogs.Api.Tests.Startup;
 

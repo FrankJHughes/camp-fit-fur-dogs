@@ -1,4 +1,4 @@
-namespace Frank.Abstractions.Problem;
+namespace Frank.Abstractions.Exceptions;
 
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class ExceptionHandlerAttribute : Attribute

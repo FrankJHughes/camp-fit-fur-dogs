@@ -15,7 +15,7 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
     [Fact]
     public async Task Can_Create_And_Retrieve_Customer()
     {
-        var customer = Customer.Create(
+        var customer = Domain.Customers.Customer.Create(
             firstName: FirstName.From("Test"),
             lastName: LastName.From("User"),
             email: Email.From("test@example.com"),
@@ -23,7 +23,7 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
             phone: PhoneNumber.From("916-555-5555")
         );
 
-        var customers = _fixture.DbContext.Set<Customer>();
+        var customers = _fixture.DbContext.Set<Domain.Customers.Customer>();
         customers.Add(customer);
         await _fixture.DbContext.SaveChangesAsync();
 

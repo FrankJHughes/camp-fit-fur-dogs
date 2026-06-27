@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
+using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
 using Frank.Abstractions.Query;
 
 namespace CampFitFurDogs.Application.Dogs.ListDogsByOwner;
