@@ -21,7 +21,7 @@ jobs:
       frontend_artifact_name: ${{ steps.out.outputs.frontend_artifact_name }}
       frontend_artifact_file_path: ${{ steps.out.outputs.frontend_artifact_file_path }}
       api_base_url: ${{ steps.out.outputs.api_base_url }}
-      api_live_endpoint: "/api/dogs"
+      api_live_endpoint: "/api/health"
       should_destroy: ${{ steps.out.outputs.should_destroy }}
       should_deploy: ${{ steps.out.outputs.should_deploy }}
     steps:
