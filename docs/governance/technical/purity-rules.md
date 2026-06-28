@@ -1,3 +1,4 @@
+
 # Camp Fit Fur Dogs — Governance — Technical — Architecture Purity Rules  
 Authoritative companion to ADR‑0002 (Layered Architecture)
 
@@ -38,6 +39,8 @@ API → Application → Domain
 
 **Golden rule:** dependencies point inward.  
 No layer may reference a layer above it.
+
+Frank is the **lowest‑level dependency** in the entire system.
 
 ---
 
@@ -216,10 +219,12 @@ It must remain **pure, minimal, and product‑agnostic**.
 - Domain event primitives  
 - Result/error primitives  
 - Guard utilities  
+- Registration Engine (`[Registration]`, `DiscoveryOptions`, `Orchestrator`)  
 - Endpoint discovery  
-- DI auto‑registration  
 - EF Core configuration scanning  
 - Hosting abstractions  
+- StartupEngine  
+- HostingEngine  
 - Security header + CORS middleware  
 - Validation pipeline primitives  
 - Observability primitives (`IObservabilityContext`, `ITraceEvents`, `IMetrics`)  
@@ -236,7 +241,7 @@ It must remain **pure, minimal, and product‑agnostic**.
 - HTTP/JSON/ZIP operations  
 - Observability exporters or vendor integrations  
 
-Frank is the lowest‑level dependency.
+Frank is **referenced**, not extended.
 
 ---
 
@@ -247,7 +252,7 @@ Dependency injection wiring happens **exclusively** in the API composition root.
 ### Rules
 
 1. Registration lives in Api  
-2. Handlers and validators are auto‑registered via Frank  
+2. Handlers and validators are registered via Frank’s Registration Engine  
 3. Lifetime defaults:  
    - Handlers → Scoped  
    - Validators → Scoped  
@@ -256,10 +261,10 @@ Dependency injection wiring happens **exclusively** in the API composition root.
    - `ICurrentUser` → Scoped  
 4. No service locator  
 5. No DI attributes in Domain  
-6. No manual DI registration of slice services  
+6. No manual DI registration of governed interfaces  
 7. No Scrutor or suffix‑based scanning  
 8. No DI logic in slices  
-9. Frank owns all auto‑registration  
+9. Frank owns all governed registration  
 
 DI must be **observable** through structured startup events.
 
@@ -412,6 +417,9 @@ This file is the reference.
 
 # 15. Contributor Guidance
 
+Purity enforcement is deterministic.  
+This decision tree ensures contributors place code in the correct layer every time.
+
 ### Decision Tree
 
 ```
@@ -440,10 +448,12 @@ Is it observability emission?
   → Application or Infrastructure only
 ```
 
-### Common Mistakes and Fixes
+---
+
+## Common Mistakes and Fixes
 
 | Mistake | Fix |
-|---------|-----|
+|--------|------|
 | EF Core attributes in Domain | Move to Infrastructure configuration |
 | Returning entities from API | Map to DTO |
 | Accepting `OwnerId` in request DTO | Remove; resolve via `ICurrentUser` |
@@ -457,7 +467,9 @@ Is it observability emission?
 | Observability emission in Domain | Move to Application/Infrastructure |
 | Stopwatch timing | Use Frank metrics timers |
 
-### TDD and Purity
+---
+
+## TDD and Purity
 
 TDD naturally enforces purity:
 
@@ -469,8 +481,13 @@ TDD naturally enforces purity:
 
 If a test requires violating purity, the design is wrong.
 
-### Updating This Document
+---
+
+## Updating This Document
 
 - Convention‑changing PRs update this file  
 - Reviewed during retrospectives  
-- “We got burned” moments update immediately
+- “We got burned” moments update immediately  
+
+This document is the authoritative reference for purity enforcement.
+

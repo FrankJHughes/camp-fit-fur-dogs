@@ -19,7 +19,7 @@ public static class Startup
             new IdentityStartupModule(),
             new InfrastructureStartupModule(),
             new LoggingStartupModule(),
-            new ObservabilityStartupModule(),
+            new ObservationsStartupModule(),
             new SecurityHeadersStartupModule(),
             new SwaggerStartupModule(),
             new ValidatorsStartupModule()

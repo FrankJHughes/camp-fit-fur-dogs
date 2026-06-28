@@ -1,19 +1,17 @@
 # Conventions Index
 
-This index provides a unified map of all conventions across Frank, CampFitFurDogs,
-testing, and development workflow.  
-Conventions define **how the system is implemented** and serve as the authoritative
-rules for code, architecture, testing, and workflow.
+This index provides a unified map of all conventions across **Frank**, **CampFitFurDogs**, testing, and the development workflow.
 
-Governance defines **what must be true**.  
-Conventions define **how it must be done**.
+Conventions define **how the system is implemented** and serve as the authoritative rules for code, architecture, testing, and workflow.
+
+- **Governance** defines *what must be true*.  
+- **Conventions** define *how it must be done*.
 
 ---
 
 # Frank Conventions
 
-Frank provides platform‑level primitives, hosting, OIDC protocol support, DI,
-test seams, and cross‑cutting infrastructure.
+Frank provides platform‑level primitives: hosting, OIDC protocol support, DI, unified discovery/registration, test seams, and cross‑cutting infrastructure.
 
 ## Code Conventions
 
@@ -35,8 +33,7 @@ test seams, and cross‑cutting infrastructure.
 
 # CampFitFurDogs Conventions
 
-CampFitFurDogs implements product‑level behavior, domain logic, application
-orchestration, persistence, and UI.
+CampFitFurDogs implements product‑level behavior: domain logic, application orchestration, persistence, and UI.
 
 ## Code Conventions
 
@@ -54,8 +51,7 @@ orchestration, persistence, and UI.
 
 # Test Conventions
 
-Test conventions define how to use Frank’s test seams, the ApiFactory harness,
-fake builders, and deterministic test data.
+Test conventions define how to use Frank’s test seams, the ApiFactory harness, fake builders, deterministic test data, and preview‑safe testing.
 
 - [Testing Conventions](../CampFitFurDogs/conventions/test/testing-conventions.md)
 - [Test Harness Conventions](../CampFitFurDogs/conventions/test/test-harness-conventions.md)
@@ -71,8 +67,7 @@ fake builders, and deterministic test data.
 
 # Development Workflow Conventions
 
-Workflow conventions define how stories, tasks, branches, commits, PRs, CI/CD,
-and releases operate.
+Workflow conventions define how stories, tasks, branches, commits, PRs, CI/CD, and releases operate.
 
 - [Branching Conventions](../CampFitFurDogs/conventions/development-workflow/branching-conventions.md)
 - [Commit Message Conventions](../CampFitFurDogs/conventions/development-workflow/commit-message-conventions.md)

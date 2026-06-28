@@ -1,4 +1,4 @@
-# Query Dispatcher — Developer Guide
+# Frank - Guides - Developer - Query Dispatcher Guide
 
 The Query Dispatcher capability provides a **centralized, validated, DI‑driven query execution pipeline**.  
 It ensures that:
@@ -53,7 +53,7 @@ Queries must be:
 
 ## 3. Query Handlers
 
-Handlers are auto‑registered via `AutoRegister`.
+Handlers are registered through **Frank’s Registration Engine**, using `RegistrationAttribute` applied to the handler interfaces.
 
 ### 3.1 IQueryHandler<TQuery, TResponse>
 
@@ -140,8 +140,8 @@ var handler = _provider.GetRequiredService(handlerType);
 ### Invariants
 
 - Exactly one handler must exist  
-- Handlers must be registered via AutoRegistration  
-- Handlers must be scoped (default behavior)  
+- Handlers must be registered via the Registration Engine  
+- Handlers must be scoped  
 
 ---
 
@@ -153,7 +153,7 @@ return await ((dynamic)handler).HandleAsync((dynamic)query, ct);
 
 ### Notes
 
-- Dynamic dispatch is used to avoid reflection‑heavy invocation  
+- Dynamic dispatch avoids reflection‑heavy invocation  
 - Exceptions thrown by handlers propagate naturally  
 - Cancellation tokens are passed through end‑to‑end  
 
@@ -164,14 +164,14 @@ return await ((dynamic)handler).HandleAsync((dynamic)query, ct);
 The dispatcher is registered via:
 
 ```csharp
-[AutoRegister(ServiceLifetime.Scoped)]
+[Registration(ServiceLifetime.Scoped)]
 public interface IQueryDispatcher
 ```
 
 Handlers are registered via:
 
 ```csharp
-[AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
+[Registration(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
 public interface IQueryHandler<...>
 ```
 
@@ -180,7 +180,7 @@ public interface IQueryHandler<...>
 - Dispatcher is scoped  
 - Handlers are scoped  
 - Only one handler per query is allowed  
-- Concrete handler types are auto‑registered  
+- Concrete handler types are registered automatically  
 
 ---
 

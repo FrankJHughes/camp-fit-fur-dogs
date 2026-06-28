@@ -1,4 +1,4 @@
-# Startup Engine — Developer Guide
+# Frank - Guides - Developer — Startup Engine Guide
 
 The Startup Engine provides a **modular, ordered, deterministic startup pipeline** for ASP.NET Core applications.  
 It enables developers to break application startup into small, focused modules that run in a predictable order.
@@ -11,13 +11,13 @@ This guide documents the architecture, contracts, invariants, and extension poin
 
 ### 1.1 IStartupModule
 
-````csharp
+```csharp
 public interface IStartupModule
 {
     void Add(WebApplicationBuilder builder);
     void Use(WebApplication app);
 }
-````
+```
 
 ### The Add Phase (Critical Invariant)
 
@@ -65,14 +65,14 @@ This is the correct place for:
 
 ### 1.2 StartupModuleAttribute
 
-````csharp
+```csharp
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class StartupModuleAttribute : Attribute
 {
     public int Order { get; }
     public StartupModuleAttribute(int order) => Order = order;
 }
-````
+```
 
 #### Purpose
 
@@ -91,7 +91,7 @@ Assigns deterministic ordering to startup modules.
 
 ### 2.1 StartupEngine
 
-````csharp
+```csharp
 public sealed class StartupEngine
 {
     private readonly IReadOnlyList<IStartupModule> _modules;
@@ -116,7 +116,7 @@ public sealed class StartupEngine
             module.Use(app);
     }
 }
-````
+```
 
 ### Responsibilities
 
@@ -151,7 +151,7 @@ public sealed class StartupEngine
 
 ## 3. DI Registration
 
-````csharp
+```csharp
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddStartupEngine(this IServiceCollection services)
@@ -160,12 +160,12 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
-````
+```
 
 #### Purpose
 
 - Registers the StartupEngine as a singleton  
-- Modules themselves must be registered separately (typically via AutoRegistration)  
+- Modules themselves must be registered separately (typically via the Registration Engine)  
 
 ---
 
@@ -173,7 +173,7 @@ public static class ServiceCollectionExtensions
 
 A typical module looks like this:
 
-````csharp
+```csharp
 [StartupModule(200)]
 public sealed class SecurityHeadersModule : IStartupModule
 {
@@ -187,7 +187,7 @@ public sealed class SecurityHeadersModule : IStartupModule
         app.UseSecurityHeaders();
     }
 }
-````
+```
 
 ### Guidelines
 
@@ -229,13 +229,10 @@ Developers must ensure:
 
 Avoid:
 
-- **Resolving services inside `Add()`**  
-  Example of what NOT to do:
-
-  ````csharp
-  // ❌ INVALID — DI container not built yet
-  var myService = builder.Services.BuildServiceProvider().GetRequiredService<IMyService>();
-  ````
+```csharp
+// ❌ INVALID — DI container not built yet
+var myService = builder.Services.BuildServiceProvider().GetRequiredService<IMyService>();
+```
 
 - Using `BuildServiceProvider()` inside `Add()`  
 - Adding middleware inside `Add()`  
@@ -270,4 +267,4 @@ As a developer:
 - You implement `IStartupModule`  
 - You optionally assign an order  
 - You register modules in DI  
-- The Startup Engine handles the rest  
+- The Startup Engine handles the rest

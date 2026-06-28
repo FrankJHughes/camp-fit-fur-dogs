@@ -10,7 +10,9 @@ public class AuthenticationStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)
     {
-        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        var services = builder.Services;
+
+        services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor |
@@ -21,7 +23,6 @@ public class AuthenticationStartupModule : IStartupModule
         });
 
         var env = builder.Environment;
-        var services = builder.Services;
         var config = builder.Configuration;
 
         var oidcDisabled = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");

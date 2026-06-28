@@ -1,13 +1,15 @@
-# DI and Registration Conventions (Frank)
+# Frank – Conventions – Code – DI and Registration Conventions
 
-Frank provides cross‑cutting dependency injection behaviors that products consume.
-Frank must remain product‑agnostic and must not reference CampFitFurDogs code.
+Frank provides cross‑cutting dependency injection behaviors that products consume.  
+Frank must remain **product‑agnostic** and must never reference CampFitFurDogs code.
+
+These conventions define how **discovery**, **registration**, and **DI orchestration** operate across the platform.
 
 ---
 
-## Auto‑Registration
+# Registration
 
-Frank automatically registers:
+Frank registers governed types such as:
 
 - CQRS handlers  
 - Validators  
@@ -15,34 +17,95 @@ Frank automatically registers:
 - Hosting providers  
 - Test seams  
 
-Auto‑registration is attribute‑driven:
+Registration is **attribute‑driven** (via `[Registration]`) and **discovery‑rule‑driven** (via `DiscoveryOptions`).
 
-````csharp
-[AutoRegister]
-public sealed class CreateOwnerHandler : ICommandHandler<CreateOwner>
-````
-  
-Products must not manually register these types.
+Interfaces must explicitly opt in using `RegistrationAttribute`:
 
----
+```csharp
+[Registration(ServiceLifetime.Scoped, RegisterConcreteType = true)]
+public interface ICommandHandler<TCommand> { ... }
+```
 
-## Dispatcher Enforcement
+Implementations do **not** require attributes.
 
-- All commands and queries must go through Frank’s dispatcher.  
-- Handlers must not be invoked directly.  
-- Validators must be discovered automatically.  
+Products must **not** manually register any type that Frank registers through the Registration Engine.
 
 ---
 
-## Prohibitions
+# Unified Discovery & Registration
+
+Frank uses a unified pipeline:
+
+```
+DiscoveryOptions → Scanner → Planner → Validator → Registrar → DI Container
+```
+
+### DiscoveryOptions  
+Defines **which interfaces** and **which implementations** are included:
+
+- Inclusion predicates for interfaces  
+- Exclusion predicates for interfaces  
+- Inclusion predicates for implementations  
+- Exclusion predicates for implementations  
+
+Nothing is included unless explicitly included via `IncludeInterface` / `IncludeImplementation`.
+
+### Scanner  
+Inspects assemblies and matches interfaces to implementations using:
+
+```csharp
+Scanner.Scan(IEnumerable<Assembly> assemblies, DiscoveryOptions options)
+```
+
+### Orchestrator  
+Coordinates the full pipeline:
+
+```csharp
+Orchestrator.Orchestrate(
+    IServiceCollection services,
+    IEnumerable<Assembly> assemblies,
+    DiscoveryOptions options)
+```
+
+### Product Responsibilities  
+Products must provide:
+
+- **Assemblies to scan**  
+- **DiscoveryOptions rules** (what to include/exclude)
+
+Frank handles everything else.
+
+All Frank subsystems (Command, Query, Event, Exception, Endpoint, Hosting) follow this model.
+
+---
+
+# Dispatcher Enforcement
+
+Frank enforces strict dispatcher usage:
+
+- All **commands** must go through `ICommandDispatcher`.  
+- All **queries** must go through `IQueryDispatcher`.  
+- Handlers must **never** be invoked directly.  
+- Validators must be **discovered automatically** and must not be manually registered.
+
+This ensures consistent pipeline behavior, validation, logging, and observability.
+
+---
+
+# Prohibitions
 
 Frank must not:
 
 - depend on product assemblies  
 - register product services  
-- reference product domain/application/infrastructure  
+- reference product domain, application, or infrastructure layers  
 
 Products must not:
 
-- bypass the dispatcher  
-- manually register handlers or validators  
+- bypass Frank’s dispatchers  
+- manually register handlers, validators, or any governed type  
+- override or bypass the Registration Engine  
+
+These boundaries preserve platform integrity and prevent cross‑layer coupling.
+
+---

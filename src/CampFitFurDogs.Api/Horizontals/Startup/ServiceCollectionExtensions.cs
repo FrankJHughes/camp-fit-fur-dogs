@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IStartupModule, ExceptionsStartupModule>();
         services.AddSingleton<IStartupModule, InfrastructureStartupModule>();
         services.AddSingleton<IStartupModule, LoggingStartupModule>();
-        services.AddSingleton<IStartupModule, ObservabilityStartupModule>();
+        services.AddSingleton<IStartupModule, ObservationsStartupModule>();
         services.AddSingleton<IStartupModule, SecurityHeadersStartupModule>();
         services.AddSingleton<IStartupModule, SwaggerStartupModule>();
 

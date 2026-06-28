@@ -9,7 +9,7 @@ namespace Frank.Infrastructure.Observations;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankObservability(this IServiceCollection services)
+    public static IServiceCollection AddFrankObservations(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
 

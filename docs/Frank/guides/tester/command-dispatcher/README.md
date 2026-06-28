@@ -1,4 +1,5 @@
-# Command Dispatcher — Tester Guide
+
+# Frank - Guides - Tester - Command Dispatcher Guide
 
 The Command Dispatcher capability provides a **validated, deterministic, DI‑driven command execution pipeline**.  
 Testers validate that:
@@ -95,7 +96,7 @@ Validate:
 
 The dispatcher uses:
 
-```
+```csharp
 ((dynamic)handler).HandleAsync((dynamic)command, ct)
 ```
 
@@ -157,7 +158,7 @@ Testers must ensure:
 
 ## 4.1 Fake Validators
 
-````csharp
+```csharp
 public sealed class FakeValidator : AbstractValidator<TestCommand>
 {
     public FakeValidator()
@@ -165,7 +166,7 @@ public sealed class FakeValidator : AbstractValidator<TestCommand>
         RuleFor(x => x.Value).NotEmpty();
     }
 }
-````
+```
 
 Validate:
 
@@ -176,13 +177,13 @@ Validate:
 
 ## 4.2 Fake Handlers
 
-````csharp
+```csharp
 public sealed class FakeHandler : ICommandHandler<TestCommand, string>
 {
     public Task<string> HandleAsync(TestCommand command, CancellationToken ct)
         => Task.FromResult("ok");
 }
-````
+```
 
 Validate:
 
@@ -195,7 +196,7 @@ Validate:
 
 Use a handler that records invocation:
 
-````csharp
+```csharp
 public sealed class TrackingHandler : ICommandHandler<TestCommand>
 {
     public bool Called { get; private set; }
@@ -206,7 +207,7 @@ public sealed class TrackingHandler : ICommandHandler<TestCommand>
         return Task.CompletedTask;
     }
 }
-````
+```
 
 Validate:
 
@@ -266,3 +267,4 @@ Testers ensure that the Command Dispatcher:
 - never executes handlers when validation fails  
 
 This Tester Guide covers everything needed to validate the Command Dispatcher capability end‑to‑end.
+
