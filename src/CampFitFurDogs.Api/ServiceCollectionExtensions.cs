@@ -1,5 +1,3 @@
-using Frank.Abstractions.Startup;
-using CampFitFurDogs.Api.Horizontal.Startup.Modules;
 using System.Reflection;
 using FluentValidation;
 

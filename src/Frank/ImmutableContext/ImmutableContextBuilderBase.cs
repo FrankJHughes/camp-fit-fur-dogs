@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Frank.Abstractions.ImmutableContext;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
 namespace Frank.ImmutableContext;
 
@@ -9,13 +9,13 @@ public abstract class ImmutableContextBuilderBase<TContext, TStep>
     where TStep : IImmutableContextBuildStep<TContext>
 {
     private readonly IReadOnlyList<TStep> _steps;
-    protected IObservabilitySink Sink { get; }
-    protected IObservabilityContext SystemContext { get; }
+    protected IObservationSink Sink { get; }
+    protected IObservationContext SystemContext { get; }
 
     protected ImmutableContextBuilderBase(
         IEnumerable<TStep> steps,
-        IObservabilitySink sink,
-        IObservabilityContext systemContext)
+        IObservationSink sink,
+        IObservationContext systemContext)
     {
         _steps = steps.ToList();
         Sink = sink;

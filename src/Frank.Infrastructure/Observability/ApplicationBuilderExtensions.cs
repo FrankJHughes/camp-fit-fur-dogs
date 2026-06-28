@@ -1,14 +1,14 @@
 #nullable enable
-using Frank.Infrastructure.Observability.Http;
+using Frank.Infrastructure.Observations.Http;
 using Microsoft.AspNetCore.Builder;
 
-namespace Frank.Infrastructure.Observability;
+namespace Frank.Infrastructure.Observations;
 
 public static class ApplicationBuilderExtensions
 {
     public static IApplicationBuilder UseFrankObservability(this IApplicationBuilder app)
     {
-        return app.UseMiddleware<InboundObservabilityContextMiddleware>()
-            .UseMiddleware<ObservabilityInstrumentationMiddleware>();
+        return app.UseMiddleware<InboundObservationContextMiddleware>()
+            .UseMiddleware<ObservationInstrumentationMiddleware>();
     }
 }

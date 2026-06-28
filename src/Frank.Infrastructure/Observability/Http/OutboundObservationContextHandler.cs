@@ -1,13 +1,13 @@
 using System.Security.Cryptography;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
-namespace Frank.Infrastructure.Observability.Http;
+namespace Frank.Infrastructure.Observations.Http;
 
-public sealed class OutboundObservabilityContextHandler : DelegatingHandler
+public sealed class OutboundObservationContextHandler : DelegatingHandler
 {
-    private readonly IRequestObservabilityContext _context;
+    private readonly IRequestObservationContext _context;
 
-    public OutboundObservabilityContextHandler(IRequestObservabilityContext context)
+    public OutboundObservationContextHandler(IRequestObservationContext context)
     {
         _context = context;
     }

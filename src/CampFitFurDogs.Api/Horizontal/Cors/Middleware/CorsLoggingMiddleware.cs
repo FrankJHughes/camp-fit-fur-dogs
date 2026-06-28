@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace CampFitFurDogs.Api.Horizontal.Cors.Middleware;
 
-public sealed class CorsLoggingMiddleware
+public sealed class OriginLoggingMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<CorsLoggingMiddleware> _logger;
+    private readonly ILogger<OriginLoggingMiddleware> _logger;
     private readonly ICorsPolicyProvider _policyProvider;
 
-    public CorsLoggingMiddleware(
+    public OriginLoggingMiddleware(
         RequestDelegate next,
-        ILogger<CorsLoggingMiddleware> logger,
+        ILogger<OriginLoggingMiddleware> logger,
         ICorsPolicyProvider policyProvider)
     {
         _next = next;

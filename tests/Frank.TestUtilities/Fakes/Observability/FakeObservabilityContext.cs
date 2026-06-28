@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
 namespace Frank.TestUtilities.Fakes.Observability;
 
-public sealed class FakeObservabilityContext : IObservabilityContext
+public sealed class FakeObservabilityContext : IObservationContext
 {
     public string CorrelationId => "test-correlation";
     public string Channel => "TestChannel";

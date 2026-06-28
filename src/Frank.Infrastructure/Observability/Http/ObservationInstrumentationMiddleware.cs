@@ -2,24 +2,24 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 using Frank.Abstractions.Identity;
 
-namespace Frank.Infrastructure.Observability.Http;
+namespace Frank.Infrastructure.Observations.Http;
 
-public sealed class ObservabilityInstrumentationMiddleware
+public sealed class ObservationInstrumentationMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IObservabilitySink _trace;
+    private readonly IObservationSink _trace;
     private readonly IMetrics _metrics;
     private readonly ICorrelationContext _correlation;
     private readonly IErrorBoundaryObserver _errors;
     private readonly IHostEnvironment _environment;
     private readonly ICurrentUser _currentUser;
 
-    public ObservabilityInstrumentationMiddleware(
+    public ObservationInstrumentationMiddleware(
         RequestDelegate next,
-        IObservabilitySink trace,
+        IObservationSink trace,
         IMetrics metrics,
         ICorrelationContext correlation,
         IErrorBoundaryObserver errors,
@@ -54,7 +54,7 @@ public sealed class ObservabilityInstrumentationMiddleware
             // User is not authenticated — leave userId = null
         }
 
-        var context = new RequestObservabilityContext(
+        var context = new RequestObservationContext(
             userId: userId,
             correlationId: correlationId,
             channel: "http",

@@ -1,5 +1,5 @@
 using Frank.Abstractions.Startup;
-using Frank.Infrastructure.Observability;
+using Frank.Infrastructure.Observations;
 
 namespace CampFitFurDogs.Api.Horizontal.Startup.Modules;
 

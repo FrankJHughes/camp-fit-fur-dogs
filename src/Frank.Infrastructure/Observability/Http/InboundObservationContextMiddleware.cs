@@ -1,17 +1,17 @@
 #nullable enable
 using System.Text.RegularExpressions;
 using Frank.Abstractions.Identity;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 
-namespace Frank.Infrastructure.Observability.Http;
+namespace Frank.Infrastructure.Observations.Http;
 
-public sealed class InboundObservabilityContextMiddleware
+public sealed class InboundObservationContextMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public InboundObservabilityContextMiddleware(RequestDelegate next)
+    public InboundObservationContextMiddleware(RequestDelegate next)
     {
         _next = next;
     }
@@ -44,7 +44,7 @@ public sealed class InboundObservabilityContextMiddleware
         // -----------------------------
         // 3. Build RequestObservabilityContext
         // -----------------------------
-        var context = new RequestObservabilityContext(
+        var context = new RequestObservationContext(
             userId: userId,
             correlationId: correlationId,
             channel: "http",
@@ -59,7 +59,7 @@ public sealed class InboundObservabilityContextMiddleware
         // -----------------------------
         // 4. Store for downstream
         // -----------------------------
-        httpContext.Items[nameof(IRequestObservabilityContext)] = context;
+        httpContext.Items[nameof(IRequestObservationContext)] = context;
 
         await _next(httpContext);
     }

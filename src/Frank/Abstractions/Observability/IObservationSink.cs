@@ -1,11 +1,11 @@
 // src/Frank/Abstractions/Observability/ITraceEvents.cs
-namespace Frank.Abstractions.Observability;
+namespace Frank.Abstractions.Observations;
 
 /// <summary>
 /// Emits structured trace events for observability.
 /// Implementations must be provided by the infrastructure layer.
 /// </summary>
-public interface IObservabilitySink
+public interface IObservationSink
 {
     /// <summary>
     /// Emits a structured event with the given metadata and context.
@@ -15,5 +15,5 @@ public interface IObservabilitySink
         string category,
         string severity,
         object? payload,
-        IObservabilityContext context);
+        IObservationContext context);
 }

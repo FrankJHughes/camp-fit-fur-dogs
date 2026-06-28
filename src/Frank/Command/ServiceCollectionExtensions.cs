@@ -12,23 +12,26 @@ public static class ServiceCollectionExtensions
         return AddFrankCommand(services, []);
     }
 
-    public static IServiceCollection AddFrankCommand(this IServiceCollection services, Assembly[] assemblies)
+    public static IServiceCollection AddFrankCommand(
+        this IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
+        Action<RegistrationOptions>? configure = null)
     {
         services.AddScoped<ICommandDispatcher, CommandDispatcher>();
-
         var includeInterfaceTypes = new Type[]
         {
             typeof(ICommandHandler<>),
             typeof(ICommandHandler<,>)
         };
 
-        var excludeConcreteTypes = Array.Empty<Type>();
+        var registrationOptions = new RegistrationOptions();
+        configure?.Invoke(registrationOptions);
 
         Orchestrator.Orchestrate(
             services,
+            assemblies,
             includeInterfaceTypes,
-            excludeConcreteTypes,
-            assemblies);
+            registrationOptions);
 
         return services;
     }

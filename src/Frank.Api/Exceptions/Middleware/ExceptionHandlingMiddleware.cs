@@ -2,7 +2,7 @@ using System.Reflection;
 using Frank.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http;
 
-namespace Frank.Api.ExceptionHandling;
+namespace Frank.Api.Exceptions.Middleware;
 
 public sealed class ExceptionHandlingMiddleware
 {

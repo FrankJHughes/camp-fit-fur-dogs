@@ -9,12 +9,12 @@ public static class Scanner
     private static readonly Type RegistrationAttributeType = typeof(RegistrationAttribute);
 
     public static IEnumerable<RelevantInterfaceGroup> Scan(
+        IEnumerable<Assembly> assemblies,
         IEnumerable<Type> includeInterfaceTypes,
-        IEnumerable<Type> excludeConcreteTypes,
-        IEnumerable<Assembly> assemblies) =>
+        RegistrationOptions registrationOptions) =>
         GetRelevantInterfaces(includeInterfaceTypes, assemblies)
         .LeftJoin(
-            GetConcreteImplementations(assemblies, excludeConcreteTypes), // right side
+            GetConcreteImplementations(assemblies, registrationOptions), // right side
             GetRelevantInterfaceKey, // key of left side
             GetImplementedInterfaceKey, // key of right side
             (relevantInterface, implementation) =>
@@ -71,18 +71,22 @@ public static class Scanner
 
     private static IEnumerable<Implementation> GetConcreteImplementations(
         IEnumerable<Assembly> assemblies,
-        IEnumerable<Type> excludeConcreteTypes)
+        RegistrationOptions options)
     {
-        var excludeConcreteTypeInfos = excludeConcreteTypes.Select(ct => ct.GetTypeInfo());
-
         return assemblies
             .SelectMany(a => a.DefinedTypes)
             .Where(IsConcreteClassType)
-            .Where(ct => !excludeConcreteTypeInfos.Contains(ct))
+            .Where(ct => ConcreteTypeNotExcluded(options, ct))
             .Distinct()
             .SelectMany(ct =>
                 ct.ImplementedInterfaces,
                 (ct, iit) => new Implementation(ct, iit));
+    }
+
+    private static bool ConcreteTypeNotExcluded(RegistrationOptions options, TypeInfo ct)
+    {
+        return !options.ExcludedTypes.Contains(ct)
+            && !options.ExclusionPredicates.Any(p => p(ct));
     }
 
     private static bool IsConcreteClassType(TypeInfo ct)

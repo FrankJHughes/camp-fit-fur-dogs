@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using Frank.Abstractions.ImmutableContext;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 using Frank.ImmutableContext;
 
 namespace CampFitFurDogs.Application.Authentication.Callback;
@@ -11,8 +11,8 @@ public sealed class ApplicationAuthCallbackContextBuilder
 {
     public ApplicationAuthCallbackContextBuilder(
         IEnumerable<IImmutableContextBuildStep<ApplicationAuthCallbackContext>> steps,
-        IObservabilitySink sink,
-        IObservabilityContext systemContext)
+        IObservationSink sink,
+        IObservationContext systemContext)
         : base(steps, sink, systemContext)
     {
     }

@@ -7,12 +7,12 @@ public sealed class Orchestrator
 {
     public static void Orchestrate(
         IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
         IEnumerable<Type> includeInterfaceTypes,
-        IEnumerable<Type> excludeConcreteTypes,
-        IEnumerable<Assembly> assemblies)
+        RegistrationOptions registrationOptions)
     {
 
-        var groups = Scanner.Scan(includeInterfaceTypes, excludeConcreteTypes, assemblies);
+        var groups = Scanner.Scan(assemblies, includeInterfaceTypes, registrationOptions);
 
         var plans = Planner.Plan(groups);
 

@@ -1,15 +1,15 @@
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
-namespace Frank.Infrastructure.Observability;
+namespace Frank.Infrastructure.Observations;
 
-public sealed class ObservabilitySink : IObservabilitySink
+public sealed class ObservationSink : IObservationSink
 {
     public void Emit(
         string eventName,
         string category,
         string severity,
         object? payload,
-        IObservabilityContext context)
+        IObservationContext context)
     {
         // TODO: Implement vendor-specific trace emission
         // Placeholder no-op implementation

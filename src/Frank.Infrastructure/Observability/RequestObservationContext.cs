@@ -1,13 +1,13 @@
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 using Microsoft.Extensions.Hosting;
 
-namespace Frank.Infrastructure.Observability;
+namespace Frank.Infrastructure.Observations;
 
 /// <summary>
 /// Observability context for request-scope operations.
 /// Includes authenticated user identity when available.
 /// </summary>
-public sealed class RequestObservabilityContext : ObservabilityContextBase, IRequestObservabilityContext
+public sealed class RequestObservationContext : ObservationContextBase, IRequestObservationContext
 {
     public string? UserId { get; }
 
@@ -15,7 +15,7 @@ public sealed class RequestObservabilityContext : ObservabilityContextBase, IReq
     /// Canonical constructor.
     /// Mirrors UserId into Metadata["user.id"] when provided.
     /// </summary>
-    public RequestObservabilityContext(
+    public RequestObservationContext(
         string? userId,
         string correlationId,
         string channel,
@@ -37,7 +37,7 @@ public sealed class RequestObservabilityContext : ObservabilityContextBase, IReq
     /// <summary>
     /// Convenience constructor using IHostEnvironment. Timestamp defaults to UtcNow.
     /// </summary>
-    public RequestObservabilityContext(
+    public RequestObservationContext(
         string? userId,
         string correlationId,
         string channel,
@@ -58,7 +58,7 @@ public sealed class RequestObservabilityContext : ObservabilityContextBase, IReq
     /// <summary>
     /// Factory helper for typical request-scope usage.
     /// </summary>
-    public static RequestObservabilityContext Create(
+    public static RequestObservationContext Create(
         string? userId,
         string correlationId,
         string channel,
@@ -66,7 +66,7 @@ public sealed class RequestObservabilityContext : ObservabilityContextBase, IReq
         IHostEnvironment environment,
         IReadOnlyDictionary<string, object?>? metadata = null)
     {
-        return new RequestObservabilityContext(
+        return new RequestObservationContext(
             userId: userId,
             correlationId: correlationId,
             channel: channel,

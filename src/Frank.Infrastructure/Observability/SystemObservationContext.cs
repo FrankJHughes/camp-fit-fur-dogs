@@ -1,4 +1,4 @@
-namespace Frank.Infrastructure.Observability;
+namespace Frank.Infrastructure.Observations;
 
 using Microsoft.Extensions.Hosting;
 
@@ -6,12 +6,12 @@ using Microsoft.Extensions.Hosting;
 /// Observability context for system-scope operations (startup, discovery,
 /// background jobs, domain pipelines, context builders, etc.).
 /// </summary>
-public sealed class SystemObservabilityContext : ObservabilityContextBase
+public sealed class SystemObservationContext : ObservationContextBase
 {
     /// <summary>
     /// Canonical constructor.
     /// </summary>
-    public SystemObservabilityContext(
+    public SystemObservationContext(
         string correlationId,
         string channel,
         string agent,
@@ -25,7 +25,7 @@ public sealed class SystemObservabilityContext : ObservabilityContextBase
     /// <summary>
     /// Convenience constructor using IHostEnvironment. Timestamp defaults to UtcNow.
     /// </summary>
-    public SystemObservabilityContext(
+    public SystemObservationContext(
         string correlationId,
         string channel,
         string agent,
@@ -44,13 +44,13 @@ public sealed class SystemObservabilityContext : ObservabilityContextBase
     /// <summary>
     /// Factory helper for typical system-scope usage.
     /// </summary>
-    public static SystemObservabilityContext Create(
+    public static SystemObservationContext Create(
         string channel,
         string agent,
         IHostEnvironment environment,
         IReadOnlyDictionary<string, object?>? metadata = null)
     {
-        return new SystemObservabilityContext(
+        return new SystemObservationContext(
             correlationId: Guid.NewGuid().ToString("N"),
             channel: channel,
             agent: agent,

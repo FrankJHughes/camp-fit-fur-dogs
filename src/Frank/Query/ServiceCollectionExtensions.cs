@@ -12,7 +12,10 @@ public static class ServiceCollectionExtensions
         return AddFrankQuery(services, []);
     }
 
-    public static IServiceCollection AddFrankQuery(this IServiceCollection services, Assembly[] assemblies)
+    public static IServiceCollection AddFrankQuery(
+        this IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
+        Action<RegistrationOptions>? configure = null)
     {
         services.AddScoped<IQueryDispatcher, QueryDispatcher>();
         var includeInterfaceTypes = new Type[]
@@ -20,13 +23,14 @@ public static class ServiceCollectionExtensions
             typeof(IQueryHandler<,>)
         };
 
-        var excludeConcreteTypes = Array.Empty<Type>();
+        var registrationOptions = new RegistrationOptions();
+        configure?.Invoke(registrationOptions);
 
         Orchestrator.Orchestrate(
             services,
+            assemblies,
             includeInterfaceTypes,
-            excludeConcreteTypes,
-            assemblies);
+            registrationOptions);
 
         return services;
     }

@@ -1,5 +1,3 @@
-using System.Reflection;
-using FluentValidation;
 using Frank.Abstractions.Startup;
 using Frank.Api.Endpoints;
 

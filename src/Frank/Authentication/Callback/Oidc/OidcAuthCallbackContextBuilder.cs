@@ -1,6 +1,6 @@
 using Frank.Abstractions.Authentication.Callback;
 using Frank.Abstractions.ImmutableContext;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 using Frank.ImmutableContext;
 
 namespace Frank.Authentication.Callback.Oidc;
@@ -11,8 +11,8 @@ public sealed class OidcAuthCallbackContextBuilder
 {
     public OidcAuthCallbackContextBuilder(
         IEnumerable<IImmutableContextBuildStep<OidcAuthCallbackContext>> steps,
-        IObservabilitySink sink,
-        IObservabilityContext systemContext)
+        IObservationSink sink,
+        IObservationContext systemContext)
         : base(steps, sink, systemContext)
     {
     }

@@ -1,7 +1,7 @@
 using System.Reflection;
 using Frank.Abstractions.Startup;
 using Frank.Infrastructure.Exceptions;
-using Frank.Api.ExceptionHandling;
+using Frank.Api.Exceptions.Middleware;
 
 namespace CampFitFurDogs.Api.Horizontal.Startup.Modules;
 
@@ -19,11 +19,11 @@ public sealed class ExceptionsStartupModule : IStartupModule
             typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly
         };
 
-        services.AddFrankProblem(assemblies);
+        services.AddFrankException(assemblies);
     }
 
     public void Use(WebApplication app)
     {
-        app.UseMiddleware<ExceptionHandlingMiddleware>();
+        app.UseFrankExceptions();
     }
 }

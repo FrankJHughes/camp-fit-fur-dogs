@@ -43,7 +43,7 @@ public sealed class CorsStartupModule : IStartupModule
     {
         app.UseRouting();
         app.UseCors();
-        app.UseMiddleware<CorsLoggingMiddleware>();
+        app.UseOriginLogging();
     }
 
     private void ApplyDefaultPolicy(CorsPolicyBuilder policy)

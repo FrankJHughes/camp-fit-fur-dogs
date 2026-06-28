@@ -7,12 +7,15 @@ namespace Frank.Infrastructure.Exceptions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankProblem(this IServiceCollection services)
+    public static IServiceCollection AddFrankException(this IServiceCollection services)
     {
-        return AddFrankProblem(services, []);
+        return AddFrankException(services, []);
     }
 
-    public static IServiceCollection AddFrankProblem(this IServiceCollection services, Assembly[] assemblies)
+    public static IServiceCollection AddFrankException(
+        this IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
+        Action<RegistrationOptions>? configure = null)
     {
         services.AddSingleton<ExceptionHandlerRegistry>();
 
@@ -21,13 +24,14 @@ public static class ServiceCollectionExtensions
             typeof(IExceptionHandler)
         };
 
-        var excludeConcreteTypes = Array.Empty<Type>();
+        var registrationOptions = new RegistrationOptions();
+        configure?.Invoke(registrationOptions);
 
         Orchestrator.Orchestrate(
             services,
+            assemblies,
             includeInterfaceTypes,
-            excludeConcreteTypes,
-            assemblies);
+            registrationOptions);
 
         return services;
     }

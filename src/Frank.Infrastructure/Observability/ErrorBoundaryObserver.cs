@@ -1,17 +1,17 @@
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
-namespace Frank.Infrastructure.Observability;
+namespace Frank.Infrastructure.Observations;
 
 public sealed class ErrorBoundaryObserver : IErrorBoundaryObserver
 {
-    private readonly IObservabilitySink _sink;
+    private readonly IObservationSink _sink;
 
-    public ErrorBoundaryObserver(IObservabilitySink sink)
+    public ErrorBoundaryObserver(IObservationSink sink)
     {
         _sink = sink;
     }
 
-    public void OnError(Exception exception, IRequestObservabilityContext context)
+    public void OnError(Exception exception, IRequestObservationContext context)
     {
         // Emit a structured error event into the unified observability sink
         _sink.Emit(

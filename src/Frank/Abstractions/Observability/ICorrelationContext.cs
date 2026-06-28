@@ -1,5 +1,5 @@
 // src/Frank/Abstractions/Observability/ICorrelationContext.cs
-namespace Frank.Abstractions.Observability;
+namespace Frank.Abstractions.Observations;
 
 /// <summary>
 /// Responsible for creating and propagating correlation identifiers.

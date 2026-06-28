@@ -1,11 +1,11 @@
 // src/Frank/Abstractions/Observability/IObservabilityContext.cs
-namespace Frank.Abstractions.Observability;
+namespace Frank.Abstractions.Observations;
 
 /// <summary>
 /// Represents the structured context that flows through all observable operations.
 /// This context is immutable and must be provided by the infrastructure layer.
 /// </summary>
-public interface IObservabilityContext
+public interface IObservationContext
 {
     /// <summary>
     /// A unique identifier used to correlate logs, traces, and metrics across boundaries.

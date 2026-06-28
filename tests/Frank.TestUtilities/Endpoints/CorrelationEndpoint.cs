@@ -1,5 +1,5 @@
 using Frank.Abstractions;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -10,7 +10,7 @@ public sealed class CorrelationEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/__test__/correlation", (IRequestObservabilityContext observabilityContext) =>
+        endpoints.MapGet("/__test__/correlation", (IRequestObservationContext observabilityContext) =>
         {
             var correlationId = observabilityContext.CorrelationId;
 

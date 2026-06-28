@@ -1,6 +1,6 @@
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
-namespace Frank.Infrastructure.Observability;
+namespace Frank.Infrastructure.Observations;
 
 public sealed class CorrelationContext : ICorrelationContext
 {
