@@ -1,5 +1,5 @@
 using System.Reflection;
-using CampFitFurDogs.Api.Horizontal.Startup.Modules;
+using CampFitFurDogs.Api.Horizontals.Startup.Modules;
 using CampFitFurDogs.TestUtilities.Infrastructure;
 using FluentAssertions;
 

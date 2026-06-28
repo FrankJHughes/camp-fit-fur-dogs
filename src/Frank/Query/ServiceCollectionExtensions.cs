@@ -7,30 +7,42 @@ namespace Frank.Query;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankQuery(this IServiceCollection services)
-    {
-        return AddFrankQuery(services, []);
-    }
+    private static bool HasRegistrationAttribute(TypeInfo iface) =>
+        iface.GetCustomAttributes(typeof(RegistrationAttribute), inherit: true).Length != 0;
 
     public static IServiceCollection AddFrankQuery(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
-        Action<RegistrationOptions>? configure = null)
+        Action<DiscoveryOptions>? configure = null)
     {
         services.AddScoped<IQueryDispatcher, QueryDispatcher>();
-        var includeInterfaceTypes = new Type[]
-        {
-            typeof(IQueryHandler<,>)
-        };
 
-        var registrationOptions = new RegistrationOptions();
-        configure?.Invoke(registrationOptions);
+        var options = new DiscoveryOptions();
+
+        //
+        // Interface must:
+        //   - be IQueryHandler<TQuery, TResponse>
+        //   - AND be decorated with [Registration]
+        //
+        options.IncludeInterface(iface =>
+            HasRegistrationAttribute(iface) &&
+            iface.IsGenericType &&
+            iface.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
+
+        //
+        // Implementations: any class implementing IQueryHandler<TQuery, TResponse>
+        //
+        options.IncludeImplementation(impl =>
+            impl.ImplementedInterfaces.Any(i =>
+                i.IsGenericType &&
+                i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
+
+        configure?.Invoke(options);
 
         Orchestrator.Orchestrate(
             services,
-            assemblies,
-            includeInterfaceTypes,
-            registrationOptions);
+            [typeof(Frank.AssemblyMarker).Assembly, .. assemblies],
+            options);
 
         return services;
     }

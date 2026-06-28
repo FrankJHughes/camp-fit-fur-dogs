@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
-using CampFitFurDogs.Api.Horizontal.Startup.Modules;
+using CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
 namespace CampFitFurDogs.Api.Tests.Startup;
 

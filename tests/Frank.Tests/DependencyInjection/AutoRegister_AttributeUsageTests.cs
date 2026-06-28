@@ -1,4 +1,5 @@
 using System.Reflection;
+using Frank.Abstractions;
 using Frank.Abstractions.Command;
 using Frank.Abstractions.Event;
 using Frank.Abstractions.Exceptions;
@@ -18,13 +19,12 @@ public class AutoRegister_AttributeUsageTests
 
     private static readonly Type[] Known =
     [
-        typeof(IClock),
         typeof(ICommandHandler<>),
         typeof(ICommandHandler<,>),
-        typeof(ICurrentUser),
         typeof(IEventHandler<>),
         typeof(IExceptionHandler),
-        typeof(IQueryHandler<,>)
+        typeof(IQueryHandler<,>),
+        typeof(IEndpoint)
     ];
 
     [Fact]

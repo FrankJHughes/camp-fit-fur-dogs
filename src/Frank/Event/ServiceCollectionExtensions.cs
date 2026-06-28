@@ -7,6 +7,9 @@ namespace Frank.Event;
 
 public static class ServiceCollectionExtensions
 {
+    private static bool HasRegistrationAttribute(TypeInfo iface) =>
+    iface.GetCustomAttributes(typeof(RegistrationAttribute), inherit: true).Length != 0;
+
     public static IServiceCollection AddFrankEvent(this IServiceCollection services)
     {
         return AddFrankEvent(services, []);
@@ -15,22 +18,36 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFrankEvent(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
-        Action<RegistrationOptions>? configure = null)
+        Action<DiscoveryOptions>? configure = null)
     {
         services.AddScoped<IEventDispatcher, EventDispatcher>();
-        var includeInterfaceTypes = new Type[]
-        {
-            typeof(IEventHandler<>)
-        };
 
-        var registrationOptions = new RegistrationOptions();
-        configure?.Invoke(registrationOptions);
+        var options = new DiscoveryOptions();
+
+        //
+        // Interface must:
+        //   - be IEventHandler<>
+        //   - AND be decorated with [Registration]
+        //
+        options.IncludeInterface(iface =>
+            HasRegistrationAttribute(iface) &&
+            iface.IsGenericType &&
+            iface.GetGenericTypeDefinition() == typeof(IEventHandler<>));
+
+        //
+        // Implementations: any class implementing IEventHandler<>
+        //
+        options.IncludeImplementation(impl =>
+            impl.ImplementedInterfaces.Any(i =>
+                i.IsGenericType &&
+                i.GetGenericTypeDefinition() == typeof(IEventHandler<>)));
+
+        configure?.Invoke(options);
 
         Orchestrator.Orchestrate(
             services,
-            assemblies,
-            includeInterfaceTypes,
-            registrationOptions);
+            [typeof(Frank.AssemblyMarker).Assembly, .. assemblies],
+            options);
 
         return services;
     }

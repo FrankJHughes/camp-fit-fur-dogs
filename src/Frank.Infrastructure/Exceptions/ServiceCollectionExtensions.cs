@@ -7,31 +7,51 @@ namespace Frank.Infrastructure.Exceptions;
 
 public static class ServiceCollectionExtensions
 {
+    private static bool HasRegistrationAttribute(TypeInfo iface) =>
+    iface.GetCustomAttributes(typeof(RegistrationAttribute), inherit: true).Length != 0;
+
     public static IServiceCollection AddFrankException(this IServiceCollection services)
     {
-        return AddFrankException(services, []);
+        return AddFrankException(services, Array.Empty<Assembly>());
     }
 
     public static IServiceCollection AddFrankException(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
-        Action<RegistrationOptions>? configure = null)
+        Action<DiscoveryOptions>? configure = null)
     {
         services.AddSingleton<ExceptionHandlerRegistry>();
 
-        var includeInterfaceTypes = new Type[]
-        {
-            typeof(IExceptionHandler)
-        };
+        var options = new DiscoveryOptions();
 
-        var registrationOptions = new RegistrationOptions();
-        configure?.Invoke(registrationOptions);
+        //
+        // Interface must:
+        //   - be IExceptionHandler
+        //   - AND be decorated with [Registration]
+        //
+        options.IncludeInterface(iface =>
+            HasRegistrationAttribute(iface) &&
+            iface.AsType() == typeof(IExceptionHandler));
 
+        //
+        // Implementations: any class implementing IExceptionHandler
+        //
+        options.IncludeImplementation(impl =>
+            impl.ImplementedInterfaces.Any(i =>
+                i == typeof(IExceptionHandler)));
+
+        //
+        // Allow user overrides
+        //
+        configure?.Invoke(options);
+
+        //
+        // Unified discovery + registration
+        //
         Orchestrator.Orchestrate(
             services,
-            assemblies,
-            includeInterfaceTypes,
-            registrationOptions);
+            [typeof(Frank.AssemblyMarker).Assembly, .. assemblies],
+            options);
 
         return services;
     }
