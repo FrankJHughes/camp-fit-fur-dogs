@@ -12,6 +12,9 @@ public class AuthenticationStartupModule : IStartupModule
     {
         var services = builder.Services;
 
+        //
+        // Forwarded headers (unchanged)
+        //
         services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders =
@@ -27,14 +30,24 @@ public class AuthenticationStartupModule : IStartupModule
 
         var oidcDisabled = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
 
+        //
+        // IMPORTANT:
+        //
+        // DefaultChallengeScheme MUST NOT be OpenIdConnect.
+        // If it is, ANY unauthorized request (including "/") triggers an OIDC redirect.
+        //
+        // Instead, the cookie scheme handles authentication,
+        // and OIDC is ONLY invoked when the user explicitly hits /api/auth/login.
+        //
         var auth = services
             .AddAuthentication(options =>
             {
                 options.DefaultScheme = "cfd.session";
                 options.DefaultAuthenticateScheme = "cfd.session";
-                options.DefaultChallengeScheme = oidcDisabled
-                    ? "cfd.session"
-                    : OpenIdConnectDefaults.AuthenticationScheme;
+
+                // FIX: Never auto-challenge with OIDC.
+                // Only /api/auth/login should trigger OIDC.
+                options.DefaultChallengeScheme = "cfd.session";
             })
             .AddCookie("cfd.session", options =>
             {
@@ -46,7 +59,6 @@ public class AuthenticationStartupModule : IStartupModule
                     ? CookieSecurePolicy.Always
                     : CookieSecurePolicy.None;
 
-                // Required for OIDC
                 options.Cookie.SameSite = SameSiteMode.None;
 
                 options.LoginPath = "/api/auth/login";
@@ -70,37 +82,25 @@ public class AuthenticationStartupModule : IStartupModule
                 };
             });
 
+        //
+        // Add OIDC only if enabled
+        //
         if (!oidcDisabled)
         {
-            var authority = config["Authentication:Callback:Oidc:Authority"];
-            if (string.IsNullOrWhiteSpace(authority))
-            {
-                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
-            }
+            var authority = config["Authentication:Callback:Oidc:Authority"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
 
-            var clientId = config["Authentication:Callback:Oidc:ClientId"];
-            if (string.IsNullOrWhiteSpace(clientId))
-            {
-                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
-            }
+            var clientId = config["Authentication:Callback:Oidc:ClientId"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
 
-            var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"];
-            if (string.IsNullOrWhiteSpace(clientSecret))
-            {
-                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
-            }
+            var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
 
-            var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"];
-            if (string.IsNullOrWhiteSpace(postLoginRedirectUrl))
-            {
-                throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
-            }
+            var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
 
-            string callbackUrl = CalculateCallbackUrl(config);
-            if (string.IsNullOrWhiteSpace(callbackUrl))
-            {
-                throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl or incorrect ASPNETCORE_URLS");
-            }
+            string callbackUrl = CalculateCallbackUrl(config)
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl or incorrect ASPNETCORE_URLS");
 
             auth.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
@@ -117,6 +117,9 @@ public class AuthenticationStartupModule : IStartupModule
                 options.Scope.Add("profile");
                 options.Scope.Add("email");
 
+                //
+                // FIX: Only redirect to OIDC when explicitly invoked.
+                //
                 options.Events.OnRedirectToIdentityProvider = context =>
                 {
                     var req = context.Request;
@@ -126,8 +129,6 @@ public class AuthenticationStartupModule : IStartupModule
 
                     return Task.CompletedTask;
                 };
-
-                // You may add events here later for claim mapping, etc.
             });
         }
     }

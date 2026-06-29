@@ -46,8 +46,9 @@ public static class Scanner
 
     private static bool IsConcreteClassType(TypeInfo t)
         => t.IsClass &&
-           !t.IsAbstract &&
-           !t.ContainsGenericParameters;
+           !t.IsAbstract;
+    // NOTE: we intentionally allow generic type definitions here
+    // so open generic implementations like GenericImpl<T> are included.
 
     private static Type GetComparisonKey(Type type)
         => type.IsGenericType

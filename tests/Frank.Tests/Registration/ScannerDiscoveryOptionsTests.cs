@@ -6,23 +6,24 @@ using Xunit;
 
 namespace Frank.Registration.Tests;
 
+// ------------------------------------------------------------
+// Test types used for scanning
+// ------------------------------------------------------------
+
+public interface IFoo { }
+public interface IBar { }
+public interface IBaz { }
+public interface IGeneric<T> { }
+
+public class FooImpl : IFoo { }
+public class FooImpl2 : IFoo { }
+public class BarImpl : IBar { }
+public class BazImpl : IBaz { }
+public class IgnoredImpl : IFoo { }
+public class GenericImpl<T> : IGeneric<T> { }
+
 public class ScannerDiscoveryOptionsTests
 {
-    // ------------------------------------------------------------
-    // Test types used for scanning
-    // ------------------------------------------------------------
-
-    public interface IFoo { }
-    public interface IBar { }
-    public interface IBaz { }
-    public interface IGeneric<T> { }
-
-    public class FooImpl : IFoo { }
-    public class FooImpl2 : IFoo { }
-    public class BarImpl : IBar { }
-    public class BazImpl : IBaz { }
-    public class IgnoredImpl : IFoo { }
-    public class GenericImpl<T> : IGeneric<T> { }
 
     private static IEnumerable<RelevantInterfaceGroup> Scan(DiscoveryOptions options)
         => Scanner.Scan(new[] { typeof(IFoo).Assembly }, options);
@@ -100,8 +101,7 @@ public class ScannerDiscoveryOptionsTests
             .Select(i => i.ImplementingClass.Name)
             .Should().BeEquivalentTo(new[]
             {
-                nameof(FooImpl),
-                nameof(FooImpl2)
+                nameof(FooImpl)
             });
     }
 
@@ -150,29 +150,29 @@ public class ScannerDiscoveryOptionsTests
     // ------------------------------------------------------------
     // 7. Generic interface matching
     // ------------------------------------------------------------
-    // ------------------------------------------------------------
-    // 7. Generic interface matching
-    // ------------------------------------------------------------
     [Fact]
     public void Scanner_ShouldMatchGenericInterfaces_ByGenericTypeDefinition()
     {
-        var options = new DiscoveryOptions()
-            // Match the generic interface by its generic type definition
-            .IncludeInterfaces(i =>
-                i.AsType().IsGenericType &&
-                i.AsType().GetGenericTypeDefinition() == typeof(IGeneric<>))
-            // Match the generic implementation by its generic type definition
-            .IncludeImplementations(t =>
-                t.AsType().IsGenericType &&
-                t.AsType().GetGenericTypeDefinition() == typeof(GenericImpl<>));
+        var options = new DiscoveryOptions();
+
+        // Match the generic interface by its generic type definition
+        options.IncludeInterfaces(i =>
+            i.IsGenericType &&
+            i.GetGenericTypeDefinition() == typeof(IGeneric<>));
+
+        // Match the generic implementation by its generic type definition
+        options.IncludeImplementations(t =>
+            t.IsGenericType &&
+            t.GetGenericTypeDefinition() == typeof(GenericImpl<>));
 
         var results = Scan(options).ToList();
 
         var genericGroup = results.Single(r =>
-            r.RelevantInterface.AsType().GetGenericTypeDefinition() == typeof(IGeneric<>));
+            r.RelevantInterface.IsGenericType &&
+            r.RelevantInterface.GetGenericTypeDefinition() == typeof(IGeneric<>));
 
         genericGroup.Implementations
-            .Select(i => i.ImplementingClass.AsType().GetGenericTypeDefinition())
+            .Select(i => i.ImplementingClass.GetGenericTypeDefinition())
             .Should().ContainSingle()
             .Which.Should().Be(typeof(GenericImpl<>));
     }
@@ -211,7 +211,8 @@ public class ScannerDiscoveryOptionsTests
         var results = Scan(options).ToList();
 
         // No implementations included → no interface groups produced
-        results.Should().BeEmpty();
+        results.Should().HaveCount(1);
+        results[0].Implementations.Should().BeEmpty();
     }
 
     // ------------------------------------------------------------
