@@ -9,25 +9,25 @@ public sealed class DiscoveryOptions
     internal List<Func<TypeInfo, bool>> ImplementationInclusionPredicates { get; } = [];
     internal List<Func<TypeInfo, bool>> ImplementationExclusionPredicates { get; } = [];
 
-    public DiscoveryOptions IncludeInterface(Func<TypeInfo, bool> predicate)
+    public DiscoveryOptions IncludeInterfaces(Func<TypeInfo, bool> predicate)
     {
         InterfaceInclusionPredicates.Add(predicate);
         return this;
     }
 
-    public DiscoveryOptions ExcludeInterface(Func<TypeInfo, bool> predicate)
+    public DiscoveryOptions ExcludeInterfaces(Func<TypeInfo, bool> predicate)
     {
         InterfaceExclusionPredicates.Add(predicate);
         return this;
     }
 
-    public DiscoveryOptions IncludeImplementation(Func<TypeInfo, bool> predicate)
+    public DiscoveryOptions IncludeImplementations(Func<TypeInfo, bool> predicate)
     {
         ImplementationInclusionPredicates.Add(predicate);
         return this;
     }
 
-    public DiscoveryOptions ExcludeImplementation(Func<TypeInfo, bool> predicate)
+    public DiscoveryOptions ExcludeImplementations(Func<TypeInfo, bool> predicate)
     {
         ImplementationExclusionPredicates.Add(predicate);
         return this;

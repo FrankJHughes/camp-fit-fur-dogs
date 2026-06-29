@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         //   - be IEventHandler<>
         //   - AND be decorated with [Registration]
         //
-        options.IncludeInterface(iface =>
+        options.IncludeInterfaces(iface =>
             HasRegistrationAttribute(iface) &&
             iface.IsGenericType &&
             iface.GetGenericTypeDefinition() == typeof(IEventHandler<>));
@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
         //
         // Implementations: any class implementing IEventHandler<>
         //
-        options.IncludeImplementation(impl =>
+        options.IncludeImplementations(impl =>
             impl.ImplementedInterfaces.Any(i =>
                 i.IsGenericType &&
                 i.GetGenericTypeDefinition() == typeof(IEventHandler<>)));

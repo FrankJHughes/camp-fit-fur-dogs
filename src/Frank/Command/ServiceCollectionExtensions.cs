@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         //   - be ICommandHandler<> or ICommandHandler<,>
         //   - AND be decorated with [Registration]
         //
-        options.IncludeInterface(iface =>
+        options.IncludeInterfaces(iface =>
             HasRegistrationAttribute(iface) &&
             iface.IsGenericType &&
             (
@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
         //
         // Implementations: any class implementing ICommandHandler<> or ICommandHandler<,>
         //
-        options.IncludeImplementation(impl =>
+        options.IncludeImplementations(impl =>
             impl.ImplementedInterfaces.Any(i =>
                 i.IsGenericType &&
                 (

@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
         //   - be IQueryHandler<TQuery, TResponse>
         //   - AND be decorated with [Registration]
         //
-        options.IncludeInterface(iface =>
+        options.IncludeInterfaces(iface =>
             HasRegistrationAttribute(iface) &&
             iface.IsGenericType &&
             iface.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
         //
         // Implementations: any class implementing IQueryHandler<TQuery, TResponse>
         //
-        options.IncludeImplementation(impl =>
+        options.IncludeImplementations(impl =>
             impl.ImplementedInterfaces.Any(i =>
                 i.IsGenericType &&
                 i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));

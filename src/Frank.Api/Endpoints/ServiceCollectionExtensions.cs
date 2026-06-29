@@ -19,14 +19,14 @@ public static class EndpointServiceCollectionExtensions
         //   - be IEndpoint
         //   - AND be decorated with [Registration]
         //
-        options.IncludeInterface(iface =>
+        options.IncludeInterfaces(iface =>
             iface.AsType() == typeof(IEndpoint) &&
             iface.GetCustomAttributes(typeof(RegistrationAttribute), inherit: true).Length != 0);
 
         //
         // Implementations: any class implementing IEndpoint
         //
-        options.IncludeImplementation(impl =>
+        options.IncludeImplementations(impl =>
             impl.ImplementedInterfaces.Any(i => i == typeof(IEndpoint)));
 
         configure?.Invoke(options);

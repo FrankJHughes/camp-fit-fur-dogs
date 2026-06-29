@@ -29,14 +29,14 @@ public static class ServiceCollectionExtensions
         //   - be IExceptionHandler
         //   - AND be decorated with [Registration]
         //
-        options.IncludeInterface(iface =>
+        options.IncludeInterfaces(iface =>
             HasRegistrationAttribute(iface) &&
             iface.AsType() == typeof(IExceptionHandler));
 
         //
         // Implementations: any class implementing IExceptionHandler
         //
-        options.IncludeImplementation(impl =>
+        options.IncludeImplementations(impl =>
             impl.ImplementedInterfaces.Any(i =>
                 i == typeof(IExceptionHandler)));
 
