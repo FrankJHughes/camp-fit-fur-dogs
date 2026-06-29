@@ -1,155 +1,172 @@
-# startup-engine.md
+# Conventions – Architecture – Startup Engine (Frank)
 
-# Startup Engine (Frank)
+The **Startup Engine** is the deterministic, ordered module‑composition pipeline used by Frank‑based applications.  
+It provides a consistent way for products to define startup behavior by composing **startup modules**.
 
-The **Startup Engine** is the deterministic, centralized initialization pipeline
-for all Frank‑based products.  
-It is responsible for discovering modules, loading configuration, wiring
-dependencies, applying global middleware, and emitting lifecycle events.
-
-Products — including CampFitFurDogs — must not define their own startup logic.
+Products — including CampFitFurDogs — must define startup logic **by composing startup modules**.
 
 The Startup Engine ensures:
 
-- consistent initialization across environments  
-- deterministic module loading  
-- strict DI governance  
-- hardened security defaults  
-- unified observability  
-- predictable hosting behavior  
+- predictable module ordering  
+- consistent application initialization  
+- separation of concerns across startup responsibilities  
 
 ---
 
-## Responsibilities
+# Responsibilities
 
 The Startup Engine owns:
 
-- module discovery  
-- module manifest loading  
-- DI registration (with opt‑out support)  
-- configuration binding  
-- environment detection  
-- lifecycle event emission  
-- global middleware registration  
-- observability initialization  
-- validation of required services  
+- resolving all `IStartupModule` instances from DI  
+- ordering modules using `[StartupModuleAttribute(Order)]`  
+- executing module `Add()` methods during builder configuration  
+- executing module `Use()` methods during app configuration  
 
-The engine is the **single source of truth** for application startup.
+The engine does **not** perform discovery itself — modules are registered by the product.
 
 ---
 
-## Module Discovery
+# Startup Modules
 
-Modules are discovered by:
+A startup module is any class implementing:
 
-- scanning assemblies  
-- reading module manifests  
-- validating dependencies  
-- ordering modules deterministically  
+```csharp
+public interface IStartupModule
+{
+    void Add(WebApplicationBuilder builder);
+    void Use(WebApplication app);
+}
+```
 
-Modules must not:
+Modules may optionally specify ordering:
 
-- perform hosting logic  
-- modify global middleware  
-- read environment variables  
-- override platform defaults  
+```csharp
+[StartupModule(100)]
+public sealed class LoggingStartupModule : IStartupModule { ... }
+```
 
-Modules are **units of capability**, not hosting components.
-
----
-
-## Auto‑Registration & Opt‑Out
-
-By default, modules participate in **auto‑registration**:
-
-- services are registered automatically  
-- handlers are discovered  
-- configuration sections are bound  
-- validators are wired  
-
-Modules may opt out when:
-
-- explicit DI wiring is required  
-- safety or clarity demands manual registration  
-- performance considerations apply  
-
-Opt‑out modules must:
-
-- register all required services explicitly  
-- pass Startup Engine validation  
-- fail fast if dependencies are missing  
-
-(See US‑185 for the governing story.)
+Modules with lower order values run earlier.  
+Modules without an attribute default to order **1000**.
 
 ---
 
-## Lifecycle Events
+# Module Registration (Product‑Side)
 
-The Startup Engine emits structured lifecycle events:
+Products register modules explicitly:
 
-- `Startup.Begin`  
-- `Module.Loaded`  
-- `Module.Initialized`  
-- `Startup.Complete`  
-- `Shutdown.Begin`  
-- `Shutdown.Complete`  
+```csharp
+services.AddSingleton<IStartupModule, LoggingStartupModule>();
+services.AddSingleton<IStartupModule, CorsStartupModule>();
+services.AddSingleton<IStartupModule, SwaggerStartupModule>();
+```
 
-These events support:
-
-- observability  
-- debugging  
-- environment diagnostics  
-- module health verification  
-
-(See US‑183 for observability requirements.)
+Modules are **not** registered through Frank.Registration.  
+Modules do **not** use `RegistrationAttribute`.  
+Modules are **product‑owned**, not platform‑owned.
 
 ---
 
-## Global Middleware Registration
+# Startup Engine Execution
 
-The Startup Engine registers global middleware in a fixed, hardened order:
+The engine is registered via:
 
-1. correlation IDs  
-2. structured request logging  
-3. exception handling  
-4. security headers  
-5. CORS  
-6. rate limiting  
-7. routing  
-8. endpoint mapping  
+```csharp
+services.AddStartupEngine();
+```
 
-Products may add slice‑specific middleware **after** global middleware.
+During startup:
 
-Products must not:
+### 1. Add Phase
 
-- reorder global middleware  
-- weaken security defaults  
-- bypass exception handling  
+```csharp
+startupEngine.AddAll(builder);
+```
+
+Executes:
+
+```
+module1.Add(builder)
+module2.Add(builder)
+...
+```
+
+### 2. Use Phase
+
+```csharp
+startupEngine.UseAll(app);
+```
+
+Executes:
+
+```
+module1.Use(app)
+module2.Use(app)
+...
+```
+
+Ordering is identical in both phases.
 
 ---
 
-## Configuration & Environment
+# Product Composition Pattern
 
-The Startup Engine:
+A typical product startup looks like:
 
-- loads configuration from all supported sources  
-- binds strongly‑typed configuration objects  
-- resolves secrets  
-- detects environment (`Development`, `Staging`, `Production`)  
-- validates required configuration keys  
+```csharp
+var builder = WebApplication.CreateBuilder(args);
 
-Products must not read environment variables directly.
+await Hosting.AdaptToHostingEnvironment(builder);
+
+builder.Services.AddStartupModules();
+builder.Services.AddStartupEngine();
+
+var app = builder.Build();
+
+var engine = app.Services.GetRequiredService<StartupEngine>();
+engine.UseAll(app);
+
+app.Run();
+```
+
+Products:
+
+- register modules  
+- register the engine  
+- call `AddAll` and `UseAll` through their own composition helpers  
 
 ---
 
-## Enforcement
+# Conventions
 
-Startup Engine rules are enforced through:
+### Modules must:
 
-- guardrail tests  
-- module validation  
-- dependency analysis  
-- conventions governance  
+- be stateless  
+- be registered as `IStartupModule`  
+- encapsulate a single startup concern  
+- avoid side effects outside `Add()` and `Use()`  
 
-The Startup Engine is the **foundation** of every Frank‑based application.
+### Modules must not:
 
+- perform hosting environment adaptation  
+- perform DI scanning or registration outside their scope  
+- depend on product‑specific global state  
+- assume ordering beyond what `[StartupModuleAttribute]` defines  
+
+### Products must:
+
+- compose startup exclusively through modules  
+- register modules explicitly  
+- avoid custom startup pipelines  
+
+---
+
+# Summary
+
+The Startup Engine is a **simple, deterministic module runner**:
+
+- modules are registered by the product  
+- ordered via `[StartupModuleAttribute]`  
+- executed through `Add()` and `Use()`  
+- coordinated by `StartupEngine`  
+
+This document reflects the **actual**, **current**, **implemented** behavior — no more, no less.

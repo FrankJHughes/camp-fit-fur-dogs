@@ -1,6 +1,7 @@
 using Frank.Abstractions.Startup;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
@@ -9,34 +10,44 @@ public class AuthenticationStartupModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)
     {
-        var env = builder.Environment;
         var services = builder.Services;
-        var config = builder.Configuration;
-
-        var authority = config["Authentication:Callback:Oidc:Authority"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
-        var clientId = config["Authentication:Callback:Oidc:ClientId"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
-        var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
-        var callbackUrl = config["Authentication:Callback:Oidc:CallbackUrl"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl");
-        var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"]
-            ?? throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
-
-        var disableOidc = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
 
         //
-        // ⭐ Authentication configuration
+        // Forwarded headers (unchanged)
+        //
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor |
+                ForwardedHeaders.XForwardedProto;
+
+            options.KnownIPNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
+
+        var env = builder.Environment;
+        var config = builder.Configuration;
+
+        var oidcDisabled = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
+
+        //
+        // IMPORTANT:
+        //
+        // DefaultChallengeScheme MUST NOT be OpenIdConnect.
+        // If it is, ANY unauthorized request (including "/") triggers an OIDC redirect.
+        //
+        // Instead, the cookie scheme handles authentication,
+        // and OIDC is ONLY invoked when the user explicitly hits /api/auth/login.
         //
         var auth = services
             .AddAuthentication(options =>
             {
                 options.DefaultScheme = "cfd.session";
                 options.DefaultAuthenticateScheme = "cfd.session";
-                options.DefaultChallengeScheme = disableOidc
-                    ? "cfd.session"
-                    : OpenIdConnectDefaults.AuthenticationScheme;
+
+                // FIX: Never auto-challenge with OIDC.
+                // Only /api/auth/login should trigger OIDC.
+                options.DefaultChallengeScheme = "cfd.session";
             })
             .AddCookie("cfd.session", options =>
             {
@@ -48,7 +59,6 @@ public class AuthenticationStartupModule : IStartupModule
                     ? CookieSecurePolicy.Always
                     : CookieSecurePolicy.None;
 
-                // Required for OIDC
                 options.Cookie.SameSite = SameSiteMode.None;
 
                 options.LoginPath = "/api/auth/login";
@@ -73,10 +83,25 @@ public class AuthenticationStartupModule : IStartupModule
             });
 
         //
-        // ⭐ Optional OIDC (disabled in local dev)
+        // Add OIDC only if enabled
         //
-        if (!disableOidc)
+        if (!oidcDisabled)
         {
+            var authority = config["Authentication:Callback:Oidc:Authority"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
+
+            var clientId = config["Authentication:Callback:Oidc:ClientId"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
+
+            var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
+
+            var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"]
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
+
+            string callbackUrl = CalculateCallbackUrl(config)
+                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl or incorrect ASPNETCORE_URLS");
+
             auth.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.Authority = authority;
@@ -92,13 +117,41 @@ public class AuthenticationStartupModule : IStartupModule
                 options.Scope.Add("profile");
                 options.Scope.Add("email");
 
-                // You may add events here later for claim mapping, etc.
+                //
+                // FIX: Only redirect to OIDC when explicitly invoked.
+                //
+                options.Events.OnRedirectToIdentityProvider = context =>
+                {
+                    var req = context.Request;
+
+                    context.ProtocolMessage.RedirectUri =
+                        $"{req.Scheme}://{req.Host}/api/auth/callback";
+
+                    return Task.CompletedTask;
+                };
             });
         }
     }
 
+    private static string CalculateCallbackUrl(ConfigurationManager config)
+    {
+        var callbackUrl = config["Authentication:Callback:Oidc:CallbackUrl"];
+
+        if (string.IsNullOrWhiteSpace(callbackUrl))
+        {
+            var serverUrl = config["ASPNETCORE_URLS"]
+                ?? "https://localhost:5001";
+
+            serverUrl = serverUrl.Split(';', StringSplitOptions.RemoveEmptyEntries)[0];
+            callbackUrl = $"{serverUrl.TrimEnd('/')}/api/auth/callback";
+        }
+
+        return callbackUrl;
+    }
+
     public void Use(WebApplication app)
     {
+        app.UseForwardedHeaders();
         app.UseAuthentication();
     }
 }

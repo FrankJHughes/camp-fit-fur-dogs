@@ -1,219 +1,172 @@
-# Frank — Tester Guide — Endpoint Registration Engine  
-*How to test the current and future Endpoint Registration Engine.*
 
-This guide documents the **current state** of the Frank Endpoint Registration Engine and the **intended future state** as the platform evolves.
+# Frank — Guides — Tester — Endpoint Registration Guide  
+*How to test the current Endpoint Registration Engine.*
 
-The Endpoint Registration Engine provides a **convention‑based mechanism** for discovering, instantiating, and mapping API endpoints.  
-Testers validate the *behavior of the engine itself* — **not** the behavior of the endpoints.
+This guide documents how to test the **current, DI‑driven, Registration Engine–powered Endpoint Registration Engine** in Frank.
 
----
+The Endpoint Registration Engine provides a **governed, deterministic mechanism** for discovering, instantiating, and mapping API endpoints using the **Registration Engine pipeline**:
 
-# 1. Current State (Before Future Enhancements)
+- `Scanner`
+- `Planner`
+- `Validator`
+- `Registrar`
+- `Orchestrator`
 
-The engine currently consists of:
-
-- `IEndpoint` — the contract for endpoint modules  
-- `EndpointRegistrationEngine.AddEndpoints(assembly)` — discovers endpoint types  
-- `EndpointRegistrationEngine.MapEndpoints(app)` — instantiates and maps endpoints  
-- `app.MapEndpoints()` — convenience extension  
+Testers validate the **behavior of the engine itself** — not the behavior of the endpoints.
 
 ---
 
-## What exists today (testable behavior)
+# 1. Current Architecture (Authoritative)
+
+The modern endpoint system consists of:
+
+- `IEndpoint` — contract for endpoint modules  
+- `[Registration]` — governs endpoint interfaces  
+- `DiscoveryOptions.IncludeInterface` — selects governed endpoint interfaces  
+- `DiscoveryOptions.IncludeImplementation` — selects implementing classes  
+- `Orchestrator.Orchestrate` — performs scanning, planning, validation, registration  
+- DI activation — endpoints are instantiated via DI  
+- Scoped lifetime — endpoints are scoped by default  
+- `MapFrankEndpoints(app)` — maps all registered endpoints  
+
+This is the system testers must validate.
+
+---
+
+# 2. What Exists Today (Testable Behavior)
 
 ### **Discovery**
-- only non‑abstract types implementing `IEndpoint` are discovered  
-- discovery is assembly‑based  
-- discovery is explicit (developer must call `AddEndpoints`)  
-- discovered types are cached in a thread‑safe dictionary  
+- Only interfaces decorated with `[Registration]` are governed  
+- Only classes implementing governed interfaces are included  
+- Abstract classes and open generics are ignored  
+- Discovery is deterministic (based on assembly order + type name order)  
+- DiscoveryOptions filters must be honored  
 
 ### **Instantiation**
-- endpoints are instantiated via `Activator.CreateInstance`  
-- endpoints must have parameterless constructors  
-- endpoints must be stateless  
+- Endpoints are instantiated via **DI**, not `Activator.CreateInstance`  
+- Constructor injection is supported  
+- Endpoints must be resolvable by DI  
+- Endpoints must be stateless  
 
 ### **Mapping**
-- each discovered endpoint has its `Map` method invoked  
-- mapping order is not guaranteed  
-- mapping is synchronous  
-- mapping is idempotent (calling twice does not break the system)  
+- Each endpoint’s `Map` method is invoked  
+- Mapping order follows DI resolution order  
+- Mapping is deterministic  
+- Mapping is idempotent  
+
+### **Registration Engine Behavior**
+- Min/max constraints are enforced  
+- Violations throw `InvalidOperationException`  
+- Lifetime is determined by `[Registration]`  
+- Concrete type registration occurs when enabled  
 
 ---
 
-## What does *not* exist today (not testable)
+# 3. Required Test Types (Current Engine)
 
-- no DI activation  
-- no constructor injection  
-- no endpoint ordering  
-- no grouping or versioning  
-- no metadata conventions  
-- no automatic assembly scanning  
-- no diagnostics or logging  
-- no namespace/attribute filtering  
-
----
-
-## What testers validate today
-
-Testers validate:
-
-- correct endpoint discovery  
-- correct instantiation  
-- correct invocation of `Map`  
-- ignoring abstract types  
-- ignoring non‑`IEndpoint` types  
-- safe handling of duplicate discovery  
-- mapping does not throw  
-- mapping does not persist state between runs (beyond static cache)  
-
-The current capability is intentionally minimal and deterministic.
-
----
-
-# 2. Future Intent (After Capability Expansion)
-
-As the platform evolves, testers will validate richer engine behavior.
-
----
-
-## 2.1 Dependency Injection Support
-
-Future tests will validate:
-
-- constructor injection  
-- scoped and transient endpoint lifetimes  
-- DI‑aware activation failures  
-- DI‑based endpoint dependencies  
-
----
-
-## 2.2 Endpoint Grouping and Versioning
-
-Future tests will validate:
-
-- namespace‑based grouping  
-- versioning conventions  
-- route prefix conventions  
-- tag conventions  
-
----
-
-## 2.3 Assembly Scanning Enhancements
-
-Future tests will validate:
-
-- automatic scanning of all loaded assemblies  
-- attribute‑based filtering  
-- module‑based endpoint registration  
-
----
-
-## 2.4 Metadata and Conventions
-
-Future tests will validate:
-
-- automatic OpenAPI metadata  
-- automatic authorization conventions  
-- automatic validation conventions  
-- automatic logging conventions  
-
----
-
-## 2.5 Diagnostics and Observability
-
-Future tests will validate:
-
-- discovery diagnostics  
-- mapping logs  
-- endpoint registration metrics  
-- failure reporting  
-
-These enhancements will significantly expand the testing surface.
-
----
-
-# 3. Required Test Types (Current State)
-
-## 3.1 Discovery Tests
+## 3.1 Registration Engine Tests (Endpoint‑Specific)
 
 Validate:
 
-- only types implementing `IEndpoint` are discovered  
-- abstract classes are ignored  
-- types without parameterless constructors are ignored or fail predictably  
-- duplicate types do not cause errors  
-- discovery is deterministic  
+- `[Registration]` is required for endpoint interfaces  
+- Implementations are discovered correctly  
+- Generic interface matching works  
+- Min/max constraints are enforced  
+- Violations are formatted correctly  
+- DI registrations match the plan exactly  
 
 ### Example
 
-````csharp
-EndpointRegistrationEngine.AddEndpoints(typeof(TestEndpoint).Assembly);
-Assert.Contains(typeof(TestEndpoint), DiscoveredTypes());
-````
+```csharp
+options.IncludeInterface(iface =>
+    iface.IsGenericType &&
+    iface.GetGenericTypeDefinition() == typeof(IEndpoint));
+```
 
 ---
 
-## 3.2 Instantiation Tests
+## 3.2 Discovery Tests
 
 Validate:
 
-- endpoints are instantiated via `Activator.CreateInstance`  
-- missing parameterless constructors cause predictable failures  
-- endpoints remain stateless  
+- Only governed endpoint interfaces are included  
+- Only classes implementing governed interfaces are included  
+- Abstract classes are ignored  
+- Open generics are ignored  
+- DiscoveryOptions filters are honored  
+- Discovery is deterministic  
 
 ### Example
 
-````csharp
-var endpoint = Activator.CreateInstance(typeof(TestEndpoint));
+```csharp
+Orchestrator.Orchestrate(services, assemblies, options);
+Assert.Contains(typeof(TestEndpoint), DiscoveredImplementations());
+```
+
+---
+
+## 3.3 DI Activation Tests
+
+Validate:
+
+- Endpoints are instantiated via DI  
+- Constructor injection works  
+- Missing dependencies cause predictable DI failures  
+- Scoped lifetime is respected  
+
+### Example
+
+```csharp
+var endpoint = provider.GetRequiredService<IEndpoint>();
 Assert.NotNull(endpoint);
-````
+```
 
 ---
 
-## 3.3 Mapping Invocation Tests
+## 3.4 Mapping Invocation Tests
 
 Validate:
 
 - `Map` is called exactly once per endpoint  
-- mapping order is not guaranteed  
-- mapping does not throw  
-- mapping is idempotent  
+- Mapping order follows DI resolution order  
+- Mapping does not throw  
+- Mapping is idempotent  
 
 ### Example
 
-````csharp
-var endpoint = new TestEndpoint();
+```csharp
+var endpoint = provider.GetRequiredService<TestEndpoint>();
 endpoint.Map(app);
 Assert.True(endpoint.WasMapped);
-````
+```
 
 ---
 
-## 3.4 Integration Tests (Engine + Minimal API)
+## 3.5 Integration Tests (Engine + Minimal API)
 
 Validate:
 
-- endpoints register routes correctly  
-- routes appear in the endpoint data source  
-- no duplicate routes are created  
-- mapping does not break other middleware  
+- Endpoints register routes correctly  
+- Routes appear in the endpoint data source  
+- No duplicate routes are created  
+- Mapping does not break middleware ordering  
 
 ---
 
 # 4. Anti‑Patterns (Tests Must Reject)
 
-Tests must reject assumptions about features that **do not exist today**:
+Tests must reject assumptions about features that **do not exist yet**:
 
-- DI activation  
-- constructor injection  
-- endpoint ordering  
+- automatic assembly scanning  
+- endpoint ordering beyond DI order  
 - grouping or versioning  
 - metadata conventions  
-- automatic assembly scanning  
 - logging or diagnostics  
 - endpoint statefulness  
+- non‑DI activation  
+- implicit discovery without `[Registration]`  
 
-Tests must reflect the **current minimal engine**, not the future one.
+Tests must reflect the **current governed, DI‑driven engine**, not the deprecated one.
 
 ---
 
@@ -221,19 +174,21 @@ Tests must reflect the **current minimal engine**, not the future one.
 
 **Current State — Testers validate:**
 
-- endpoint discovery  
-- endpoint instantiation  
+- governed endpoint discovery  
+- DI‑based endpoint instantiation  
+- constructor injection  
 - endpoint mapping  
 - idempotency  
 - statelessness  
 - correct handling of invalid endpoint types  
+- Registration Engine correctness (Scanner → Planner → Validator → Registrar → Orchestrator)
 
 **Future Intent — Testers will validate:**
 
-- DI activation  
 - grouping and versioning  
 - automatic assembly scanning  
 - metadata conventions  
 - diagnostics and observability  
 
-This Tester Guide prepares testers for both the current minimal engine and the richer future Endpoint Registration Engine.
+This Tester Guide reflects the **current, modern Endpoint Registration Engine** and prepares testers for future enhancements.
+

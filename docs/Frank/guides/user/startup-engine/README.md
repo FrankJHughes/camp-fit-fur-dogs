@@ -1,13 +1,15 @@
-# Startup Engine — User Guide
+
+# Frank — Guides — User — Startup Engine Guide  
+*How to use the Startup Engine in Frank.*
 
 The Startup Engine allows your application to start up in a **modular, predictable, and organized** way.  
 Instead of putting all startup logic in one place, the Startup Engine lets you break it into small units called **startup modules**.
 
 Each module can:
 
-- register services during the *Add phase*
-- configure middleware and endpoints during the *Use phase*
-- run in a specific order
+- register services during the *Add phase*  
+- configure middleware and endpoints during the *Use phase*  
+- run in a specific order  
 
 This guide explains how to use the Startup Engine in your application.
 
@@ -36,12 +38,22 @@ This gives you:
 
 Add the engine to your service collection:
 
-````csharp
+```csharp
 services.AddStartupEngine();
-````
+```
 
-This registers the engine as a singleton.  
-You must also register your startup modules (typically via AutoRegistration).
+This registers the engine as a singleton.
+
+You must also register your startup modules — typically via DI:
+
+```csharp
+services.AddScoped<IStartupModule, MyModule>();
+services.AddScoped<IStartupModule, LoggingModule>();
+services.AddScoped<IStartupModule, EndpointModule>();
+```
+
+The Startup Engine does **not** auto‑discover modules.  
+You explicitly register them like any other service.
 
 ---
 
@@ -49,7 +61,7 @@ You must also register your startup modules (typically via AutoRegistration).
 
 A startup module looks like this:
 
-````csharp
+```csharp
 public sealed class MyModule : IStartupModule
 {
     public void Add(WebApplicationBuilder builder)
@@ -62,7 +74,7 @@ public sealed class MyModule : IStartupModule
         // configure middleware here
     }
 }
-````
+```
 
 ### Add Phase
 
@@ -97,10 +109,10 @@ Use this phase for:
 
 You can control the order modules run in by adding an attribute:
 
-````csharp
+```csharp
 [StartupModule(100)]
 public sealed class MyModule : IStartupModule { ... }
-````
+```
 
 Rules:
 
@@ -108,24 +120,33 @@ Rules:
 - modules without an attribute default to `1000`  
 - ordering applies to both Add and Use phases  
 
+This ensures deterministic startup behavior.
+
 ---
 
 ## 5. How to Run All Modules
 
 In your Program.cs:
 
-````csharp
+```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-var startup = builder.Services.BuildServiceProvider().GetRequiredService<StartupEngine>();
+// Resolve the engine
+var startup = builder.Services
+    .BuildServiceProvider()
+    .GetRequiredService<StartupEngine>();
+
+// Run Add phase
 startup.AddAll(builder);
 
+// Build the app
 var app = builder.Build();
 
+// Run Use phase
 startup.UseAll(app);
 
 app.Run();
-````
+```
 
 This ensures:
 
@@ -142,6 +163,7 @@ This ensures:
 - Put middleware and endpoints in Use()  
 - Avoid resolving services in Add()  
 - Avoid global/static state  
+- Keep module responsibilities clear and isolated  
 
 ---
 
@@ -158,6 +180,9 @@ This ensures:
 
 - **Assuming modules run in DI registration order**  
   They run in attribute order.
+
+- **Putting runtime logic in Add()**  
+  Add() is strictly for registration.
 
 ---
 
@@ -178,3 +203,4 @@ As a user:
 - the engine runs everything for you  
 
 This makes your application startup easier to understand, easier to maintain, and easier to extend.
+

@@ -3,9 +3,8 @@ using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using Frank.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Domain.Errors;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
 using Frank.Authentication.Callback.Oidc;
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 using System.Text.Json;
 using Frank.Abstractions;
 
@@ -22,11 +21,11 @@ public class AuthCallbackEndpoint : IEndpoint
     private static async Task<IResult> HandleAsync(
         HttpContext http,
         IHostEnvironment env,
-        [FromServices] IImmutableContextBuilder<
+            IImmutableContextBuilder<
             FrankAuthCallbackRequest,
             OidcAuthCallbackContext,
             FrankAuthCallbackResult> frankEngine,
-        [FromServices] IImmutableContextBuilder<
+            IImmutableContextBuilder<
             ApplicationAuthCallbackRequest,
             ApplicationAuthCallbackContext,
             ApplicationAuthCallbackContextBuilderResult> appEngine)

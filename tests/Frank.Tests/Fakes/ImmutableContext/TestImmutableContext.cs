@@ -1,4 +1,4 @@
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 
 namespace Frank.Tests.Fakes.ImmutableContext;
 

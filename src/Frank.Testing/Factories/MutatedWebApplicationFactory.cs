@@ -141,8 +141,7 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
             // ------------------------------------------------------------
             // ENDPOINT DISCOVERY
             // ------------------------------------------------------------
-            foreach (var asm in _ctx.EndpointAssemblies)
-                EndpointDiscovery.AddEndpoints(asm);
+            services.AddFrankEndpoints(_ctx.EndpointAssemblies);
 
             // ------------------------------------------------------------
             // ALLOW SUBCLASSES TO MUTATE SERVICES

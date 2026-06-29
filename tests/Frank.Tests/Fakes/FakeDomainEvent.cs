@@ -1,5 +1,5 @@
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
 
 namespace Frank.Tests.Fakes;
 
-public sealed record FakeDomainEvent(string Message) : IDomainEvent;
+public sealed record FakeDomainEvent(string Message) : IEvent;

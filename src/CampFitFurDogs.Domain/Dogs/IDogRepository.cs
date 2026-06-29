@@ -1,9 +1,9 @@
-using Frank.AutoRegistration;
+using Frank.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Domain.Dogs;
 
-[AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
+[Registration(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
 
 public interface IDogRepository
 {

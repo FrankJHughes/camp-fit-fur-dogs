@@ -1,5 +1,12 @@
 using System.Reflection;
-using Frank.AutoRegistration;
+using Frank.Abstractions;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.Event;
+using Frank.Abstractions.Exceptions;
+using Frank.Abstractions.Identity;
+using Frank.Abstractions.Query;
+using Frank.Abstractions.Time;
+using Frank.Registration;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -7,23 +14,17 @@ public class AutoRegister_AttributeUsageTests
 {
     private static readonly Assembly[] Assemblies =
     [
-        typeof(AutoRegisterAttribute).Assembly
+        typeof(RegistrationAttribute).Assembly
     ];
 
     private static readonly Type[] Known =
     [
-        typeof(Frank.Abstractions.ICommandDispatcher),
-        typeof(Frank.Abstractions.ICommandHandler<>),
-        typeof(Frank.Abstractions.ICommandHandler<,>),
-        typeof(Frank.Abstractions.Identity.ICurrentUser),
-        typeof(Frank.Abstractions.IQueryDispatcher),
-        typeof(Frank.Abstractions.IQueryHandler<,>),
-        typeof(Frank.Abstractions.IUnitOfWork),
-        typeof(Frank.Abstractions.Environment.IEnvironment),
-        typeof(Frank.Abstractions.Events.IDomainEventDispatcher),
-        typeof(Frank.Abstractions.Events.IDomainEventHandler<>),
-        typeof(Frank.Abstractions.ExceptionHandling.IExceptionHandler),
-        typeof(Frank.Abstractions.Time.IClock)
+        typeof(ICommandHandler<>),
+        typeof(ICommandHandler<,>),
+        typeof(IEventHandler<>),
+        typeof(IExceptionHandler),
+        typeof(IQueryHandler<,>),
+        typeof(IEndpoint)
     ];
 
     [Fact]
@@ -32,7 +33,7 @@ public class AutoRegister_AttributeUsageTests
         var offenders =
             (from asm in Assemblies
              from type in asm.DefinedTypes
-             let attr = type.GetCustomAttribute<AutoRegisterAttribute>()
+             let attr = type.GetCustomAttribute<RegistrationAttribute>()
              where type.IsInterface
                    && attr is not null
                    && !Known.Contains(type.AsType())

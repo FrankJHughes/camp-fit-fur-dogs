@@ -1,4 +1,4 @@
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
 using Frank.Domain;
 using Frank.Tests.Fakes;
 
@@ -6,13 +6,13 @@ namespace Frank.Tests.Domain;
 
 public sealed class AggregateRootTests
 {
-    private sealed class TestEvent : IDomainEvent { }
+    private sealed class TestEvent : IEvent { }
 
     private sealed class TestAggregate : AggregateRoot<FakeAggregateId>
     {
         public TestAggregate() : base(FakeAggregateId.New()) { }
 
-        public void Raise(IDomainEvent evt) => RaiseDomainEvent(evt);
+        public void Raise(IEvent evt) => RaiseDomainEvent(evt);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public sealed class AggregateRootTests
         Action attempt = () =>
         {
             // IReadOnlyList prevents modification, but we assert immutability anyway
-            var list = (IList<IDomainEvent>)agg.DomainEvents;
+            var list = (IList<IEvent>)agg.DomainEvents;
             list.Clear();
         };
 

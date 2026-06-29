@@ -1,15 +1,15 @@
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
 namespace CampFitFurDogs.TestUtilities.Fakes.Observability;
 
-public sealed class FakeObservabilitySink : IObservabilitySink
+public sealed class FakeObservabilitySink : IObservationSink
 {
     public sealed record CapturedTrace(
         string EventName,
         string Category,
         string Severity,
         object? Payload,
-        IObservabilityContext Context);
+        IObservationContext Context);
 
     public List<CapturedTrace> Events { get; } = new();
 
@@ -18,7 +18,7 @@ public sealed class FakeObservabilitySink : IObservabilitySink
         string category,
         string severity,
         object? payload,
-        IObservabilityContext context)
+        IObservationContext context)
     {
         Events.Add(new CapturedTrace(eventName, category, severity, payload, context));
     }

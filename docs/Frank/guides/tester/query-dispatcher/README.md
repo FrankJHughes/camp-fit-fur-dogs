@@ -1,4 +1,5 @@
-# Query Dispatcher — Tester Guide
+
+# Frank — Guides — Tester — Query Dispatcher Guide
 
 The Query Dispatcher capability provides a **validated, deterministic, DI‑driven query execution pipeline**.  
 Testers validate that:
@@ -59,7 +60,7 @@ Testers must ensure:
 - Dispatcher resolves the correct handler type  
 - Exactly one handler exists per query  
 - Missing handler → `InvalidOperationException`  
-- Multiple handlers (should not happen with AutoRegistration) → DI failure  
+- Multiple handlers (should not happen with Registration Engine) → DI failure  
 
 #### Test scenarios
 
@@ -257,3 +258,4 @@ Testers ensure that the Query Dispatcher:
 - never executes handlers when validation fails  
 
 This Tester Guide covers everything needed to validate the Query Dispatcher capability end‑to‑end.
+

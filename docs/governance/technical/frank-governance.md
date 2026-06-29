@@ -1,4 +1,4 @@
-# Camp Fit Fur Dogs — Governance — Technical — Frank  
+# Camp Fit Fur Dogs — Governance — Technical - Frank Governance
 Authoritative companion to ADR‑0002 (Layered Architecture)
 
 Frank is the **Shared Kernel** of Camp Fit Fur Dogs.  

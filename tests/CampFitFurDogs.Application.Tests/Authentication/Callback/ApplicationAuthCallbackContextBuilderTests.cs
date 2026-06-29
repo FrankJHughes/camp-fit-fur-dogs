@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Application.Authentication.Callback;
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 using CampFitFurDogs.Application.Tests.Fakes.Authentication.Callback;
 using Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
 using CampFitFurDogs.TestUtilities.Fakes.Observability;

@@ -32,7 +32,7 @@ public class ListDogsByOwnerReaderTests : IClassFixture<PostgresFixture>
         return customer.Id;
     }
 
-    private async Task<Dog> SeedDogAsync(
+    private async Task<Domain.Dogs.Dog> SeedDogAsync(
         AppDbContext ctx, CustomerId ownerId, string name, string breed)
     {
         var dog = new DogBuilder()

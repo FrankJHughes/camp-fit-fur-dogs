@@ -1,4 +1,4 @@
-# Command Dispatcher — Developer Guide
+# Frank – Guides – Developer – Command Dispatcher
 
 The Command Dispatcher capability provides a **centralized, validated, DI‑driven command execution pipeline**.  
 It ensures that:
@@ -33,21 +33,21 @@ This capability enforces a clean separation between:
 
 # 2. Command Abstractions
 
-## 2.1 ICommand (no response)
+## 2.1 `ICommand` (no response)
 
-````csharp
+```csharp
 public interface ICommand { }
-````
+```
 
 Represents a fire‑and‑forget command.
 
 ---
 
-## 2.2 ICommand<TResponse>
+## 2.2 `ICommand<TResponse>`
 
-````csharp
+```csharp
 public interface ICommand<TResponse> { }
-````
+```
 
 Represents a command that returns a value.
 
@@ -55,31 +55,31 @@ Represents a command that returns a value.
 
 # 3. Command Handlers
 
-Handlers are auto‑registered via `AutoRegister`.
+Handlers are registered through **Frank’s Registration Engine**, using `RegistrationAttribute` applied to the handler interfaces.
 
-## 3.1 ICommandHandler<TCommand>
+## 3.1 `ICommandHandler<TCommand>`
 
-````csharp
+```csharp
 public interface ICommandHandler<in TCommand>
     where TCommand : ICommand
 {
     Task HandleAsync(TCommand command, CancellationToken ct);
 }
-````
+```
 
 For commands with **no return value**.
 
 ---
 
-## 3.2 ICommandHandler<TCommand, TResponse>
+## 3.2 `ICommandHandler<TCommand, TResponse>`
 
-````csharp
+```csharp
 public interface ICommandHandler<in TCommand, TResponse>
     where TCommand : ICommand<TResponse>
 {
     Task<TResponse> HandleAsync(TCommand command, CancellationToken ct);
 }
-````
+```
 
 For commands that **produce a result**.
 
@@ -87,7 +87,7 @@ For commands that **produce a result**.
 
 # 4. Command Dispatcher
 
-````csharp
+```csharp
 public sealed class CommandDispatcher : ICommandDispatcher
 {
     private readonly IServiceProvider _provider;
@@ -99,7 +99,7 @@ public sealed class CommandDispatcher : ICommandDispatcher
 
     ...
 }
-````
+```
 
 The dispatcher is responsible for:
 
@@ -115,15 +115,15 @@ The dispatcher automatically discovers and executes all validators for a command
 
 ### How validators are resolved
 
-````csharp
+```csharp
 var validatorType = typeof(IValidator<>).MakeGenericType(commandType);
 var validators = _provider.GetServices(validatorType);
-````
+```
 
 ### Validation behavior
 
 - All validators run  
-- ValidationContext is created dynamically  
+- A `ValidationContext` is created dynamically  
 - If any validator fails → `ValidationException` is thrown  
 - Command execution stops immediately  
 
@@ -138,18 +138,18 @@ var validators = _provider.GetServices(validatorType);
 
 Handlers are resolved using DI:
 
-````csharp
+```csharp
 var handlerType = typeof(ICommandHandler<,>)
     .MakeGenericType(command.GetType(), typeof(TResponse));
 
 var handler = _provider.GetRequiredService(handlerType);
-````
+```
 
 ### Invariants
 
 - Exactly one handler must exist  
-- Handlers must be registered via AutoRegistration  
-- Handlers must be scoped (default behavior)  
+- Handlers must be registered via Frank.Registration  
+- Handlers must be scoped  
 
 ---
 
@@ -157,19 +157,19 @@ var handler = _provider.GetRequiredService(handlerType);
 
 ### Commands with return values
 
-````csharp
+```csharp
 return await ((dynamic)handler).HandleAsync((dynamic)command, ct);
-````
+```
 
 ### Commands without return values
 
-````csharp
+```csharp
 await ((dynamic)handler).HandleAsync((dynamic)command, ct);
-````
+```
 
 ### Notes
 
-- Dynamic dispatch is used to avoid reflection‑heavy invocation  
+- Dynamic dispatch avoids reflection‑heavy invocation  
 - Exceptions thrown by handlers propagate naturally  
 - Cancellation tokens are passed through end‑to‑end  
 
@@ -179,24 +179,24 @@ await ((dynamic)handler).HandleAsync((dynamic)command, ct);
 
 The dispatcher is registered via:
 
-````csharp
-[AutoRegister(ServiceLifetime.Scoped)]
+```csharp
+[Registration(ServiceLifetime.Scoped)]
 public interface ICommandDispatcher
-````
+```
 
 Handlers are registered via:
 
-````csharp
-[AutoRegister(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
+```csharp
+[Registration(ServiceLifetime.Scoped, RegisterConcreteType = true, MaxRegistrationCount = 1)]
 public interface ICommandHandler<...>
-````
+```
 
 ### Implications
 
 - Dispatcher is scoped  
 - Handlers are scoped  
 - Only one handler per command is allowed  
-- Concrete handler types are auto‑registered  
+- Concrete handler types are registered automatically  
 
 ---
 
@@ -206,9 +206,9 @@ Developers must ensure:
 
 - Commands are **POCOs** with no side effects  
 - Validators are pure and deterministic  
-- Handlers do not perform validation (dispatcher handles it)  
+- Handlers do not perform validation  
 - Handlers do not depend on transient state outside DI  
-- Handlers do not throw validation exceptions (validators handle it)  
+- Handlers do not throw validation exceptions  
 - Handlers return the correct type  
 
 ---
@@ -219,10 +219,10 @@ Avoid:
 
 - Registering multiple handlers for the same command  
 - Performing validation inside handlers  
-- Throwing non‑ValidationException for validation failures  
+- Throwing non‑`ValidationException` for validation failures  
 - Using static/global state inside handlers  
 - Creating commands with mutable public fields  
-- Returning null from handlers that produce a result  
+- Returning `null` from handlers that produce a result  
 
 ---
 

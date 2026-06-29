@@ -17,7 +17,7 @@ public class GetDogProfileReaderTests : IClassFixture<PostgresFixture>
         _fixture = fixture;
     }
 
-    private async Task<(CustomerId OwnerId, Dog Dog)> SeedDogAsync()
+    private async Task<(CustomerId OwnerId, Domain.Dogs.Dog Dog)> SeedDogAsync()
     {
         await using var ctx = _fixture.CreateContext();
 

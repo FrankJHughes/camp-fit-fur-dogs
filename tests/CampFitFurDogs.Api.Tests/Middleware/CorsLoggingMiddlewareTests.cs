@@ -1,4 +1,4 @@
-using CampFitFurDogs.Api.Horizontals.Cors;
+using CampFitFurDogs.Api.Horizontals.Cors.Middleware;
 using CampFitFurDogs.TestUtilities.Fakes;
 using FluentAssertions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -10,20 +10,20 @@ namespace CampFitFurDogs.Api.Tests.Middleware;
 
 public class CorsLoggingMiddlewareTests
 {
-    private static CorsLoggingMiddleware CreateMiddleware(
+    private static OriginLoggingMiddleware CreateMiddleware(
         CorsPolicy policy,
-        TestLogger<CorsLoggingMiddleware> logger)
+        TestLogger<OriginLoggingMiddleware> logger)
     {
         var services = new ServiceCollection();
 
         services.AddSingleton<ICorsPolicyProvider>(new FakeCorsPolicyProvider(policy));
-        services.AddSingleton<ILogger<CorsLoggingMiddleware>>(logger);
+        services.AddSingleton<ILogger<OriginLoggingMiddleware>>(logger);
 
         var provider = services.BuildServiceProvider();
 
-        return new CorsLoggingMiddleware(
+        return new OriginLoggingMiddleware(
             _ => Task.CompletedTask,
-            provider.GetRequiredService<ILogger<CorsLoggingMiddleware>>(),
+            provider.GetRequiredService<ILogger<OriginLoggingMiddleware>>(),
             provider.GetRequiredService<ICorsPolicyProvider>());
     }
 
@@ -52,7 +52,7 @@ public class CorsLoggingMiddlewareTests
     [Fact]
     public async Task Logs_allowed_origin_request()
     {
-        var logger = new TestLogger<CorsLoggingMiddleware>();
+        var logger = new TestLogger<OriginLoggingMiddleware>();
         var policy = new CorsPolicyBuilder()
             .WithOrigins("https://allowed.com")
             .Build();
@@ -71,7 +71,7 @@ public class CorsLoggingMiddlewareTests
     [Fact]
     public async Task Logs_blocked_origin_request()
     {
-        var logger = new TestLogger<CorsLoggingMiddleware>();
+        var logger = new TestLogger<OriginLoggingMiddleware>();
         var policy = new CorsPolicyBuilder()
             .WithOrigins("https://allowed.com")
             .Build();
@@ -90,7 +90,7 @@ public class CorsLoggingMiddlewareTests
     [Fact]
     public async Task Logs_allowed_preflight()
     {
-        var logger = new TestLogger<CorsLoggingMiddleware>();
+        var logger = new TestLogger<OriginLoggingMiddleware>();
         var policy = new CorsPolicyBuilder()
             .WithOrigins("https://allowed.com")
             .Build();
@@ -112,7 +112,7 @@ public class CorsLoggingMiddlewareTests
     [Fact]
     public async Task Logs_blocked_preflight()
     {
-        var logger = new TestLogger<CorsLoggingMiddleware>();
+        var logger = new TestLogger<OriginLoggingMiddleware>();
         var policy = new CorsPolicyBuilder()
             .WithOrigins("https://allowed.com")
             .Build();
@@ -134,7 +134,7 @@ public class CorsLoggingMiddlewareTests
     [Fact]
     public async Task Logs_nothing_when_no_origin_header()
     {
-        var logger = new TestLogger<CorsLoggingMiddleware>();
+        var logger = new TestLogger<OriginLoggingMiddleware>();
         var policy = new CorsPolicyBuilder()
             .WithOrigins("https://allowed.com")
             .Build();

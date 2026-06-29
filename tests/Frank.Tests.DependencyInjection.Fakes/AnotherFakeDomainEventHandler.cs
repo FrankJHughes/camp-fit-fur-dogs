@@ -1,8 +1,8 @@
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
 
 namespace Frank.Tests.DependencyInjection.Fakes;
 
-public sealed class AnotherFakeDomainEventHandler : IDomainEventHandler<FakeDomainEvent>
+public sealed class AnotherFakeDomainEventHandler : IEventHandler<FakeDomainEvent>
 {
     public Task HandleAsync(FakeDomainEvent domainEvent, CancellationToken cancellationToken = default)
     {

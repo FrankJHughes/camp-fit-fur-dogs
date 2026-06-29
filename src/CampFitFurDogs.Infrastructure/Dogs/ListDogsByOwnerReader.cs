@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
+using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Data;

@@ -1,11 +1,14 @@
 
+using Frank.Abstractions.Query;
+using Frank.Query;
+
 namespace Frank.Tests.Dispatching;
 
 public class QueryDispatcherTests : DispatcherTestBase
 {
     public QueryDispatcherTests()
     {
-        WithDispatcher<Frank.QueryDispatcher, IQueryDispatcher>();
+        WithDispatcher<QueryDispatcher, IQueryDispatcher>();
     }
 
     [Fact]

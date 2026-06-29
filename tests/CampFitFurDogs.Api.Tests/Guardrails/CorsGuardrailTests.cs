@@ -1,4 +1,6 @@
 using System.Reflection;
+using CampFitFurDogs.Api.Horizontals.Startup.Modules;
+using CampFitFurDogs.TestUtilities.Infrastructure;
 using FluentAssertions;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
@@ -17,25 +19,46 @@ public class CorsGuardrailTests
     [Fact]
     public void Api_should_only_configure_cors_in_CorsStartupModule()
     {
+        var corsStartupModuleFullName = typeof(CorsStartupModule).FullName!;
+
         var offenders = ApiAssembly
             .GetTypes()
-            .Where(t =>
-                t.FullName != "CampFitFurDogs.Api.Horizontals.Startup.CorsStartupModule" &&
-                t.FullName != "Program")
+            .Where(t => t.FullName != corsStartupModuleFullName &&
+                        t.FullName != "Program")
             .SelectMany(t => t.GetMethods(
                 BindingFlags.Public |
                 BindingFlags.NonPublic |
                 BindingFlags.Static |
                 BindingFlags.Instance))
             .Where(m =>
-                m.Name.Contains("Cors", StringComparison.OrdinalIgnoreCase) ||
+                // Attribute-based CORS configuration
                 m.GetCustomAttributes().Any(a =>
-                    a.GetType().Name.Contains("Cors", StringComparison.OrdinalIgnoreCase)))
+                    a.GetType().Name is "EnableCorsAttribute" or "DisableCorsAttribute") ||
+
+                // Method calls to AddCors or UseCors (reflection-only heuristic)
+                MethodBodyCallsCors(m))
             .Select(m => $"{m.DeclaringType!.FullName}.{m.Name}")
             .ToList();
 
         offenders.Should().BeEmpty(
             "All CORS configuration must be centralized in CorsStartupModule to prevent drift.");
+    }
+
+    private static bool MethodBodyCallsCors(MethodInfo method)
+    {
+        var body = method.GetMethodBody();
+        if (body == null)
+            return false;
+
+        var il = body.GetILAsByteArray();
+        if (il == null || il.Length == 0)
+            return false;
+
+        // Reflection-only heuristic:
+        // Look for metadata tokens referencing AddCors or UseCors
+        return method.Module.ResolveMethodTokens(il)
+            .Any(mi =>
+                mi.Name is "AddCors" or "UseCors");
     }
 
     // ---------------------------------------------------------------------

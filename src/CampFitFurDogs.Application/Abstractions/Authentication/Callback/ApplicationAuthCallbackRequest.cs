@@ -1,5 +1,5 @@
 using Frank.Abstractions.Authentication.Callback;
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 
 namespace CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 

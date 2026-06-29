@@ -1,4 +1,6 @@
 
+using Frank.Abstractions.Command;
+
 namespace Frank.Tests.Slices;
 
 public sealed record SendMessageCommand(string Text)
