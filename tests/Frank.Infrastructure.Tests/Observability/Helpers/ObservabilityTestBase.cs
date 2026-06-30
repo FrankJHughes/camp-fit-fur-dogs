@@ -1,5 +1,5 @@
 #nullable enable
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 using Frank.TestUtilities.Contexts;
 using Frank.TestUtilities.Factories;
 using Frank.TestUtilities.Fakes.Observability;
@@ -15,7 +15,7 @@ public abstract class ObservabilityTestBase : IDisposable, IAsyncDisposable
     protected ObservabilityTestBase()
     {
         Context = new ApiContext()
-            .WithFake<IObservabilitySink>(new FakeObservabilitySink())
+            .WithFake<IObservationSink>(new FakeObservabilitySink())
             .WithFake<IMetrics>(new FakeMetrics())
             .WithFake<IErrorBoundaryObserver>(new FakeErrorBoundaryObserver())
             .WithEndpointAssembly(typeof(Frank.TestUtilities.AssemblyMarker).Assembly);
@@ -24,7 +24,7 @@ public abstract class ObservabilityTestBase : IDisposable, IAsyncDisposable
         Client = Factory.CreateClient(new ApiClientContext());
     }
 
-    protected FakeObservabilitySink Trace => (FakeObservabilitySink)Context.GetFake<IObservabilitySink>();
+    protected FakeObservabilitySink Trace => (FakeObservabilitySink)Context.GetFake<IObservationSink>();
     protected FakeMetrics Metrics => (FakeMetrics)Context.GetFake<IMetrics>();
     protected FakeErrorBoundaryObserver Errors => (FakeErrorBoundaryObserver)Context.GetFake<IErrorBoundaryObserver>();
 

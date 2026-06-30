@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
 using CampFitFurDogs.Application.Dogs.GetDogProfile;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Customers;
@@ -20,7 +20,7 @@ public class GetDogProfileHandlerTests
     public async Task Handle_DogExistsAndOwnedByCustomer_ReturnsProfile()
     {
         var ownerId = CustomerId.From(Guid.NewGuid());
-        var dog = Dog.Create(
+        var dog = Domain.Dogs.Dog.Create(
             ownerId,
             DogName.Create("Biscuit"),
             Breed.Create("Golden Retriever"),
@@ -55,7 +55,7 @@ public class GetDogProfileHandlerTests
         var ownerA = Guid.NewGuid();
         var ownerB = Guid.NewGuid();
 
-        var dog = Dog.Create(
+        var dog = Domain.Dogs.Dog.Create(
             CustomerId.From(ownerA),
             DogName.Create("Biscuit"),
             Breed.Create("Golden Retriever"),

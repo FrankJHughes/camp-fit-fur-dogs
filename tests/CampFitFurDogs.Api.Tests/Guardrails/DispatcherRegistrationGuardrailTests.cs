@@ -1,12 +1,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
-
-using Frank.Abstractions;
-using Frank.Abstractions.Events;
+using Frank.Abstractions.Event;
 
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
+using Frank.Abstractions.Command;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 
@@ -72,13 +71,13 @@ public class DispatcherRegistrationGuardrailTests : IAsyncLifetime
     public void DomainEventDispatcher_ShouldBeRegistered()
     {
         var factory = CreateFactory();
-        Get<IDomainEventDispatcher>(factory).Should().NotBeNull();
+        Get<IEventDispatcher>(factory).Should().NotBeNull();
     }
 
     [Fact]
     public void DomainEventDispatcher_ShouldHaveSingleRegistration()
     {
         var factory = CreateFactory();
-        GetAll<IDomainEventDispatcher>(factory).Should().HaveCount(1);
+        GetAll<IEventDispatcher>(factory).Should().HaveCount(1);
     }
 }

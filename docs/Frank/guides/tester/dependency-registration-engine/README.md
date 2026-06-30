@@ -1,18 +1,16 @@
-# Frank AutoRegistration — Tester Guide
 
-This guide describes how to test the AutoRegistration engine end‑to‑end.  
-Testers validate scanning, planning, validation, formatting, and DI registration behavior.
+# Frank — Guides — Tester — Registration Engine Tester Guide
 
-The engine consists of:
+This guide describes how to test the **current Registration Engine** end‑to‑end.  
+Testers validate scanning, planning, validation, and DI registration behavior across the full pipeline:
 
-- `AutoRegisterAttribute`
+- `RegistrationAttribute`
+- `DiscoveryOptions`
 - `Scanner`
 - `Planner`
 - `Validator`
-- `Formatter`
 - `Registrar`
 - `Orchestrator`
-- `AddAutoRegistration`
 
 Each component has deterministic, testable behavior.
 
@@ -22,15 +20,17 @@ Each component has deterministic, testable behavior.
 
 Testers must ensure:
 
-- Relevant interfaces are discovered correctly  
+- Governed interfaces (those with `[Registration]`) are discovered correctly  
 - Implementations are matched correctly (including generics)  
+- DiscoveryOptions filters are applied correctly  
 - Plans are generated correctly  
 - Min/max registration constraints are enforced  
 - Violations are surfaced with correct formatting  
-- DI registrations match the plan  
+- DI registrations match the plan exactly  
 - Concrete type registration works when enabled  
 - The orchestrator fails fast on violations  
 - The orchestrator registers everything when valid  
+- Ordering is deterministic and stable  
 
 ---
 
@@ -40,20 +40,21 @@ Testers must ensure:
 
 ### What to validate
 
-- Interfaces with `[AutoRegister]` are discovered  
+- Interfaces with `[Registration]` are discovered  
 - Interfaces without the attribute are ignored  
-- Concrete classes are discovered correctly  
+- Implementations are discovered correctly  
 - Abstract classes and open generics are ignored  
-- Implementations are matched to interfaces  
+- Implementations are matched to governed interfaces  
 - Generic interfaces use generic type definition matching  
+- DiscoveryOptions filters are honored  
 
 ### Patterns
 
-- Create a test assembly with known shapes  
+- Create a synthetic test assembly with known shapes  
 - Assert `RelevantInterfaceGroup` contents  
 - Assert generic matching:  
-  - `IFoo<T>` implemented by `FooInt : IFoo<int>`  
-  - Scanner must group them correctly  
+  - `IThing<T>` implemented by `ThingInt : IThing<int>`  
+- Assert that excluded interfaces/implementations are not scanned  
 
 ---
 
@@ -61,10 +62,11 @@ Testers must ensure:
 
 ### What to validate
 
-- Planner reads `AutoRegisterAttribute` correctly  
-- Planner groups implementations by implemented interface  
-- Planner produces one `Plan` per implemented interface  
+- Planner reads `RegistrationAttribute` correctly  
+- Planner groups implementations by governed interface  
+- Planner produces one `Plan` per governed interface  
 - Planner preserves all implementing classes  
+- Planner includes attribute metadata (lifetime, min/max, concrete registration)  
 
 ### Patterns
 
@@ -83,6 +85,7 @@ Testers must ensure:
 - No violations when counts are within range  
 - Violations emitted when out of range  
 - Multiple violations surfaced correctly  
+- Validator never throws — it only returns violations  
 
 ### Patterns
 
@@ -92,28 +95,7 @@ Testers must ensure:
 
 ---
 
-## 2.4 Formatter Tests
-
-### What to validate
-
-- Interface names are formatted correctly  
-- Generic interface names drop the backtick suffix  
-- Implementing classes are listed  
-- Output is readable and stable  
-
-### Patterns
-
-- Create a violation with:  
-  - generic interface  
-  - multiple implementing classes  
-- Assert formatted output contains:  
-  - interface name  
-  - min/max/actual counts  
-  - class names  
-
----
-
-## 2.5 Registrar Tests
+## 2.4 Registrar Tests
 
 ### What to validate
 
@@ -121,6 +103,7 @@ Testers must ensure:
 - Lifetime matches the attribute  
 - Concrete type registration occurs when enabled  
 - No duplicate registrations beyond what the plan specifies  
+- DI registration order is deterministic  
 
 ### Patterns
 
@@ -128,22 +111,32 @@ Testers must ensure:
 - Run `Registrar.Register`  
 - Inspect `IServiceCollection` contents  
 
+Example inspection:
+
+```csharp
+var descriptor = services.Single(x => x.ServiceType == typeof(IMyInterface));
+Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);
+Assert.Equal(typeof(MyImplementation), descriptor.ImplementationType);
+```
+
 ---
 
-## 2.6 Orchestrator Tests
+## 2.5 Orchestrator Tests
 
 ### What to validate
 
 - Full pipeline runs in correct order  
 - Violations throw `InvalidOperationException`  
 - Valid plans result in DI registrations  
-- Exception message matches `Formatter` output  
+- Exception message matches formatted violations  
+- DiscoveryOptions are applied end‑to‑end  
 
 ### Patterns
 
 - Provide assemblies with:  
   - valid shapes → expect success  
   - invalid shapes → expect exception  
+- Assert exception message contains formatted violations  
 
 ---
 
@@ -157,6 +150,7 @@ Testers must ensure:
 - Validator does not throw  
 - Registrar does not register types not in the plan  
 - Orchestrator does not swallow exceptions  
+- DiscoveryOptions filters do not accidentally include/exclude types incorrectly  
 
 ---
 
@@ -165,7 +159,8 @@ Testers must ensure:
 - Use isolated test assemblies or dynamically generated ones  
 - Do not rely on global/static state  
 - Do not reuse `IServiceCollection` across tests  
-- Ensure deterministic ordering of types (avoid reflection nondeterminism by controlling test assemblies)  
+- Ensure deterministic ordering of types (control test assemblies)  
+- Avoid reflection nondeterminism by controlling type names  
 
 ---
 
@@ -174,12 +169,18 @@ Testers must ensure:
 ### 5.1 Synthetic Test Assemblies  
 Use small, purpose‑built assemblies containing:
 
-- 1–3 interfaces  
+- 1–3 governed interfaces  
 - 1–5 implementations  
 - known generic shapes  
+- predictable type names  
 
 ### 5.2 Reflection‑Based Test Fixtures  
-Generate types dynamically to test edge cases.
+Generate types dynamically to test edge cases:
+
+- open generics  
+- abstract classes  
+- multiple implementations  
+- conflicting min/max constraints  
 
 ### 5.3 DI Collection Inspection  
 After registration, inspect:
@@ -187,27 +188,29 @@ After registration, inspect:
 - service type  
 - implementation type  
 - lifetime  
+- number of registrations  
 
-### 5.4 Snapshot Testing for Formatter  
-Ensure violation messages remain stable.
+### 5.4 Snapshot Testing for Violation Formatting  
+Ensure violation messages remain stable and readable.
 
 ---
 
 # 6. Anti‑Patterns (Tests Must Reject)
 
-- Interfaces marked with `[AutoRegister]` but not included in scanning  
+- Interfaces marked with `[Registration]` but not included in scanning  
 - Implementations not matched due to generic mismatch  
 - Plans with incorrect implementing classes  
 - Missing violations when counts are out of range  
 - Incorrect DI lifetimes  
 - Missing concrete type registration when enabled  
 - Orchestrator silently ignoring violations  
+- Tests that assume DI registration order matters (it is deterministic but not semantically meaningful)  
 
 ---
 
 # 7. Summary
 
-Testers ensure that AutoRegistration:
+Testers ensure that the Registration Engine:
 
 - discovers governed interfaces  
 - finds all valid implementations  
@@ -215,6 +218,9 @@ Testers ensure that AutoRegistration:
 - enforces min/max constraints  
 - formats violations clearly  
 - registers services correctly  
+- applies DiscoveryOptions correctly  
 - fails fast when constraints are violated  
+- behaves deterministically  
 
-This unified Tester Guide covers everything needed to validate the AutoRegistration engine end‑to‑end.
+This unified Tester Guide covers everything needed to validate the **current** Registration Engine end‑to‑end.
+

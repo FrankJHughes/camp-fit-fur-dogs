@@ -1,6 +1,6 @@
 namespace CampFitFurDogs.Application.Abstractions.Authentication;
 
-public sealed class AuthCallbackException : Exception
+public sealed class AuthCallbackException : System.Exception
 {
     public AuthCallbackError Error { get; }
 

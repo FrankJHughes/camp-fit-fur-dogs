@@ -1,4 +1,4 @@
-# Authentication Callback — Developer Guide
+# Frank - Guides - Developer - Authentication Callback Guide
 
 The Authentication Callback capability implements the **OIDC authorization‑code callback pipeline** for Frank.  
 It exchanges an authorization code for tokens, validates the ID token, fetches user information, and produces a normalized `FrankAuthCallbackResult`.

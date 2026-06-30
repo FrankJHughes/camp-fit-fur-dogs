@@ -10,18 +10,19 @@ public static class Startup
     {
         return
         [
-            new ApiStartupModule(),
+            new EndpointsStartupModule(),
             new ApplicationStartupModule(),
             new AuthenticationStartupModule(),
             new AuthorizationStartupModule(),
             new CorsStartupModule(),
-            new ExceptionHandlingStartupModule(),
+            new ExceptionsStartupModule(),
             new IdentityStartupModule(),
             new InfrastructureStartupModule(),
             new LoggingStartupModule(),
-            new ObservabilityStartupModule(),
+            new ObservationsStartupModule(),
             new SecurityHeadersStartupModule(),
-            new SwaggerStartupModule()
+            new SwaggerStartupModule(),
+            new ValidatorsStartupModule()
         ];
     }
 

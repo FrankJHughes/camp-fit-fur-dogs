@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Customers.FindCustomerByExternalId;
+using CampFitFurDogs.Application.Abstractions.Customer.FindCustomerByExternalId;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

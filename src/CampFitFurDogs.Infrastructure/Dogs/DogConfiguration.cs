@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;
 
-public sealed class DogConfiguration : AggregateRootConfiguration<Dog, DogId>
+public sealed class DogConfiguration : AggregateRootConfiguration<Domain.Dogs.Dog, DogId>
 {
     protected override string TableName => "dogs";
 
-    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Dog> builder)
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Domain.Dogs.Dog> builder)
     {
         builder.Property(d => d.Id)
             .HasConversion(
@@ -25,7 +25,7 @@ public sealed class DogConfiguration : AggregateRootConfiguration<Dog, DogId>
             .HasColumnName("owner_id")
             .IsRequired();
 
-        builder.HasOne<Customer>()
+        builder.HasOne<Domain.Customers.Customer>()
             .WithMany()
             .HasForeignKey(d => d.OwnerId)
             .OnDelete(DeleteBehavior.Cascade);

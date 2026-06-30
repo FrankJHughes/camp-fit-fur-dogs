@@ -1,13 +1,12 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
-using CampFitFurDogs.Domain.Dogs;
+using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
 
 namespace CampFitFurDogs.Application.Tests.Fakes;
 
 public class FakeListDogsByOwnerReader : IListDogsByOwnerReader
 {
-    private readonly List<Dog> _dogs = [];
+    private readonly List<Domain.Dogs.Dog> _dogs = [];
 
-    public void Add(Dog dog) => _dogs.Add(dog);
+    public void Add(Domain.Dogs.Dog dog) => _dogs.Add(dog);
 
     public Task<ListDogsByOwnerResponse> ListDogsByOwnerAsync(
         Guid ownerId, CancellationToken ct)

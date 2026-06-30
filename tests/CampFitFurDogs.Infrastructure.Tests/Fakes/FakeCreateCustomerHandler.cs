@@ -1,7 +1,8 @@
-using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
+using CampFitFurDogs.Application.Abstractions.Customer.CreateCustomer;
+using CampFitFurDogs.Application.Customers.CreateCustomer;
 using CampFitFurDogs.Domain.Customers.Exceptions;
 using FluentValidation;
-using Frank.Abstractions;
+using Frank.Abstractions.Command;
 
 public sealed class FakeCreateCustomerHandler
     : ICommandHandler<CreateCustomerCommand, Guid>

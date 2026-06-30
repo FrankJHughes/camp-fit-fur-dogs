@@ -1,4 +1,5 @@
-# Test Architecture & Guardrails (Aligned With Recent Changes)
+# Guides — Developer — Testing — Test Architecture Guide  
+*A developer‑facing guide to the testing strategy, test layering, and architectural guardrails for Camp Fit Fur Dogs.*
 
 This guide describes the **testing strategy**, **test layering**, and **architectural guardrail system** for Camp Fit Fur Dogs.  
 It has been fully aligned with the **new DI patterns**, **new guardrail boundaries**, **new identity model**, and **recent refactors** (including the removal of unnecessary initialization in guardrails and the separation of DI‑dependent vs pure‑reflection guardrails).
@@ -23,14 +24,14 @@ The goal is to ensure the architecture remains **clean, predictable, and self‑
 
 The solution uses **one test project per layer**, plus a dedicated project for **pure‑reflection architectural guardrails**:
 
-```
+````text
 tests/
     CampFitFurDogs.Api.Tests/
     CampFitFurDogs.Application.Tests/
     CampFitFurDogs.Architecture.Tests/
     CampFitFurDogs.Domain.Tests/
     CampFitFurDogs.Infrastructure.Tests/
-```
+````
 
 Each project tests only its corresponding layer, except `Architecture.Tests`, which validates **cross‑cutting structural rules** via pure reflection.
 
@@ -43,8 +44,8 @@ Api.Tests contains:
 - Endpoint tests (full request → response flow)  
 - Request/response mapping tests  
 - **DI‑dependent guardrails** using the **new ApiContext + ApiFactory harness**  
-- Authentication callback tests (see Authentication Testing Guide)  
-- Identity resolution integration tests (external ID → internal ID mapping)  
+- Authentication callback tests  
+- Identity resolution integration tests  
 
 **Important recent change:**  
 Guardrails in this project **must not** use Testcontainers unless the guardrail explicitly tests database connectivity.
@@ -332,4 +333,4 @@ Guardrails turn architecture into something the system **defends**, not somethin
 - **[Frontend Testing](../frontend-testing.md)**  
 - **[Purity Rules](../purity-rules.md)**  
 - **[Dispatcher Pipeline](../dispatcher-pipeline.md)**  
-- **[Abstractions Contract](../abstractions-contract.md)**  
+- **[Abstractions Contract](../abstractions-contract.md)**

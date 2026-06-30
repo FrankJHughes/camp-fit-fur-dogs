@@ -32,4 +32,5 @@ projects:
           value: "secret" # access to the GitHub Artifacts hosting the preview environment variable overrides
 
         - key: Authentication__Callback__Oidc__ClientSecret
+          value: "secret"
 

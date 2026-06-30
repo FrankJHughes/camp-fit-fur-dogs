@@ -12,19 +12,19 @@ public sealed class DogRepository : IDogRepository
         _db = db;
     }
 
-    public async Task AddAsync(Dog dog, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Domain.Dogs.Dog dog, CancellationToken cancellationToken = default)
     {
-        await _db.Set<Dog>().AddAsync(dog, cancellationToken);
+        await _db.Set<Domain.Dogs.Dog>().AddAsync(dog, cancellationToken);
     }
 
-    public async Task<Dog?> GetByIdAsync(DogId id, CancellationToken cancellationToken = default)
+    public async Task<Domain.Dogs.Dog?> GetByIdAsync(DogId id, CancellationToken cancellationToken = default)
     {
-        return await _db.Set<Dog>().FindAsync(new object[] { id }, cancellationToken);
+        return await _db.Set<Domain.Dogs.Dog>().FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public Task DeleteAsync(Dog dog, CancellationToken cancellationToken = default)
+    public Task DeleteAsync(Domain.Dogs.Dog dog, CancellationToken cancellationToken = default)
     {
-        _db.Set<Dog>().Remove(dog);
+        _db.Set<Domain.Dogs.Dog>().Remove(dog);
         return Task.CompletedTask;
     }
 }

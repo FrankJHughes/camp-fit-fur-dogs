@@ -1,7 +1,7 @@
 #nullable enable
 
 using System.Collections.Generic;
-using Frank.Abstractions.Observability;
+using Frank.Abstractions.Observations;
 
 namespace Frank.TestUtilities.Fakes.Observability;
 

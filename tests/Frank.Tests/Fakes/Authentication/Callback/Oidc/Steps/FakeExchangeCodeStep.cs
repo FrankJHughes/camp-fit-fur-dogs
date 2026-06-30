@@ -1,4 +1,4 @@
-using Frank.Abstractions.ImmutableContextBuilder;
+using Frank.Abstractions.ImmutableContext;
 using Frank.Authentication.Callback.Oidc;
 
 namespace Frank.Tests.Fakes.Authentication.Callback.Oidc.Steps;

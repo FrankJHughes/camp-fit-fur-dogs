@@ -1,4 +1,4 @@
-# StartupEngine Architecture Guide  
+# Guides — Developer — Architecture — Startup Engine Architecture Guide  
 *A developer‑facing explanation of how application startup works using Frank’s StartupEngine.*
 
 The **StartupEngine** is part of **Frank**, the shared kernel.  
@@ -38,14 +38,14 @@ StartupEngine ensures:
 
 StartupEngine coordinates two phases:
 
-```
+````text
 AddAll (before host build)
 UseAll (after host build)
-```
+````
 
 Each phase runs across all startup modules in the order they were provided.
 
-```
+````text
 Startup Modules
     ↓
 StartupEngine.AddAll(builder)
@@ -53,7 +53,7 @@ StartupEngine.AddAll(builder)
 builder.Build()
     ↓
 StartupEngine.UseAll(app)
-```
+````
 
 ---
 
@@ -75,13 +75,13 @@ Examples:
 
 Each module implements:
 
-```csharp
+````csharp
 public interface IStartupModule
 {
     void Add(WebApplicationBuilder builder);
     void Use(WebApplication app);
 }
-```
+````
 
 Modules are:
 
@@ -109,15 +109,13 @@ Modules use this phase to:
 
 This phase is DI‑only.
 
-Example:
-
-```csharp
+````csharp
 public void Add(WebApplicationBuilder builder)
 {
     builder.Services.AddAuthentication();
     builder.Services.AddAuthorization();
 }
-```
+````
 
 ---
 
@@ -132,16 +130,14 @@ Modules use this phase to:
 
 This phase is pipeline‑only.
 
-Example:
-
-```csharp
+````csharp
 public void Use(WebApplication app)
 {
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 }
-```
+````
 
 ---
 
@@ -149,7 +145,7 @@ public void Use(WebApplication app)
 
 CampFitFurDogs constructs its startup modules in a single place:
 
-```csharp
+````csharp
 public static IStartupModule[] ConstructStartupModules()
 {
     return
@@ -166,7 +162,7 @@ public static IStartupModule[] ConstructStartupModules()
         new SwaggerStartupModule()
     ];
 }
-```
+````
 
 This list defines the **startup order**.
 
@@ -176,31 +172,31 @@ This list defines the **startup order**.
 
 In `Program.cs`:
 
-```csharp
+````csharp
 Startup.AddAllServices(builder);
 
 var app = builder.Build();
 
 Startup.UseAllServices(app);
-```
+````
 
 ### AddAllServices
 
-```csharp
+````csharp
 var startupModules = ConstructStartupModules();
 var startupEngine = new StartupEngine(startupModules);
 startupEngine.AddAll(builder);
 
 builder.Services.AddStartupModules();
 builder.Services.AddStartupEngine();
-```
+````
 
 ### UseAllServices
 
-```csharp
+````csharp
 var startupEngine = app.Services.GetRequiredService<StartupEngine>();
 startupEngine.UseAll(app);
-```
+````
 
 This ensures:
 
@@ -216,9 +212,9 @@ StartupEngine runs **after** HostingEngine.
 
 Sequence:
 
-```
+````text
 HostingEngine → StartupEngine.AddAll → Host Build → StartupEngine.UseAll
-```
+````
 
 HostingEngine configures:
 
@@ -237,7 +233,7 @@ They are complementary but separate.
 
 ---
 
-# 8. Interaction With DI Auto‑Registration
+# 8. Interaction With DI Registration Engine
 
 StartupEngine does **not**:
 
@@ -247,7 +243,7 @@ StartupEngine does **not**:
 - Scan for readers  
 - Scan for EF Core configurations  
 
-Frank’s DI auto‑registration engine handles all scanning.
+Frank’s Registration Engine handles all governed DI registration.
 
 StartupEngine simply orchestrates module execution.
 
@@ -259,13 +255,13 @@ The test harness uses StartupEngine to build a realistic test host.
 
 Sequence:
 
-```
+````text
 HostingEngine
 StartupEngine.AddAll
 Test overrides
 Host Build
 StartupEngine.UseAll
-```
+````
 
 Test overrides must always run **after** both engines.
 
@@ -316,6 +312,5 @@ StartupEngine is a **startup orchestrator**, not a logic container.
 - Modules run in two phases: AddAll + UseAll  
 - StartupEngine is deterministic, modular, and app‑agnostic  
 - All application‑specific startup behavior lives in modules  
-- StartupEngine interacts cleanly with HostingEngine and DI auto‑registration  
-- StartupEngine is a core part of the application’s startup architecture  
-
+- StartupEngine interacts cleanly with HostingEngine and DI registration  
+- StartupEngine is a core part of the application’s startup architecture

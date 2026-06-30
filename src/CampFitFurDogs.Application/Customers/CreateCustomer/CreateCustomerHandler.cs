@@ -1,6 +1,7 @@
-using CampFitFurDogs.Application.Abstractions.Customers.CreateCustomer;
+using CampFitFurDogs.Application.Abstractions.Customer.CreateCustomer;
 using CampFitFurDogs.Domain.Customers;
-using Frank.Abstractions;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Customers.CreateCustomer;
 
@@ -29,7 +30,7 @@ public sealed class CreateCustomerHandler
         var phone = string.IsNullOrWhiteSpace(request.Phone) ? null : PhoneNumber.From(request.Phone);
 
         // Create domain entity (domain enforces identity invariants)
-        var customer = Customer.Create(
+        var customer = Domain.Customers.Customer.Create(
             firstName: firstName,
             lastName: lastName,
             email: email,

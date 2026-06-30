@@ -16,13 +16,13 @@ public abstract record MutatedWebApplicationContext<TSelf>
     public bool OverrideCookiesForHttp { get; init; } = true;
 
     public virtual IReadOnlyList<Action<IConfigurationBuilder>> ConfigOverrides { get; init; }
-        = Array.Empty<Action<IConfigurationBuilder>>();
+        = [];
 
     public virtual IReadOnlyList<Action<IServiceCollection>> ServiceOverrides { get; init; }
-        = Array.Empty<Action<IServiceCollection>>();
+        = [];
 
     public virtual IReadOnlyList<Action<CookieAuthenticationOptions>> CookieOptionsOverrides { get; init; }
-        = Array.Empty<Action<CookieAuthenticationOptions>>();
+        = [];
 
     public virtual IReadOnlyList<Assembly> EndpointAssemblies { get; init; }
         = [typeof(Frank.Testing.AssemblyMarker).Assembly];

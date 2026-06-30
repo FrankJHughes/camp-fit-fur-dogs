@@ -1,8 +1,9 @@
 
-using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
+using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Domain.Dogs;
-using Frank.Abstractions;
+using Frank.Abstractions.Command;
+using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Dogs.RegisterDog;
 
@@ -27,7 +28,7 @@ public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Gui
         var breed = Breed.Create(command.Breed);
         var dob = command.DateOfBirth;
 
-        var dog = Dog.Create(ownerId, name, breed, dob, sex);
+        var dog = Domain.Dogs.Dog.Create(ownerId, name, breed, dob, sex);
 
         await _dogRepository.AddAsync(dog, ct);
         await _unitOfWork.CommitAsync(ct);

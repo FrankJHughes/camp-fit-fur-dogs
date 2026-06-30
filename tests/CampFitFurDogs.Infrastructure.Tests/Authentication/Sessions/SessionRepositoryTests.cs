@@ -1,13 +1,13 @@
-using CampFitFurDogs.Domain.Authentication.Sessions;
+using CampFitFurDogs.Domain.Sessions;
 using CampFitFurDogs.Domain.Customers;
-using CampFitFurDogs.Infrastructure.Authentication.Sessions;
+using CampFitFurDogs.Infrastructure.Sessions;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
-namespace CampFitFurDogs.Infrastructure.Tests.Authentication.Sessions;
+namespace CampFitFurDogs.Infrastructure.Tests.Sessions;
 
 public class SessionRepositoryTests : IClassFixture<PostgresFixture>
 {

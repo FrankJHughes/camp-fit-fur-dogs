@@ -1,3 +1,5 @@
+using Frank.Abstractions.Command;
+
 namespace Frank.Tests.Fakes;
 
 public class DeleteMessageCommandHandler : ICommandHandler<DeleteMessageCommand>

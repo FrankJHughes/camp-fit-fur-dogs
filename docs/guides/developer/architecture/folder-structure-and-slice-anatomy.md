@@ -1,4 +1,4 @@
-# Folder Structure & Slice Anatomy - Developer Guide
+# Guides — Developer — Architecture — Folder Structure & Slice Anatomy Guide  
 *A developer‑facing guide to how the solution is structured and how vertical slices cut through it.*
 
 This guide describes the high‑level folder structure of the Camp Fit Fur Dogs solution and the anatomy of a vertical slice.  
@@ -13,7 +13,7 @@ This is an **architecture guide**. It explains the model; governance documents d
 
 ---
 
-## 1. Top‑Level Solution Structure
+# 1. Top‑Level Solution Structure
 
 ````text
 .devcontainer/
@@ -32,7 +32,7 @@ tests/
 
 High‑level intent:
 
-- `src/` — backend products (CampFitFurDogs, Frank)  
+- `src/` — backend products (CampFitFurDogs, Frank, SharedKernel)  
 - `frontend/` — Next.js frontend  
 - `tests/` — unit + architecture tests  
 - `integration-tests/` — cross‑boundary integration tests  
@@ -42,9 +42,9 @@ High‑level intent:
 
 ---
 
-## 2. Backend Product Structure
+# 2. Backend Product Structure
 
-### 2.1 CampFitFurDogs Projects
+## 2.1 CampFitFurDogs Projects
 
 ````text
 src/
@@ -54,21 +54,21 @@ src/
   CampFitFurDogs.Infrastructure/
 ````
 
-**CampFitFurDogs.Api**  
+### CampFitFurDogs.Api  
 HTTP endpoints, routing, request/response DTOs, middleware wiring.
 
-**CampFitFurDogs.Application**  
+### CampFitFurDogs.Application  
 Use cases, handlers, validators, dispatchers, domain event dispatch.
 
-**CampFitFurDogs.Domain**  
+### CampFitFurDogs.Domain  
 Entities, value objects, domain events, invariants.
 
-**CampFitFurDogs.Infrastructure**  
+### CampFitFurDogs.Infrastructure  
 Persistence, external systems, repositories, readers, EF Core configuration.
 
 ---
 
-### 2.2 Frank (Reusable Product)
+## 2.2 Frank (Shared Kernel Product)
 
 Frank is a **separate product**, not a layer.  
 It provides reusable architectural primitives and eliminates boilerplate.
@@ -82,38 +82,79 @@ src/
   Frank.Testing/
 ````
 
-Key Frank areas:
+### Frank  
+Core engines and primitives:
 
 ````text
 Frank/
   Abstractions/
+    Authentication/
+      Callback/
+    Command/
+    Environment/
+    Errors/
+    Event/
+    Exceptions/
+    Hosting/
+    Identity/
+    ImmutableContext/
+    Observations/
+    Query/
+    Startup/
+    Time/
+    UnitOfWork/
   Authentication/
-  AutoRegistration/
-  DependencyInjection/
+    Callback/
+      Oidc/
+        Steps/
+  Command/
   Domain/
-  Events/
+  Event/
   ImmutableContext/
-  Modules/
+  Query/
+  Registration/
+    Shapes/
   Settings/
 ````
 
+### Frank.Api  
+API‑level primitives:
+
 ````text
 Frank.Api/
-  ExceptionHandling/
+  Endpoints/
+  Exceptions/
+    Middleware/
   Hosting/
   SecurityHeaders/
   Startup/
 ````
 
+### Frank.Infrastructure  
+Cross‑cutting infrastructure primitives:
+
 ````text
 Frank.Infrastructure/
+  Authorization/
   Environment/
+  Exceptions/
+  Identity/
+  Observations/
+    Http/
+  Time/
 ````
+
+### Frank.Infrastructure.EntityFrameworkCore  
+EF Core helpers:
 
 ````text
 Frank.Infrastructure.EntityFrameworkCore/
   Configurations/
+  UnitOfWork/
 ````
+
+### Frank.Testing  
+Testing primitives:
 
 ````text
 Frank.Testing/
@@ -124,37 +165,51 @@ Frank.Testing/
 
 Frank provides:
 
-- DI auto‑registration  
-- Endpoint discovery  
-- HostingEngine + StartupEngine  
+- Registration Engine  
+- Endpoint Engine  
+- StartupEngine  
+- HostingEngine  
 - Validation pipeline  
 - Domain event infrastructure  
-- Authentication callback pipeline  
 - Immutable context builder  
+- Observability primitives  
 - Testing utilities  
 
 CampFitFurDogs **consumes** Frank.
 
 ---
 
-## 3. CampFitFurDogs.Api Structure
+## 2.3 SharedKernel (Legacy / Transitional)
+
+````text
+SharedKernel/
+SharedKernel.Api/
+SharedKernel.Infrastructure/
+SharedKernel.Infrastructure.EntityFrameworkCore/
+`````
+
+SharedKernel is transitional and being replaced by Frank.
+
+---
+
+# 3. CampFitFurDogs.Api Structure
 
 ````text
 CampFitFurDogs.Api/
   Horizontals/
-  Verticals/
-  Validation/
   Properties/
+  Validation/
+  Verticals/
 ````
 
-### 3.1 Horizontals
+## 3.1 Horizontals
 
 ````text
 Horizontals/
   Cors/
-  ExceptionHandling/
-    Handlers/
     Middleware/
+  Exception/
+    Handler/
   Hosting/
     Modules/
   Startup/
@@ -163,14 +218,15 @@ Horizontals/
 
 Horizontals = cross‑cutting concerns.
 
-### 3.2 Verticals
+## 3.2 Verticals
 
 ````text
 Verticals/
   Authentication/
     Callback/
     Login/
-  Dogs/
+  Dog/
+  Health/
 ````
 
 Verticals = API slices.  
@@ -178,7 +234,7 @@ Endpoints map HTTP → Application commands/queries.
 
 ---
 
-## 4. CampFitFurDogs.Application Structure
+# 4. CampFitFurDogs.Application Structure
 
 ````text
 CampFitFurDogs.Application/
@@ -191,17 +247,17 @@ CampFitFurDogs.Application/
   Settings/
 ````
 
-### 4.1 Abstractions
+## 4.1 Abstractions
 
 ````text
 Abstractions/
   Audit/
   Authentication/
     Callback/
-  Customers/
+  Customer/
     CreateCustomer/
     FindCustomerByExternalId/
-  Dogs/
+  Dog/
     EditDogProfile/
     GetDogProfile/
     ListDogsByOwner/
@@ -216,7 +272,7 @@ Abstractions define:
 - Results  
 - Reader interfaces  
 
-### 4.2 Feature Folders
+## 4.2 Feature Folders
 
 ````text
 Authentication/
@@ -242,7 +298,7 @@ Each use case folder contains:
 
 ---
 
-## 5. CampFitFurDogs.Domain Structure
+# 5. CampFitFurDogs.Domain Structure
 
 ````text
 CampFitFurDogs.Domain/
@@ -266,19 +322,18 @@ Domain has **no dependencies** on Application, Infrastructure, or Api.
 
 ---
 
-## 6. CampFitFurDogs.Infrastructure Structure
+# 6. CampFitFurDogs.Infrastructure Structure
 
 ````text
 CampFitFurDogs.Infrastructure/
   Audit/
   Authentication/
-    Sessions/
   Customers/
   Data/
   Dogs/
   Identity/
   Migrations/
-  Time/
+  Sessions/
 ````
 
 Infrastructure:
@@ -290,9 +345,9 @@ Infrastructure:
 
 ---
 
-## 7. Tests
+# 7. Tests
 
-### 7.1 Unit + Architecture Tests
+## 7.1 Unit + Architecture Tests
 
 ````text
 tests/
@@ -305,7 +360,7 @@ tests/
   CampFitFurDogs.TestUtilities/
 ````
 
-### 7.2 Frank Tests
+## 7.2 Frank Tests
 
 ````text
 tests/
@@ -316,7 +371,7 @@ tests/
   Frank.TestUtilities/
 ````
 
-### 7.3 Integration Tests
+## 7.3 Integration Tests
 
 ````text
 integration-tests/
@@ -326,7 +381,7 @@ integration-tests/
 
 ---
 
-## 8. Frontend Structure
+# 8. Frontend Structure
 
 ````text
 frontend/src/
@@ -338,7 +393,7 @@ frontend/src/
   test/
 ````
 
-### 8.1 Frontend Aggregates
+## 8.1 Frontend Aggregates
 
 ````text
 api/
@@ -365,7 +420,7 @@ app/
   dogs/register/success/
 ````
 
-### 8.2 Frontend Test Structure
+## 8.2 Frontend Test Structure
 
 ````text
 frontend/src/test/
@@ -380,11 +435,11 @@ frontend/src/test/
 
 ---
 
-## 9. Vertical Slice Anatomy
+# 9. Vertical Slice Anatomy
 
 Example slice: **Dogs**
 
-### Backend
+## Backend
 
 ````text
 Api/
@@ -401,7 +456,7 @@ Infrastructure/
   Dogs/
 ````
 
-### Frontend
+## Frontend
 
 ````text
 frontend/src/
@@ -412,13 +467,13 @@ frontend/src/
   app/dogs/
 ````
 
-### Backend Slice Diagram
+## Backend Slice Diagram
 
 ````text
 [Api] → [Application] → [Domain] → [Infrastructure]
 ````
 
-### Frontend Slice Diagram
+## Frontend Slice Diagram
 
 ````text
 [app] → [components] → [hooks] → [api] → [lib]
@@ -426,38 +481,38 @@ frontend/src/
 
 ---
 
-## 10. Layer Responsibilities
+# 10. Layer Responsibilities
 
-### Api
+## Api
 - HTTP endpoints  
 - Request/response mapping  
 - No business logic  
 - Must use dispatchers  
 
-### Application
+## Application
 - Use cases  
 - Handlers + validators  
 - Domain event dispatch  
 - No HTTP or persistence logic  
 
-### Domain
+## Domain
 - Entities, value objects, domain events  
 - Invariants  
 - No dependencies on other layers  
 
-### Infrastructure
+## Infrastructure
 - Repositories, readers  
 - EF Core, identity, time  
 - No domain logic  
 
-### Frank
+## Frank
 - Reusable product  
 - Provides architectural primitives  
 - Consumed by CampFitFurDogs  
 
 ---
 
-## 11. Contributor Decision Tree
+# 11. Contributor Decision Tree
 
 1. **Is it reusable across products?**  
    → Frank
@@ -488,7 +543,7 @@ frontend/src/
 
 ---
 
-## 12. Anti‑Patterns
+# 12. Anti‑Patterns
 
 - Business logic in Api  
 - Domain logic in Infrastructure  
@@ -499,7 +554,7 @@ frontend/src/
 
 ---
 
-## 13. Summary
+# 13. Summary
 
 - CampFitFurDogs is structured by **layers** and **vertical slices**.  
 - Frank is a **separate product** providing reusable architectural primitives.  
@@ -508,3 +563,4 @@ frontend/src/
 - Tests mirror the product and layer structure.
 
 This guide is the **map**; governance defines the **rules**.
+

@@ -1,6 +1,6 @@
 using Frank.Domain;
 
-namespace CampFitFurDogs.Domain.Authentication.Sessions.Errors;
+namespace CampFitFurDogs.Domain.Sessions.Errors;
 
 public sealed class InvalidSessionIdException : DomainException
 {

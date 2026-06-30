@@ -12,8 +12,8 @@ public sealed class CustomerRepository : ICustomerRepository
         _db = db;
     }
 
-    public async Task AddAsync(Customer customer, CancellationToken ct)
+    public async Task AddAsync(Domain.Customers.Customer customer, CancellationToken ct)
     {
-        await _db.Set<Customer>().AddAsync(customer, ct);
+        await _db.Set<Domain.Customers.Customer>().AddAsync(customer, ct);
     }
 }

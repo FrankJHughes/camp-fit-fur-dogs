@@ -1,4 +1,5 @@
-# Frank — Developer Guide  
+
+# Frank — Guides - Developer - Index  
 Authoritative handbook for contributors to the Frank Framework
 
 Welcome to the **Frank Developer Guide** — the authoritative handbook for developers who build, extend, or maintain the Frank Framework.  
@@ -387,7 +388,7 @@ Or read the Frank Tester Guide:
 docs/frank/guides/tester/README.md
 ```
 
-Or explore **[Observability Conventions](ca://s?q=Open_observability_conventions)** (NEW).
+Or explore **Observability Conventions**.
 
 ---
 
@@ -405,3 +406,4 @@ The Frank Developer Guide is your handbook for:
 
 Frank is a governed, deterministic, capability‑oriented framework.  
 As a developer, you are responsible for preserving its integrity.
+

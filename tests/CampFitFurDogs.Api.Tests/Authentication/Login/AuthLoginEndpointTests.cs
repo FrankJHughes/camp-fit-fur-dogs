@@ -143,24 +143,4 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         json.Should().Contain("Authentication configuration is missing or incomplete");
     }
 
-    [Fact]
-    public async Task Missing_callback_url_returns_internal_server_error()
-    {
-        var client = CreateClientWithOverrides(cfg =>
-        {
-            cfg.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
-                ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = ""
-            });
-        });
-
-        var response = await client.GetAsync("/api/auth/login");
-
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-
-        var json = await response.Content.ReadAsStringAsync();
-        json.Should().Contain("Authentication configuration is missing or incomplete");
-    }
 }

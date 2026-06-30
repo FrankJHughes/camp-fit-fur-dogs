@@ -1,3 +1,5 @@
+using Frank.Abstractions.Query;
+
 namespace Frank.Tests.Fakes;
 
 public sealed class TrackingQueryHandler<TQuery, TResponse>

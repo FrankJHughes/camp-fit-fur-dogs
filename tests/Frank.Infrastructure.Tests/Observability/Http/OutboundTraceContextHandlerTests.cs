@@ -1,14 +1,14 @@
 #nullable enable
 using System.Net;
-using Frank.Abstractions.Observability;
-using Frank.Infrastructure.Observability.Http;
+using Frank.Abstractions.Observations;
+using Frank.Infrastructure.Observations.Http;
 using Xunit;
 
 namespace Frank.Infrastructure.Tests.Observability.Http;
 
 public class OutboundObservabilityContextHandlerTests
 {
-    private sealed class TestObservabilityContext : IRequestObservabilityContext
+    private sealed class TestObservabilityContext : IRequestObservationContext
     {
         public string? UserId { get; init; } = "test-user-id";
         public string CorrelationId { get; init; } = "11111111-2222-3333-4444-555555555555";
@@ -37,7 +37,7 @@ public class OutboundObservabilityContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservationContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         await client.GetAsync("http://example.com");
@@ -52,7 +52,7 @@ public class OutboundObservabilityContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservationContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         var request = new HttpRequestMessage(HttpMethod.Get, "http://example.com");
@@ -72,7 +72,7 @@ public class OutboundObservabilityContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservationContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         await client.GetAsync("http://example.com");
@@ -85,7 +85,7 @@ public class OutboundObservabilityContextHandlerTests
     {
         var context = new TestObservabilityContext();
         var inner = new TestMessageHandler();
-        var handler = new OutboundObservabilityContextHandler(context) { InnerHandler = inner };
+        var handler = new OutboundObservationContextHandler(context) { InnerHandler = inner };
         var client = new HttpClient(handler);
 
         const string existing = "00-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbb-01";
