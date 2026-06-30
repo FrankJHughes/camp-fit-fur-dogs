@@ -151,7 +151,7 @@
 "US-204","Auto-registration Observability","","","sprint:10","infra","","","","false","","","","product/stories/infra/US-204-auto-registration-observability.md"
 "US-205","Command Handler Observability","","","sprint:10","infra","","","","false","","","","product/stories/infra/US-205-command-handler-observability.md"
 "US-206","Query Handler Observability","","","sprint:10","infra","","","","false","","","","product/stories/infra/US-206-query-handler-observability.md"
-"US-207","Domain Event Handler Observability","","","backlog","infra","","","","false","","","","product/stories/infra/US-207-domain-event-handler-observability.md"
+"US-207","Domain Event Handler Observability","","","backlcde og","infra","","","","false","","","","product/stories/infra/US-207-domain-event-handler-observability.md"
 "US-208","Command Dispatcher Observability","","","backlog","infra","","","","false","","","","product/stories/infra/US-208-command-dispatcher-observability.md"
 "US-209","Query Dispatcher Observability","","","backlog","infra","","","","false","","","","product/stories/infra/US-209-query-dispatcher-observability.md"
 "US-210","Domain Event Dispatch Observability","","","backlog","infra","","","","false","","","","product/stories/infra/US-210-domain-event-dispatch-observability.md"
