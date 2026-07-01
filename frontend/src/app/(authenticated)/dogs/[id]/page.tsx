@@ -8,7 +8,7 @@ import { DogNotFound } from '@/components/dogs/DogNotFound';
 import { DogProfileCard } from '@/components/dogs/DogProfileCard';
 import { ActionsCard } from '@/lib/components/ActionsCard';
 import { ConfirmDialog } from '@/lib/components/ConfirmDialog';
-import { useRemoveDog } from '@/hooks/dogs/useRemoveDog';
+import { useRemoveDog } from '@/lib/dogs/useRemoveDog';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import type { Action } from '@/lib/action';
 

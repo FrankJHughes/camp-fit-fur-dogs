@@ -8,7 +8,7 @@ using Frank.Abstractions.ImmutableContext;
 using System.Text.Json;
 using Frank.Abstractions;
 
-namespace CampFitFurDogs.Api.Verticals.Authentication.Callback;
+namespace CampFitFurDogs.Api.Verticals.Authentication;
 
 public class AuthCallbackEndpoint : IEndpoint
 {
@@ -21,11 +21,11 @@ public class AuthCallbackEndpoint : IEndpoint
     private static async Task<IResult> HandleAsync(
         HttpContext http,
         IHostEnvironment env,
-            IImmutableContextBuilder<
+        IImmutableContextBuilder<
             FrankAuthCallbackRequest,
             OidcAuthCallbackContext,
             FrankAuthCallbackResult> frankEngine,
-            IImmutableContextBuilder<
+        IImmutableContextBuilder<
             ApplicationAuthCallbackRequest,
             ApplicationAuthCallbackContext,
             ApplicationAuthCallbackContextBuilderResult> appEngine)
@@ -48,7 +48,7 @@ public class AuthCallbackEndpoint : IEndpoint
                 var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(stateRaw));
                 var stateObj = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 
-                if (stateObj != null && stateObj.TryGetValue("r", out var r))
+                if (stateObj != null && stateObj.TryGetValue("return_url", out var r))
                 {
                     requestedRedirectUrl = r;
                 }

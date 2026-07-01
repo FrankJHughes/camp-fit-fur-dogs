@@ -1,35 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { logout } from '@/api/logout/logout';
+import { logout } from '@/api/authentication/logout';
 
-const { mockPost } = vi.hoisted(() => ({
-  mockPost: vi.fn(),
+const { mockGet } = vi.hoisted(() => ({
+  mockGet: vi.fn(),
 }));
 
 vi.mock('@/lib/api/client', () => ({
-  createApiClient: () => ({ post: mockPost }),
+  createApiClient: () => ({ get: mockGet }),
 }));
 
 describe('logout', () => {
   beforeEach(() => {
-    mockPost.mockReset();
+    mockGet.mockReset();
   });
 
-  it('POSTs to /auth/logout and returns success', async () => {
-    mockPost.mockResolvedValue({ ok: true });
+  it('GETs /auth/logout and returns success', async () => {
+    mockGet.mockResolvedValue({ ok: true, data: {} });
 
-    const result = await logout();
+    const result = await logout('http://localhost:3000');
 
-    expect(mockPost).toHaveBeenCalledWith('/auth/logout', {});
-    expect(result).toEqual({ success: true });
+    expect(mockGet).toHaveBeenCalledWith(`/auth/logout?return_url=${encodeURIComponent('http://localhost:3000')}`);
+    expect(result).toEqual({ success: true, data: {} });
   });
 
   it('returns error on failure', async () => {
-    mockPost.mockRejectedValue(new Error('boom'));
+    mockGet.mockRejectedValue(new Error('boom'));
 
-    const result = await logout();
+    const result = await logout('http://localhost:3000');
 
     expect(result).toEqual({
       success: false,
+      notFound: false,
       error: 'boom',
     });
   });

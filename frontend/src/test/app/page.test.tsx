@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Home from '@/app/page';
+import Home from '@/app/(public)/page';
 import { getHealth } from '@/api/health/getHealth';
 
 vi.mock('@/api/health/getHealth');

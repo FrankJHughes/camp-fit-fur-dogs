@@ -1,8 +1,10 @@
 'use client';
 
 import { ActionsCard } from '@/lib/components/ActionsCard';
-import { login } from '@/api/login/login';
+import { login } from '@/api/authentication/login';
+import { logout } from '@/api/authentication/logout';
 import { useState } from 'react';
+import { useSession } from '@/lib/authentication/useSession';
 
 export default function PublicLayout({
   children,
@@ -10,17 +12,19 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
 
+  const { isAuthenticated } = useSession();
+
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // ------------------------------------------------------------
-  // Global authenticated action: Login
+  // Login
   // ------------------------------------------------------------
   async function handleLogin() {
     setError(null);
     setIsLoading(true);
 
-    const result = await login();
+    const result = await login(window.location.href);
 
     if (!result.success) {
       setError(result.error ?? 'Login failed');
@@ -28,11 +32,29 @@ export default function PublicLayout({
       return;
     }
 
-    // Backend revokes the session and redirects to the logged out page.
+    // Backend redirects to Auth0; callback returns to return_url.
+  }
+
+  // ------------------------------------------------------------
+  // Logout
+  // ------------------------------------------------------------
+  async function handleLogout() {
+    setError(null);
+    setIsLoading(true);
+
+    const result = await logout(window.location.href);
+
+    if (!result.success) {
+      setError(result.error ?? 'Logout failed');
+      setIsLoading(false);
+      return;
+    }
+
+    // Backend clears cookie; frontend handles navigation.
   }
 
   return (
-    <div className="authenticated-shell">
+    <div className="public-shell">
       <header className="shell-header">
         <h1>Camp Fit Fur Dogs</h1>
 
@@ -43,13 +65,23 @@ export default function PublicLayout({
         )}
 
         <ActionsCard
-          actions={[
-            {
-              label: 'Login',
-              variant: 'destructive',
-              onClick: handleLogin,
-            },
-          ]}
+          actions={
+            isAuthenticated
+              ? [
+                {
+                  label: 'Logout',
+                  variant: 'destructive',
+                  onClick: handleLogout,
+                },
+              ]
+              : [
+                {
+                  label: 'Login',
+                  variant: 'primary',
+                  onClick: handleLogin,
+                },
+              ]
+          }
         />
       </header>
 

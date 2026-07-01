@@ -1,35 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { login } from '@/api/login/login';
+import { login } from '@/api/authentication/login';
 
-const { mockPost } = vi.hoisted(() => ({
-  mockPost: vi.fn(),
+const { mockGet } = vi.hoisted(() => ({
+  mockGet: vi.fn(),
 }));
 
 vi.mock('@/lib/api/client', () => ({
-  createApiClient: () => ({ post: mockPost }),
+  createApiClient: () => ({ get: mockGet }),
 }));
 
 describe('login', () => {
   beforeEach(() => {
-    mockPost.mockReset();
+    mockGet.mockReset();
   });
 
-  it('POSTs to /auth/login and returns success', async () => {
-    mockPost.mockResolvedValue({ ok: true });
+  it('GETs /auth/login and returns success', async () => {
+    mockGet.mockResolvedValue({ ok: true, data: {} });
 
-    const result = await login();
+    const result = await login('http://localhost:3000');
 
-    expect(mockPost).toHaveBeenCalledWith('/auth/login', {});
-    expect(result).toEqual({ success: true });
+    expect(mockGet).toHaveBeenCalledWith(`/auth/login?return_url=${encodeURIComponent('http://localhost:3000')}`);
+    expect(result).toEqual({ success: true, data: {} });
   });
 
   it('returns error on network or server failure', async () => {
-    mockPost.mockRejectedValue(new Error('boom'));
+    mockGet.mockRejectedValue(new Error('boom'));
 
-    const result = await login();
+    const result = await login('http://localhost:3000');
 
     expect(result).toEqual({
       success: false,
+      notFound: false,
       error: 'boom',
     });
   });

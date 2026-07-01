@@ -6,14 +6,14 @@ using Frank.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace CampFitFurDogs.Api.Verticals.Authentication.Login;
+namespace CampFitFurDogs.Api.Verticals.Authentication;
 
 public class AuthLoginEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
         app.MapGet("/api/auth/login", HandleAsync)
-        .AllowAnonymous();
+            .AllowAnonymous();
     }
 
     private async Task<IResult> HandleAsync(
@@ -33,7 +33,6 @@ public class AuthLoginEndpoint : IEndpoint
         }
 
         var frontendBaseUrl = frontendOptionsMonitor.CurrentValue?.BaseUrl;
-
         if (string.IsNullOrWhiteSpace(frontendBaseUrl))
         {
             throw new BadConfigurationException("Frontend configuration is missing or incomplete.");
@@ -50,15 +49,15 @@ public class AuthLoginEndpoint : IEndpoint
             callback = $"{scheme}://{host}{pathBase}/api/auth/callback";
         }
 
-        // Capture returnUrl (PR preview URL)
-        var returnUrl = http.Request.Query["returnUrl"].ToString();
+        // Capture return_url (client-specified post-login redirect)
+        var returnUrl = http.Request.Query["return_url"].ToString();
         if (string.IsNullOrWhiteSpace(returnUrl))
         {
             returnUrl = frontendBaseUrl;
         }
 
         // Encode state as JSON
-        var stateObj = new { r = returnUrl };
+        var stateObj = new { return_url = returnUrl };
         var stateJson = JsonSerializer.Serialize(stateObj);
         var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
 

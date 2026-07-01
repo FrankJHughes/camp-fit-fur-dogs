@@ -13,7 +13,7 @@ const openMock = vi.fn();
 const dialogPropsMock = {};
 let removeErrorMock: string | null = null;
 
-vi.mock('@/hooks/dogs/useRemoveDog', () => ({
+vi.mock('@/lib/dogs/useRemoveDog', () => ({
   useRemoveDog: () => ({
     open: openMock,
     dialogProps: dialogPropsMock,
@@ -83,7 +83,7 @@ describe('GetDogProfilePage (UI)', () => {
     const Page = await loadPage();
     render(<Page />);
 
-    expect(screen.getByText(/rex/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /rex/i })).toBeInTheDocument();
     expect(screen.getByText(/labrador/i)).toBeInTheDocument();
   });
 

@@ -1,29 +1,37 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-// mock API client BEFORE importing the page
-import { apiClientMock } from '@/test/setup';
-import { pushMock } from '@/test/helpers/mockRouter';
+// ------------------------------------------------------------
+// Mock getSession BEFORE importing the layout
+// ------------------------------------------------------------
+vi.mock('@/api/authentication/getSession');
 
-describe('Login (integration)', () => {
+import { getSession } from '@/api/authentication/getSession';
+import { apiClientMock } from '@/test/setup';
+
+// Strongly typed mock instance
+const getSessionMock = getSession as MockedFunction<typeof getSession>;
+
+describe('PublicLayout', () => {
   beforeEach(() => {
-    vi.resetModules();
-    apiClientMock.post.mockReset();
-    pushMock.mockReset();
+    apiClientMock.get.mockReset();
+    getSessionMock.mockReset();
   });
 
   async function loadPage() {
-    // authenticated layout or page containing logout action
     const mod = await import('@/app/(public)/layout');
     return mod.default;
   }
 
-  it('logs out and allows the backend redirect', async () => {
-    apiClientMock.post.mockResolvedValue({ ok: true });
+  it('always shows children', async () => {
+    // Authenticated by default
+    getSessionMock.mockResolvedValue({
+      success: true,
+      data: { isAuthenticated: true },
+    });
 
     const Layout = await loadPage();
-    const user = userEvent.setup();
 
     render(
       <Layout>
@@ -31,16 +39,16 @@ describe('Login (integration)', () => {
       </Layout>
     );
 
-    await user.click(screen.getByRole('button', { name: /login/i }));
-
-    expect(apiClientMock.post).toHaveBeenCalledWith('/auth/login', {});
+    expect(await screen.findByText('child')).toBeInTheDocument();
   });
 
-  it('shows error and does not navigate on failure', async () => {
-    apiClientMock.post.mockRejectedValue(new Error('boom'));
+  it('shows logout when authenticated', async () => {
+    getSessionMock.mockResolvedValue({
+      success: true,
+      data: { isAuthenticated: true },
+    });
 
     const Layout = await loadPage();
-    const user = userEvent.setup();
 
     render(
       <Layout>
@@ -48,9 +56,23 @@ describe('Login (integration)', () => {
       </Layout>
     );
 
-    await user.click(screen.getByRole('button', { name: /login/i }));
+    expect(await screen.findByRole('button', { name: /logout/i })).toBeInTheDocument();
+  });
 
-    expect(await screen.findByText('boom')).toBeInTheDocument();
-    expect(pushMock).not.toHaveBeenCalled();
+  it('shows login when unauthenticated', async () => {
+    getSessionMock.mockResolvedValue({
+      success: true,
+      data: { isAuthenticated: false },
+    });
+
+    const Layout = await loadPage();
+
+    render(
+      <Layout>
+        <div>child</div>
+      </Layout>
+    );
+
+    expect(await screen.findByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 });
