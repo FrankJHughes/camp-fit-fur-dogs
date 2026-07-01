@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { apiClientMock } from '@/test/setup';
 import { fillDogForm } from '@/test/helpers/dogs/fillDogForm';
-import RegisterDogPage from '@/app/dogs/register/page';
+import RegisterDogPage from '@/app/(authenticated)/dogs/register/page';
 
 describe('Register Dog Page', () => {
   beforeEach(() => {

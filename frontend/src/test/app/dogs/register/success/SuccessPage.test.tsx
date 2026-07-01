@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import SuccessPage from '@/app/dogs/register/success/page';
+import SuccessPage from '@/app/(authenticated)/dogs/register/success/page';
 
 describe('Register Dog Success Page', () => {
   it('renders a success confirmation message', () => {

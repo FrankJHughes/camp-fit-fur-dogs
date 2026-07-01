@@ -14,7 +14,7 @@ vi.mock('@/api/dogs/editDogProfile');
 
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 import { editDogProfile } from '@/api/dogs/editDogProfile';
-import EditDogProfilePage from '@/app/dogs/[id]/edit/page';
+import EditDogProfilePage from '@/app/(authenticated)/dogs/[id]/edit/page';
 
 const profileData = {
     id: 'dog-123',

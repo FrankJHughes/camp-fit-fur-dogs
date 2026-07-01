@@ -16,7 +16,7 @@ describe('DogsPage (UI)', () => {
   });
 
   async function loadPage() {
-    const mod = await import('@/app/dogs/page');
+    const mod = await import('@/app/(authenticated)/dogs/page');
     return mod.default;
   }
 

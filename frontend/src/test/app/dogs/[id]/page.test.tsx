@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
-import GetDogProfilePage from '@/app/dogs/[id]/page';
+import GetDogProfilePage from '@/app/(authenticated)/dogs/[id]/page';
 import { getDogProfile } from '@/api/dogs/getDogProfile';
 import { removeDog } from '@/api/dogs/removeDog';
 

@@ -19,7 +19,7 @@ describe('Register Dog (integration)', () => {
 
   async function loadPage() {
     // dynamically import AFTER mocks are applied
-    const mod = await import('@/app/dogs/register/page');
+    const mod = await import('@/app/(authenticated)/dogs/register/page');
     return mod.default;
   }
 

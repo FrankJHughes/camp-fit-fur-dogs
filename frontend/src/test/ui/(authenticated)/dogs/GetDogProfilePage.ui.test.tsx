@@ -33,7 +33,7 @@ describe('GetDogProfilePage (UI)', () => {
   });
 
   async function loadPage() {
-    const mod = await import('@/app/dogs/[id]/page');
+    const mod = await import('@/app/(authenticated)/dogs/[id]/page');
     return mod.default;
   }
 
