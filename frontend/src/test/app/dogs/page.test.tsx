@@ -16,7 +16,7 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
-import DogsPage from '@/app/dogs/page';
+import DogsPage from '@/app/(authenticated)/dogs/page';
 
 describe('DogsPage', () => {
   afterEach(() => {

@@ -2,7 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Sprint 9] – Unreleased
+## [Sprint 10] – Unreleased
+
+## [Sprint 9] – 06/29/2026
+
+### Stories Completed
+
+| Story ID | Title | Notes |
+|----------|--------|--------|
+| US-175 | Migrate Auth Callback Engine to Frank | Infrastructure modernization; replaced legacy callback engine with Frank-native implementation. |
+| US-176 | Migrate Test Harness to Frank | Unified test harness under Frank; removed legacy harness. |
+| US-177 | Stabilize Test Harness | Reliability improvements; eliminated nondeterministic test failures. |
+| US-178 | Refactor Tests | Structural cleanup; aligned tests with new harness (depends on US-177). |
+| US-179 | Implement Authenticated User Service | Core identity service implemented (depends on US-110, US-111). |
+| US-180 | Migrate Hosting Engine to Frank | Hosting engine migrated to Frank (depends on US-108). |
+| US-181 | Migrate Startup Engine to Frank | Startup engine migrated to Frank (depends on US-108). |
+| US-183 | Observability Exploration | Initial exploration and mapping of observability surfaces across the platform. |
+| US-184 | De-feature Local Identity | Removed legacy local-identity paths; depends on US-110 and US-111. |
+| US-185 | Auto-registration Opt-Out | Added opt-out mechanism for automatic DI registration. |
+| US-193 | OIDC Protocol Observability | Completed during Sprint 9; added protocol-level tracing for OIDC flows. |
+| US-194 | Authentication Observability | Completed during Sprint 9; added observability surfaces for authentication flows. |
+| US-218 | Migrate Exception → Problem to Frank | Completed during Sprint 9; exception registry and middleware migrated to Frank.Infrastructure and Frank.Api. |
+| US-221 | Dependency Registration Engine Refactor | Completed during Sprint 9; unified DI registration under Frank.Registration. |
+| US-223 | Endpoint Registration Engine Refactor | Completed during Sprint 9; Frank.Endpoints refactored into service collection + route builder extensions. |
 
 ### Added
 - More reliable sign‑in experience powered by our upgraded **exclusive OIDC authentication flow**, ensuring owners can log in consistently across all environments.

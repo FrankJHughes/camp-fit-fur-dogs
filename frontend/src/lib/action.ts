@@ -1,5 +1,6 @@
 export interface Action {
-    label: string;
-    onClick: () => void;
-    variant?: 'default' | 'destructive';
+  label: string;
+  onClick: () => void;
+  variant?: 'default' | string;
+  disabled?: boolean;
 }

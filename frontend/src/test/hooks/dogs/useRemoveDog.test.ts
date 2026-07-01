@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useRemoveDog } from '@/hooks/dogs/useRemoveDog';
+import { useRemoveDog } from '@/lib/dogs/useRemoveDog';
 import { removeDog } from '@/api/dogs/removeDog';
 
 vi.mock('@/api/dogs/removeDog');

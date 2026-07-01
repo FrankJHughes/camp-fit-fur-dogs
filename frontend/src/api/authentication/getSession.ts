@@ -1,14 +1,11 @@
 import { createApiClient } from '@/lib/api/client';
 import type { QueryResult } from '@/lib/api/queryResult';
-
-export interface GetHealthResponse {
-  status: string;
-}
+import { GetSessionResponse } from '@/lib/authentication/getSessionResponse';
 
 const client = createApiClient();
 
-export async function getHealth(): Promise<QueryResult<GetHealthResponse>> {
-  const result = await client.get<GetHealthResponse>(`/api/health`);
+export async function getSession(): Promise<QueryResult<GetSessionResponse>> {
+  const result = await client.get<GetSessionResponse>(`/api/auth/session`);
   if (result.ok) {
     return { success: true, data: result.data };
   }
