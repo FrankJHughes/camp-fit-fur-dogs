@@ -7,4 +7,6 @@ public class FakeCurrentUser(Guid currentUserId) : ICurrentUser
     public Guid? Id { get; } = currentUserId;
 
     public bool IsAuthenticated => true;
+
+    public string? Name => throw new NotImplementedException();
 }

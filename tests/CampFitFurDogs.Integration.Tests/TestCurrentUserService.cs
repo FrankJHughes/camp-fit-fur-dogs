@@ -7,4 +7,6 @@ public sealed class TestCurrentUser : ICurrentUser
     public Guid? Id { get; set; } = Guid.NewGuid();
 
     public bool IsAuthenticated => true;
+
+    public string? Name => throw new NotImplementedException();
 }
