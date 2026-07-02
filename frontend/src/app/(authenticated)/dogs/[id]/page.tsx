@@ -19,7 +19,7 @@ export default function GetDogProfilePage() {
 
   // Guard early for missing id (keeps hooks stable)
   if (!dogId) {
-    return <p>Invalid dog id</p>;
+    return <p className="error-message">Invalid dog id</p>;
   }
 
   // Hooks must be called unconditionally and in the same order on every render
@@ -35,7 +35,7 @@ export default function GetDogProfilePage() {
   // Keep early returns consistent so hook order never changes
   if (state.status === 'loading') return <p>Loading…</p>;
   if (state.status === 'not-found') return <DogNotFound />;
-  if (state.status === 'error') return <p>{state.error}</p>;
+  if (state.status === 'error') return <p className="error-message">{state.error}</p>;
 
   // Use a plain const for actions (no hooks) to avoid any hook-order surprises
   const actions: Action[] = [
@@ -44,15 +44,26 @@ export default function GetDogProfilePage() {
   ];
 
   return (
-    <>
-      <DogProfileCard profile={state.data} />
+    <main className="page-container">
+      <h1 className="page-title">{state.data.name}</h1>
+
+      <div className="card-section">
+        <DogProfileCard profile={state.data} />
+      </div>
+
       <ActionsCard actions={actions} />
+
       {removeDog.dialogProps && <ConfirmDialog {...removeDog.dialogProps} />}
+
       {removeDog.error && (
-        <p role="alert" aria-live="polite">
+        <p
+          role="alert"
+          aria-live="assertive"
+          className="error-message"
+        >
           {removeDog.error}
         </p>
       )}
-    </>
+    </main>
   );
 }

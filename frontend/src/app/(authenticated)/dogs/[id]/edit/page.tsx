@@ -1,4 +1,3 @@
-// src/app/dogs/[id]/edit/page.tsx
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -31,7 +30,7 @@ export default function EditDogProfilePage() {
 
   if (state.status === 'loading') return <p>Loading…</p>;
   if (state.status === 'not-found') return <DogNotFound />;
-  if (state.status === 'error') return <p>{state.error}</p>;
+  if (state.status === 'error') return <p className="error-message">{state.error}</p>;
 
   const initialValues: DogFormValues = {
     name: state.data.name,
@@ -41,9 +40,13 @@ export default function EditDogProfilePage() {
   };
 
   return (
-    <EditDogProfileForm
-      command={command}
-      initialValues={initialValues}
-    />
+    <main className="page-container">
+      <h1 className="page-title">Edit Dog Profile</h1>
+
+      <EditDogProfileForm
+        command={command}
+        initialValues={initialValues}
+      />
+    </main>
   );
 }

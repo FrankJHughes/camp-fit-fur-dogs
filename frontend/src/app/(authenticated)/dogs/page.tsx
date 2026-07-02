@@ -1,4 +1,3 @@
-// src/app/dogs/page.tsx
 'use client';
 
 import { useMemo } from 'react';
@@ -15,7 +14,7 @@ export default function DogsPage() {
   const router = useRouter();
 
   const actions: Action[] = useMemo(
-    () => [{ label: 'Register', onClick: () => router.push('/dogs/register') }],
+    () => [{ label: 'Register Dog', onClick: () => router.push('/dogs/register') }],
     [router]
   );
 
@@ -28,25 +27,32 @@ export default function DogsPage() {
   );
 
   if (state.status === 'loading') return <p>Loading…</p>;
+
   if (state.status === 'error')
     return (
-      <p role="alert" aria-live="assertive">
+      <p role="alert" aria-live="assertive" className="error-message">
         {state.error}
       </p>
     );
-  if (state.status === 'not-found') return <p>Not found.</p>;
 
-  // state.status === 'success' here
+  if (state.status === 'not-found')
+    return <p className="empty-state">Not found.</p>;
+
   const dogs = state.data.dogs ?? [];
 
   return (
-    <>
-      {dogs.length === 0 ? (
-        <p aria-live="polite">No dogs registered yet.</p>
-      ) : (
-        <ListDogsByCurrentUserCard dogs={dogs} />
-      )}
+    <main className="page-container">
+      <h1 className="page-title">Your Dogs</h1>
+
+      <div className="card-section">
+        {dogs.length === 0 ? (
+          <p className="empty-state">No dogs registered yet.</p>
+        ) : (
+          <ListDogsByCurrentUserCard dogs={dogs} />
+        )}
+      </div>
+
       <ActionsCard actions={actions} />
-    </>
+    </main>
   );
 }

@@ -28,7 +28,6 @@ describe('GetDogProfilePage (UI)', () => {
     openMock.mockClear();
     removeErrorMock = null;
 
-    // Set default route param
     paramsMock.id = 'dog-1';
   });
 
@@ -83,7 +82,11 @@ describe('GetDogProfilePage (UI)', () => {
     const Page = await loadPage();
     render(<Page />);
 
-    expect(await screen.findByRole('heading', { name: /rex/i })).toBeInTheDocument();
+    // FIX: target the DogProfileCard heading (<h2>Rex</h2>)
+    expect(
+      await screen.findByRole('heading', { level: 2, name: /rex/i })
+    ).toBeInTheDocument();
+
     expect(screen.getByText(/labrador/i)).toBeInTheDocument();
   });
 
@@ -145,6 +148,7 @@ describe('GetDogProfilePage (UI)', () => {
     const Page = await loadPage();
     render(<Page />);
 
+    // FIX: now the component renders <p role="alert">…</p>
     expect(screen.getByRole('alert')).toHaveTextContent(/failed to remove dog/i);
   });
 });

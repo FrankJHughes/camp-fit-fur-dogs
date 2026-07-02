@@ -7,5 +7,10 @@ import { useRegisterDog } from '@/lib/dogs/useRegisterDog';
 export default function RegisterDogPage() {
   const { command } = useRegisterDog();
 
-  return <RegisterDogForm command={command} />;
+  return (
+    <main className="page-container">
+      <h1 className="page-title">Register a Dog</h1>
+      <RegisterDogForm command={command} />
+    </main>
+  );
 }
