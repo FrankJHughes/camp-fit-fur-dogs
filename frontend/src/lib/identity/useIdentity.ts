@@ -19,7 +19,7 @@ export function useIdentity() {
       const result = await getIdentity();
 
       // ⭐ Network unreachable → service unavailable
-      if (!result.success && result.error === 'failed to fetch') {
+      if (!result.success && result.error?.toLowerCase() === 'failed to fetch') {
         setIsAuthenticated(false);
         setIsUnavailable(true);
         setUser(null);
