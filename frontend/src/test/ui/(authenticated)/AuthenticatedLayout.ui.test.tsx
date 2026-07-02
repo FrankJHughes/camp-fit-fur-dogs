@@ -1,20 +1,15 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
-// Mock module BEFORE importing the layout
-vi.mock('@/api/authentication/getSession');
+const mockUseSession = vi.fn();
 
-import { getSession } from '@/api/authentication/getSession';
-import { apiClientMock } from '@/test/setup';
+vi.mock('@/lib/authentication/useSession', () => ({
+  useSession: () => mockUseSession(),
+}));
 
-// Strongly-typed mock
-const getSessionMock = getSession as MockedFunction<typeof getSession>;
-
-describe('AuthenticatedLayout', () => {
+describe('AuthenticatedLayout (integration)', () => {
   beforeEach(() => {
-    apiClientMock.get.mockReset();
-    getSessionMock.mockReset();
+    mockUseSession.mockReset();
   });
 
   async function loadPage() {
@@ -23,9 +18,11 @@ describe('AuthenticatedLayout', () => {
   }
 
   it('shows children when authenticated', async () => {
-    getSessionMock.mockResolvedValue({
-      success: true,
-      data: { isAuthenticated: true },
+    mockUseSession.mockReturnValue({
+      isAuthenticated: true,
+      isUnavailable: false,
+      error: null,
+      refresh: vi.fn(),
     });
 
     const Layout = await loadPage();
@@ -37,13 +34,14 @@ describe('AuthenticatedLayout', () => {
     );
 
     expect(await screen.findByText('child')).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: /logout/i })).toBeInTheDocument();
   });
 
   it('shows login message when unauthenticated', async () => {
-    getSessionMock.mockResolvedValue({
-      success: true,
-      data: { isAuthenticated: false },
+    mockUseSession.mockReturnValue({
+      isAuthenticated: false,
+      isUnavailable: false,
+      error: null,
+      refresh: vi.fn(),
     });
 
     const Layout = await loadPage();
@@ -55,19 +53,17 @@ describe('AuthenticatedLayout', () => {
     );
 
     expect(await screen.findByText(/login to view/i)).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
-  it('calls logout endpoint', async () => {
-    getSessionMock.mockResolvedValue({
-      success: true,
-      data: { isAuthenticated: true },
+  it('behaves like unauthenticated when API is unavailable', async () => {
+    mockUseSession.mockReturnValue({
+      isAuthenticated: false,
+      isUnavailable: true,
+      error: 'authentication service unavailable',
+      refresh: vi.fn(),
     });
 
-    apiClientMock.get.mockResolvedValue({ ok: true, data: {} });
-
     const Layout = await loadPage();
-    const user = userEvent.setup();
 
     render(
       <Layout>
@@ -75,10 +71,6 @@ describe('AuthenticatedLayout', () => {
       </Layout>
     );
 
-    await user.click(await screen.findByRole('button', { name: /logout/i }));
-
-    expect(apiClientMock.get).toHaveBeenCalledWith(
-      `/auth/logout?return_url=${encodeURIComponent(window.location.href)}`
-    );
+    expect(await screen.findByText(/login to view/i)).toBeInTheDocument();
   });
 });

@@ -14,7 +14,6 @@ describe('(authenticated) layout', () => {
 
   async function renderLayout() {
     const { default: Layout } = await import('@/app/(authenticated)/layout');
-
     render(
       <Layout>
         <div>child</div>
@@ -25,7 +24,7 @@ describe('(authenticated) layout', () => {
   it('renders children when authenticated', async () => {
     mockUseSession.mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      isUnavailable: false,
       error: null,
       refresh: vi.fn(),
     });
@@ -38,8 +37,21 @@ describe('(authenticated) layout', () => {
   it('shows login message when unauthenticated', async () => {
     mockUseSession.mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      isUnavailable: false,
       error: null,
+      refresh: vi.fn(),
+    });
+
+    await renderLayout();
+
+    expect(await screen.findByText(/login to view/i)).toBeInTheDocument();
+  });
+
+  it('behaves like unauthenticated when API is unavailable', async () => {
+    mockUseSession.mockReturnValue({
+      isAuthenticated: false,
+      isUnavailable: true,
+      error: 'authentication service unavailable',
       refresh: vi.fn(),
     });
 
