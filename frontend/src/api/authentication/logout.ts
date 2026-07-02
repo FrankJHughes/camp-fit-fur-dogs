@@ -1,8 +1,9 @@
 import { createApiClient } from '@/lib/api/client';
 import { QueryResult } from '@/lib/api/queryResult';
-import { LogoutResponse } from '@/lib/authentication/getLogoutResponse';
 
 const client = createApiClient();
+
+export interface LogoutResponse { }
 
 export async function logout(returnUrl: string): Promise<QueryResult<LogoutResponse>> {
   try {

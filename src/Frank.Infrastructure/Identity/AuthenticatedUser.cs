@@ -13,36 +13,42 @@ public sealed class AuthenticatedUser : ICurrentUser
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Guid? Id
-    {
-        get
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user is null)
-            {
-                return null;
-            }
-
-            var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            return Guid.TryParse(id, out var guid) ? guid : null;
-        }
-    }
-
     public bool IsAuthenticated
     {
         get
         {
             var user = _httpContextAccessor.HttpContext?.User;
-
-            if (user?.Identity?.IsAuthenticated != true)
-            {
-                return false;
-            }
-
-            var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            return Guid.TryParse(id, out _);
+            return user?.Identity?.IsAuthenticated == true;
         }
     }
+
+    public Guid? Id
+    {
+        get
+        {
+            var claimValue = GetClaimValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(claimValue, out var id) ? id : null;
+        }
+    }
+
+    public string? Name
+    {
+        get
+        {
+            var claimValue = GetClaimValue(ClaimTypes.Name);
+            return claimValue;
+        }
+    }
+
+    private string? GetClaimValue(string key)
+    {
+        var user = GetClaimsPrincipal();
+        return user?.FindFirst(key)?.Value;
+    }
+
+    private ClaimsPrincipal? GetClaimsPrincipal()
+    {
+        return _httpContextAccessor.HttpContext?.User;
+    }
+
 }

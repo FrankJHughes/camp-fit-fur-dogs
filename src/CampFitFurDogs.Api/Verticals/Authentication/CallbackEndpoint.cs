@@ -10,7 +10,7 @@ using Frank.Abstractions;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication;
 
-public class AuthCallbackEndpoint : IEndpoint
+public class CallbackEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
@@ -78,8 +78,9 @@ public class AuthCallbackEndpoint : IEndpoint
         // 4. Issue authentication cookie
         await IssueAuthenticationCookie(
             http,
+            frankAuthCallbackResult.SubjectId,
             appAuthCallbackResult.CustomerId,
-            frankAuthCallbackResult.SubjectId
+            $"{frankAuthCallbackResult.GivenName} {frankAuthCallbackResult.FamilyName}"
         );
 
         // 5. Redirect user
@@ -88,14 +89,20 @@ public class AuthCallbackEndpoint : IEndpoint
 
     private static async Task IssueAuthenticationCookie(
         HttpContext http,
+        string externalSub,
         Guid customerId,
-        string externalSub)
+        string? displayName)
     {
         var claims = new List<Claim>
+    {
+        new(ClaimTypes.NameIdentifier, customerId.ToString()),
+        new("sub", externalSub)
+    };
+
+        if (!string.IsNullOrWhiteSpace(displayName))
         {
-            new(ClaimTypes.NameIdentifier, customerId.ToString()),
-            new("sub", externalSub)
-        };
+            claims.Add(new(ClaimTypes.Name, displayName));
+        }
 
         var identity = new ClaimsIdentity(claims, "cfd.session");
         var principal = new ClaimsPrincipal(identity);

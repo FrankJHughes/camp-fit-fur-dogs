@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication;
 
-public class AuthLogoutEndpoint : IEndpoint
+public class LogoutEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {

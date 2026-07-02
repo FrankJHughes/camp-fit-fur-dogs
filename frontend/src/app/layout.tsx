@@ -4,7 +4,7 @@ import { ActionsCard } from '@/lib/components/ActionsCard';
 import { login } from '@/api/authentication/login';
 import { logout } from '@/api/authentication/logout';
 import { useState } from 'react';
-import { useSession } from '@/lib/authentication/useSession';
+import { useIdentity } from '@/lib/identity/useIdentity';
 
 import './globals.css';
 
@@ -13,7 +13,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, isUnavailable, error: sessionError } = useSession();
+  const {
+    isAuthenticated,
+    isUnavailable,
+    error: sessionError,
+    user,
+  } = useIdentity();
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +52,10 @@ export default function RootLayout({
   const bannerMessage =
     isUnavailable ? 'authentication service unavailable' : sessionError ?? error;
 
+  const identityLabel = isAuthenticated
+    ? `You are ${user?.name ?? 'anonymous'}.`
+    : `You are anonymous.`;
+
   return (
     <html lang="en">
       <body className="app-root">
@@ -60,27 +69,31 @@ export default function RootLayout({
               <div className="error-banner">{bannerMessage}</div>
             )}
 
-            <ActionsCard
-              actions={
-                isUnavailable
-                  ? []
-                  : isAuthenticated
-                    ? [
-                      {
-                        label: 'Logout',
-                        variant: 'destructive',
-                        onClick: handleLogout,
-                      },
-                    ]
-                    : [
-                      {
-                        label: 'Login',
-                        variant: 'primary',
-                        onClick: handleLogin,
-                      },
-                    ]
-              }
-            />
+            {!isUnavailable && (
+              <div className="identity-wrapper">
+                <span className="identity-label">{identityLabel}</span>
+
+                <ActionsCard
+                  actions={
+                    isAuthenticated
+                      ? [
+                        {
+                          label: 'Logout',
+                          variant: 'destructive',
+                          onClick: handleLogout,
+                        },
+                      ]
+                      : [
+                        {
+                          label: 'Login',
+                          variant: 'primary',
+                          onClick: handleLogin,
+                        },
+                      ]
+                  }
+                />
+              </div>
+            )}
           </div>
         </header>
 

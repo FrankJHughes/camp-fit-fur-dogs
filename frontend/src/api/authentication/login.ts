@@ -1,8 +1,9 @@
 import { createApiClient } from '@/lib/api/client';
 import { QueryResult } from "@/lib/api/queryResult";
-import { LoginResponse } from "@/lib/authentication/getLoginResponse";
 
 const client = createApiClient();
+
+export interface LoginResponse { }
 
 export async function login(returnUrl: string): Promise<QueryResult<LoginResponse>> {
   try {
