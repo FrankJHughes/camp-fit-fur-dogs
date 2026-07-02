@@ -6,13 +6,7 @@ import { logout } from '@/api/authentication/logout';
 import { useState } from 'react';
 import { useSession } from '@/lib/authentication/useSession';
 
-import type { Metadata } from 'next';
 import './globals.css';
-
-export const metadata: Metadata = {
-  title: 'Camp Fit Fur Dogs',
-  description: 'Dog fitness camp management system',
-};
 
 export default function RootLayout({
   children,
@@ -54,39 +48,43 @@ export default function RootLayout({
     isUnavailable ? 'authentication service unavailable' : sessionError ?? error;
 
   return (
-    <html>
-      <body>
-        <header className="shell-header">
-          <h1>Camp Fit Fur Dogs</h1>
+    <html lang="en">
+      <body className="app-root">
+        <header className="app-header">
+          <div className="header-left">
+            <h1 className="app-title">Camp Fit Fur Dogs</h1>
+          </div>
 
-          {bannerMessage && (
-            <div className="error-banner">{bannerMessage}</div>
-          )}
+          <div className="header-right">
+            {bannerMessage && (
+              <div className="error-banner">{bannerMessage}</div>
+            )}
 
-          <ActionsCard
-            actions={
-              isUnavailable
-                ? [] // No login/logout when API is down
-                : isAuthenticated
-                  ? [
-                    {
-                      label: 'Logout',
-                      variant: 'destructive',
-                      onClick: handleLogout,
-                    },
-                  ]
-                  : [
-                    {
-                      label: 'Login',
-                      variant: 'primary',
-                      onClick: handleLogin,
-                    },
-                  ]
-            }
-          />
+            <ActionsCard
+              actions={
+                isUnavailable
+                  ? []
+                  : isAuthenticated
+                    ? [
+                      {
+                        label: 'Logout',
+                        variant: 'destructive',
+                        onClick: handleLogout,
+                      },
+                    ]
+                    : [
+                      {
+                        label: 'Login',
+                        variant: 'primary',
+                        onClick: handleLogin,
+                      },
+                    ]
+              }
+            />
+          </div>
         </header>
 
-        {children}
+        <main className="app-main">{children}</main>
       </body>
     </html>
   );

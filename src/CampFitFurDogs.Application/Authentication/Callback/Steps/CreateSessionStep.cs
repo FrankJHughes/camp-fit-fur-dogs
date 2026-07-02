@@ -43,7 +43,7 @@ public sealed class CreateSessionStep
             createdAt: ctx.Now
         );
 
-        await _repo.CreateAsync(session);
+        await _repo.CreateAsync(session, ct);
         await _uow.CommitAsync(ct);
 
         return ctx with { SessionId = session.Id.Value };

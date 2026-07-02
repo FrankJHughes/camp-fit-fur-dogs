@@ -18,19 +18,19 @@ public sealed class CreateSessionStepTests
         public SessionTokenHash? LookupHash { get; private set; }
         public Session? LookupResult { get; set; }
 
-        public Task CreateAsync(Session session)
+        public Task CreateAsync(Session session, CancellationToken ct)
         {
             Created = session;
             return Task.CompletedTask;
         }
 
-        public Task<Session?> GetByTokenHashAsync(SessionTokenHash hash)
+        public Task<Session?> GetByTokenHashAsync(SessionTokenHash hash, CancellationToken ct)
         {
             LookupHash = hash;
             return Task.FromResult(LookupResult);
         }
 
-        public Task RevokeAsync(SessionTokenHash hash)
+        public Task RevokeAsync(SessionTokenHash hash, CancellationToken ct)
         {
             RevokedHash = hash;
             return Task.CompletedTask;

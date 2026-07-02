@@ -4,12 +4,12 @@ namespace CampFitFurDogs.TestUtilities.Fakes;
 
 public sealed class FakeSessionRepository : ISessionRepository
 {
-    public List<Session> CreatedSessions { get; } = new();
-    public List<SessionTokenHash> RevokedHashes { get; } = new();
+    public List<Session> CreatedSessions { get; } = [];
+    public List<SessionTokenHash> RevokedHashes { get; } = [];
     public Session? SessionToReturn { get; set; }
     public Exception? ExceptionToThrow { get; set; }
 
-    public Task CreateAsync(Session session)
+    public Task CreateAsync(Session session, CancellationToken ct)
     {
         if (ExceptionToThrow is not null)
             throw ExceptionToThrow;
@@ -18,7 +18,7 @@ public sealed class FakeSessionRepository : ISessionRepository
         return Task.CompletedTask;
     }
 
-    public Task RevokeAsync(SessionTokenHash tokenHash)
+    public Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken ct)
     {
         if (ExceptionToThrow is not null)
             throw ExceptionToThrow;
@@ -27,7 +27,7 @@ public sealed class FakeSessionRepository : ISessionRepository
         return Task.CompletedTask;
     }
 
-    public Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash)
+    public Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash, CancellationToken ct)
     {
         if (ExceptionToThrow is not null)
             throw ExceptionToThrow;

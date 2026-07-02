@@ -1,27 +1,29 @@
-import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import Home from '@/app/(public)/page';
-import { getHealth } from '@/api/health/getHealth';
 
-vi.mock('@/api/health/getHealth');
+// Mock useApiQuery BEFORE importing Home
+const mockUseApiQuery = vi.fn();
+
+vi.mock('@/lib/hooks/useApiQuery', () => ({
+  useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+}));
 
 describe('Home page', () => {
   beforeEach(() => {
-    vi.mocked(getHealth).mockReset();
+    mockUseApiQuery.mockReset();
   });
 
-  it('renders the heading', async () => {
-    vi.mocked(getHealth).mockResolvedValue({
-      success: true,
-      data: { status: 'Healthy' }
+  it('renders the API Health heading', async () => {
+    mockUseApiQuery.mockReturnValue({
+      status: 'success',
+      data: { status: 'Healthy' },
     });
 
     render(<Home />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { level: 1, name: /camp fit fur dogs/i })
-      ).toBeInTheDocument();
-    });
+    expect(
+      screen.getByRole('heading', { level: 1, name: /api health status/i })
+    ).toBeInTheDocument();
   });
 });
