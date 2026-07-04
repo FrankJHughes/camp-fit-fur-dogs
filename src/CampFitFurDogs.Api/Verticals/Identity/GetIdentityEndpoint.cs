@@ -1,6 +1,5 @@
 using Frank.Abstractions;
 using Frank.Abstractions.Identity;
-using Microsoft.AspNetCore.Http;
 
 namespace CampFitFurDogs.Api.Verticals.Identity;
 

@@ -23,11 +23,16 @@ public sealed class BuildCookieStepTests
 
             Returned = new GeneratedSessionToken(
                 PlaintextToken: plaintext,
-                Hash: SessionTokenHash.From(finalHash)
+                HashedToken: SessionTokenHash.From(finalHash)
             );
         }
 
         public GeneratedSessionToken Generate() => Returned;
+
+        public SessionTokenHash Hash(string plaintextToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Fact]

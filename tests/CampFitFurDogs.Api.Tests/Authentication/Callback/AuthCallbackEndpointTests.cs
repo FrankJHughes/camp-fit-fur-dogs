@@ -7,8 +7,6 @@ using Frank.Abstractions.Authentication.Callback;
 using Frank.Abstractions.ImmutableContext;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Testing.Contexts;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -81,7 +79,6 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     {
         _ctx = new ApiContext()
             .WithDatabase(false)
-            .WithCookieAuthOnly(false)
             .WithServiceOverride(services =>
             {
                 // Remove real engines
@@ -105,13 +102,6 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
                     ApplicationAuthCallbackRequest,
                     ApplicationAuthCallbackContext,
                     ApplicationAuthCallbackContextBuilderResult>, FakeAppEngine>();
-
-                // Ensure cookie auth works in TestServer
-                services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
-                {
-                    opts.Cookie.SecurePolicy = CookieSecurePolicy.None;
-                    opts.Cookie.SameSite = SameSiteMode.Lax;
-                });
             });
 
         _api = new ApiFactory(_ctx);
@@ -154,9 +144,9 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
         response.Headers.Location!.ToString()
             .Should().Be("http://localhost:5173/dashboard");
 
-        // Cookie issued
+        // Cookie issued (domain session cookie)
         response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeTrue();
-        cookies!.Any(c => c.Contains("cfd.session", StringComparison.OrdinalIgnoreCase))
+        cookies!.Any(c => c.Contains("session=", StringComparison.OrdinalIgnoreCase))
             .Should().BeTrue();
     }
 }

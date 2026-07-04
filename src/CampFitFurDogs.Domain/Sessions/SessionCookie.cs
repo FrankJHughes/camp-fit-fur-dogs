@@ -14,7 +14,7 @@ public sealed class SessionCookie : ValueObject
     }
 
     public static SessionCookie FromPlaintextToken(string token)
-        => new("cfd.session", token);
+        => new("session", token);
 
     public override string ToString() => $"{Name}={Value}";
 

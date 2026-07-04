@@ -164,7 +164,7 @@ The endpoint returns:
 ````http
 302 Found
 Location: <RedirectUrl from Application pipeline>
-Set-Cookie: cfd.session=...
+Set-Cookie: cffd.session=...
 ````
 
 The redirect URL is computed **only** by the Application pipeline.

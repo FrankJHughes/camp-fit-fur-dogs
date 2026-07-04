@@ -38,7 +38,7 @@ public sealed class BuildCookieStep
         return Task.FromResult(
             ctx with
             {
-                TokenHash = generated.Hash.Value,
+                TokenHash = generated.HashedToken.Value,
                 CookieValue = cookie.Value
             }
         );

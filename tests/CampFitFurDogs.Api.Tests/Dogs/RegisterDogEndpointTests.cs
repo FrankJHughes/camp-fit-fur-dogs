@@ -28,8 +28,7 @@ public class RegisterDogEndpointTests : IAsyncLifetime
 
         // 2. Build ApiContext
         var ctx = new ApiContext()
-            .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(true);
+            .WithDatabase(true, _postgres);
 
         // 3. Create ApiFactory
         _api = new ApiFactory(ctx);

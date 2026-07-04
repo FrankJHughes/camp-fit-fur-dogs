@@ -1,4 +1,5 @@
 using Frank.Abstractions.Startup;
+using Frank.Infrastructure.Authorization;
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
@@ -23,5 +24,6 @@ public class AuthorizationStartupModule : IStartupModule
     public void Use(WebApplication app)
     {
         app.UseAuthorization();
+        app.UseFrankAuthorization();
     }
 }

@@ -1,8 +1,6 @@
-using System.Text.Json;
 using CampFitFurDogs.Application.Settings;
 using CampFitFurDogs.Domain.Errors;
 using Frank.Abstractions;
-using Frank.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -12,20 +10,29 @@ public class LogoutEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/auth/logout", HandleAsync);
+        app.MapGet("/api/auth/logout", HandleAsync)
+            .AllowAnonymous();
     }
 
     private async Task<IResult> HandleAsync(
         HttpContext http,
-        [FromServices] IOptionsMonitor<AuthCallbackOidcSettings> oidcOptionsMonitor,
-        [FromServices] IOptionsMonitor<FrontendSettings> frontendOptionsMonitor,
-        IConfiguration config)
+        [FromServices] IOptionsMonitor<FrontendSettings> frontendOptionsMonitor)
     {
-        // Clear session cookie
-        http.Response.Cookies.Delete("cffd.session");
+        //
+        // IMPORTANT:
+        //
+        // We no longer use ASP.NET cookie authentication ("cffd.session").
+        // The real authentication cookie is now the domain session cookie: "session".
+        //
+        // So logout simply deletes the domain session cookie.
+        //
+        http.Response.Cookies.Delete("session");
 
-        // Capture return_url (client-specified post-login redirect)
+        //
+        // Determine where to redirect after logout.
+        //
         var returnUrl = http.Request.Query["return_url"].ToString();
+
         if (string.IsNullOrWhiteSpace(returnUrl))
         {
             var frontendBaseUrl = frontendOptionsMonitor.CurrentValue?.BaseUrl;
@@ -37,7 +44,9 @@ public class LogoutEndpoint : IEndpoint
             returnUrl = frontendBaseUrl;
         }
 
-        // Redirect to logged-out page
+        //
+        // Redirect user to the frontend's logged-out page.
+        //
         return Results.Redirect(returnUrl);
     }
 }

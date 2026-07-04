@@ -18,7 +18,12 @@ public sealed class FakeTokenService : ISessionTokenService
 
         return new GeneratedSessionToken(
             PlaintextToken: plaintext,
-            Hash: hash
+            HashedToken: hash
         );
+    }
+
+    public SessionTokenHash Hash(string plaintextToken)
+    {
+        throw new NotImplementedException();
     }
 }

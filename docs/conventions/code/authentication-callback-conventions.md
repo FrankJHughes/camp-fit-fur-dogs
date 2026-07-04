@@ -79,7 +79,7 @@ The callback endpoint must issue a cookie that is:
 - Path=/  
 - Max‑Age set  
 
-Cookie name: `cfd.session`
+Cookie name: `cffd.session`
 
 ---
 

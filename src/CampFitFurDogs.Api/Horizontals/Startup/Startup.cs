@@ -21,6 +21,7 @@ public static class Startup
             new LoggingStartupModule(),
             new ObservationsStartupModule(),
             new SecurityHeadersStartupModule(),
+            new SessionValidationStartupModule(),
             new SwaggerStartupModule(),
             new ValidatorsStartupModule()
         ];
@@ -30,10 +31,12 @@ public static class Startup
     {
         var startupModules = ConstructStartupModules();
         var startupEngine = new StartupEngine(startupModules);
+
+        // Run Add on ALL modules
         startupEngine.AddAll(builder);
 
-        builder.Services.AddStartupModules();
-        builder.Services.AddStartupEngine();
+        // Register THIS engine in DI so UseAllServices sees the same module set
+        builder.Services.AddSingleton(startupEngine);
     }
 
     public static void UseAllServices(WebApplication app)
@@ -41,5 +44,4 @@ public static class Startup
         var startupEngine = app.Services.GetRequiredService<StartupEngine>();
         startupEngine.UseAll(app);
     }
-
 }

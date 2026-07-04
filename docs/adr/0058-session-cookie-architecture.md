@@ -93,7 +93,7 @@ The Api endpoint issues it.
 The cookie name is:
 
 ```
-cfd.session
+cffd.session
 ```
 
 ### Requirements

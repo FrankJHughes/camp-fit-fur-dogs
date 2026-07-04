@@ -19,11 +19,17 @@ public static class ServiceCollectionExtensions
 
         services
             .AddOptions<AuthCallbackSettings>()
-            .BindConfiguration("Frontend")
+            .BindConfiguration("Authentication:Callback")
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
         services.AddApplicationAuthCallback();
+
+        services
+            .AddOptions<SessionSettings>()
+            .BindConfiguration("Authentication:Session")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.AddFrankCommand([
             typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly

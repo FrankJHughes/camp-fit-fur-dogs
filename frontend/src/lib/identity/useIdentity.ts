@@ -28,16 +28,17 @@ export function useIdentity() {
         return;
       }
 
+      // ⭐ API reachable but returned an error → treat as anonymous
+      // This covers: corrupt session, expired session, backend bug, invalid shape, etc.
       if (!result.success) {
-        // API reachable but session invalid
         setIsAuthenticated(false);
         setUser(null);
-        setError(result.error ?? 'Unable to determine session state');
+        setError(null); // do NOT show "Unable to determine session state"
         setIsLoading(false);
         return;
       }
 
-      // API reachable and session valid
+      // ⭐ API reachable and session valid
       setIsAuthenticated(result.data.isAuthenticated);
       setUser(result.data.user ?? null);
       setIsLoading(false);

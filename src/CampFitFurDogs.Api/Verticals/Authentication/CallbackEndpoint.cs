@@ -1,11 +1,9 @@
-using System.Security.Claims;
+using System.Text.Json;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using Frank.Abstractions.Authentication.Callback;
-using CampFitFurDogs.Domain.Errors;
-using Microsoft.AspNetCore.Authentication;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Abstractions.ImmutableContext;
-using System.Text.Json;
+using CampFitFurDogs.Domain.Errors;
 using Frank.Abstractions;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication;
@@ -75,38 +73,19 @@ public class CallbackEndpoint : IEndpoint
         };
         var appAuthCallbackResult = await appEngine.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
 
-        // 4. Issue authentication cookie
-        await IssueAuthenticationCookie(
-            http,
-            frankAuthCallbackResult.SubjectId,
-            appAuthCallbackResult.CustomerId,
-            $"{frankAuthCallbackResult.GivenName} {frankAuthCallbackResult.FamilyName}"
-        );
+        // 4. Issue the REAL CFFD session cookie
+        http.Response.Cookies.Append(
+            "session",
+            appAuthCallbackResult.CookieValue,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+                // No Expires — the cookie value already encodes expiration
+            });
 
         // 5. Redirect user
         return Results.Redirect(appAuthCallbackResult.RedirectUrl);
-    }
-
-    private static async Task IssueAuthenticationCookie(
-        HttpContext http,
-        string externalSub,
-        Guid customerId,
-        string? displayName)
-    {
-        var claims = new List<Claim>
-    {
-        new(ClaimTypes.NameIdentifier, customerId.ToString()),
-        new("sub", externalSub)
-    };
-
-        if (!string.IsNullOrWhiteSpace(displayName))
-        {
-            claims.Add(new(ClaimTypes.Name, displayName));
-        }
-
-        var identity = new ClaimsIdentity(claims, "cfd.session");
-        var principal = new ClaimsPrincipal(identity);
-
-        await http.SignInAsync("cfd.session", principal);
     }
 }

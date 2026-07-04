@@ -79,14 +79,14 @@ It contains **no user data**, is **not a JWT**, and is **not readable** by the c
 Example (conceptual):
 
 ````text
-Set-Cookie: cfd.session=2f9c3e2a...; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400
+Set-Cookie: cffd.session=2f9c3e2a...; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400
 ````
 
 ### Cookie Properties
 
 | Property | Value | Purpose |
 |---------|--------|---------|
-| Name | `cfd.session` | Standardized across API |
+| Name | `cffd.session` | Standardized across API |
 | Value | 256‑bit random token | Prevents guessing/bruteforce |
 | HttpOnly | `true` | Prevents JS access |
 | Secure | `true` in preview/prod | Required for HTTPS |
@@ -194,7 +194,7 @@ It will be added in **US‑111**.
 
 The middleware will:
 
-- Read the `cfd.session` cookie  
+- Read the `cffd.session` cookie  
 - Hash the token  
 - Look up the session by hash  
 - Validate expiration  

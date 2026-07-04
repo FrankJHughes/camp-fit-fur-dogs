@@ -1,5 +1,6 @@
+using CampFitFurDogs.Api.Horizontals.Session.Authentication;
 using Frank.Abstractions.Startup;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -30,57 +31,12 @@ public class AuthenticationStartupModule : IStartupModule
 
         var oidcDisabled = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
 
-        //
-        // IMPORTANT:
-        //
-        // DefaultChallengeScheme MUST NOT be OpenIdConnect.
-        // If it is, ANY unauthorized request (including "/") triggers an OIDC redirect.
-        //
-        // Instead, the cookie scheme handles authentication,
-        // and OIDC is ONLY invoked when the user explicitly hits /api/auth/login.
-        //
-        var auth = services
-            .AddAuthentication(options =>
-            {
-                options.DefaultScheme = "cfd.session";
-                options.DefaultAuthenticateScheme = "cfd.session";
-
-                // FIX: Never auto-challenge with OIDC.
-                // Only /api/auth/login should trigger OIDC.
-                options.DefaultChallengeScheme = "cfd.session";
-            })
-            .AddCookie("cfd.session", options =>
-            {
-                options.Cookie.Name = "cfd.session";
-                options.Cookie.Path = "/";
-                options.Cookie.HttpOnly = true;
-
-                options.Cookie.SecurePolicy = env.IsProduction()
-                    ? CookieSecurePolicy.Always
-                    : CookieSecurePolicy.None;
-
-                options.Cookie.SameSite = SameSiteMode.None;
-
-                options.LoginPath = "/api/auth/login";
-                options.LogoutPath = "/api/auth/logout";
-
-                //
-                // Prevent 302 redirects for APIs.
-                //
-                options.Events = new CookieAuthenticationEvents
-                {
-                    OnRedirectToLogin = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToAccessDenied = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+        var auth = services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = "Session";
+            options.DefaultChallengeScheme = "Session";
+        })
+        .AddScheme<AuthenticationSchemeOptions, SessionAuthenticationHandler>("Session", o => { });
 
         //
         // Add OIDC only if enabled
@@ -152,6 +108,5 @@ public class AuthenticationStartupModule : IStartupModule
     public void Use(WebApplication app)
     {
         app.UseForwardedHeaders();
-        app.UseAuthentication();
     }
 }
