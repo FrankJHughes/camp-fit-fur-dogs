@@ -26,10 +26,12 @@ export default function DogsPage() {
     []
   );
 
+  // Loading
   if (state.status === 'loading') {
     return <p>Loading…</p>;
   }
 
+  // Error
   if (state.status === 'error') {
     return (
       <p role="alert" aria-live="assertive" className="error-message">
@@ -38,10 +40,21 @@ export default function DogsPage() {
     );
   }
 
+  // Unauthenticated
+  if (state.status === 'unauthenticated') {
+    return (
+      <p role="alert" aria-live="assertive" className="error-message">
+        You must be logged in to view your dogs.
+      </p>
+    );
+  }
+
+  // Not found
   if (state.status === 'not-found') {
     return <p className="empty-state">Not found.</p>;
   }
 
+  // Success — safe to access state.data
   const dogs = state.data.dogs ?? [];
 
   return (

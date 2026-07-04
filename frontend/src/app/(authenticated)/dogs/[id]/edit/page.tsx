@@ -28,10 +28,35 @@ export default function EditDogProfilePage() {
     onSuccess: () => router.push(`/dogs/${id}`),
   });
 
-  if (state.status === 'loading') return <p>Loading…</p>;
-  if (state.status === 'not-found') return <DogNotFound />;
-  if (state.status === 'error') return <p className="error-message">{state.error}</p>;
+  // Loading
+  if (state.status === 'loading') {
+    return <p>Loading…</p>;
+  }
 
+  // Unauthenticated
+  if (state.status === 'unauthenticated') {
+    return (
+      <p role="alert" aria-live="assertive" className="error-message">
+        You must be logged in to edit this dog.
+      </p>
+    );
+  }
+
+  // Not found
+  if (state.status === 'not-found') {
+    return <DogNotFound />;
+  }
+
+  // Error
+  if (state.status === 'error') {
+    return (
+      <p role="alert" aria-live="assertive" className="error-message">
+        An unexpected error occurred. Please try again.
+      </p>
+    );
+  }
+
+  // Success — safe to access state.data
   const initialValues: DogFormValues = {
     name: state.data.name,
     breed: state.data.breed,

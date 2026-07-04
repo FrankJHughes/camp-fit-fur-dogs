@@ -70,14 +70,14 @@ export function DogForm({
       <h1 className="page-title">{title}</h1>
 
       {displayErrors.form && (
-        <p
+        <div
           id="error-form"
           role="alert"
           aria-live="assertive"
           className="error-message"
         >
           <FieldError id="error-form" message={displayErrors.form} />
-        </p>
+        </div>
       )}
 
       <div className="form-section">

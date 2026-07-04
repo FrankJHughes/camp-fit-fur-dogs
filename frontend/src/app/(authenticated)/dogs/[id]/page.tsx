@@ -17,27 +17,42 @@ export default function GetDogProfilePage() {
   const dogId = params?.id;
   const router = useRouter();
 
-  // Guard early for missing id (keeps hooks stable)
   if (!dogId) {
     return <p className="error-message">Invalid dog id</p>;
   }
 
-  // Hooks must be called unconditionally and in the same order on every render
   const state = useApiQuery(() => getDogProfile(dogId).then(toQueryState), [dogId]);
 
-  // Provide a stable name argument (empty string until we have data)
   const removeDog = useRemoveDog(
     dogId,
     state.status === 'success' ? state.data.name : '',
     (path: string) => router.push(path)
   );
 
-  // Keep early returns consistent so hook order never changes
-  if (state.status === 'loading') return <p>Loading…</p>;
-  if (state.status === 'not-found') return <DogNotFound />;
-  if (state.status === 'error') return <p className="error-message">{state.error}</p>;
+  if (state.status === 'loading') {
+    return <p>Loading…</p>;
+  }
 
-  // Use a plain const for actions (no hooks) to avoid any hook-order surprises
+  if (state.status === 'unauthenticated') {
+    return (
+      <p role="alert" aria-live="assertive" className="error-message">
+        You must be logged in to view this dog.
+      </p>
+    );
+  }
+
+  if (state.status === 'not-found') {
+    return <DogNotFound />;
+  }
+
+  if (state.status === 'error') {
+    return (
+      <p role="alert" aria-live="assertive" className="error-message">
+        Something went wrong
+      </p>
+    );
+  }
+
   const actions: Action[] = [
     { label: 'Edit', onClick: () => router.push(`/dogs/${dogId}/edit`) },
     { label: 'Remove', onClick: removeDog.open },
@@ -56,11 +71,7 @@ export default function GetDogProfilePage() {
       {removeDog.dialogProps && <ConfirmDialog {...removeDog.dialogProps} />}
 
       {removeDog.error && (
-        <p
-          role="alert"
-          aria-live="assertive"
-          className="error-message"
-        >
+        <p role="alert" aria-live="assertive" className="error-message">
           {removeDog.error}
         </p>
       )}
