@@ -30,7 +30,7 @@ export default function RootLayout({
     const result = await login(window.location.href);
 
     if (!result.success) {
-      setError(result.error ?? 'Login failed');
+      setError('error' in result ? result.error : 'Login failed');
       setIsLoading(false);
       return;
     }
@@ -43,7 +43,7 @@ export default function RootLayout({
     const result = await logout(window.location.href);
 
     if (!result.success) {
-      setError(result.error ?? 'Logout failed');
+      setError('error' in result ? result.error : 'Logout failed');
       setIsLoading(false);
       return;
     }
