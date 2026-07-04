@@ -17,11 +17,26 @@ export async function login(returnUrl: string): Promise<QueryResult<LoginRespons
     if (result.ok) {
       return { success: true, data: result.data };
     }
+
+    // 404 → not found
     if (result.error.status === 404) {
       return { success: false, notFound: true };
     }
-    return { success: false, notFound: false, error: result.error.message };
+
+    // 401 → unauthorized
+    if (result.error.status === 401) {
+      return { success: false, unauthorized: true };
+    }
+
+    // All other errors → error
+    return {
+      success: false,
+      error: result.error.message ?? 'An unknown error occurred.',
+    };
   } catch (err: any) {
-    return { success: false, notFound: false, error: err.message };
+    return {
+      success: false,
+      error: err?.message ?? 'An unknown error occurred.',
+    };
   }
 }

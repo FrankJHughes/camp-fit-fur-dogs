@@ -30,7 +30,6 @@ describe('logout', () => {
 
     expect(result).toEqual({
       success: false,
-      notFound: false,
       error: 'boom',
     });
   });
