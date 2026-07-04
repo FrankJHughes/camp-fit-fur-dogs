@@ -15,5 +15,5 @@ export async function getHealth(): Promise<QueryResult<GetHealthResponse>> {
   if (result.error.status === 404) {
     return { success: false, notFound: true };
   }
-  return { success: false, notFound: false, error: result.error.message };
+  return { success: false, error: result.error.message };
 }

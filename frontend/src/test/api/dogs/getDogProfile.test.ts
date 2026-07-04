@@ -54,7 +54,6 @@ describe('getDogProfile', () => {
 
     expect(result).toEqual({
       success: false,
-      notFound: false,
       error: 'Internal Server Error',
     });
   });
@@ -69,7 +68,6 @@ describe('getDogProfile', () => {
 
     expect(result).toEqual({
       success: false,
-      notFound: false,
       error: 'A network error occurred',
     });
   });

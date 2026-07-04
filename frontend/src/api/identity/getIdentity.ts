@@ -22,6 +22,5 @@ export async function getIdentity(): Promise<QueryResult<GetIdentityResponse>> {
     return { success: false, notFound: true };
   }
 
-  // ⭐ Do NOT return notFound: false
   return { success: false, error: result.error.message };
 }

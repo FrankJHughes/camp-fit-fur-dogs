@@ -36,7 +36,6 @@ describe('listDogsByCurrentUser', () => {
 
     expect(result).toEqual({
       success: false,
-      notFound: false,
       error: 'Server error',
     });
   });
