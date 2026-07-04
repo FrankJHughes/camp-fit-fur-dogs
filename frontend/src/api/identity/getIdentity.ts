@@ -4,10 +4,7 @@ import type { QueryResult } from '@/lib/api/queryResult';
 const client = createApiClient();
 
 export interface GetIdentityResponse {
-  isAuthenticated: boolean;
-  user?: {
-    name: string;
-  };
+  name: string;
 }
 
 export async function getIdentity(): Promise<QueryResult<GetIdentityResponse>> {
@@ -17,20 +14,14 @@ export async function getIdentity(): Promise<QueryResult<GetIdentityResponse>> {
     return { success: true, data: result.data };
   }
 
+  if (result.error.status === 401) {
+    return { success: false, unauthorized: true };
+  }
+
   if (result.error.status === 404) {
     return { success: false, notFound: true };
   }
 
-  return {
-    success: false,
-    notFound: false,
-    error: result.error.message,
-  };
-}
-
-export interface GetIdentityResponse {
-  isAuthenticated: boolean;
-  user?: {
-    name: string;
-  };
+  // ⭐ Do NOT return notFound: false
+  return { success: false, error: result.error.message };
 }

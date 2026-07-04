@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 export type QueryState<T> =
   | { status: 'loading' }
   | { status: 'success'; data: T }
+  | { status: 'unauthenticated' }
   | { status: 'not-found' }
   | { status: 'error'; error: string };
 

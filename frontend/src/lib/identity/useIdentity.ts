@@ -18,8 +18,8 @@ export function useIdentity() {
     try {
       const result = await getIdentity();
 
-      // ⭐ Network unreachable → service unavailable
-      if (!result.success && result.error?.toLowerCase() === 'failed to fetch') {
+      // Network unreachable → service unavailable
+      if (!result.success && 'error' in result && result.error.toLowerCase() === 'failed to fetch') {
         setIsAuthenticated(false);
         setIsUnavailable(true);
         setUser(null);
@@ -28,22 +28,39 @@ export function useIdentity() {
         return;
       }
 
-      // ⭐ API reachable but returned an error → treat as anonymous
-      // This covers: corrupt session, expired session, backend bug, invalid shape, etc.
-      if (!result.success) {
+      // Unauthorized → anonymous user
+      if (!result.success && 'unauthorized' in result) {
         setIsAuthenticated(false);
         setUser(null);
-        setError(null); // do NOT show "Unable to determine session state"
+        setError(null);
         setIsLoading(false);
         return;
       }
 
-      // ⭐ API reachable and session valid
-      setIsAuthenticated(result.data.isAuthenticated);
-      setUser(result.data.user ?? null);
+      // Not found → treat as anonymous
+      if (!result.success && 'notFound' in result) {
+        setIsAuthenticated(false);
+        setUser(null);
+        setError(null);
+        setIsLoading(false);
+        return;
+      }
+
+      // Other API errors → anonymous
+      if (!result.success && 'error' in result) {
+        setIsAuthenticated(false);
+        setUser(null);
+        setError(result.error);
+        setIsLoading(false);
+        return;
+      }
+
+      // Success → authenticated
+      setIsAuthenticated(true);
+      setUser({ name: result.data.name });
       setIsLoading(false);
+
     } catch {
-      // ⭐ Catch-all for network failures
       setIsAuthenticated(false);
       setIsUnavailable(true);
       setUser(null);

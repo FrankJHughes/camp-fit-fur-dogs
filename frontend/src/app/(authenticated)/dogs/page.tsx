@@ -26,17 +26,21 @@ export default function DogsPage() {
     []
   );
 
-  if (state.status === 'loading') return <p>Loading…</p>;
+  if (state.status === 'loading') {
+    return <p>Loading…</p>;
+  }
 
-  if (state.status === 'error')
+  if (state.status === 'error') {
     return (
       <p role="alert" aria-live="assertive" className="error-message">
-        {state.error}
+        Something went wrong
       </p>
     );
+  }
 
-  if (state.status === 'not-found')
+  if (state.status === 'not-found') {
     return <p className="empty-state">Not found.</p>;
+  }
 
   const dogs = state.data.dogs ?? [];
 

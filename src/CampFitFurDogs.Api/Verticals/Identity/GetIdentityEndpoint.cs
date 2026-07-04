@@ -9,19 +9,13 @@ public class GetIdentityEndpoint : IEndpoint
     {
         app.MapGet("/api/identity", (ICurrentUser currentUser) =>
         {
-            var response = new GetIdentityResponse
+            var dto = new GetIdentityResponse
             {
-                IsAuthenticated = currentUser.IsAuthenticated,
-                User = currentUser.IsAuthenticated
-                    ? new IdentityUserDto
-                    {
-                        Id = currentUser.Id,
-                        Name = currentUser.Name
-                    }
-                    : null
+                Name = currentUser.Name!
             };
 
-            return Results.Json(response);
-        });
+            return Results.Ok(dto);
+        })
+        .RequireAuthorization(); // Require authenticated user for this endpoint
     }
 }
