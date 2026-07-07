@@ -1,7 +1,7 @@
 import type { Action } from '@/lib/action';
 
 interface ActionsCardProps {
-  header: React.ReactNode;
+  header?: React.ReactNode;
   actions: Action[];
 }
 
