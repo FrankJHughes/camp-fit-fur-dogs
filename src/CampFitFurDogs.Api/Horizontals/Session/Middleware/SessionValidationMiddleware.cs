@@ -23,7 +23,14 @@ public sealed class SessionValidationMiddleware
         ISessionTokenService tokens,
         IOptionsMonitor<SessionSettings> sessionOptions)
     {
-        if (context.Request.Path.StartsWithSegments("/api/auth"))
+        var excludes = new string[]
+        {
+            "/api/identity/callback",
+            "/api/identity/login",
+            "/api/identity/logout"
+        };
+
+        if (excludes.Any(exclude => context.Request.Path.StartsWithSegments(exclude)))
         {
             await _next(context);
             return;

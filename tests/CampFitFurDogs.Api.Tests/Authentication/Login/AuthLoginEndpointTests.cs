@@ -5,7 +5,7 @@ using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
-using CampFitFurDogs.Api.Verticals.Authentication;
+using CampFitFurDogs.Api.Verticals.Identity;
 using System.Net.Http.Json;
 
 namespace CampFitFurDogs.Api.Tests.Authentication.Login;
@@ -57,13 +57,13 @@ public class AuthLoginEndpointTests : IAsyncLifetime
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
                 ["Authentication:Callback:Oidc:ClientSecret"] = "secret123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback",
                 ["Authentication:Callback:PostLoginRedirectUrl"] = "http://localhost:5173/",
                 ["Authentication:Callback:Oidc:Disabled"] = "false"
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
@@ -76,7 +76,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         query["scope"].ToString().Should().Be("openid profile email");
         query["response_type"].ToString().Should().Be("code");
         query["client_id"].ToString().Should().Be("client123");
-        query["redirect_uri"].ToString().Should().Be("http://localhost/api/auth/callback");
+        query["redirect_uri"].ToString().Should().Be("http://localhost/api/identity/callback");
     }
 
     // ------------------------------------------------------------
@@ -95,7 +95,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
@@ -112,11 +112,11 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
@@ -133,11 +133,11 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 

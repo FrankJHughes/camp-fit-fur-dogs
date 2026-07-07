@@ -127,7 +127,7 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
         var stateJson = JsonSerializer.Serialize(stateObj);
         var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
 
-        var response = await client.GetAsync($"/api/auth/callback?state={Uri.EscapeDataString(state)}");
+        var response = await client.GetAsync($"/api/identity/callback?state={Uri.EscapeDataString(state)}");
 
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
@@ -148,7 +148,7 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
         var stateJson = JsonSerializer.Serialize(stateObj);
         var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
 
-        var response = await client.GetAsync($"/api/auth/callback?code=abc123&state={Uri.EscapeDataString(state)}");
+        var response = await client.GetAsync($"/api/identity/callback?code=abc123&state={Uri.EscapeDataString(state)}");
 
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 

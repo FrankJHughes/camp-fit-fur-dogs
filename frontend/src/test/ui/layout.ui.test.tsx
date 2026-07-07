@@ -1,78 +1,127 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 
-const mockUseIdentity = vi.fn();
-
-vi.mock('@/lib/identity/useIdentity', () => ({
-  useIdentity: () => mockUseIdentity(),
+// Mock identity API calls
+vi.mock('@/api/identity/identify', () => ({
+  identify: vi.fn(),
 }));
 
-vi.mock('@/api/authentication/login', () => ({ login: vi.fn() }));
-vi.mock('@/api/authentication/logout', () => ({ logout: vi.fn() }));
+vi.mock('@/api/identity/login', () => ({
+  login: vi.fn(),
+}));
+
+vi.mock('@/api/identity/logout', () => ({
+  logout: vi.fn(),
+}));
+
+import { identify } from '@/api/identity/identify';
+import { login } from '@/api/identity/login';
+import { logout } from '@/api/identity/logout';
 
 async function loadLayout() {
   const mod = await import('@/app/layout');
   return mod.default;
 }
 
+// Helper: wait for identity transition (2 seconds + buffer)
+function waitIdentityTransition() {
+  return new Promise(resolve => setTimeout(resolve, 2100));
+}
+
 describe('RootLayout — identity + authentication integration', () => {
-  it('shows identity and logout button when authenticated', async () => {
-    mockUseIdentity.mockReturnValue({
-      isAuthenticated: true,
-      isUnavailable: false,
-      isLoading: false,
-      error: null,
-      user: { name: 'Harry Styles' },
-      refresh: vi.fn(),
+  const mockIdentify = vi.mocked(identify);
+  const mockLogin = vi.mocked(login);
+  const mockLogout = vi.mocked(logout);
+
+  beforeEach(() => {
+    mockIdentify.mockReset();
+    mockLogin.mockReset();
+    mockLogout.mockReset();
+  });
+
+  it('shows authenticated identity and logout button after identify succeeds', async () => {
+    mockIdentify.mockResolvedValue({
+      success: true,
+      data: { name: 'Harry Styles' },
     });
 
     const Layout = await loadLayout();
     render(<Layout><div>child</div></Layout>);
 
-    expect(screen.getByText(/you are harry styles/i)).toBeInTheDocument();
+    await waitIdentityTransition();
+
+    expect(screen.getByText(/harry styles/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
   });
 
-  it('shows anonymous identity and login button when unauthenticated', async () => {
-    mockUseIdentity.mockReturnValue({
-      isAuthenticated: false,
-      isUnavailable: false,
-      isLoading: false,
-      error: null,
-      user: null,
-      refresh: vi.fn(),
+  it('shows anonymous identity and login button when identify fails', async () => {
+    mockIdentify.mockResolvedValue({
+      success: false,
+      error: 'unauthenticated',
     });
 
     const Layout = await loadLayout();
     render(<Layout><div>child</div></Layout>);
 
-    expect(screen.getByText(/you are anonymous/i)).toBeInTheDocument();
+    await waitIdentityTransition();
+
+    expect(screen.getByText(/anonymous/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
-  it('hides identity and auth actions when service is unavailable', async () => {
-    mockUseIdentity.mockReturnValue({
-      isAuthenticated: false,
-      isUnavailable: true,
-      isLoading: false,
-      error: null,
-      user: null,
-      refresh: vi.fn(),
+  it('performs login and redirects when login succeeds', async () => {
+    mockIdentify.mockResolvedValue({
+      success: false,
+      error: 'unauthenticated',
+    });
+
+    mockLogin.mockResolvedValue({
+      success: true,
+      data: { nextUrl: '/after-login' },
     });
 
     const Layout = await loadLayout();
     render(<Layout><div>child</div></Layout>);
 
-    // Banner must show unavailable message
-    expect(
-      screen.getByText(/authentication service unavailable/i)
-    ).toBeInTheDocument();
+    await waitIdentityTransition();
 
-    // Identity must NOT appear
-    expect(screen.queryByText(/you are/i)).toBeNull();
+    const loginButton = await screen.findByRole('button', { name: /login/i });
 
-    // No login/logout buttons
-    expect(screen.queryByRole('button', { name: /login/i })).toBeNull();
-    expect(screen.queryByRole('button', { name: /logout/i })).toBeNull();
+    delete (window as any).location;
+    (window as any).location = { href: '' };
+
+    loginButton.click();
+
+    await waitIdentityTransition();
+
+    expect(window.location.href).toBe('/after-login');
+  });
+
+  it('performs logout and redirects when logout succeeds', async () => {
+    mockIdentify.mockResolvedValue({
+      success: true,
+      data: { name: 'Harry Styles' },
+    });
+
+    mockLogout.mockResolvedValue({
+      success: true,
+      data: { nextUrl: '/after-logout' },
+    });
+
+    const Layout = await loadLayout();
+    render(<Layout><div>child</div></Layout>);
+
+    await waitIdentityTransition();
+
+    const logoutButton = await screen.findByRole('button', { name: /logout/i });
+
+    delete (window as any).location;
+    (window as any).location = { href: '' };
+
+    logoutButton.click();
+
+    await waitIdentityTransition();
+
+    expect(window.location.href).toBe('/after-logout');
   });
 });

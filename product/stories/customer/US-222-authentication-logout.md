@@ -35,7 +35,7 @@ As an **owner**, I must be able to securely log out of my session so that I can 
 A logout action must be available in the authenticated UI shell (header menu or account menu).
 
 ### Behavior
-- Calls `POST /api/auth/logout`.
+- Calls `POST /api/identity/logout`.
 - On success:
   - If OIDC logout is required: follow redirect URL.
   - Otherwise: navigate to `/logged-out`.
@@ -46,7 +46,7 @@ A logout action must be available in the authenticated UI shell (header menu or 
 ## Endpoint
 
 ### Route
-`POST /api/auth/logout`
+`POST /api/identity/logout`
 
 ### Responsibilities
 - Validate session cookie.

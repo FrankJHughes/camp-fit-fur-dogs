@@ -250,7 +250,7 @@ public class AuthCallbackEndpointTests
     [Fact]
     public async Task Callback_IssuesSessionCookie_OnSuccess()
     {
-        var response = await _client.GetAsync("/api/auth/callback?code=abc");
+        var response = await _client.GetAsync("/api/identity/callback?code=abc");
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.ShouldContainKey("Set-Cookie");

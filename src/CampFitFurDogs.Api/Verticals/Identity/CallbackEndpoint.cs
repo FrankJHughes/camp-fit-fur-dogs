@@ -6,13 +6,13 @@ using CampFitFurDogs.Domain.Errors;
 using Frank.Abstractions;
 using Frank.Abstractions.Authentication.Oidc;
 
-namespace CampFitFurDogs.Api.Verticals.Authentication;
+namespace CampFitFurDogs.Api.Verticals.Identity;
 
 public class CallbackEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/auth/callback", HandleAsync)
+        app.MapGet("/api/identity/callback", HandleAsync)
             .AllowAnonymous();
     }
 

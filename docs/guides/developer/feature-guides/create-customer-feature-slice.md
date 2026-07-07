@@ -9,7 +9,7 @@ This slice was formerly known as **Create Account**, but after **US‑184 (De‑
 - There is **no email/password flow**  
 - There is **no `/api/account` endpoint**  
 - Owner creation is triggered by the **OIDC callback**  
-- The slice’s API surface is **`/api/auth/callback`**  
+- The slice’s API surface is **`/api/identity/callback`**  
 - The slice’s frontend surface is the **post‑callback redirect**  
 
 This guide explains how the slice works today.
@@ -29,7 +29,7 @@ The Create Customer slice is responsible for:
 This slice follows the vertical slice pattern:
 
 ```
-Auth0 → /api/auth/callback → Frank Pipeline → Application Pipeline → Domain → Persistence → Redirect
+Auth0 → /api/identity/callback → Frank Pipeline → Application Pipeline → Domain → Persistence → Redirect
 ```
 
 ---
@@ -39,7 +39,7 @@ Auth0 → /api/auth/callback → Frank Pipeline → Application Pipeline → Dom
 The slice is triggered when Auth0 redirects the user to:
 
 ```
-GET /api/auth/callback?code=XYZ
+GET /api/identity/callback?code=XYZ
 ```
 
 The callback endpoint:
@@ -197,7 +197,7 @@ The frontend only receives the **post‑callback redirect**.
 # Success Flow
 
 1. User logs in via Auth0  
-2. Auth0 redirects to `/api/auth/callback`  
+2. Auth0 redirects to `/api/identity/callback`  
 3. Frank pipeline normalizes identity  
 4. Application pipeline:
    - Creates Owner (if first login)  

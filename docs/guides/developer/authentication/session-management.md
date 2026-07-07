@@ -42,7 +42,7 @@ This guide documents only what exists today.
 # Session Flow Overview (Post‑Refactor)
 
 1. User completes OIDC login with Auth0  
-2. Auth0 redirects to `/api/auth/callback?code=XYZ`  
+2. Auth0 redirects to `/api/identity/callback?code=XYZ`  
 3. API extracts the authorization code  
 4. **Frank Auth Callback Pipeline** runs (protocol):  
    - Validates configuration  
@@ -219,9 +219,9 @@ Until then:
 ### Auth0 Callback URLs
 
 ````text
-http://localhost:5000/api/auth/callback
-https://<preview>.onrender.com/api/auth/callback
-https://campfitfurdogsapi.onrender.com/api/auth/callback
+http://localhost:5000/api/identity/callback
+https://<preview>.onrender.com/api/identity/callback
+https://campfitfurdogsapi.onrender.com/api/identity/callback
 ````
 
 ---

@@ -321,7 +321,7 @@ client.WithSessionCookie("abc123");
 ## 8.3 Testing callback pipeline
 
 ```csharp
-var result = await client.GetAsync("/api/auth/callback?code=123");
+var result = await client.GetAsync("/api/identity/callback?code=123");
 ```
 
 ---

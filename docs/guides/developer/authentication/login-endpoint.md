@@ -1,4 +1,4 @@
-# Login Endpoint — `/api/auth/login`  
+# Login Endpoint — `/api/identity/login`  
 **Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
 The login endpoint initiates the **OIDC authorization code flow** by redirecting the client to the external identity provider (Auth0).  
@@ -19,7 +19,7 @@ It does **not** access Infrastructure, Domain, or Application handlers directly.
 # HTTP Request
 
 ````http
-GET /api/auth/login?returnUrl=/dashboard
+GET /api/identity/login?returnUrl=/dashboard
 ````
 
 The request accepts an optional `returnUrl` parameter.  

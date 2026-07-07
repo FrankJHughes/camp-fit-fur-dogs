@@ -36,7 +36,7 @@ Local configuration is loaded from:
   ```
 - Auth0 callback URL uses:  
   ```
-  http://localhost:5000/api/auth/callback
+  http://localhost:5000/api/identity/callback
   ```
 - Environment variables may be set via user secrets or shell  
 

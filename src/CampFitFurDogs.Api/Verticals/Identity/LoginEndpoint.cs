@@ -7,13 +7,13 @@ using Frank.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace CampFitFurDogs.Api.Verticals.Authentication;
+namespace CampFitFurDogs.Api.Verticals.Identity;
 
 public class LoginEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/auth/login", HandleAsync)
+        app.MapGet("/api/identity/login", HandleAsync)
             .AllowAnonymous();
     }
 
@@ -47,7 +47,7 @@ public class LoginEndpoint : IEndpoint
             var host = http.Request.Host.Value;
             var pathBase = http.Request.PathBase.Value?.TrimEnd('/') ?? "";
 
-            callback = $"{scheme}://{host}{pathBase}/api/auth/callback";
+            callback = $"{scheme}://{host}{pathBase}/api/identity/callback";
         }
 
         // Capture return_url (client-specified post-login redirect)

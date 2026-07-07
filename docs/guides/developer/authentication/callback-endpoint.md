@@ -1,4 +1,4 @@
-# Callback Endpoint — `/api/auth/callback`  
+# Callback Endpoint — `/api/identity/callback`  
 **Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
 The callback endpoint completes the **OIDC authorization code flow**.  
@@ -28,7 +28,7 @@ All authentication behavior is implemented inside the Frank and Application pipe
 # HTTP Request
 
 ````http
-GET /api/auth/callback?code=XYZ&returnUrl=/dashboard
+GET /api/identity/callback?code=XYZ&returnUrl=/dashboard
 ````
 
 The endpoint accepts:

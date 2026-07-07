@@ -369,10 +369,10 @@ Authentication spans four layers:
 # Data Flow Diagram
 
 ````text
-Browser → /api/auth/login?returnUrl=/dashboard
+Browser → /api/identity/login?returnUrl=/dashboard
     → Redirect to Auth0 (with returnUrl encoded in state)
 
-Auth0 → /api/auth/callback?code=XYZ&state=...
+Auth0 → /api/identity/callback?code=XYZ&state=...
     → Frank pipeline (protocol)
     → Application pipeline (business + returnUrl validation)
     → API issues cookie + redirect
@@ -477,7 +477,7 @@ Tests use:
 Local development uses the following callback URL:
 
 ````text
-http://localhost:5000/api/auth/callback
+http://localhost:5000/api/identity/callback
 ````
 
 ## Cookies

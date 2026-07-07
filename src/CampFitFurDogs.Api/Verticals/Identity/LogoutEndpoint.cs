@@ -4,13 +4,13 @@ using Frank.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace CampFitFurDogs.Api.Verticals.Authentication;
+namespace CampFitFurDogs.Api.Verticals.Identity;
 
 public class LogoutEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/auth/logout", HandleAsync)
+        app.MapGet("/api/identity/logout", HandleAsync)
             .AllowAnonymous();
     }
 

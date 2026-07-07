@@ -17,11 +17,11 @@ All authentication behavior follows **Architecture Governance**, Security Govern
 
 # Flow Summary
 
-1. Client calls **GET `/api/auth/login`** (optionally with `returnUrl`)  
+1. Client calls **GET `/api/identity/login`** (optionally with `returnUrl`)  
 2. API constructs an Auth0 authorization URL  
 3. API returns **302 Redirect** to Auth0  
 4. User authenticates externally  
-5. Auth0 redirects back to **GET `/api/auth/callback`** with an authorization code  
+5. Auth0 redirects back to **GET `/api/identity/callback`** with an authorization code  
 
 ### Frank Pipeline (Protocol Layer)
 6. Validates OIDC configuration  

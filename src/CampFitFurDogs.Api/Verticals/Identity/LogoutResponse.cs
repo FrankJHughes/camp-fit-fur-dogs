@@ -1,3 +1,3 @@
-namespace CampFitFurDogs.Api.Verticals.Authentication;
+namespace CampFitFurDogs.Api.Verticals.Identity;
 
 public sealed record LogoutResponse(string NextUrl) { }

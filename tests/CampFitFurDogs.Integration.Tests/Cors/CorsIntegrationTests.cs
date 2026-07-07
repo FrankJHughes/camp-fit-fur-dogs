@@ -210,7 +210,7 @@
 //     [Fact(Skip = "Authentication not implemented yet — no endpoint returns 401")]
 //     public async Task Cors_headers_are_present_even_when_auth_fails()
 //     {
-//         var request = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
+//         var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/me");
 //         request.Headers.Add("Origin", AllowedOrigin);
 
 //         var response = await _client.SendAsync(request);

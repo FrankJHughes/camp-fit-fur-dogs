@@ -80,7 +80,7 @@ public class AuthenticationStartupModule : IStartupModule
             //         var req = context.Request;
 
             //         context.ProtocolMessage.RedirectUri =
-            //             $"{req.Scheme}://{req.Host}/api/auth/callback";
+            //             $"{req.Scheme}://{req.Host}/api/identity/callback";
 
             //         return Task.CompletedTask;
             //     };
@@ -98,7 +98,7 @@ public class AuthenticationStartupModule : IStartupModule
                 ?? "https://localhost:5001";
 
             serverUrl = serverUrl.Split(';', StringSplitOptions.RemoveEmptyEntries)[0];
-            callbackUrl = $"{serverUrl.TrimEnd('/')}/api/auth/callback";
+            callbackUrl = $"{serverUrl.TrimEnd('/')}/api/identity/callback";
         }
 
         return callbackUrl;

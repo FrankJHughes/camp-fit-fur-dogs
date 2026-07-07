@@ -49,7 +49,7 @@ Structured, non‑PII logging enables safe debugging across environments and red
   "event": "auth.callback.received",
   "layer": "api",
   "correlationId": "c-9f3a1d",
-  "path": "/api/auth/callback",
+  "path": "/api/identity/callback",
   "hasCode": true
 }
 

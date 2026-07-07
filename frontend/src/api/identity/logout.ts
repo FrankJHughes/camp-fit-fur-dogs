@@ -11,7 +11,7 @@ export async function logout(returnUrl: string): Promise<QueryResult<LogoutRespo
   const urlSearchParams = new URLSearchParams();
   urlSearchParams.set('return_url', returnUrl);
 
-  const url = '/api/auth/logout?' + urlSearchParams.toString();
+  const url = '/api/identity/logout?' + urlSearchParams.toString();
 
   const result = await client.get<LogoutResponse>(url);
 
