@@ -7,15 +7,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Authentication.Callback;
 
-public static class AuthCallbackExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddFrankAuthCallback(this IServiceCollection services)
     {
-        services.AddOptions<AuthCallbackOidcSettings>()
-                .BindConfiguration("Authentication:Callback:Oidc")
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+        services
+            .AddOptions<AuthCallbackOidcSettings>()
+            .BindConfiguration("Authentication:Callback:Oidc")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
+        services.AddTransient<IOidcUserInfoClient, Auth0OidcUserInfoClient>();
         services.AddTransient<IImmutableContextBuildStep<OidcAuthCallbackContext>, ExchangeCodeStep>();
         services.AddTransient<IImmutableContextBuildStep<OidcAuthCallbackContext>, FetchUserInfoStep>();
         services.AddTransient<IImmutableContextBuildStep<OidcAuthCallbackContext>, ValidateTokensStep>();

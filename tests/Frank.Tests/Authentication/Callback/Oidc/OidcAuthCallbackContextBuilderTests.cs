@@ -11,10 +11,10 @@ public sealed class OidcAuthCallbackContextBuilderTests
 {
     private static OidcAuthCallbackContextBuilder CreateBuilder(
         params IImmutableContextBuildStep<OidcAuthCallbackContext>[] steps)
-        => new OidcAuthCallbackContextBuilder(
+        => new(
             steps,
             new FakeObservabilitySink(),
-            new FakeObservabilityContext());
+            (_, _) => new FakeObservabilityContext());
 
     [Fact]
     public async Task ProcessAsync_WithValidFlow_ProducesFrankAuthCallbackResult()

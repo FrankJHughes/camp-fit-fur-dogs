@@ -44,9 +44,7 @@ public class LogoutEndpoint : IEndpoint
             returnUrl = frontendBaseUrl;
         }
 
-        //
-        // Redirect user to the frontend's logged-out page.
-        //
-        return Results.Redirect(returnUrl);
+        return Results.Ok(
+            new LogoutResponse(returnUrl));
     }
 }

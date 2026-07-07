@@ -21,7 +21,7 @@ public sealed class ResolveCustomerStep
         );
 
     public bool CanExecute(ApplicationAuthCallbackContext ctx)
-        => ctx.CustomerId is null; // only run once, at the start
+        => ctx.External is not null && ctx.CustomerId is null; // only run once, at the start
 
     public async Task<ApplicationAuthCallbackContext> ExecuteAsync(
         ApplicationAuthCallbackContext ctx,

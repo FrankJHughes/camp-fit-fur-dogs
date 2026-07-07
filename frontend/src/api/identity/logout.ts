@@ -3,12 +3,17 @@ import type { QueryResult } from '@/lib/api/queryResult';
 
 const client = createApiClient();
 
-export interface GetIdentityResponse {
-  name: string;
+export interface LogoutResponse {
+  nextUrl: string;
 }
 
-export async function getIdentity(): Promise<QueryResult<GetIdentityResponse>> {
-  const result = await client.get<GetIdentityResponse>(`/api/identity`);
+export async function logout(returnUrl: string): Promise<QueryResult<LogoutResponse>> {
+  const urlSearchParams = new URLSearchParams();
+  urlSearchParams.set('return_url', returnUrl);
+
+  const url = '/api/auth/logout?' + urlSearchParams.toString();
+
+  const result = await client.get<LogoutResponse>(url);
 
   if (result.ok) {
     return { success: true, data: result.data };

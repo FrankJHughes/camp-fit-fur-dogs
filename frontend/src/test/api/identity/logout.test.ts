@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { logout } from '@/api/authentication/logout';
+import { logout } from '@/api/identity/logout';
 
 const { mockGet } = vi.hoisted(() => ({
   mockGet: vi.fn(),

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
@@ -67,7 +68,6 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
                 SessionId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                 TokenHash = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
                 CookieValue = "cookie-value",
-                RedirectUrl = "http://localhost:5173/dashboard"
             });
         }
     }
@@ -117,16 +117,21 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     // ERROR PATH
     // ------------------------------------------------------------
     [Fact]
-    public async Task Missing_code_returns_bad_request()
+    public async Task Missing_code_returns_without_session()
     {
         var client = CreateClient();
 
-        var response = await client.GetAsync("/api/auth/callback");
+        // Encode state as JSON
+        var returnUrl = "/dashboard";
+        var stateObj = new { return_url = returnUrl };
+        var stateJson = JsonSerializer.Serialize(stateObj);
+        var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var response = await client.GetAsync($"/api/auth/callback?state={Uri.EscapeDataString(state)}");
 
-        var body = await response.Content.ReadAsStringAsync();
-        body.Should().Contain("Missing authorization code");
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+
+        response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeFalse();
     }
 
     // ------------------------------------------------------------
@@ -137,12 +142,18 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     {
         var client = CreateClient();
 
-        var response = await client.GetAsync("/api/auth/callback?code=abc123");
+        // Encode state as JSON
+        var returnUrl = "/dashboard";
+        var stateObj = new { return_url = returnUrl };
+        var stateJson = JsonSerializer.Serialize(stateObj);
+        var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
+
+        var response = await client.GetAsync($"/api/auth/callback?code=abc123&state={Uri.EscapeDataString(state)}");
 
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
         response.Headers.Location!.ToString()
-            .Should().Be("http://localhost:5173/dashboard");
+            .Should().Be("/dashboard");
 
         // Cookie issued (domain session cookie)
         response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeTrue();

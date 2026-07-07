@@ -5,6 +5,8 @@ using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
+using CampFitFurDogs.Api.Verticals.Authentication;
+using System.Net.Http.Json;
 
 namespace CampFitFurDogs.Api.Tests.Authentication.Login;
 
@@ -46,7 +48,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
     // SUCCESS PATH
     // ------------------------------------------------------------
     [Fact]
-    public async Task Login_redirects_to_auth0_authorize_url()
+    public async Task Login_returns_auth0_authorize_url()
     {
         var client = CreateClientWithOverrides(cfg =>
         {
@@ -63,12 +65,12 @@ public class AuthLoginEndpointTests : IAsyncLifetime
 
         var response = await client.GetAsync("/api/auth/login");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
 
-        var location = response.Headers.Location!.ToString();
-        location.Should().StartWith("https://dev-fake.auth0.com/authorize?");
+        loginResponse!.NextUrl.Should().StartWith("https://dev-fake.auth0.com/authorize?");
 
-        var uri = new Uri(location);
+        var uri = new Uri(loginResponse!.NextUrl);
         var query = QueryHelpers.ParseQuery(uri.Query);
 
         query["scope"].ToString().Should().Be("openid profile email");

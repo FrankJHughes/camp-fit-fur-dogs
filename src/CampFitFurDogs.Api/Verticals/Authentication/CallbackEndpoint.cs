@@ -1,10 +1,10 @@
-using System.Text.Json;
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using Frank.Abstractions.Authentication.Callback;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Abstractions.ImmutableContext;
 using CampFitFurDogs.Domain.Errors;
 using Frank.Abstractions;
+using Frank.Abstractions.Authentication.Oidc;
 
 namespace CampFitFurDogs.Api.Verticals.Authentication;
 
@@ -28,50 +28,57 @@ public class CallbackEndpoint : IEndpoint
             ApplicationAuthCallbackContext,
             ApplicationAuthCallbackContextBuilderResult> appEngine)
     {
-        // 1. Extract authorization code
-        var code = http.Request.Query["code"].ToString();
-        if (string.IsNullOrWhiteSpace(code))
+        // 1a. Extract and decode state
+        var query = http.Request.Query;
+        if (!query.TryGetValue("state", out var encodedState))
         {
-            throw new BadRequestException("Missing authorization code.");
+            throw new BadRequestException("missing state query string parameter");
         }
 
-        // 1b. Extract and decode state
-        var stateRaw = http.Request.Query["state"].ToString();
-        string? requestedRedirectUrl = null;
-
-        if (!string.IsNullOrWhiteSpace(stateRaw))
+        if (!OidcStateEncoder.TryDecodeValue<Dictionary<string, string>>(encodedState!, out var decodedState))
         {
-            try
-            {
-                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(stateRaw));
-                var stateObj = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+            throw new BadRequestException("malformed state query string parameter value");
+        }
 
-                if (stateObj != null && stateObj.TryGetValue("return_url", out var r))
-                {
-                    requestedRedirectUrl = r;
-                }
-            }
-            catch
-            {
-                // Ignore malformed state
-            }
+        if (!decodedState!.TryGetValue("return_url", out var returnUrl))
+        {
+            throw new BadRequestException("missing return_url state parameter value");
+        }
+
+        if (!Uri.TryCreate(returnUrl, UriKind.RelativeOrAbsolute, out var uri))
+        {
+            throw new BadRequestException("malformed return_url state parameter value");
+        }
+
+        // 1b. Extract authorization code
+        if (!http.Request.Query.TryGetValue("code", out var code))
+        {
+            // 5. Redirect user
+            return Results.Redirect(returnUrl);
         }
 
         // 2. Run Frank pipeline
-        var frankAuthCallbackRequest = new FrankAuthCallbackRequest
-        {
-            Code = code
-        };
-        var frankAuthCallbackResult = await frankEngine.BuildAsync(frankAuthCallbackRequest, CancellationToken.None);
+        var frankAuthCallbackRequest =
+            new FrankAuthCallbackRequest
+            {
+                Code = code!
+            };
+
+        var frankAuthCallbackResult =
+            await frankEngine.BuildAsync(frankAuthCallbackRequest, CancellationToken.None);
 
         // 3. Run Application pipeline
         var appAuthCallbackRequest = new ApplicationAuthCallbackRequest
         {
             External = frankAuthCallbackResult,
-            Now = DateTimeOffset.UtcNow,
-            RequestedRedirectUrl = requestedRedirectUrl
+            Now = DateTimeOffset.UtcNow
         };
         var appAuthCallbackResult = await appEngine.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
+
+        if (string.IsNullOrWhiteSpace(appAuthCallbackResult.CookieValue))
+        {
+            return Results.Redirect(returnUrl);
+        }
 
         // 4. Issue the REAL CFFD session cookie
         http.Response.Cookies.Append(
@@ -86,6 +93,6 @@ public class CallbackEndpoint : IEndpoint
             });
 
         // 5. Redirect user
-        return Results.Redirect(appAuthCallbackResult.RedirectUrl);
+        return Results.Redirect(returnUrl);
     }
 }

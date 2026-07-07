@@ -17,12 +17,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddFrankAuthCallback(); // IImmutableContextBuilder<FrankAuthCallbackRequest, OidcAuthCallbackContext, FrankAuthCallbackResult>
 
-        services
-            .AddOptions<AuthCallbackSettings>()
-            .BindConfiguration("Authentication:Callback")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
         services.AddApplicationAuthCallback();
 
         services

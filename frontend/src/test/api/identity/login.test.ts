@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { login } from '@/api/authentication/login';
+import { login } from '@/api/identity/login';
 
 const { mockGet } = vi.hoisted(() => ({
   mockGet: vi.fn(),

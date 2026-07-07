@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CampFitFurDogs.Application.Abstractions.Authentication;
+using CampFitFurDogs.Application.Abstractions.Customer.GetCustomerById;
 using CampFitFurDogs.Application.Abstractions.Sessions.GetSession;
 using CampFitFurDogs.Application.Settings;
 using CampFitFurDogs.Domain.Sessions.Errors;
@@ -10,24 +11,26 @@ namespace CampFitFurDogs.Api.Horizontals.Session.Middleware;
 public sealed class SessionValidationMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IGetSessionReader _reader;
-    private readonly ISessionTokenService _tokens;
-    private readonly TimeSpan _ttl;
 
-    public SessionValidationMiddleware(
-        RequestDelegate next,
-        IGetSessionReader reader,
+    public SessionValidationMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task InvokeAsync(HttpContext context,
+        IGetCustomerByIdReader getCustomerReader,
+        IGetSessionReader getSessionReader,
         ISessionTokenService tokens,
         IOptionsMonitor<SessionSettings> sessionOptions)
     {
-        _next = next;
-        _reader = reader;
-        _tokens = tokens;
-        _ttl = sessionOptions.CurrentValue.Ttl;
-    }
+        if (context.Request.Path.StartsWithSegments("/api/auth"))
+        {
+            await _next(context);
+            return;
+        }
 
-    public async Task InvokeAsync(HttpContext context)
-    {
+        var ttl = sessionOptions.CurrentValue.Ttl;
+
         // 1. Read plaintext token from cookie
         var plaintextToken = context.Request.Cookies["session"];
 
@@ -41,7 +44,7 @@ public sealed class SessionValidationMiddleware
         string tokenHash;
         try
         {
-            tokenHash = _tokens.Hash(plaintextToken).Value;
+            tokenHash = tokens.Hash(plaintextToken).Value;
         }
         catch
         {
@@ -51,7 +54,7 @@ public sealed class SessionValidationMiddleware
         }
 
         // 3. Load session by token hash
-        var session = await _reader.GetSessionAsync(tokenHash, context.RequestAborted);
+        var session = await getSessionReader.GetSessionAsync(tokenHash, context.RequestAborted);
 
         if (session is null)
         {
@@ -68,12 +71,21 @@ public sealed class SessionValidationMiddleware
             throw new SessionNotFoundException();
         }
 
+
+        var customer = await getCustomerReader.GetByIdAsync(session.OwnerId, context.RequestAborted);
+        if (customer is null)
+        {
+            context.Response.Cookies.Delete("session");
+            throw new SessionNotFoundException();
+        }
+
+        var customerName = $"{customer.FirstName} {customer.LastName}";
         // 5. Attach authenticated owner to HttpContext
         var identity = new ClaimsIdentity(
-            new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, session.OwnerId.ToString())
-            },
+            [
+                new Claim(ClaimTypes.NameIdentifier, session.OwnerId.ToString()),
+                new Claim(ClaimTypes.Name, customerName)
+            ],
             authenticationType: "Session");
 
         context.User = new ClaimsPrincipal(identity);

@@ -2,6 +2,7 @@ using System.Text.Json;
 using CampFitFurDogs.Application.Settings;
 using CampFitFurDogs.Domain.Errors;
 using Frank.Abstractions;
+using Frank.Abstractions.Authentication.Oidc;
 using Frank.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -50,27 +51,40 @@ public class LoginEndpoint : IEndpoint
         }
 
         // Capture return_url (client-specified post-login redirect)
-        var returnUrl = http.Request.Query["return_url"].ToString();
-        if (string.IsNullOrWhiteSpace(returnUrl))
+        if (http.Request.Query.TryGetValue("return_url", out var returnUrl))
         {
+            if (!Uri.TryCreate(returnUrl, UriKind.RelativeOrAbsolute, out _))
+            {
+                throw new BadRequestException("malformed return_url query string parameter value");
+            }
+        }
+        else
+        {
+            if (!Uri.TryCreate(frontendBaseUrl, UriKind.RelativeOrAbsolute, out _))
+            {
+                throw new BadConfigurationException("malformed Frontend:BaseUrl configuration value");
+            }
             returnUrl = frontendBaseUrl;
         }
 
         // Encode state as JSON
-        var stateObj = new { return_url = returnUrl };
-        var stateJson = JsonSerializer.Serialize(stateObj);
-        var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
+        var decodedState = new Dictionary<string, string>()
+        {
+            ["return_url"] = returnUrl!
+        };
+        OidcStateEncoder.TryEncodeValue(decodedState, out var encodedState);
 
         var scope = "openid profile email";
 
-        var redirectUrl =
+        var nextUrl =
             $"{authority.TrimEnd('/')}/authorize" +
             $"?response_type=code" +
             $"&client_id={Uri.EscapeDataString(clientId)}" +
             $"&redirect_uri={Uri.EscapeDataString(callback)}" +
             $"&scope={Uri.EscapeDataString(scope)}" +
-            $"&state={Uri.EscapeDataString(state)}";
+            $"&state={Uri.EscapeDataString(encodedState!)}";
 
-        return Results.Redirect(redirectUrl);
+        return Results.Ok(
+            new LoginResponse(nextUrl));
     }
 }

@@ -12,8 +12,8 @@ public sealed class ApplicationAuthCallbackContextBuilder
     public ApplicationAuthCallbackContextBuilder(
         IEnumerable<IImmutableContextBuildStep<ApplicationAuthCallbackContext>> steps,
         IObservationSink sink,
-        IObservationContext systemContext)
-        : base(steps, sink, systemContext)
+        Func<string, string, IObservationContext> contextFactory)
+        : base(steps, sink, contextFactory("System", "ApplicationAuthCallbackContextBuilder"))
     {
     }
 
@@ -24,8 +24,7 @@ public sealed class ApplicationAuthCallbackContextBuilder
         var ctx = new ApplicationAuthCallbackContext
         {
             External = request.External,
-            Now = request.Now,
-            RequestedRedirectUrl = request.RequestedRedirectUrl
+            Now = request.Now
         };
 
         ctx = await ProcessAsync(ctx, ct);
@@ -35,8 +34,7 @@ public sealed class ApplicationAuthCallbackContextBuilder
             CustomerId = ctx.CustomerId!.Value,
             SessionId = ctx.SessionId!.Value,
             TokenHash = ctx.TokenHash!,
-            CookieValue = ctx.CookieValue!,
-            RedirectUrl = ctx.RedirectUrl!
+            CookieValue = ctx.CookieValue!
         };
     }
 

@@ -1,13 +1,13 @@
 'use client';
 
-import { useIdentity } from '@/lib/identity/useIdentity';
+import { useIdentityState } from '@/lib/identity/useIdentityState';
 
 export default function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated } = useIdentity();
+  const { isAuthenticated } = useIdentityState();
 
   return (
     <div className="authenticated-shell">

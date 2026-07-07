@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using CampFitFurDogs.Domain.Customers;
 using CampFitFurDogs.Application.Abstractions.Customer.FindCustomerByExternalId;
+using CampFitFurDogs.Application.Abstractions.Customer.GetCustomerById;
 
 namespace CampFitFurDogs.Infrastructure.Customers;
 
@@ -10,6 +11,7 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddScoped<ICustomerRepository, CustomerRepository>()
-            .AddScoped<IFindCustomerByExternalIdReader, FindCustomerByExternalIdReader>();
+            .AddScoped<IFindCustomerByExternalIdReader, FindCustomerByExternalIdReader>()
+            .AddScoped<IGetCustomerByIdReader, GetCustomerByIdReader>();
     }
 }

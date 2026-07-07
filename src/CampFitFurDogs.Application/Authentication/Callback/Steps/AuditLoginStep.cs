@@ -21,7 +21,7 @@ public sealed class AuditLoginStep
         );
 
     public bool CanExecute(ApplicationAuthCallbackContext ctx)
-        => ctx.CustomerId is not null; // always runs once customer is resolved
+        => ctx.External is not null && ctx.CustomerId is not null; // always runs once customer is resolved
 
     public async Task<ApplicationAuthCallbackContext> ExecuteAsync(
         ApplicationAuthCallbackContext ctx,
