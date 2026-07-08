@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Sprint 10] – Unreleased
 
+### Stories Completed
+
+| Story ID | Title | Notes |
+|----------|--------|--------|
+| US‑222 | Logout | Delivered full logout capability; includes integration work within the identity header and dropdown to support a consistent sign‑out experience. |
+
+### Added
+- Introduced a secure and reliable **logout experience**, allowing owners and staff to sign out at any time. Sessions now end cleanly, and users are redirected to the correct public page after logout.
+- Improved the **identity dropdown behavior** as part of integrating logout, ensuring account actions are consistently visible and accessible across authenticated pages.
+- Enhanced clarity of the signed‑in state through refinements to the identity header, helping owners more easily understand when they are logged in and how to access account actions.
+
+### Changed
+- Updated the identity header to provide smoother, more predictable interactions when accessing account actions, including logout.
+- Refined identity‑related UI transitions to ensure a more consistent and intuitive experience across the application.
+
 ## [Sprint 9] – 06/29/2026
 
 ### Stories Completed

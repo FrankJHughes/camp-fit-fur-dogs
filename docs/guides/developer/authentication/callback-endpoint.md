@@ -2,7 +2,7 @@
 **Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
 The callback endpoint completes the **OIDC authorization code flow**.  
-It extracts the authorization code (and optional `returnUrl`), invokes the **Frank Auth Callback Pipeline** (protocol), invokes the **Application Auth Callback Pipeline** (business), issues the session cookie, and redirects the user.
+It extracts the encoded `state` (including `return_url`), extracts the authorization code, invokes the **Frank Auth Callback Pipeline** (protocol), invokes the **Application Auth Callback Pipeline** (business), issues the `session` cookie, and redirects the user.
 
 The endpoint itself contains:
 
@@ -28,13 +28,17 @@ All authentication behavior is implemented inside the Frank and Application pipe
 # HTTP Request
 
 ````http
-GET /api/identity/callback?code=XYZ&returnUrl=/dashboard
+GET /api/identity/callback?code=XYZ&state=<encoded>
 ````
 
 The endpoint accepts:
 
 - `code` — required  
-- `returnUrl` — optional (validated only in Application pipeline)
+- `state` — required (contains `return_url`)  
+
+**Important:**  
+The real implementation does **not** accept `returnUrl` as a query parameter.  
+It is always encoded inside `state` by the login endpoint.
 
 Identity, protocol, and session logic are handled exclusively inside the pipelines.
 
@@ -44,7 +48,7 @@ Identity, protocol, and session logic are handled exclusively inside the pipelin
 
 The callback endpoint performs **three** responsibilities:
 
-1. **Extract and validate the authorization code**  
+1. **Extract and validate `state` + authorization code**  
 2. **Invoke the Frank + Application pipelines**  
 3. **Issue the session cookie and redirect**  
 
@@ -52,17 +56,23 @@ Everything else happens inside the pipelines.
 
 ---
 
-# 1. Extract and Validate the Authorization Code
+# 1. Extract and Validate `state` + Authorization Code
 
+- Reads `state` from the query string  
+- Decodes `state` using `OidcStateEncoder`  
+- Extracts `return_url` from decoded state  
 - Reads `code` from the query string  
-- Reads optional `returnUrl`  
-- If `code` is missing or empty → **400 Bad Request**  
-- No protocol logic  
-- No identity logic  
-- No Infrastructure access  
-- No redirect logic  
+- If `state` is missing → **400 Bad Request**  
+- If `state` is malformed → **400 Bad Request**  
+- If `return_url` is missing or malformed → **400 Bad Request**  
+- If `code` is missing → redirect to `return_url` **without** issuing a session cookie  
 
-This is the only validation the endpoint performs.
+The endpoint performs **shape validation only**.
+
+No protocol logic.  
+No identity logic.  
+No Infrastructure access.  
+No redirect computation.
 
 ---
 
@@ -71,7 +81,7 @@ This is the only validation the endpoint performs.
 The endpoint calls:
 
 ````csharp
-FrankAuthCallbackPipeline.BuildAsync(...)
+frankEngine.BuildAsync(frankAuthCallbackRequest, CancellationToken.None)
 ````
 
 Frank performs all **OIDC protocol work**:
@@ -79,7 +89,6 @@ Frank performs all **OIDC protocol work**:
 - Validates OIDC configuration  
 - Exchanges the authorization code for tokens  
 - Validates issuer, audience, signature, nonce, state  
-- Fetches userinfo (if required)  
 - Normalizes provider‑specific claims  
 - Produces a stable, provider‑agnostic identity payload  
 
@@ -88,7 +97,7 @@ Frank pipeline **does not**:
 - Resolve identity  
 - Create sessions  
 - Compute redirect URLs  
-- Interpret or validate `returnUrl`  
+- Interpret or validate `return_url`  
 - Compute cookie values  
 - Perform any business logic  
 
@@ -101,7 +110,7 @@ Frank pipeline errors are shaped by Frank’s error boundary.
 The endpoint then calls:
 
 ````csharp
-ApplicationAuthCallbackPipeline.BuildAsync(...)
+appEngine.BuildAsync(appAuthCallbackRequest, CancellationToken.None)
 ````
 
 Application performs all **business logic**:
@@ -112,10 +121,10 @@ Application performs all **business logic**:
 - Creates the session  
 - Computes the session token hash  
 - Computes the cookie value (opaque token)  
-- Computes the final redirect URL  
-  - If `returnUrl` is provided → validate + use it  
-  - If unsafe → sanitize or replace  
-  - If missing → use default post‑login redirect  
+
+**Important:**  
+The Application pipeline does **not** compute the redirect URL.  
+Redirect computation is done entirely by the API endpoint using the `return_url` extracted from `state`.
 
 Application pipeline **does not**:
 
@@ -124,6 +133,7 @@ Application pipeline **does not**:
 - Perform userinfo calls  
 - Issue cookies  
 - Perform HTTP operations  
+- Validate or sanitize `return_url`  
 
 The result object includes:
 
@@ -131,7 +141,6 @@ The result object includes:
 - `SessionId`  
 - `TokenHash`  
 - `CookieValue`  
-- `RedirectUrl`  
 
 ---
 
@@ -145,11 +154,25 @@ The API endpoint:
 - Applies Frank CORS  
 - Applies Frank error boundary  
 
-Cookie properties:
+Cookie properties (from real code):
+
+````csharp
+http.Response.Cookies.Append(
+    "session",
+    appAuthCallbackResult.CookieValue,
+    new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Strict
+    });
+````
+
+Cookie characteristics:
 
 - **HttpOnly**  
 - **Secure** (preview/prod)  
-- **SameSite=Lax**  
+- **SameSite=Strict**  
 - Contains an **opaque, random session token**  
 - Backed by a **hashed token** stored in the database  
 
@@ -163,18 +186,20 @@ The endpoint returns:
 
 ````http
 302 Found
-Location: <RedirectUrl from Application pipeline>
-Set-Cookie: cffd.session=...
+Location: <return_url from decoded state>
+Set-Cookie: session=...
 ````
 
-The redirect URL is computed **only** by the Application pipeline.
+The redirect URL is computed **only** by the API endpoint using the decoded `return_url`.
 
-The endpoint does not:
+The endpoint does **not**:
 
 - Construct redirect URLs  
-- Validate `returnUrl`  
+- Validate `return_url` beyond shape  
 - Perform business logic  
 - Perform identity logic  
+
+Redirect computation is intentionally minimal and governed.
 
 ---
 
@@ -184,12 +209,14 @@ All errors flow through Frank’s global exception → ProblemDetails mapping.
 
 | Condition | Error Code | HTTP Status |
 |----------|------------|-------------|
-| Missing `code` | `ValidationError` | 400 |
+| Missing `state` | `ValidationError` | 400 |
+| Malformed `state` | `ValidationError` | 400 |
+| Missing `return_url` | `ValidationError` | 400 |
+| Missing `code` | Redirect (no cookie) | 302 |
 | Missing OIDC configuration | `BadConfiguration` | 500 |
 | Token exchange failure | `ExternalAuthProviderFailure` | 502 |
 | Userinfo failure | `ExternalAuthProviderFailure` | 502 |
 | Missing `sub` claim | `ExternalAuthProviderFailure` | 502 |
-| Invalid `returnUrl` | `ValidationError` | 400 |
 | Identity resolution failure | `Unexpected` | 500 |
 | Session creation failure | `Unexpected` | 500 |
 | Any other unhandled error | `Unexpected` | 500 |
@@ -209,12 +236,12 @@ Additional guarantees:
 
 The callback endpoint:
 
+- Extracts and decodes `state`  
 - Extracts the authorization code  
-- Extracts optional `returnUrl`  
 - Invokes Frank (protocol)  
 - Invokes Application (business)  
-- Issues the cookie  
-- Redirects the user  
+- Issues the `session` cookie  
+- Redirects the user to `return_url`  
 
 It contains **no business logic**, **no protocol logic**, and **no Infrastructure logic**.
 
@@ -227,4 +254,4 @@ It contains **no business logic**, **no protocol logic**, and **no Infrastructur
 - **[Authentication Configuration](ca://s?q=Show_authentication_configuration_doc)**  
 - **[Authentication Architecture Guide](ca://s?q=Show_authentication_architecture_doc)**  
 - **[Identity Mapping Guide](ca://s?q=Show_identity_mapping_guide)**  
-- **[Session Management Guide](ca://s?q=Show_session_management_guide)**  
+- **[Session Management Guide](ca://s?q=Show_session_management_guide)**
