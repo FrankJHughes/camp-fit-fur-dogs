@@ -1,4 +1,4 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Infrastructure.IntegrationTests.Fixtures;
 
 namespace CampFitFurDogs.Infrastructure.IntegrationTests.Customers;
@@ -15,7 +15,7 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
     [Fact]
     public async Task Can_Create_And_Retrieve_Customer()
     {
-        var customer = Domain.Customers.Customer.Create(
+        var customer = User.Create(
             firstName: FirstName.From("Test"),
             lastName: LastName.From("User"),
             email: Email.From("test@example.com"),
@@ -23,7 +23,7 @@ public class CustomerRepositoryTests : IClassFixture<DatabaseFixture>
             phone: PhoneNumber.From("916-555-5555")
         );
 
-        var customers = _fixture.DbContext.Set<Domain.Customers.Customer>();
+        var customers = _fixture.DbContext.Set<User>();
         customers.Add(customer);
         await _fixture.DbContext.SaveChangesAsync();
 

@@ -1,10 +1,10 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Fakes;
 
-public class FakeCustomerRepository : ICustomerRepository
+public class FakeCustomerRepository : IUserRepository
 {
-    public List<Domain.Customers.Customer> Customers { get; } = [];
+    public List<User> Customers { get; } = [];
 
     public int AddCallCount { get; private set; }
 
@@ -15,7 +15,7 @@ public class FakeCustomerRepository : ICustomerRepository
         return Task.FromResult(Customers.Any(c => c.Email.Equals(email)));
     }
 
-    public Task AddAsync(Domain.Customers.Customer customer, CancellationToken ct)
+    public Task AddAsync(User customer, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 

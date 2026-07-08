@@ -1,3 +1,4 @@
+using Frank.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Builders;
 
 namespace CampFitFurDogs.TestUtilities.Fixtures;
@@ -5,7 +6,7 @@ namespace CampFitFurDogs.TestUtilities.Fixtures;
 public static class ApiRequestFixtures
 {
     public static object Customer()
-        => new CustomerBuilder().BuildApiRequest();
+        => new UserBuilder().BuildApiRequest();
 
     public static object Dog()
         => new DogBuilder().BuildApiRequest();

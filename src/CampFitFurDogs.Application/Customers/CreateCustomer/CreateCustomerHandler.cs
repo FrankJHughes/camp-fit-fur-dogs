@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Customer.CreateCustomer;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using Frank.Abstractions.Command;
 using Frank.Abstractions.UnitOfWork;
 
@@ -8,10 +8,10 @@ namespace CampFitFurDogs.Application.Customers.CreateCustomer;
 public sealed class CreateCustomerHandler
     : ICommandHandler<CreateCustomerCommand, Guid>
 {
-    private readonly ICustomerRepository _repo;
+    private readonly IUserRepository _repo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateCustomerHandler(ICustomerRepository repo, IUnitOfWork unitOfWork)
+    public CreateCustomerHandler(IUserRepository repo, IUnitOfWork unitOfWork)
     {
         _repo = repo;
         _unitOfWork = unitOfWork;
@@ -30,7 +30,7 @@ public sealed class CreateCustomerHandler
         var phone = string.IsNullOrWhiteSpace(request.Phone) ? null : PhoneNumber.From(request.Phone);
 
         // Create domain entity (domain enforces identity invariants)
-        var customer = Domain.Customers.Customer.Create(
+        var customer = User.Create(
             firstName: firstName,
             lastName: lastName,
             email: email,

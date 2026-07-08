@@ -1,5 +1,5 @@
 using CampFitFurDogs.Domain.Sessions;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using Frank.Infrastructure.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -40,7 +40,7 @@ public sealed class SessionConfiguration : AggregateRootConfiguration<Domain.Ses
         builder.Property(s => s.OwnerId)
             .HasConversion(
                 v => v.Value,
-                v => CustomerId.From(v))
+                v => UserId.From(v))
             .HasColumnName("owner_id")
             .IsRequired();
 

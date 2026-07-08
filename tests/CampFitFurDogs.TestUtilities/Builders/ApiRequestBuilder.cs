@@ -1,3 +1,5 @@
+using Frank.TestUtilities.Builders;
+
 namespace CampFitFurDogs.TestUtilities.Builders;
 
 public sealed class ApiRequestBuilder
@@ -7,10 +9,9 @@ public sealed class ApiRequestBuilder
         string? phone = null,
         string? password = null)
     {
-        return new CustomerBuilder()
+        return new UserBuilder()
             .WithEmail(email ?? $"api-{Guid.NewGuid()}@example.com")
             .WithPhone(phone ?? "916-555-1234")
-            .WithPassword(password ?? "SuperSecure123!")
             .BuildApiRequest();
     }
 

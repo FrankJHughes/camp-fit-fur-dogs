@@ -46,6 +46,7 @@
       "frank": {
         "type": "Project",
         "dependencies": {
+          "BCrypt.Net-Next": "[4.1.0, )",
           "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Microsoft.IdentityModel.Logging": "[8.1.0, )",
@@ -59,6 +60,12 @@
         "dependencies": {
           "Frank": "[1.0.0, )"
         }
+      },
+      "BCrypt.Net-Next": {
+        "type": "CentralTransitive",
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "5YT3DKllmtkyW68PjURu/V1TOe4MKiByKwsRNVcfYE1S5KuFTeozdmKzyNzolKiQF391OXCaQtINvYT3j1ERzQ=="
       },
       "FluentValidation": {
         "type": "CentralTransitive",

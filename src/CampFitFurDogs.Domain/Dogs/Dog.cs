@@ -1,11 +1,11 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using Frank.Domain;
 
 namespace CampFitFurDogs.Domain.Dogs;
 
 public sealed class Dog : AggregateRoot<DogId>
 {
-    public CustomerId OwnerId { get; private set; } = default!;
+    public UserId OwnerId { get; private set; } = default!;
     public DogName Name { get; private set; } = default!;
     public Breed Breed { get; private set; } = default!;
     public DateOnly DateOfBirth { get; private set; }
@@ -13,7 +13,7 @@ public sealed class Dog : AggregateRoot<DogId>
 
     private Dog() { }
 
-    private Dog(DogId id, CustomerId ownerId, DogName name, Breed breed, DateOnly dateOfBirth, Sex sex)
+    private Dog(DogId id, UserId ownerId, DogName name, Breed breed, DateOnly dateOfBirth, Sex sex)
         : base(id)
     {
         OwnerId = ownerId;
@@ -23,7 +23,7 @@ public sealed class Dog : AggregateRoot<DogId>
         Sex = sex;
     }
 
-    public static Dog Create(CustomerId ownerId, DogName name, Breed breed, DateOnly dateOfBirth, Sex sex)
+    public static Dog Create(UserId ownerId, DogName name, Breed breed, DateOnly dateOfBirth, Sex sex)
     {
         return new Dog(DogId.New(), ownerId, name, breed, dateOfBirth, sex);
     }

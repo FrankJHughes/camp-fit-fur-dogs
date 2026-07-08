@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dog.EditDogProfile;
 using CampFitFurDogs.Application.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Tests.Fakes;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
@@ -14,7 +14,7 @@ public class EditDogProfileHandlerTests
     public async Task Handle_WhenDogExistsAndOwnerMatches_UpdatesDogAndCommits()
     {
         // Arrange
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
 
         var dog = new DogBuilder()
             .WithOwner(ownerId)
@@ -80,7 +80,7 @@ public class EditDogProfileHandlerTests
     public async Task Handle_WhenOwnerDoesNotMatch_ThrowsInvalidOperationException()
     {
         // Arrange
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
 
         var dog = new DogBuilder()
             .WithOwner(ownerId)

@@ -2,6 +2,7 @@ using CampFitFurDogs.Application.Abstractions.Customer.CreateCustomer;
 using CampFitFurDogs.Application.Customers.CreateCustomer;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using Frank.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Application.Tests.Customers.CreateCustomer;
 

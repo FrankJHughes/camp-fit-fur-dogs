@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +13,7 @@ public sealed class GetDogProfileReader(AppDbContext db) : IGetDogProfileReader
     {
         var dog = await db.Set<Dog>()
             .Where(d =>
-                d.OwnerId == CustomerId.From(ownerId) &&
+                d.OwnerId == UserId.From(ownerId) &&
                 d.Id == DogId.From(dogId))
             .SingleOrDefaultAsync(ct);
 

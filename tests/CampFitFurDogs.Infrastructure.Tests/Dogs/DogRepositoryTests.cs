@@ -1,4 +1,4 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.Infrastructure.Dogs;
@@ -6,6 +6,8 @@ using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Frank.TestUtilities.Builders;
+using Frank.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 
@@ -18,17 +20,16 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
         _fixture = fixture;
     }
 
-    private async Task<CustomerId> SeedOwnerAsync()
+    private async Task<UserId> SeedOwnerAsync()
     {
         await using var ctx = _fixture.CreateContext();
         var repo = new CustomerRepository(ctx);
 
-        var customer = new CustomerBuilder()
-            .WithFirstName(CustomerFixtures.First.Value)
-            .WithLastName(CustomerFixtures.Last.Value)
+        var customer = new UserBuilder()
+            .WithFirstName(UserFixtures.First.Value)
+            .WithLastName(UserFixtures.Last.Value)
             .WithEmail($"infra-{Guid.NewGuid()}@example.com")
-            .WithPhone(CustomerFixtures.Phone.Value)
-            .WithPassword(CustomerFixtures.Hash.Value)
+            .WithPhone(UserFixtures.Phone.Value)
             .Build();
 
         await repo.AddAsync(customer, CancellationToken.None);
@@ -74,7 +75,7 @@ public class DogRepositoryTests : IClassFixture<PostgresFixture>
         await using var ctx = _fixture.CreateContext();
         var repo = new DogRepository(ctx);
 
-        var fakeOwnerId = CustomerId.From(Guid.NewGuid());
+        var fakeOwnerId = UserId.From(Guid.NewGuid());
 
         var dog = new DogBuilder()
             .WithOwner(fakeOwnerId)

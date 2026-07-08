@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Fixtures;
 
@@ -7,7 +7,7 @@ namespace CampFitFurDogs.TestUtilities.Builders;
 
 public sealed class DogBuilder
 {
-    private CustomerId _owner = CustomerId.New();
+    private UserId _owner = UserId.New();
     private string _name = DogFixtures.DefaultName;
     private string _breed = DogFixtures.DefaultBreed;
     private DateOnly _dob = DogFixtures.Dob;
@@ -17,7 +17,7 @@ public sealed class DogBuilder
     // Fluent configuration
     // ------------------------------------------------------------
 
-    public DogBuilder WithOwner(CustomerId owner)
+    public DogBuilder WithOwner(UserId owner)
     {
         _owner = owner;
         return this;

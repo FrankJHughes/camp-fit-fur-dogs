@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
 using CampFitFurDogs.Application.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Tests.Fakes;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 
@@ -20,7 +20,7 @@ public class ListDogsByOwnerHandlerTests
     [Fact]
     public async Task Handle_OwnerHasMultipleDogs_ReturnsAllDogs()
     {
-        var ownerId = CustomerId.From(Guid.NewGuid());
+        var ownerId = UserId.From(Guid.NewGuid());
 
         var dog1 = new DogBuilder()
             .WithOwner(ownerId)
@@ -65,8 +65,8 @@ public class ListDogsByOwnerHandlerTests
     [Fact]
     public async Task Handle_OnlyReturnsDogsBelongingToOwner()
     {
-        var ownerA = CustomerId.From(Guid.NewGuid());
-        var ownerB = CustomerId.From(Guid.NewGuid());
+        var ownerA = UserId.From(Guid.NewGuid());
+        var ownerB = UserId.From(Guid.NewGuid());
 
         var dogA = new DogBuilder()
             .WithOwner(ownerA)

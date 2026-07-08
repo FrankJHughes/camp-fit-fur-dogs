@@ -1,5 +1,5 @@
 using CampFitFurDogs.Domain.Sessions;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.TestUtilities.Fixtures;
 
@@ -12,8 +12,8 @@ public static class SessionFixtures
     public static readonly SessionTokenHash TokenHash =
         SessionTokenHash.From(DefaultTokenHash);
 
-    public static readonly CustomerId OwnerId =
-        CustomerId.From(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
+    public static readonly UserId OwnerId =
+        UserId.From(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
 
     public static readonly DateTimeOffset CreatedAt =
         new(2026, 5, 1, 12, 0, 0, TimeSpan.Zero);

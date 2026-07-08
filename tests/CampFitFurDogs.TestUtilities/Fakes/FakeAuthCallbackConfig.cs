@@ -1,10 +1,10 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 
 public sealed class FakeAuthCallbackConfig
 {
-    public required CustomerId CustomerId { get; init; }
+    public required UserId CustomerId { get; init; }
     public required string RedirectUrl { get; init; }
     public FakeAuditLogger? AuditLogger { get; init; }
 }

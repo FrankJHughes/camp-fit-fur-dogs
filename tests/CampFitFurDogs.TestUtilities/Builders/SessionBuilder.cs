@@ -1,5 +1,5 @@
 using CampFitFurDogs.Domain.Sessions;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.TestUtilities.Builders;
@@ -9,7 +9,7 @@ public class SessionBuilder
     private SessionTokenHash _tokenHash =
         SessionTokenHash.From(SessionFixtures.DefaultTokenHash);
 
-    private CustomerId _ownerId =
+    private UserId _ownerId =
         SessionFixtures.OwnerId;
 
     private DateTimeOffset _createdAt =
@@ -33,7 +33,7 @@ public class SessionBuilder
         return this;
     }
 
-    public SessionBuilder WithOwner(CustomerId ownerId)
+    public SessionBuilder WithOwner(UserId ownerId)
     {
         _ownerId = ownerId;
         return this;

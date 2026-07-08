@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Errors;
-using CampFitFurDogs.Domain.Customers.Exceptions;
+using Frank.Domain.Users.Exceptions;
 using Frank.Abstractions.Errors;
 using Frank.Abstractions.Exceptions;
 

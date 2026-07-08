@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dog.RemoveDog;
 using CampFitFurDogs.Application.Dogs.RemoveDog;
 using CampFitFurDogs.Application.Tests.Fakes;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 
@@ -13,7 +13,7 @@ public class RemoveDogHandlerTests
     public async Task Handle_WhenDogExistsAndOwnerMatches_RemovesDogAndCommits()
     {
         // Arrange
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
 
         var dog = new DogBuilder()
             .WithOwner(ownerId)
@@ -67,7 +67,7 @@ public class RemoveDogHandlerTests
     public async Task Handle_WhenOwnerDoesNotMatch_ThrowsInvalidOperationException()
     {
         // Arrange
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
 
         var dog = new DogBuilder()
             .WithOwner(ownerId)

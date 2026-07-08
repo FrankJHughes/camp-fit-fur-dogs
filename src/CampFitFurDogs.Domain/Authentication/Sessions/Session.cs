@@ -1,4 +1,4 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using Frank.Domain;
 
 namespace CampFitFurDogs.Domain.Sessions;
@@ -6,7 +6,7 @@ namespace CampFitFurDogs.Domain.Sessions;
 public sealed class Session : AggregateRoot<SessionId>
 {
     public SessionTokenHash TokenHash { get; }
-    public CustomerId OwnerId { get; }
+    public UserId OwnerId { get; }
     public DateTimeOffset CreatedAt { get; }
     public DateTimeOffset? RevokedAt { get; private set; }
 
@@ -20,7 +20,7 @@ public sealed class Session : AggregateRoot<SessionId>
     private Session(
         SessionId sessionId,
         SessionTokenHash tokenHash,
-        CustomerId ownerId,
+        UserId ownerId,
         DateTimeOffset createdAt)
         : base(sessionId)
     {
@@ -38,7 +38,7 @@ public sealed class Session : AggregateRoot<SessionId>
 
     public static Session Create(
         SessionTokenHash tokenHash,
-        CustomerId ownerId,
+        UserId ownerId,
         DateTimeOffset createdAt)
         => new(SessionId.New(), tokenHash, ownerId, createdAt);
 

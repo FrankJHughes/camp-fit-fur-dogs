@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ public sealed class ListDogsByOwnerReader(AppDbContext db) : IListDogsByOwnerRea
         Guid ownerId, CancellationToken ct)
     {
         var dogs = await db.Set<Dog>()
-            .Where(d => d.OwnerId == CustomerId.From(ownerId))
+            .Where(d => d.OwnerId == UserId.From(ownerId))
             .Select(d => new DogSummary(d.Id.Value, d.Name.Value, d.Breed.Value))
             .ToListAsync(ct);
 

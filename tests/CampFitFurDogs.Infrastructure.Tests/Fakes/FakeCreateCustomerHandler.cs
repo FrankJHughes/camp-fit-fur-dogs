@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Customer.CreateCustomer;
 using CampFitFurDogs.Application.Customers.CreateCustomer;
-using CampFitFurDogs.Domain.Customers.Exceptions;
+using Frank.Domain.Users.Exceptions;
 using FluentValidation;
 using Frank.Abstractions.Command;
 

@@ -1,9 +1,9 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Infrastructure.Data;
 
 namespace CampFitFurDogs.Infrastructure.Customers;
 
-public sealed class CustomerRepository : ICustomerRepository
+public sealed class CustomerRepository : IUserRepository
 {
     private readonly AppDbContext _db;
 
@@ -12,8 +12,8 @@ public sealed class CustomerRepository : ICustomerRepository
         _db = db;
     }
 
-    public async Task AddAsync(Domain.Customers.Customer customer, CancellationToken ct)
+    public async Task AddAsync(User customer, CancellationToken ct)
     {
-        await _db.Set<Domain.Customers.Customer>().AddAsync(customer, ct);
+        await _db.Set<User>().AddAsync(customer, ct);
     }
 }

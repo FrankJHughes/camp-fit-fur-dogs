@@ -1,8 +1,4 @@
-using System.Reflection;
-using FluentAssertions;
-using Frank.Registration;
 using Frank.Registration.Shapes;
-using Xunit;
 
 namespace Frank.Registration.Tests;
 

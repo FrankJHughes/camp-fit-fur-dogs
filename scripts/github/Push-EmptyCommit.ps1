@@ -1,2 +1,2 @@
 git commit --allow-empty -m "Empty Commit"
-git push
+git push -u origin HEAD

@@ -1,6 +1,6 @@
 
 using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Abstractions.Command;
 using Frank.Abstractions.UnitOfWork;
@@ -23,7 +23,7 @@ public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Gui
         if (!Enum.TryParse<Sex>(command.Sex, ignoreCase: true, out var sex))
             throw new ArgumentException("Sex must be 'Male' or 'Female'.");
 
-        var ownerId = CustomerId.From(command.OwnerId);
+        var ownerId = UserId.From(command.OwnerId);
         var name = DogName.Create(command.Name);
         var breed = Breed.Create(command.Breed);
         var dob = command.DateOfBirth;

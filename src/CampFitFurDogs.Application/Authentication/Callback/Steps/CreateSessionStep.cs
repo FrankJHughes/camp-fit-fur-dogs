@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Authentication.Callback;
 using CampFitFurDogs.Domain.Sessions;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using Frank.Abstractions.ImmutableContext;
 using Frank.Abstractions.UnitOfWork;
 
@@ -39,7 +39,7 @@ public sealed class CreateSessionStep
 
         var session = Session.Create(
             tokenHash: SessionTokenHash.From(ctx.TokenHash),
-            ownerId: CustomerId.From(ctx.CustomerId.Value),
+            ownerId: UserId.From(ctx.CustomerId.Value),
             createdAt: ctx.Now
         );
 

@@ -1,5 +1,5 @@
 using CampFitFurDogs.Application.Abstractions.Customer.FindCustomerByExternalId;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +18,7 @@ public sealed class FindCustomerByExternalIdReader : IFindCustomerByExternalIdRe
         string externalId,
         CancellationToken ct)
     {
-        return _db.Set<Customer>()
+        return _db.Set<User>()
             .AsNoTracking()
             .Where(c =>
                 c.ExternalId != null &&

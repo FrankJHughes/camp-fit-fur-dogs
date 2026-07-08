@@ -1,11 +1,13 @@
 using CampFitFurDogs.Domain.Sessions;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Infrastructure.Sessions;
 using CampFitFurDogs.Infrastructure.Customers;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Frank.TestUtilities.Fixtures;
+using Frank.TestUtilities.Builders;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Sessions;
 
@@ -18,17 +20,16 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
         _fixture = fixture;
     }
 
-    private async Task<CustomerId> SeedOwnerAsync()
+    private async Task<UserId> SeedOwnerAsync()
     {
         await using var ctx = _fixture.CreateContext();
         var repo = new CustomerRepository(ctx);
 
-        var customer = new CustomerBuilder()
-            .WithFirstName(CustomerFixtures.First.Value)
-            .WithLastName(CustomerFixtures.Last.Value)
+        var customer = new UserBuilder()
+            .WithFirstName(UserFixtures.First.Value)
+            .WithLastName(UserFixtures.Last.Value)
             .WithEmail($"infra-{Guid.NewGuid()}@example.com")
-            .WithPhone(CustomerFixtures.Phone.Value)
-            .WithPassword(CustomerFixtures.Hash.Value)
+            .WithPhone(UserFixtures.Phone.Value)
             .Build();
 
         await repo.AddAsync(customer, CancellationToken.None);

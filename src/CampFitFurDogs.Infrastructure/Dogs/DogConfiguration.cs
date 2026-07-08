@@ -1,4 +1,4 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Infrastructure.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +21,11 @@ public sealed class DogConfiguration : AggregateRootConfiguration<Domain.Dogs.Do
         builder.Property(d => d.OwnerId)
             .HasConversion(
                 id => id.Value,
-                value => CustomerId.From(value))
+                value => UserId.From(value))
             .HasColumnName("owner_id")
             .IsRequired();
 
-        builder.HasOne<Domain.Customers.Customer>()
+        builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(d => d.OwnerId)
             .OnDelete(DeleteBehavior.Cascade);

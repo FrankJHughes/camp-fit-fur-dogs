@@ -10,7 +10,7 @@ using Frank.Command;
 using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
@@ -30,7 +30,7 @@ public partial class AutoRegistrationTests
 
         // Stub dependencies so handlers can be constructed
         services.AddSingleton<IDogRepository, FakeDogRepository>();
-        services.AddSingleton<ICustomerRepository, FakeCustomerRepository>();
+        services.AddSingleton<IUserRepository, FakeCustomerRepository>();
         services.AddSingleton<IUnitOfWork, FakeUnitOfWork>();
 
         // Act
@@ -56,7 +56,7 @@ public partial class AutoRegistrationTests
 
         // Provide required fakes so handlers/validators can be constructed
         services.AddSingleton<IDogRepository, FakeDogRepository>();
-        services.AddSingleton<ICustomerRepository, FakeCustomerRepository>();
+        services.AddSingleton<IUserRepository, FakeCustomerRepository>();
         services.AddSingleton<IUnitOfWork, FakeUnitOfWork>();
 
         // Act

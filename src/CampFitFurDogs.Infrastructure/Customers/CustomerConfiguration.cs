@@ -1,20 +1,20 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using Frank.Infrastructure.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CampFitFurDogs.Infrastructure.Customers;
 
-public sealed class CustomerConfiguration : AggregateRootConfiguration<Domain.Customers.Customer, CustomerId>
+public sealed class CustomerConfiguration : AggregateRootConfiguration<User, UserId>
 {
     protected override string TableName => "customers";
 
-    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Domain.Customers.Customer> builder)
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<User> builder)
     {
         builder.Property(c => c.Id)
             .HasConversion(
                 id => id.Value,
-                value => CustomerId.From(value))
+                value => UserId.From(value))
             .HasColumnName("id");
 
         // FirstName VO (required)

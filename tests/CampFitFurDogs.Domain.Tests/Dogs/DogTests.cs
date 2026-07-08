@@ -1,4 +1,4 @@
-using CampFitFurDogs.Domain.Customers;
+using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 
 namespace CampFitFurDogs.Domain.Tests.Dogs;
@@ -8,7 +8,7 @@ public class DogTests
     [Fact]
     public void Create_sets_all_properties()
     {
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
         var name = DogName.Create("Biscuit");
         var breed = Breed.Create("Golden Retriever");
         var dob = new DateOnly(2022, 6, 15);
@@ -27,7 +27,7 @@ public class DogTests
     [Fact]
     public void Create_two_dogs_have_distinct_ids()
     {
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
         var name = DogName.Create("Biscuit");
         var breed = Breed.Create("Poodle");
         var dob = new DateOnly(2023, 1, 1);
@@ -41,7 +41,7 @@ public class DogTests
     [Fact]
     public void Update_sets_all_editable_properties()
     {
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
         var dog = Dog.Create(
             ownerId,
             DogName.Create("Biscuit"),
@@ -65,7 +65,7 @@ public class DogTests
     public void Update_does_not_change_id()
     {
         var dog = Dog.Create(
-            CustomerId.New(),
+            UserId.New(),
             DogName.Create("Biscuit"),
             Breed.Create("Poodle"),
             new DateOnly(2023, 1, 1),
@@ -85,7 +85,7 @@ public class DogTests
     [Fact]
     public void Update_does_not_change_owner_id()
     {
-        var ownerId = CustomerId.New();
+        var ownerId = UserId.New();
         var dog = Dog.Create(
             ownerId,
             DogName.Create("Biscuit"),
