@@ -15,11 +15,13 @@ This guide explains how the callback endpoint, Frank’s OIDC capabilities, and 
 The authentication callback flow exists to:
 
 - Receive the OIDC authorization response  
+- Validate and decode the OIDC `state`  
 - Validate the authorization code  
 - Exchange the code for tokens  
+- Normalize identity claims  
 - Resolve or create the authenticated Owner  
 - Establish a CFFD application session  
-- Issue the session cookie  
+- Issue the `session` cookie  
 - Redirect the user to the correct post‑login location  
 
 This flow is **product‑specific** and sits on top of Frank’s OIDC capabilities.
@@ -37,7 +39,7 @@ Frank OIDC Callback Pipeline (Framework)
         ↓
 CFFD Application Authentication Pipeline (Product)
         ↓
-Session Creation + Redirect (API)
+Session Cookie Issuance + Redirect (API)
 ```
 
 Each layer has a distinct responsibility.
@@ -52,12 +54,13 @@ The endpoint:
 
 - Accepts the OIDC redirect request  
 - Performs **shape validation only**  
-- Extracts the authorization code and state  
+- Extracts and decodes `state`  
+- Extracts the authorization code  
 - Invokes Frank’s OIDC callback pipeline  
-- Receives the validated identity payload  
+- Receives the normalized identity payload  
 - Invokes the CFFD Application authentication pipeline  
-- Issues the session cookie  
-- Redirects the user  
+- Issues the **CFFD session cookie (`session`)**  
+- Redirects the user to the `return_url` from decoded state  
 
 The endpoint contains **no business logic**.
 
@@ -105,7 +108,7 @@ This layer performs all **product‑specific logic**:
 - Enforce product authentication rules  
 - Emit authentication observability events  
 - Create a CFFD session  
-- Produce a `SessionEstablishedResult`  
+- Produce a `SessionEstablishedResult` containing the session token value  
 
 This pipeline is implemented using:
 
@@ -123,15 +126,16 @@ Frank is not involved in this logic.
 
 ```
 1. User logs in via external provider
-2. Provider redirects to /auth/callback
+2. Provider redirects to /api/identity/callback
 3. API endpoint receives request
-4. Frank validates state + exchanges code for tokens
-5. Frank normalizes identity → NormalizedIdentity
-6. API endpoint passes identity to Application
-7. Application resolves or creates Owner
-8. Application creates session
-9. API endpoint issues session cookie
-10. API endpoint redirects user
+4. API decodes state → return_url
+5. Frank validates state + exchanges code for tokens
+6. Frank normalizes identity → NormalizedIdentity
+7. API passes identity to Application
+8. Application resolves or creates Owner
+9. Application creates session → CookieValue
+10. API issues the "session" cookie
+11. API redirects user to return_url
 ```
 
 ---
@@ -144,22 +148,26 @@ The Application layer produces:
 SessionEstablishedResult {
     OwnerId
     SessionId
-    RedirectUrl
+    CookieValue
 }
 ```
 
 The API endpoint:
 
-- serializes the session  
-- issues the session cookie  
+- issues the **domain session cookie (`session`)**  
 - performs the redirect  
 
 Session cookies:
 
 - are HTTP‑only  
+- are Secure  
+- use SameSite=Strict  
 - contain no PII  
 - contain no tokens  
-- contain only session identifiers  
+- encode expiration internally  
+
+> **Note:** The legacy ASP.NET cookie (`cffd.session`) has been fully removed.  
+> The **only** authentication cookie is the domain cookie: `session`.
 
 ---
 
@@ -167,14 +175,16 @@ Session cookies:
 
 The callback endpoint determines the redirect target using:
 
-1. `returnUrl` from the original login request  
-2. A product‑specific default (e.g., `/dashboard`)  
+1. `return_url` from the original login request (encoded in `state`)  
+2. A product‑specific default (`Frontend:BaseUrl`) if missing  
 
 Rules:
 
 - returnUrl must be validated  
-- returnUrl must be local  
+- returnUrl must be local or well‑formed  
 - invalid returnUrl → default redirect  
+
+Redirect computation is **API‑level**, not Application‑level.
 
 ---
 
@@ -225,10 +235,46 @@ Frank emits framework‑level events (token exchange, validation, etc.).
 - Identity is resolved only through Frank’s normalized payload  
 - returnUrl must be validated  
 - Session cookies must be HTTP‑only and secure  
+- Session cookies must be deleted on logout  
 
 ---
 
-# 10. Contributor Guidelines
+# 10. Logout Architecture (US‑222)
+
+Logout is now a **first‑class identity operation**.
+
+The logout endpoint:
+
+- Deletes the **session** cookie  
+- Determines the post‑logout redirect target  
+- Returns a `LogoutResponse(returnUrl)`  
+- Leaves navigation to the frontend  
+
+Logout does **not**:
+
+- call `SignOutAsync`  
+- interact with ASP.NET authentication handlers  
+- clear any legacy cookies  
+
+This aligns logout with the new session model introduced in the callback flow.
+
+---
+
+# 11. Identity Retrieval
+
+The identity endpoint uses Frank’s `ICurrentUser` abstraction.
+
+It:
+
+- requires authorization  
+- returns the resolved identity (currently `Name`)  
+- reflects the authenticated session created during callback  
+
+Identity resolution is performed entirely by the authentication pipeline.
+
+---
+
+# 12. Contributor Guidelines
 
 When modifying the callback flow:
 
@@ -240,17 +286,20 @@ When modifying the callback flow:
 6. Do not modify Frank internals  
 7. Keep all product logic in the Application layer  
 8. Emit observability events for each major step  
+9. Use the `session` cookie exclusively  
+10. Ensure logout deletes the `session` cookie  
 
 ---
 
-# 11. Summary
+# 13. Summary
 
 - Frank handles OIDC protocol details  
 - CFFD handles product‑specific authentication logic  
 - The API endpoint orchestrates the flow  
 - The Application layer resolves identity and creates sessions  
 - The Domain layer enforces invariants  
-- The endpoint issues the session cookie and redirects the user  
+- The endpoint issues the `session` cookie and redirects the user  
+- Logout deletes the `session` cookie and returns a redirect target  
 
 This architecture keeps authentication:
 
@@ -268,4 +317,4 @@ This architecture keeps authentication:
 - API Endpoint Purity Guide  
 - Authentication Overview  
 - Session Management Guide  
-- Frank OIDC Callback Pipeline Guide  
+- Frank OIDC Callback Pipeline Guide

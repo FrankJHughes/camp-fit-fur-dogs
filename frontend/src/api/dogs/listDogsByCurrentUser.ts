@@ -6,7 +6,7 @@ const client = createApiClient();
 
 export async function listDogsByCurrentUser(): Promise<QueryResult<ListDogsByCurrentUserResponse>> {
   try {
-    const result = await client.get<ListDogsByCurrentUserResponse>('/dogs');
+    const result = await client.get<ListDogsByCurrentUserResponse>('/api/dogs');
 
     if (result.ok) {
       return { success: true, data: result.data };
@@ -18,7 +18,6 @@ export async function listDogsByCurrentUser(): Promise<QueryResult<ListDogsByCur
 
     return {
       success: false,
-      notFound: false,
       error: result.error?.message ?? 'An unknown error occurred.',
     };
   } catch (err: any) {
@@ -26,7 +25,6 @@ export async function listDogsByCurrentUser(): Promise<QueryResult<ListDogsByCur
     console.error('listDogsByCurrentUser error', err);
     return {
       success: false,
-      notFound: false,
       error: err?.message ?? 'Network error',
     };
   }

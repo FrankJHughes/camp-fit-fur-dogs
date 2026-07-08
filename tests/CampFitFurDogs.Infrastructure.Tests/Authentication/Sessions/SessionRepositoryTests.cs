@@ -51,7 +51,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
             .CreatedAtFromFixture()
             .Build();
 
-        await repo.CreateAsync(session);
+        await repo.CreateAsync(session, CancellationToken.None);
         await ctx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
@@ -86,14 +86,14 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
                 .CreatedAtFromFixture()
                 .Build();
 
-            await repo.CreateAsync(session);
+            await repo.CreateAsync(session, CancellationToken.None);
             await ctx.SaveChangesAsync();
         }
 
         await using var readCtx = _fixture.CreateContext();
         var readRepo = new SessionRepository(readCtx);
 
-        var retrieved = await readRepo.GetByTokenHashAsync(tokenHash);
+        var retrieved = await readRepo.GetByTokenHashAsync(tokenHash, CancellationToken.None);
 
         retrieved.Should().NotBeNull();
         retrieved!.TokenHash.Should().Be(tokenHash);
@@ -112,7 +112,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
             Guid.NewGuid().ToString("N").PadLeft(64, 'c')
         );
 
-        var result = await repo.GetByTokenHashAsync(missingHash);
+        var result = await repo.GetByTokenHashAsync(missingHash, CancellationToken.None);
 
         result.Should().BeNull();
     }
@@ -139,7 +139,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
                 .CreatedAtFromFixture()
                 .Build();
 
-            await repo.CreateAsync(session);
+            await repo.CreateAsync(session, CancellationToken.None);
             await ctx.SaveChangesAsync();
         }
 
@@ -149,7 +149,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
         await using (var ctx = _fixture.CreateContext())
         {
             var repo = new SessionRepository(ctx);
-            await repo.RevokeAsync(tokenHash);
+            await repo.RevokeAsync(tokenHash, CancellationToken.None);
             await ctx.SaveChangesAsync();
         }
 
@@ -157,7 +157,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture>
         await using (var readCtx = _fixture.CreateContext())
         {
             var repo = new SessionRepository(readCtx);
-            var retrieved = await repo.GetByTokenHashAsync(tokenHash);
+            var retrieved = await repo.GetByTokenHashAsync(tokenHash, CancellationToken.None);
 
             retrieved.Should().NotBeNull();
             retrieved!.RevokedAt.Should().NotBeNull();

@@ -1,6 +1,6 @@
 export function resolveBaseUrl() {
   const envBase = process.env.NEXT_PUBLIC_API_URL;
-  const localBase = "http://localhost:5209";
+  const localBase = "http://localhost:5000";
 
   if (envBase && envBase.trim().length > 0) {
     return envBase; // Vercel preview + production

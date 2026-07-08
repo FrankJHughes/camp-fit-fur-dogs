@@ -15,7 +15,7 @@ public static class ApiTestHelpers
         HttpClient client,
         string code = "test-code")
     {
-        var response = await client.GetAsync($"/api/auth/callback?code={code}");
+        var response = await client.GetAsync($"/api/identity/callback?code={code}");
         response.StatusCode.Should().Be(HttpStatusCode.Redirect); // 302
     }
 

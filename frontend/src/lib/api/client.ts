@@ -1,4 +1,5 @@
 import { resolveBaseUrl } from "./resolveBaseUrl";
+
 export interface ApiError {
   type: 'network' | 'http' | 'validation';
   message: string;
@@ -20,35 +21,47 @@ export function createApiClient(baseUrl: string = resolveBaseUrl()) {
       const options: RequestInit = {
         method,
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // important for session cookies
       };
+
       if (body !== undefined) {
         options.body = JSON.stringify(body);
       }
+
       const response = await fetch(`${baseUrl}${path}`, options);
-      const data = await response.json();
+
+      // ❗ Do NOT parse JSON yet — check status first
       if (!response.ok) {
+        // 422 → validation errors (JSON body expected)
         if (response.status === 422) {
+          const data = await safeJson(response);
           return {
             ok: false,
             error: {
               type: 'validation',
               status: 422,
-              message: data.message ?? 'Validation failed',
-              errors: data.errors,
+              message: data?.message ?? 'Validation failed',
+              errors: data?.errors,
             },
           };
         }
+
+        // 401/404/500 → may have NO body
         return {
           ok: false,
           error: {
             type: 'http',
             status: response.status,
-            message: data.message ?? 'Request failed',
-            errors: data.errors,
+            message: response.statusText || 'Request failed',
           },
         };
       }
-      return { ok: true, data };
+
+      // ✔ Safe to parse JSON now
+      const data = await safeJson(response);
+
+      return { ok: true, data: data as T };
+
     } catch (error) {
       return {
         ok: false,
@@ -57,6 +70,15 @@ export function createApiClient(baseUrl: string = resolveBaseUrl()) {
           message: error instanceof Error ? error.message : 'Unknown error',
         },
       };
+    }
+  }
+
+  // Helper: safely parse JSON or return null
+  async function safeJson(res: Response): Promise<any | null> {
+    try {
+      return await res.json();
+    } catch {
+      return null;
     }
   }
 

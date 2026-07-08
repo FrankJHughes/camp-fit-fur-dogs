@@ -26,8 +26,7 @@ public class ListDogsByCurrentUserEndpointTests : IAsyncLifetime
         await _postgres.StartAsync();
 
         var ctx = new ApiContext()
-            .WithDatabase(true, _postgres)
-            .WithCookieAuthOnly(true);
+            .WithDatabase(true, _postgres);
 
         _api = new ApiFactory(ctx);
     }

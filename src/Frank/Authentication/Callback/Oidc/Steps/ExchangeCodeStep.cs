@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Frank.Abstractions.ImmutableContext;
 using Frank.Settings;
+using Microsoft.Extensions.Options;
 
 namespace Frank.Authentication.Callback.Oidc.Steps;
 
@@ -12,10 +13,10 @@ public sealed class ExchangeCodeStep : IImmutableContextBuildStep<OidcAuthCallba
     public IImmutableContextBuildStepMetadata Metadata { get; } =
         new ImmutableContextBuildStepMetadata("oidc.exchange-code", "Exchange Authorization Code");
 
-    public ExchangeCodeStep(HttpClient http, AuthCallbackOidcSettings options)
+    public ExchangeCodeStep(HttpClient http, IOptionsMonitor<AuthCallbackOidcSettings> options)
     {
         _http = http;
-        _options = options;
+        _options = options.CurrentValue;
     }
 
     public bool CanExecute(OidcAuthCallbackContext ctx)
@@ -25,7 +26,7 @@ public sealed class ExchangeCodeStep : IImmutableContextBuildStep<OidcAuthCallba
         OidcAuthCallbackContext ctx,
         CancellationToken ct)
     {
-        var tokenEndpoint = $"https://{_options.Authority}/oauth/token";
+        var tokenEndpoint = $"{_options.Authority}/oauth/token";
 
         var payload = new Dictionary<string, string>
         {

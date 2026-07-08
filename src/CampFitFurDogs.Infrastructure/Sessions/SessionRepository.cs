@@ -13,22 +13,22 @@ public sealed class SessionRepository : ISessionRepository
         _db = db;
     }
 
-    public async Task<Domain.Sessions.Session?> GetByTokenHashAsync(SessionTokenHash tokenHash)
+    public async Task<Domain.Sessions.Session?> GetByTokenHashAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken)
     {
         return await _db.Set<Session>()
-            .FirstOrDefaultAsync(s => s.TokenHash == tokenHash);
+            .FirstOrDefaultAsync(s => s.TokenHash == tokenHash, cancellationToken);
     }
 
-    public Task CreateAsync(Domain.Sessions.Session session)
+    public Task CreateAsync(Domain.Sessions.Session session, CancellationToken cancellationToken)
     {
         _db.Set<Domain.Sessions.Session>().Add(session);
         return Task.CompletedTask;
     }
 
-    public async Task RevokeAsync(SessionTokenHash tokenHash)
+    public async Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken)
     {
         var session = await _db.Set<Session>()
-            .SingleOrDefaultAsync(s => s.TokenHash == tokenHash);
+            .SingleOrDefaultAsync(s => s.TokenHash == tokenHash, cancellationToken);
 
         if (session is null)
             return;

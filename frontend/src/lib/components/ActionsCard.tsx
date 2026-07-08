@@ -1,25 +1,29 @@
 import type { Action } from '@/lib/action';
 
 interface ActionsCardProps {
-    actions: Action[];
+  header?: React.ReactNode;
+  actions: Action[];
 }
 
-export function ActionsCard({ actions }: ActionsCardProps) {
-    if (actions.length === 0) return null;
+export function ActionsCard({ header, actions }: ActionsCardProps) {
+  return (
+    <div className="actions-card">
+      <div className="actions-card-header" tabIndex={0}>
+        {header}
+      </div>
 
-    return (
-        <>
-            {actions.map((action) => (
-                <button
-                    key={action.label}
-                    onClick={action.onClick}
-                    {...(action.variant && action.variant !== 'default'
-                        ? { 'data-variant': action.variant }
-                        : {})}
-                >
-                    {action.label}
-                </button>
-            ))}
-        </>
-    );
+      <div className="actions-card-menu">
+        {actions.map((action) => (
+          <button
+            key={action.label}
+            onClick={action.onClick}
+            disabled={action.disabled}
+            data-variant={action.variant}
+          >
+            {action.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }

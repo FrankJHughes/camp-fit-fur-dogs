@@ -82,10 +82,10 @@ These guides evolve as the system evolves.
   High‑level explanation of the OIDC authentication flow and the three‑layer callback architecture.
 
 - **Login Endpoint**  
-  Details for `/api/auth/login`, the pure redirect endpoint.
+  Details for `/api/identity/login`, the pure redirect endpoint.
 
 - **Callback Endpoint**  
-  Details for `/api/auth/callback`, which orchestrates the Frank pipeline, Application pipeline, cookie issuance, and redirect.
+  Details for `/api/identity/callback`, which orchestrates the Frank pipeline, Application pipeline, cookie issuance, and redirect.
 
 - **Authentication Configuration**  
   Required Auth0 configuration keys and environment variables.

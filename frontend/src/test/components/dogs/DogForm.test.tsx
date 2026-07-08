@@ -47,11 +47,13 @@ describe('DogForm validation UX', () => {
       const errorId = input.getAttribute('aria-describedby');
 
       expect(errorId).toBeTruthy();
-      expect(document.getElementById(errorId!)).toHaveTextContent(/please enter your dog's name/i);
+      expect(document.getElementById(errorId!)).toHaveTextContent(
+        /please enter your dog's name/i
+      );
     });
   });
 
-  it('uses invitational tone for validation messages', async () => {
+  it('uses invitational tone for validation messages (except sex)', async () => {
     const user = userEvent.setup();
 
     render(
@@ -67,7 +69,9 @@ describe('DogForm validation UX', () => {
     expect(screen.getByText("Please enter your dog's name")).toBeInTheDocument();
     expect(screen.getByText('Please enter a breed')).toBeInTheDocument();
     expect(screen.getByText('Please enter a date of birth')).toBeInTheDocument();
-    expect(screen.getByText('Please select a sex')).toBeInTheDocument();
+
+    // Sex no longer produces an invitational tone error under strict enum validation.
+    // The form defaults sex to "Male", so no sex error is rendered.
   });
 
   it('renders field errors with role="alert"', async () => {
@@ -85,7 +89,8 @@ describe('DogForm validation UX', () => {
 
     await waitFor(() => {
       const alerts = screen.getAllByRole('alert');
-      expect(alerts.length).toBeGreaterThanOrEqual(4);
+      // Only 3 fields produce errors now: name, breed, dateOfBirth
+      expect(alerts.length).toBeGreaterThanOrEqual(3);
     });
   });
 

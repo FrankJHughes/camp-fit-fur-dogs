@@ -13,12 +13,16 @@ describe('toQueryState', () => {
   });
 
   it('maps error to error state with message', () => {
-    const result: QueryResult<string> = { success: false, notFound: false, error: 'Server error' };
+    const result: QueryResult<string> = { success: false, error: 'Server error' };
     expect(toQueryState(result)).toEqual({ status: 'error', error: 'Server error' });
   });
 
-  it('uses fallback message when error is undefined', () => {
-    const result: QueryResult<string> = { success: false, notFound: false };
-    expect(toQueryState(result)).toEqual({ status: 'error', error: 'An unknown error occurred.' });
+  it('uses fallback message when error is undefined or empty', () => {
+    // Empty string is the closest valid representation under the union
+    const result: QueryResult<string> = { success: false, error: '' };
+    expect(toQueryState(result)).toEqual({
+      status: 'error',
+      error: 'An unknown error occurred.',
+    });
   });
 });

@@ -65,9 +65,9 @@ These values must stay synchronized with Render preview URLs and production host
 ## Required Callback URLs
 
 ```
-http://localhost:5000/api/auth/callback
-https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
-https://campfitfurdogsapi.onrender.com/api/auth/callback
+http://localhost:5000/api/identity/callback
+https://campfitfurdogsapi-pr-<number>.onrender.com/api/identity/callback
+https://campfitfurdogsapi.onrender.com/api/identity/callback
 ```
 
 ## Required Logout URLs
@@ -111,7 +111,7 @@ Authentication:Callback:PostLoginRedirectUrl
         "Authority": "https://YOUR_DOMAIN",
         "ClientId": "YOUR_CLIENT_ID",
         "ClientSecret": "YOUR_CLIENT_SECRET",
-        "CallbackUrl": "https://yourapp.com/api/auth/callback",
+        "CallbackUrl": "https://yourapp.com/api/identity/callback",
         "Disabled": false
       }
     }
@@ -170,7 +170,7 @@ Example:
 Authentication__Callback__Oidc__Authority=https://dev-tenant.us.auth0.com
 Authentication__Callback__Oidc__ClientId=abc123
 Authentication__Callback__Oidc__ClientSecret=xyz789
-Authentication__Callback__Oidc__CallbackUrl=http://localhost:5000/api/auth/callback
+Authentication__Callback__Oidc__CallbackUrl=http://localhost:5000/api/identity/callback
 Authentication__Callback__PostLoginRedirectUrl=http://localhost:3000/
 Authentication__Callback__Oidc__Disabled=false
 ```
@@ -199,7 +199,7 @@ Preview environments require:
 ### Preview Callback URL
 
 ```
-https://campfitfurdogsapi-pr-<number>.onrender.com/api/auth/callback
+https://campfitfurdogsapi-pr-<number>.onrender.com/api/identity/callback
 ```
 
 ### Preview Frontend URL
@@ -229,7 +229,7 @@ https://campfitfurdogsapi-pr-<number>.onrender.com
 ### Production Callback URL
 
 ```
-https://campfitfurdogsapi.onrender.com/api/auth/callback
+https://campfitfurdogsapi.onrender.com/api/identity/callback
 ```
 
 ### Production Frontend URL
@@ -278,9 +278,9 @@ npm run dev
 
 ## 3. Login Flow
 
-- Frontend calls `/api/auth/login`  
+- Frontend calls `/api/identity/login`  
 - Browser redirects to Auth0  
-- Auth0 redirects back to `/api/auth/callback`  
+- Auth0 redirects back to `/api/identity/callback`  
 - Frank pipeline performs protocol logic  
 - Application pipeline resolves identity + creates session  
 - API issues session cookie  

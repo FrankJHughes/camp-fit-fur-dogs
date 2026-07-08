@@ -29,7 +29,7 @@ describe('getDogProfile', () => {
 
     const result = await getDogProfile(dogId);
 
-    expect(mockGet).toHaveBeenCalledWith(`/dogs/${dogId}`);
+    expect(mockGet).toHaveBeenCalledWith(`/api/dogs/${dogId}`);
     expect(result).toEqual({ success: true, data: profileData });
   });
 
@@ -54,7 +54,6 @@ describe('getDogProfile', () => {
 
     expect(result).toEqual({
       success: false,
-      notFound: false,
       error: 'Internal Server Error',
     });
   });
@@ -69,7 +68,6 @@ describe('getDogProfile', () => {
 
     expect(result).toEqual({
       success: false,
-      notFound: false,
       error: 'A network error occurred',
     });
   });

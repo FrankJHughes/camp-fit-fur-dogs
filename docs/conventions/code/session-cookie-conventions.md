@@ -12,7 +12,7 @@ The session cookie is the primary authentication mechanism for Owners.
 The session cookie must be named:
 
 ````text
-cfd.session
+cffd.session
 ````
 
 ---

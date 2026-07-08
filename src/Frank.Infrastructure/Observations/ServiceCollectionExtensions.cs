@@ -18,6 +18,18 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICorrelationContext, CorrelationContext>();
         services.AddSingleton<IErrorBoundaryObserver, ErrorBoundaryObserver>();
 
+        services.AddTransient<Func<string, string, IObservationContext>>(sp =>
+        {
+            var env = sp.GetRequiredService<IHostEnvironment>();
+
+            return (channel, agent) =>
+                SystemObservationContext.Create(
+                    channel: channel,
+                    agent: agent,
+                    environment: env
+                );
+        });
+
         // Make ObservabilityContext available per-request
         services.AddScoped<IRequestObservationContext>(provider =>
         {

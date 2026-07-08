@@ -69,7 +69,7 @@ Configuration is consumed **only** by the Frank pipeline.
 
 ---
 
-## `/api/auth/login` uses:
+## `/api/identity/login` uses:
 
 - `Authority`  
 - `ClientId`  
@@ -86,7 +86,7 @@ The login endpoint contains:
 
 ---
 
-## `/api/auth/callback` uses:
+## `/api/identity/callback` uses:
 
 The API callback endpoint:
 

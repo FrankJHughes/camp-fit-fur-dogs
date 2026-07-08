@@ -6,7 +6,7 @@ const client = createApiClient();
 
 export async function removeDog(dogId: string): Promise<CommandResult> {
   try {
-    const result = await client.delete<void>(`/dogs/${dogId}`);
+    const result = await client.delete<void>(`/api/dogs/${dogId}`);
     return toCommandResult(result);
   } catch (err: any) {
     // eslint-disable-next-line no-console

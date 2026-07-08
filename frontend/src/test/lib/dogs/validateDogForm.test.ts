@@ -57,9 +57,12 @@ describe('validateDogForm', () => {
       name: 'Buddy',
       breed: 'Golden Retriever',
       dateOfBirth: '2023-06-15',
-      sex: '',
+      sex: '' as any, // strict enum rejects this
     });
-    expect(result).toEqual({ sex: 'Please select a sex' });
+
+    expect(result).toEqual({
+      sex: 'Invalid option: expected one of "Male"|"Female"',
+    });
   });
 
   it('returns errors for all fields when all are empty', () => {
@@ -67,13 +70,14 @@ describe('validateDogForm', () => {
       name: '',
       breed: '',
       dateOfBirth: '',
-      sex: '',
+      sex: '' as any,
     });
+
     expect(result).toEqual({
       name: "Please enter your dog's name",
       breed: 'Please enter a breed',
       dateOfBirth: 'Please enter a date of birth',
-      sex: 'Please select a sex',
+      sex: 'Invalid option: expected one of "Male"|"Female"',
     });
   });
 });

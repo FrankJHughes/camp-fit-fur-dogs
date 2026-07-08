@@ -1,9 +1,14 @@
-# Session Management Guide (Aligned With Auth Callback Refactor)
+# Session Management Guide  
+**Aligned With Exclusive OIDC Authentication & Auth Callback Refactor**
 
-This guide explains how session management works **today** based on the implementation completed for **US‑110 (Authentication: Owner Login)** and **US‑111 (Session Management)**.  
-It documents the *runtime behavior* and *developer workflow* for issuing and persisting session cookies after a successful OIDC login.
+This guide explains how session management works **today**, based on the implementation completed for:
 
-This guide does **not** define rules, boundaries, or architectural requirements — those live in:
+- US‑110 — Authentication: Owner Login  
+- US‑111 — Session Management  
+
+It documents the *runtime behavior* and *developer workflow* for issuing and persisting session cookies after a successful OIDC login, aligned with the **new authentication callback architecture**.
+
+This guide does **not** define rules or governance — those live in:
 
 - Architecture Governance  
 - Security Governance  
@@ -11,7 +16,7 @@ This guide does **not** define rules, boundaries, or architectural requirements 
 - Conventions  
 - ADRs  
 
-This guide focuses solely on **how the current session implementation behaves**, aligned with the **new authentication callback architecture**.
+This guide focuses solely on **how the current session implementation behaves**.
 
 ---
 
@@ -42,30 +47,30 @@ This guide documents only what exists today.
 # Session Flow Overview (Post‑Refactor)
 
 1. User completes OIDC login with Auth0  
-2. Auth0 redirects to `/api/auth/callback?code=XYZ`  
-3. API extracts the authorization code  
-4. **Frank Auth Callback Pipeline** runs (protocol):  
+2. Auth0 redirects to `/api/identity/callback?code=XYZ&state=<encoded>`  
+3. API decodes `state` → extracts `return_url`  
+4. API extracts the authorization code  
+5. **Frank Auth Callback Pipeline** runs (protocol):  
    - Validates configuration  
    - Exchanges the authorization code  
-   - Fetches and normalizes userinfo  
+   - Normalizes userinfo  
    - Produces a stable external identity payload  
 
-5. **Application Auth Callback Pipeline** runs (business):  
+6. **Application Auth Callback Pipeline** runs (business):  
    - Validates identity claims  
    - Resolves or creates the Owner  
    - Logs the login event  
    - **Creates the session**  
-   - **Computes the session token + hash**  
+   - **Generates the session token + hash**  
    - **Computes the cookie value**  
-   - Computes the final redirect URL  
 
-6. API layer:  
-   - Issues the session cookie using the `CookieValue`  
-   - Returns **302 Redirect** to the frontend  
+7. API layer:  
+   - Issues the `session` cookie using `CookieValue`  
+   - Redirects the user to `return_url` from decoded state  
 
-7. Browser stores the cookie  
-8. Future API requests will include the cookie  
-9. Session validation middleware (future) will consume it  
+8. Browser stores the cookie  
+9. Future API requests include the cookie  
+10. Session validation middleware (future) will consume it  
 
 All of this behavior follows **Session Management Governance** and **API Endpoint Purity**.
 
@@ -79,24 +84,23 @@ It contains **no user data**, is **not a JWT**, and is **not readable** by the c
 Example (conceptual):
 
 ````text
-Set-Cookie: cfd.session=2f9c3e2a...; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400
+Set-Cookie: session=2f9c3e2a...; HttpOnly; Secure; SameSite=Strict; Path=/;
 ````
 
-### Cookie Properties
+### Cookie Properties (Actual Implementation)
 
 | Property | Value | Purpose |
 |---------|--------|---------|
-| Name | `cfd.session` | Standardized across API |
+| Name | `session` | Single authentication cookie |
 | Value | 256‑bit random token | Prevents guessing/bruteforce |
 | HttpOnly | `true` | Prevents JS access |
 | Secure | `true` in preview/prod | Required for HTTPS |
-| SameSite | `Lax` | Allows OIDC redirects |
+| SameSite | `Strict` | Prevents CSRF; compatible with OIDC callback |
 | Path | `/` | Sent to all API routes |
-| Max‑Age | Configured | Temporary until US‑111 |
 
 The cookie value is computed in the **Application pipeline** and written by the **API layer**.
 
-Cookie issuance follows **Security Governance**.
+Local development uses `Secure=false`.
 
 ---
 
@@ -144,7 +148,7 @@ Only the **hash** of the token is stored — never the raw token.
 
 # Where Session Creation Happens (Post‑Refactor)
 
-Session creation occurs inside the **Application Auth Callback Pipeline**, not in a dispatcher step.
+Session creation occurs inside the **Application Auth Callback Pipeline**.
 
 ### Inputs:
 
@@ -158,11 +162,10 @@ Session creation occurs inside the **Application Auth Callback Pipeline**, not i
 1. Creates a new domain `Session`  
 2. Persists it via `ISessionRepository`  
 3. Commits via `IUnitOfWork`  
-4. Returns a result containing:
+4. Returns:
    - `SessionId`
    - `TokenHash`
    - `CookieValue`
-   - `RedirectUrl`
 
 The Application pipeline does **not** issue cookies — that is the API layer’s responsibility.
 
@@ -177,7 +180,7 @@ The API endpoint:
 1. Receives `CookieValue` from the Application pipeline  
 2. Applies cookie security flags  
 3. Writes the cookie to the HTTP response  
-4. Issues the redirect  
+4. Redirects the user to `return_url`  
 
 This separation enforces:
 
@@ -194,7 +197,7 @@ It will be added in **US‑111**.
 
 The middleware will:
 
-- Read the `cfd.session` cookie  
+- Read the `session` cookie  
 - Hash the token  
 - Look up the session by hash  
 - Validate expiration  
@@ -219,9 +222,9 @@ Until then:
 ### Auth0 Callback URLs
 
 ````text
-http://localhost:5000/api/auth/callback
-https://<preview>.onrender.com/api/auth/callback
-https://campfitfurdogsapi.onrender.com/api/auth/callback
+http://localhost:5000/api/identity/callback
+https://<preview>.onrender.com/api/identity/callback
+https://campfitfurdogsapi.onrender.com/api/identity/callback
 ````
 
 ---
@@ -243,7 +246,6 @@ Session behavior is tested in three layers:
 ## 2. Application Pipeline Tests  
 - Identity resolution → session creation  
 - Cookie value computation  
-- Redirect computation  
 
 ---
 
@@ -274,7 +276,7 @@ tests/Api.Tests/Guardrails
 # Troubleshooting
 
 ### Cookie not appearing in browser  
-- Check SameSite=Lax  
+- Check SameSite=Strict  
 - Check domain mismatch  
 - Check HTTPS requirement in preview/prod  
 
@@ -298,4 +300,4 @@ tests/Api.Tests/Guardrails
 - **[Authentication Testing Guide](ca://s?q=Show_authentication_testing_guide)**  
 - **[Authentication Operations Guide](ca://s?q=Show_authentication_operations_guide)**  
 - **[Create Account Form Guide](ca://s?q=Show_create_account_form_guide)**  
-- **[Create Account Feature Slice Guide](ca://s?q=Show_create_account_feature_slice_guide)**  
+- **[Create Account Feature Slice Guide](ca://s?q=Show_create_account_feature_slice_guide)**

@@ -17,13 +17,13 @@ public static class ServiceCollectionExtensions
     {
         services.AddFrankAuthCallback(); // IImmutableContextBuilder<FrankAuthCallbackRequest, OidcAuthCallbackContext, FrankAuthCallbackResult>
 
+        services.AddApplicationAuthCallback();
+
         services
-            .AddOptions<AuthCallbackSettings>()
-            .BindConfiguration("Frontend")
+            .AddOptions<SessionSettings>()
+            .BindConfiguration("Authentication:Session")
             .ValidateDataAnnotations()
             .ValidateOnStart();
-
-        services.AddApplicationAuthCallback();
 
         services.AddFrankCommand([
             typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly

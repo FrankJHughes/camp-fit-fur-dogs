@@ -5,8 +5,9 @@ This guide documents the current authentication architecture implemented across:
 - US‑110 — Authentication: Owner Login (OIDC)  
 - US‑111 — Authentication: Session Management  
 - US‑184 — De‑feature Local Identity  
+- US‑222 — Logout  
 
-It describes how the system performs OIDC login, executes the authentication callback, resolves identity, creates sessions, and issues cookies — using the exclusive OIDC authentication model and the three‑layer authentication callback architecture:
+It describes how the system performs OIDC login, executes the authentication callback, resolves identity, creates sessions, issues cookies, and exposes identity — using the exclusive OIDC authentication model and the three‑layer authentication callback architecture:
 
 1. OIDC Login Initiation  
 2. Frank Auth Callback Pipeline (protocol)  
@@ -76,13 +77,24 @@ Local identity, local registration, and password flows have been fully removed.
 
 # OIDC Login Initiation
 
-The login initiation endpoint:
+The login initiation endpoint (`/api/identity/login`) constructs the OIDC authorization URL and returns it to the frontend.
 
-- generates the Auth0 authorization URL  
-- includes the correct redirect URI  
-- includes PKCE parameters  
-- includes the optional `returnUrl` parameter  
-- redirects the browser to Auth0  
+The endpoint:
+
+- validates OIDC configuration (`Authority`, `ClientId`)  
+- validates frontend configuration (`Frontend:BaseUrl`)  
+- constructs callback URL (from configuration or request)  
+- validates optional `return_url`  
+- encodes `return_url` into OIDC `state` using `OidcStateEncoder`  
+- builds the final authorization URL (`nextUrl`)  
+- returns:
+
+````csharp
+return Results.Ok(new LoginResponse(nextUrl));
+````
+
+**The backend does not perform the redirect.**  
+**The frontend performs the redirect to Auth0.**
 
 This endpoint:
 
@@ -139,7 +151,6 @@ Frank must:
 - validate OIDC configuration  
 - exchange authorization code for tokens  
 - validate issuer, audience, signature, nonce, state  
-- fetch userinfo (if required)  
 - normalize provider‑specific claims  
 - produce a stable, provider‑agnostic result  
 
@@ -151,7 +162,7 @@ Frank must **not**:
 - resolve identity  
 - create sessions  
 - compute redirect URLs  
-- interpret or validate `returnUrl`  
+- interpret or validate `return_url`  
 - compute cookie values  
 
 Frank’s pipeline is **pure protocol**.
@@ -177,7 +188,7 @@ Given the normalized protocol result, Application must:
 - create or load Owner  
 - create session  
 - compute redirect URL  
-  - if `returnUrl` is provided → validate + use it  
+  - if `return_url` is provided → validate + use it  
   - otherwise → use default post‑login redirect  
 - compute cookie value (opaque, secure)  
 
@@ -193,8 +204,8 @@ The result object includes:
 
 Application must:
 
-- accept `returnUrl` from the API endpoint  
-- validate that `returnUrl` is:
+- accept `return_url` from the API endpoint  
+- validate that `return_url` is:
   - local  
   - safe  
   - non‑malicious  
@@ -221,13 +232,30 @@ The API callback endpoint is a thin orchestrator.
 
 ## Responsibilities
 
+- extract and decode `state`  
+- extract `return_url` from decoded state  
+- validate `return_url` shape  
 - extract the `code` query parameter  
-- extract the optional `returnUrl` query parameter  
-- validate that `code` is present  
 - invoke the Frank pipeline  
 - invoke the Application pipeline  
 - issue the session cookie using `CookieValue`  
-- redirect to `RedirectUrl`  
+- redirect to `return_url`  
+
+Cookie issuance:
+
+````csharp
+http.Response.Cookies.Append(
+    "session",
+    appAuthCallbackResult.CookieValue,
+    new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Strict
+    });
+````
+
+If `CookieValue` is empty, the endpoint redirects without issuing a cookie.
 
 ## Non‑Responsibilities
 
@@ -238,7 +266,7 @@ The API endpoint must **not**:
 - perform persistence  
 - call identity providers  
 - compute redirect URLs  
-- validate or sanitize `returnUrl`  
+- validate or sanitize `return_url`  
 - generate cookie values  
 
 The endpoint is responsible only for **HTTP boundary behavior**.
@@ -309,7 +337,7 @@ Production cookie flags:
 
 - `Secure=true`  
 - `HttpOnly=true`  
-- `SameSite=Lax`  
+- `SameSite=Strict`  
 
 Local development uses `Secure=false`.
 
@@ -333,7 +361,7 @@ Authentication spans four layers:
 
 ## API Layer
 - defines endpoints  
-- extracts `code` and optional `returnUrl`  
+- extracts `code` and `state`  
 - orchestrates Frank + Application pipelines  
 - issues cookies  
 - returns redirect responses  
@@ -347,7 +375,7 @@ Authentication spans four layers:
 - normalizes claims  
 - produces protocol‑level result  
 - contains **no business logic**  
-- does not interpret or validate `returnUrl`  
+- does not interpret or validate `return_url`  
 
 ## Application Layer
 - performs business logic only  
@@ -369,12 +397,12 @@ Authentication spans four layers:
 # Data Flow Diagram
 
 ````text
-Browser → /api/auth/login?returnUrl=/dashboard
-    → Redirect to Auth0 (with returnUrl encoded in state)
+Browser → /api/identity/login?return_url=/dashboard
+    → Frontend redirects to Auth0 (with return_url encoded in state)
 
-Auth0 → /api/auth/callback?code=XYZ&state=...
+Auth0 → /api/identity/callback?code=XYZ&state=...
     → Frank pipeline (protocol)
-    → Application pipeline (business + returnUrl validation)
+    → Application pipeline (business + return_url validation)
     → API issues cookie + redirect
 ````
 
@@ -387,7 +415,7 @@ Authentication errors fall into these categories:
 ## API Errors — 400
 - missing authorization code  
 - missing or malformed state  
-- invalid `returnUrl` (if Application rejects it)  
+- invalid `return_url` (if Application rejects it)  
 
 ## Protocol Errors — 502
 - token exchange failure  
@@ -415,7 +443,7 @@ The callback flow must be observable at each layer:
 
 ## API
 - callback invocation  
-- cookie issuance  
+- session cookie issuance (`session`)  
 - redirect target (non‑PII)  
 
 ## Frank
@@ -451,13 +479,13 @@ Authentication is tested at three levels:
 ## Application Pipeline Tests
 - identity resolution  
 - session creation  
-- redirect computation (with and without `returnUrl`)  
+- redirect computation (with and without `return_url`)  
 - cookie value computation  
 
 ## API Endpoint Tests
 - missing `code` → 400  
-- valid `code` → cookie issued + redirect  
-- `returnUrl` flows correctly into Application  
+- valid `code` → session cookie issued + redirect  
+- `return_url` flows correctly into Application  
 - error propagation into global error boundary  
 
 Tests use:
@@ -477,7 +505,7 @@ Tests use:
 Local development uses the following callback URL:
 
 ````text
-http://localhost:5000/api/auth/callback
+http://localhost:5000/api/identity/callback
 ````
 
 ## Cookies
@@ -491,7 +519,7 @@ Preview and production:
 
 - `Secure=true`  
 - `HttpOnly=true`  
-- `SameSite=Lax`  
+- `SameSite=Strict`  
 
 These flags are enforced by the API boundary and configured via environment‑specific cookie policies.
 
@@ -505,4 +533,4 @@ These flags are enforced by the API boundary and configured via environment‑sp
 - Authentication Operations Guide  
 - Architecture Governance  
 - API Governance  
-- Security Governance  
+- Security Governance

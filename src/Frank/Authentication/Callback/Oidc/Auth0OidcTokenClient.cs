@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Frank.Settings;
+using Microsoft.Extensions.Options;
 
 namespace Frank.Authentication.Callback.Oidc;
 
@@ -8,15 +9,15 @@ public sealed class Auth0OidcTokenClient : IOidcTokenClient
     private readonly HttpClient _http;
     private readonly AuthCallbackOidcSettings _options;
 
-    public Auth0OidcTokenClient(HttpClient http, AuthCallbackOidcSettings options)
+    public Auth0OidcTokenClient(HttpClient http, IOptionsMonitor<AuthCallbackOidcSettings> options)
     {
         _http = http;
-        _options = options;
+        _options = options.CurrentValue;
     }
 
     public async Task<string> ExchangeCodeAsync(string authorizationCode, CancellationToken ct)
     {
-        var tokenEndpoint = $"https://{_options.Authority}/oauth/token";
+        var tokenEndpoint = $"{_options.Authority}/oauth/token";
 
         var request = new Dictionary<string, string>
         {

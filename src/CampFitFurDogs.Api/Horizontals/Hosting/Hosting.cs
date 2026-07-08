@@ -10,7 +10,6 @@ public static class Hosting
     {
         return
         [
-            new LocalDevelopmentHostingModule(),
             new RenderPrPreviewHostingModule()
         ];
     }

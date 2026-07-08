@@ -102,7 +102,7 @@ src/api/<useCase>.ts
 
 ```ts
 export async function registerDog(data: RegisterDogRequest): Promise<CommandResult<RegisterDogResponse>> {
-    const res = await fetch('/api/dogs/register', { method: 'POST', body: JSON.stringify(data) });
+    const res = await fetch('/api/dogs', { method: 'POST', body: JSON.stringify(data) });
     return normalizeCommandResult(res);
 }
 ```

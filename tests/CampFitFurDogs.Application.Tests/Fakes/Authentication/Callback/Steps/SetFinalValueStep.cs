@@ -9,20 +9,16 @@ public sealed class SetFinalValuesStep : IImmutableContextBuildStep<ApplicationA
     private readonly Guid _sessionId;
     private readonly string _tokenHash;
     private readonly string _cookieValue;
-    private readonly string _redirectUrl;
-
     public SetFinalValuesStep(
         Guid customerId,
         Guid sessionId,
         string tokenHash,
-        string cookieValue,
-        string redirectUrl)
+        string cookieValue)
     {
         _customerId = customerId;
         _sessionId = sessionId;
         _tokenHash = tokenHash;
         _cookieValue = cookieValue;
-        _redirectUrl = redirectUrl;
     }
 
     public IImmutableContextBuildStepMetadata Metadata =>
@@ -37,8 +33,7 @@ public sealed class SetFinalValuesStep : IImmutableContextBuildStep<ApplicationA
                 CustomerId = _customerId,
                 SessionId = _sessionId,
                 TokenHash = _tokenHash,
-                CookieValue = _cookieValue,
-                RedirectUrl = _redirectUrl
+                CookieValue = _cookieValue
             }
         );
 }
