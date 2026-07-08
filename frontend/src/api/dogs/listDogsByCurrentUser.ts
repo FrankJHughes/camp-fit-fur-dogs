@@ -6,7 +6,7 @@ const client = createApiClient();
 
 export async function listDogsByCurrentUser(): Promise<QueryResult<ListDogsByCurrentUserResponse>> {
   try {
-    const result = await client.get<ListDogsByCurrentUserResponse>('/dogs');
+    const result = await client.get<ListDogsByCurrentUserResponse>('/api/dogs');
 
     if (result.ok) {
       return { success: true, data: result.data };

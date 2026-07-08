@@ -148,10 +148,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   //
   const actions = isAuthenticated
     ? [
-      { label: 'Logout', variant: 'destructive', onClick: handleLogout },
+      { label: 'Log Out', variant: 'destructive', onClick: handleLogout },
     ]
     : [
-      { label: 'Login with Auth0', variant: 'primary', onClick: handleLogin },
+      { label: 'Log In', variant: 'primary', onClick: handleLogin },
     ];
 
   //

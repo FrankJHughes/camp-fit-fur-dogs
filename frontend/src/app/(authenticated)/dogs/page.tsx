@@ -69,7 +69,9 @@ export default function DogsPage() {
         )}
       </div>
 
-      <ActionsCard actions={actions} />
+      <div className="page-actions">
+        <ActionsCard actions={actions} />
+      </div>
     </main>
   );
 }
