@@ -71,7 +71,7 @@ describe('GetDogProfilePage', () => {
     });
 
     await user.click(screen.getByRole('button', { name: /edit/i }));
-    expect(mockPush).toHaveBeenCalledWith('/dogs/abc-123/edit');
+    expect(mockPush).toHaveBeenCalledWith('/api/dogs/abc-123/edit');
   });
 
   it('shows not-found message when the dog does not exist', async () => {
@@ -122,7 +122,7 @@ describe('GetDogProfilePage', () => {
 
     await waitFor(() => {
       expect(removeDog).toHaveBeenCalledWith('abc-123');
-      expect(mockPush).toHaveBeenCalledWith('/dogs');
+      expect(mockPush).toHaveBeenCalledWith('/api/dogs');
     });
   });
 

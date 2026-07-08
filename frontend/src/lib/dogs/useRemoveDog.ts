@@ -31,7 +31,7 @@ export function useRemoveDog(
         const result = await removeDog(id);
 
         if (result.success) {
-          push('/dogs');
+          push('/api/dogs');
         } else {
           // Prefer server-provided field-level form error,
           // then the generic error message, then a fallback.

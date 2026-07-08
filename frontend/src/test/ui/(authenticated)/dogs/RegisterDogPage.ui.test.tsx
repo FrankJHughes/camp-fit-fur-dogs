@@ -34,11 +34,11 @@ describe('Register Dog (integration)', () => {
     await user.click(screen.getByRole('button', { name: /register/i }));
 
     await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith('/dogs/register/success');
+      expect(pushMock).toHaveBeenCalledWith('/api/dogs/success');
     });
 
     expect(apiClientMock.post).toHaveBeenCalledWith(
-      '/dogs/register',
+      '/api/dogs',
       {
         name: 'Buddy',
         breed: 'Golden Retriever',

@@ -51,7 +51,7 @@ describe('RootLayout — identity + authentication integration', () => {
     await waitIdentityTransition();
 
     expect(screen.getByText(/harry styles/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /log out/i })).toBeInTheDocument();
   });
 
   it('shows anonymous identity and login button when identify fails', async () => {
@@ -66,7 +66,7 @@ describe('RootLayout — identity + authentication integration', () => {
     await waitIdentityTransition();
 
     expect(screen.getByText(/anonymous/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
   });
 
   it('performs login and redirects when login succeeds', async () => {
@@ -85,7 +85,7 @@ describe('RootLayout — identity + authentication integration', () => {
 
     await waitIdentityTransition();
 
-    const loginButton = await screen.findByRole('button', { name: /login/i });
+    const loginButton = await screen.findByRole('button', { name: /log in/i });
 
     delete (window as any).location;
     (window as any).location = { href: '' };
@@ -113,7 +113,7 @@ describe('RootLayout — identity + authentication integration', () => {
 
     await waitIdentityTransition();
 
-    const logoutButton = await screen.findByRole('button', { name: /logout/i });
+    const logoutButton = await screen.findByRole('button', { name: /log out/i });
 
     delete (window as any).location;
     (window as any).location = { href: '' };

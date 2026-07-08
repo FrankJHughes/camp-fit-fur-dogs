@@ -139,7 +139,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Edit Dog Profile page — owners can update their dog's name, breed, date of birth, and sex (US-030)
 - Edit button on View Dog Profile navigates to the edit form (US-030)
-- My Dogs page — owners see all their registered dogs at `/dogs` with quick links to view, edit, or register a new dog (US-031)
+- My Dogs page — owners see all their registered dogs at `/api/dogs` with quick links to view, edit, or register a new dog (US-031)
 - Remove Dog — owners can remove a dog from their profile with a confirmation step to prevent accidents (US-032)
 - Form validation — clear, accessible inline error messages guide owners when required fields are missing or invalid (US-035)
 - Confirmation dialog — destructive actions like removing a dog prompt for confirmation before proceeding; Escape key and focus behavior default to the safe choice (US-038)
@@ -162,7 +162,7 @@ All notable changes to this project will be documented in this file.
 | US-107 | EF Entity Auto-Discovery                   | #165  |
 
 ### Added
-- View Dog Profile frontend page — owners can view a dog's full profile at `/dogs/[id]` (US-029)
+- View Dog Profile frontend page — owners can view a dog's full profile at `/api/dogs/[id]` (US-029)
 - Feature slice walkthrough — step-by-step TDD guide for adding new command and query slices (US-052)
 - Endpoint auto-discovery — new endpoints are registered automatically by convention (US-106; ADR-0020)
 - Query-side reader isolation — query handlers use dedicated read models instead of full domain repositories (US-106; ADR-0021)
@@ -240,7 +240,7 @@ All notable changes to this project will be documented in this file.
 | US-008 | Doc Audit & Defragmentation      | —    |
 | US-012 | Story Naming Convention          | —    |
 
-— owners see all their registered dogs at `/dogs` with quick links to view, edit, or register a new dog (US-031)
+— owners see all their registered dogs at `/api/dogs` with quick links to view, edit, or register a new dog (US-031)
 - Remove Dog — owners can remove a dog from their profile with a confirmation step to prevent accidents (US-032)
 - Form validation — clear, accessible inline error messages guide owners when required fields are missing or invalid (US-035)
 - Confirmation dialog — destructive actions like removing a dog prompt for confirmation before proceeding; Escape key and focus behavior default to the safe choice (US-038)
@@ -276,7 +276,7 @@ All notable changes to this project will be documented in this file.
 - ADR-0020: Endpoint Auto-Discovery via IEndpoint (US-106)
 - ADR-0021: Query-Side Reader Isolation (US-106)
 
-- View Dog Profile frontend slice — `/dogs/[id]` page with 13 tests (US-029; see `frontend/CHANGELOG.md`)
+- View Dog Profile frontend slice — `/api/dogs/[id]` page with 13 tests (US-029; see `frontend/CHANGELOG.md`)
 - `BCrypt.Net-Next` NuGet package dependency in Domain layer (#154)
 - `CampFitFurDogs.Architecture.Tests` project — 15 pure-reflection guardrails and `ReferenceScanner.cs` relocated from Api.Tests (US-104)
 - `Directory.Packages.props` — Central Package Management for all 17 NuGet dependencies with transitive pinning (US-104)

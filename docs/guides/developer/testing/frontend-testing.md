@@ -53,7 +53,7 @@ describe('ApiClient', () => {
     }));
 
     const client = createApiClient('http://localhost');
-    const result = await client.get('/dogs');
+    const result = await client.get('/api/dogs');
 
     expect(result).toEqual({ ok: true, data: { id: 1 } });
   });

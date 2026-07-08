@@ -85,6 +85,6 @@ describe('DogsPage (UI)', () => {
 
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(pushMock).toHaveBeenCalledWith('/dogs/register');
+    expect(pushMock).toHaveBeenCalledWith('/api/dogs');
   });
 });

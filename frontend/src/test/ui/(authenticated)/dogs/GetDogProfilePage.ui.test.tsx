@@ -108,7 +108,7 @@ describe('GetDogProfilePage (UI)', () => {
 
     await user.click(screen.getByRole('button', { name: /edit/i }));
 
-    expect(pushMock).toHaveBeenCalledWith('/dogs/dog-1/edit');
+    expect(pushMock).toHaveBeenCalledWith('/api/dogs/dog-1/edit');
   });
 
   it('opens remove dialog when clicking Remove', async () => {

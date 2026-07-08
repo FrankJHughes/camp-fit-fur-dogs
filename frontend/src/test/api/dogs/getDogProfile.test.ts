@@ -29,7 +29,7 @@ describe('getDogProfile', () => {
 
     const result = await getDogProfile(dogId);
 
-    expect(mockGet).toHaveBeenCalledWith(`/dogs/${dogId}`);
+    expect(mockGet).toHaveBeenCalledWith(`/api/dogs/${dogId}`);
     expect(result).toEqual({ success: true, data: profileData });
   });
 

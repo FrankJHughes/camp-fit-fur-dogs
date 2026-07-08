@@ -87,7 +87,7 @@ var command = new RegisterDogCommand(request.Name, request.Breed);
 
 var result = await commandDispatcher.DispatchAsync(command, cancellationToken);
 
-return Results.Created($"/dogs/{result.DogId}", result);
+return Results.Created($"/api/dogs/{result.DogId}", result);
 ```
 
 Notice what’s missing:

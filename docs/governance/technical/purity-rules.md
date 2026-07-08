@@ -184,7 +184,7 @@ The API layer is the outermost shell.
 
 ```csharp
 // Correct — identity resolved server-side
-app.MapPost("/dogs", async (
+app.MapPost("/api/dogs", async (
     RegisterDogRequest request,
     ICurrentUser currentUser,
     ICommandDispatcher dispatcher) =>
@@ -199,7 +199,7 @@ app.MapPost("/dogs", async (
 });
 
 // Violation — identity accepted from the client
-app.MapPost("/dogs", async (RegisterDogCommand command, ICommandDispatcher dispatcher) =>
+app.MapPost("/api/dogs", async (RegisterDogCommand command, ICommandDispatcher dispatcher) =>
 {
     await dispatcher.DispatchAsync(command);
     return Results.Created();

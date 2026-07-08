@@ -27,7 +27,7 @@ public interface IEndpoint
 
 `Endpoints.MapEndpoints()` assembly-scans for all `IEndpoint` implementations and
 invokes `Map` on each, passing a shared `/api` route group. Endpoint classes own
-their own route prefix (e.g., `/customers`, `/dogs/{id}`).
+their own route prefix (e.g., `/customers`, `/api/dogs/{id}`).
 
 Group files (`CustomerEndpoints.cs`, `DogEndpoints.cs`) are eliminated. Each
 endpoint class is a non-static class implementing `IEndpoint`.

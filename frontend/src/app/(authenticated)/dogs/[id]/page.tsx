@@ -54,7 +54,7 @@ export default function GetDogProfilePage() {
   }
 
   const actions: Action[] = [
-    { label: 'Edit', onClick: () => router.push(`/dogs/${dogId}/edit`) },
+    { label: 'Edit', onClick: () => router.push(`/api/dogs/${dogId}/edit`) },
     { label: 'Remove', onClick: removeDog.open },
   ];
 
