@@ -61,7 +61,7 @@ export default function EditDogProfilePage() {
     name: state.data.name,
     breed: state.data.breed,
     dateOfBirth: state.data.dateOfBirth,
-    sex: state.data.sex as '' | 'Male' | 'Female',
+    sex: state.data.sex as 'Male' | 'Female',
   };
 
   return (
