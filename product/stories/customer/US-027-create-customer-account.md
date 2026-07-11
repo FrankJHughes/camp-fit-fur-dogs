@@ -1,10 +1,10 @@
 ---
 id: US-027
-title: "Create Customer Account"
+title: "Create User Account"
 epic: 
 milestone: M0
 status: shipped
-domain: customer
+domain: user
 urgency: 
 importance: 
 covey_quadrant: 
@@ -13,18 +13,18 @@ emotional_guarantees:
 legal_guarantees:
 dependencies:
 ---
-# US-027 — Create Customer Account
+# US-027 — Create User Account
 
 ## Intent
-As a customer, I want to create an account so that I can manage my dogs and book services.
+As a user, I want to create an account so that I can manage my dogs and book services.
 
 ## Value
 Establishes identity, ownership, and trust. This is the foundation for all other interactions.
 
 ## Acceptance Criteria
-- Customer can enter required personal information
-- Customer receives clear feedback if information is invalid
-- Customer is informed if an account already exists
+- User can enter required personal information
+- User receives clear feedback if information is invalid
+- User is informed if an account already exists
 - Successful creation confirms next steps
 - No internal system concepts are exposed
 

@@ -90,16 +90,16 @@ Frank will handle everything else.
 ### 3.1 Define a domain event
 
 ```csharp
-public sealed record CustomerCreated(Guid CustomerId) : IDomainEvent;
+public sealed record UserCreated(Guid UserId) : IDomainEvent;
 ```
 
 ### 3.2 Implement a handler
 
 ```csharp
 public sealed class SendWelcomeEmailHandler
-    : IDomainEventHandler<CustomerCreated>
+    : IDomainEventHandler<UserCreated>
 {
-    public Task HandleAsync(CustomerCreated evt, CancellationToken ct)
+    public Task HandleAsync(UserCreated evt, CancellationToken ct)
     {
         // send email
         return Task.CompletedTask;
@@ -112,7 +112,7 @@ public sealed class SendWelcomeEmailHandler
 Because Frank does not yet provide a dispatcher, you must write your own:
 
 ```csharp
-await myDispatcher.DispatchAsync(new CustomerCreated(id), ct);
+await myDispatcher.DispatchAsync(new UserCreated(id), ct);
 ```
 
 Each module may do this differently.
@@ -132,7 +132,7 @@ Each module may do this differently.
 
 ```csharp
 await _domainEventDispatcher.DispatchAsync(
-    new CustomerCreated(customerId),
+    new UserCreated(userId),
     ct);
 ```
 

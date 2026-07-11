@@ -29,7 +29,7 @@ public sealed class UserBuilder
         var externalId = ExternalId.From(_externalId);
         var phone = _phone is not null ? PhoneNumber.From(_phone) : null;
 
-        var customer = User.Create(
+        var user = User.Create(
             first,
             last,
             email,
@@ -42,14 +42,14 @@ public sealed class UserBuilder
         {
             typeof(User)
                 .GetProperty(nameof(User.Id))!
-                .SetValue(customer, _id);
+                .SetValue(user, _id);
         }
 
-        return customer;
+        return user;
     }
 
     /// <summary>
-    /// Builds an external-auth customer using the domain factory.
+    /// Builds an external-auth user using the domain factory.
     /// </summary>
     public User BuildExternalUser(
         string externalId,

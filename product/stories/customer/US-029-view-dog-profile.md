@@ -4,7 +4,7 @@ title: "View Dog Profile"
 epic: 
 milestone: M0
 status: shipped
-domain: customer
+domain: user
 urgency: 
 importance: 
 covey_quadrant: 
@@ -16,14 +16,14 @@ dependencies:
 # US-029 — View Dog Profile
 
 ## Intent
-As a customer, I want to view my dog’s profile so that I can confirm their information is correct.
+As a user, I want to view my dog’s profile so that I can confirm their information is correct.
 
 ## Value
 Builds confidence and trust in stored information.
 
 ## Acceptance Criteria
-- Customer can view all previously entered information
-- Only dogs owned by the customer are visible
+- User can view all previously entered information
+- Only dogs owned by the user are visible
 - Missing dogs are handled gracefully
 
 ## Emotional Guarantees

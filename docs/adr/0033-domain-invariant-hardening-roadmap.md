@@ -19,7 +19,7 @@ Right now, it is not.
 This ADR defines the roadmap for **hardening domain invariants** so the domain becomes self‑protecting, consistent, and aligned with the canonical contract.
 
 ## Decision  
-We will introduce a structured, incremental hardening of domain invariants across all customer‑related ValueObjects. This work will occur in phases to avoid destabilizing existing slices.
+We will introduce a structured, incremental hardening of domain invariants across all user‑related ValueObjects. This work will occur in phases to avoid destabilizing existing slices.
 
 The roadmap is divided into four phases:
 
@@ -52,7 +52,7 @@ The roadmap is divided into four phases:
 - Reject raw passwords accidentally passed to the VO  
 - Reject unsupported hash formats  
 
-### CustomerId  
+### UserId  
 - Validate Guid format  
 - Reject empty Guid  
 
@@ -154,5 +154,5 @@ If unavoidable, a migration plan will be created.
 This ADR defines the **roadmap**, not the implementation.  
 Each ValueObject hardening step will be implemented in its own PR and validated through integration tests.
 
-ADR‑0032 and ADR‑0033 together form the foundation for a stable, aligned, contract‑driven customer domain.
+ADR‑0032 and ADR‑0033 together form the foundation for a stable, aligned, contract‑driven user domain.
 

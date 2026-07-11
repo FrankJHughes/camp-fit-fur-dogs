@@ -40,9 +40,9 @@ A typical structure looks like:
 
 ````text
 src/CampFitFurDogs.Application/Abstractions/
-  Customers/
-    CreateCustomerCommand.cs
-    CreateCustomerResult.cs
+  Users/
+    CreateUserCommand.cs
+    CreateUserResult.cs
 
   Dogs/
     RegisterDogCommand.cs

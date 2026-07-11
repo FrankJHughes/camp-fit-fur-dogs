@@ -183,7 +183,7 @@ Given the normalized protocol result, Application must:
 
 The result object includes:
 
-- `CustomerId`  
+- `UserId`  
 - `SessionId`  
 - `TokenHash`  
 - `CookieValue`  
@@ -319,7 +319,7 @@ Local development uses `Secure=false`.
 
 Audit logging occurs in the Application pipeline, immediately after identity resolution:
 
-- logs `CustomerId` + external identity (`sub`)  
+- logs `UserId` + external identity (`sub`)  
 - does not mutate state  
 - runs before session creation  
 - ensures login events are recorded even if session creation fails  

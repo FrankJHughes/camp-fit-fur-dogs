@@ -66,7 +66,7 @@ Every story must:
 
 - live in `product/stories/<domain>/`  
 - follow naming convention `US-NNN-kebab-case-title.md`  
-- use the correct template (customer vs docs/infra)  
+- use the correct template (user vs docs/infra)  
 - include Intent, Value, AC, EGs, Edge Cases  
 - include dependencies when applicable  
 - include milestone metadata in frontmatter  
@@ -176,7 +176,7 @@ They are **governance**.
 
 ## 5.1 EG Requirements
 
-Every customer story must:
+Every user story must:
 
 - reference at least one EG  
 - explain how the story honors it  

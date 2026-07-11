@@ -1,0 +1,42 @@
+using Frank.Application.Abstractions.Users.CreateUser;
+using Frank.Application.Users.CreateUser;
+using Frank.Domain.Users.Exceptions;
+using FluentValidation;
+using Frank.Abstractions.Command;
+using System;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
+
+namespace Frank.TestUtilities.Fakes;
+
+public sealed class FakeCreateUserHandler
+    : ICommandHandler<CreateUserCommand, Guid>
+{
+    public CreateUserCommand? LastCommand { get; private set; }
+    public Guid ResultToReturn { get; set; } = Guid.NewGuid();
+    public Exception? ExceptionToThrow { get; set; }
+
+    private readonly IValidator<CreateUserCommand> _validator;
+
+    public FakeCreateUserHandler()
+    {
+        _validator = new CreateUserCommandValidator();
+    }
+
+    public Task<Guid> HandleAsync(CreateUserCommand command, CancellationToken ct)
+    {
+        LastCommand = command;
+
+        if (ExceptionToThrow is not null)
+            throw ExceptionToThrow;
+
+        // Run the real validator
+        var result = _validator.Validate(command);
+
+        if (!result.IsValid)
+            throw new MissingIdentitySourceException(result.Errors.First().ErrorMessage);
+
+        return Task.FromResult(ResultToReturn);
+    }
+}

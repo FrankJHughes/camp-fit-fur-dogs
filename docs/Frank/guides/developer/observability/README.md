@@ -182,7 +182,7 @@ Examples:
 
 - `api.owner.login_failed`  
 - `infra.email.sent`  
-- `domain.customer.created`  
+- `domain.user.created`  
 
 Event names must be:
 

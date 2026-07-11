@@ -431,9 +431,9 @@ That is it. No test code, no configuration
 - [ produces diagnostic `CFFD002` as a build error
 - [ ] The same violation shows as a red squiggle in VS Code and Visual Studio before building
 - [ ] A `using CampFitFurDogs.Api;` statement in an Application file produces diagnostic `CFFD009` as a build error
-- [ ] A query handler constructor accepting `ICustomerRepository` produces diagnostic `CFFD011` as a warning
+- [ ] A query handler constructor accepting `IUserRepository` produces diagnostic `CFFD011` as a warning
 - [ ] Clean code (no violations) produces zero diagnostics
-- [ ] EF Core migrations ] A query handler constructor accepting `ICustomerRepository` produces diagnostic `CFFD011` as a warning
+- [ ] EF Core migrations ] A query handler constructor accepting `IUserRepository` produces diagnostic `CFFD011` as a warning
 - [ ] Clean code (no violations) produces zero diagnostics
 - [ ] EF Core migrations and generated code are excluded from analysis
 - [ ] Frank projects (no `ArchitectureLayer` property) are excluded from analysis

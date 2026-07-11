@@ -127,7 +127,7 @@ Application pipeline **does not**:
 
 The result object includes:
 
-- `CustomerId`  
+- `UserId`  
 - `SessionId`  
 - `TokenHash`  
 - `CookieValue`  

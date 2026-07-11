@@ -4,7 +4,7 @@ namespace CampFitFurDogs.TestUtilities.Builders;
 
 public sealed class ApiRequestBuilder
 {
-    public static object Customer(
+    public static object User(
         string? email = null,
         string? phone = null,
         string? password = null)

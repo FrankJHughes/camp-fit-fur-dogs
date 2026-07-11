@@ -9,7 +9,7 @@
 ## Context
 
 Endpoint registration required manually wiring each endpoint through group files
-(`CustomerEndpoints.cs`, `DogEndpoints.cs`) that called extension methods. Adding a
+(`UserEndpoints.cs`, `DogEndpoints.cs`) that called extension methods. Adding a
 new slice meant touching three files: the endpoint class, the group file, and
 `Endpoints.cs`. This violated the open/closed principle — every new slice modified
 existing wiring code.
@@ -27,9 +27,9 @@ public interface IEndpoint
 
 `Endpoints.MapEndpoints()` assembly-scans for all `IEndpoint` implementations and
 invokes `Map` on each, passing a shared `/api` route group. Endpoint classes own
-their own route prefix (e.g., `/customers`, `/dogs/{id}`).
+their own route prefix (e.g., `/users`, `/dogs/{id}`).
 
-Group files (`CustomerEndpoints.cs`, `DogEndpoints.cs`) are eliminated. Each
+Group files (`UserEndpoints.cs`, `DogEndpoints.cs`) are eliminated. Each
 endpoint class is a non-static class implementing `IEndpoint`.
 
 Two architecture guardrail tests enforce the convention:
@@ -53,4 +53,4 @@ Two architecture guardrail tests enforce the convention:
 ### Neutral
 
 - `Program.cs` is unchanged — still calls `app.MapEndpoints()`.
-- Route paths remain identical: `/api/customers`, `/api/dogs`, `/api/dogs/{id}`.
+- Route paths remain identical: `/api/users`, `/api/dogs`, `/api/dogs/{id}`.

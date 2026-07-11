@@ -207,20 +207,20 @@ Once the capability expands, developers will:
 ## Injecting UoW
 
 ````csharp
-public class CreateCustomerHandler
+public class CreateUserHandler
 {
     private readonly IUnitOfWork _uow;
-    private readonly ICustomerRepository _repo;
+    private readonly IUserRepository _repo;
 
-    public CreateCustomerHandler(IUnitOfWork uow, ICustomerRepository repo)
+    public CreateUserHandler(IUnitOfWork uow, IUserRepository repo)
     {
         _uow = uow;
         _repo = repo;
     }
 
-    public async Task HandleAsync(CreateCustomerCommand cmd, CancellationToken ct)
+    public async Task HandleAsync(CreateUserCommand cmd, CancellationToken ct)
     {
-        _repo.Add(new Customer(cmd.Id, cmd.Name));
+        _repo.Add(new User(cmd.Id, cmd.Name));
 
         await _uow.CommitAsync(ct);
     }

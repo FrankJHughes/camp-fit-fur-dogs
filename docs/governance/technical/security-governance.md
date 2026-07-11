@@ -10,7 +10,7 @@ Security governance ensures:
 - No accidental weakening of protections  
 - Compliance with legal and operational guarantees  
 - Deterministic, observable security behavior  
-- A stable foundation for customer trust  
+- A stable foundation for user trust  
 
 Security is not optional. It is a first‑class product requirement.
 
@@ -39,7 +39,7 @@ Security is a product feature, not a technical afterthought.
 Security responsibilities include:
 
 - Authentication and authorization  
-- Customer data protection  
+- User data protection  
 - Booking and profile integrity  
 - API endpoint security  
 - Frontend session and token handling  
@@ -134,7 +134,7 @@ Secrets must be validated at startup and failures must emit structured, correlat
 
 # 5. Data Protection Governance
 
-All customer data must be:
+All user data must be:
 
 - Encrypted at rest (via hosting provider)  
 - Encrypted in transit (HTTPS only)  

@@ -83,10 +83,10 @@ public class RemoveDogEndpointTests : IAsyncLifetime
     }
 
     // ------------------------------------------------------------
-    // AUTH — MISSING CUSTOMER ID
+    // AUTH — MISSING USER ID
     // ------------------------------------------------------------
     [Fact]
-    public async Task RemoveDog_MissingCustomerId_Returns401()
+    public async Task RemoveDog_MissingUserId_Returns401()
     {
         var anon = _api.CreateClient(new ApiClientContext());
 

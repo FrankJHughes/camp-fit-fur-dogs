@@ -95,12 +95,12 @@ These features will reduce boilerplate and improve consistency across all aggreg
 ## 3.1 Create a configuration class
 
 ```csharp
-public sealed class CustomerConfiguration
-    : AggregateRootConfiguration<Customer, CustomerId>
+public sealed class UserConfiguration
+    : AggregateRootConfiguration<User, UserId>
 {
-    protected override string TableName => "Customers";
+    protected override string TableName => "Users";
 
-    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Customer> builder)
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<User> builder)
     {
         // Additional mapping goes here
     }
@@ -121,7 +121,7 @@ builder.Property(c => c.Email)
 ```csharp
 builder.HasMany(c => c.Orders)
     .WithOne()
-    .HasForeignKey(o => o.CustomerId);
+    .HasForeignKey(o => o.UserId);
 ```
 
 ## 3.4 Map indexes manually
@@ -210,12 +210,12 @@ Yet.
 # 6. Example: Full Aggregate Configuration
 
 ```csharp
-public sealed class CustomerConfiguration
-    : AggregateRootConfiguration<Customer, CustomerId>
+public sealed class UserConfiguration
+    : AggregateRootConfiguration<User, UserId>
 {
-    protected override string TableName => "Customers";
+    protected override string TableName => "Users";
 
-    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Customer> builder)
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<User> builder)
     {
         builder.Property(c => c.Email)
             .HasConversion(
@@ -224,7 +224,7 @@ public sealed class CustomerConfiguration
 
         builder.HasMany(c => c.Orders)
             .WithOne()
-            .HasForeignKey(o => o.CustomerId);
+            .HasForeignKey(o => o.UserId);
 
         builder.HasIndex(c => c.Email)
             .IsUnique();

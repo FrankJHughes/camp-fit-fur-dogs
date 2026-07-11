@@ -10,8 +10,8 @@
 
 Camp Fit Fur Dogs uses a DDD layered architecture (ADR-0002) where the
 Application layer mediates between the API and Domain layers. As the
-product grew from a single CreateCustomer command to multiple slices
-(CreateCustomer, RegisterDog, GetDogProfile), the team needed a
+product grew from a single CreateUser command to multiple slices
+(CreateUser, RegisterDog, GetDogProfile), the team needed a
 consistent pattern for dispatching operations to their handlers.
 
 The requirements for the dispatch pattern are:
@@ -117,10 +117,10 @@ Example (current codebase):
 
 ```
 Application/
-  Customers/
-    CreateCustomer/
-      CreateCustomerCommand.cs
-      CreateCustomerHandler.cs
+  Users/
+    CreateUser/
+      CreateUserCommand.cs
+      CreateUserHandler.cs
   Dogs/
     RegisterDog/
       RegisterDogCommand.cs

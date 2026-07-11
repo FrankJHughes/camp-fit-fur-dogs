@@ -18,7 +18,7 @@ It is the **business core** of the authentication flow.
 
 The pipeline transforms a normalized external identity (from the Frank pipeline) into:
 
-- an internal `CustomerId`  
+- an internal `UserId`  
 - a persisted Owner record (if first login)  
 - a persisted session  
 - a computed redirect URL  
@@ -49,7 +49,7 @@ This identity is already:
 
 A result object containing:
 
-- `CustomerId`  
+- `UserId`  
 - `SessionId`  
 - `RedirectUrl`  
 - `CookieValue` (opaque session token)  
@@ -85,12 +85,12 @@ The pipeline performs the following steps:
 
 ---
 
-## 4. Owner creation (Create Customer slice)
+## 4. Owner creation (Create User slice)
 
 - create a new Owner aggregate  
 - enforce domain invariants  
 - persist the Owner  
-- produce a new `CustomerId`  
+- produce a new `UserId`  
 
 ---
 
@@ -132,7 +132,7 @@ Application/Authentication/Callback/
     ApplicationAuthCallbackPipeline.cs
     IdentityMappingBehavior.cs
     OwnerResolutionBehavior.cs
-    CreateCustomerBehavior.cs
+    CreateUserBehavior.cs
     SessionCreationBehavior.cs
     RedirectComputationBehavior.cs
     CookieComputationBehavior.cs
@@ -231,14 +231,14 @@ Resolution is:
 
 # Owner Creation
 
-Owner creation is delegated to the **Create Customer** slice.
+Owner creation is delegated to the **Create User** slice.
 
 ## Responsibilities
 
 - construct a valid Owner aggregate  
 - enforce domain invariants  
 - persist the Owner  
-- return the new `CustomerId`  
+- return the new `UserId`  
 
 Owner creation is performed **only** when identity mapping indicates a first‑time login.
 

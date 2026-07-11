@@ -21,7 +21,7 @@ product/stories/<domain>/
 Domains:
 
 ```
-customer/    # End‑user features (accounts, dogs, bookings)
+user/    # End‑user features (accounts, dogs, bookings)
 docs/        # Documentation and contributor guides
 infra/       # CI/CD, tooling, developer experience
 ```
@@ -51,7 +51,7 @@ US-NNN-kebab-case-title.md
 
 Examples:
 
-- `US-027-create-customer-account.md`
+- `US-027-create-user-account.md`
 - `US-045-product-owner-workflow-guide.md`
 
 ---
@@ -60,7 +60,7 @@ Examples:
 
 CFFD uses two templates depending on domain.
 
-### Customer Stories (features)
+### User Stories (features)
 
 ```markdown
 # US-NNN — Title
@@ -144,7 +144,7 @@ Emotional Guarantees (EGs) are **product‑level promises** that shape how featu
 
 ### Tagging Stories with EGs
 
-Every customer story must reference at least one EG:
+Every user story must reference at least one EG:
 
 ```markdown
 ## Emotional Guarantees

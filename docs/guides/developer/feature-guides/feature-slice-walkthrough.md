@@ -174,7 +174,7 @@ Frontend uses the **FormCommand architecture**:
 - `useFormStateMachine` manages validation + error merging  
 - `FormField` handles accessibility  
 - API clients return `CommandResult`  
-- Success responses for create commands are minimal DTOs (e.g., `{ id }` or `{ customerId }`)
+- Success responses for create commands are minimal DTOs (e.g., `{ id }` or `{ userId }`)
 
 ### 4a. Component (RED → GREEN)
 

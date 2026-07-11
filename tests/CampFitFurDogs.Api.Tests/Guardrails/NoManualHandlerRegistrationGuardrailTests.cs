@@ -41,6 +41,7 @@ public class NoManualHandlerRegistrationGuardrailTests : IAsyncLifetime
     public void Should_Not_Have_Manual_Handler_Registrations()
     {
         var factory = CreateFactory();
+        _ = factory.CreateClient();
 
         var appAssembly = typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly;
 
@@ -62,7 +63,9 @@ public class NoManualHandlerRegistrationGuardrailTests : IAsyncLifetime
         {
             iface.Should().NotBeNull();
 
-            var registrations = GetAll(factory, iface!);
+            var registrations = factory.ServiceCollection
+                .Where(d => d.ServiceType == iface)
+                .ToList();
 
             registrations.Should().ContainSingle(
                 $"{type.Name} must be registered exactly once via Scrutor, not manually");

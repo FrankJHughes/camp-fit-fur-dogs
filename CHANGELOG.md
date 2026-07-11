@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - Improved post‑login behavior so owners are always returned to the correct page after signing in, even when navigating from deep links or bookmarked pages.
 - Strengthened session stability to reduce unexpected logouts and keep owners signed in during normal use.
 - Introduced the first phase of our new **Observability Foundation**, enabling deeper insight into authentication, request handling, error boundaries, and platform behavior. This groundwork improves stability today and unlocks richer diagnostics in future releases.
-- **Improved end‑to‑end traceability through unified correlation IDs**, ensuring every request and background operation can be followed consistently across the platform. This enhances support investigations and improves reliability without changing any customer workflows.
+- **Improved end‑to‑end traceability through unified correlation IDs**, ensuring every request and background operation can be followed consistently across the platform. This enhances support investigations and improves reliability without changing any user workflows.
 - **More consistent and structured system events**, providing clearer visibility into how the platform processes requests and handles errors. These improvements strengthen system reliability and help us detect issues earlier.
 - **Enhanced visibility into multi‑step operations**, with clearer start/end signals for complex internal workflows. This results in faster diagnosis and more predictable system behavior.
 - Increased product reliability through the migration of our **test harness into the Frank platform**, reducing regressions and improving confidence in new releases.
@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - New Create Account page with full client‑side validation, password‑strength feedback, and accessible inline error messages.
-- New end‑to‑end account creation flow using the finalized CreateCustomer API contract.
+- New end‑to‑end account creation flow using the finalized CreateUser API contract.
 - New post‑creation success flow guiding owners through next steps.
 - New duplicate‑email handling with friendly, blame‑free messaging.
 - New hardened validation for owner name, email, phone number, and password to ensure consistent behavior across frontend and backend.
@@ -48,7 +48,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Updated account creation UI to use the new FormCommand state machine for deterministic validation and error handling.
-- Updated account creation API client to match the finalized CreateCustomer backend contract.
+- Updated account creation API client to match the finalized CreateUser backend contract.
 - Updated authentication callback flow to use a deterministic, step‑based pipeline for improved reliability and error handling.
 - Updated CORS middleware to remove wildcard allowances and use deterministic, environment‑driven origin resolution (including PR Preview URLs).
 - Updated preflight request handling and caching behavior for improved performance and consistency.
@@ -56,7 +56,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed inconsistent CORS behavior between local, preview, and production environments.
 - Fixed missing or incorrect CORS headers on some error responses by ensuring CORS executes before authentication and authorization.
-- *(No additional customer‑facing fixes this sprint — all stability improvements were part of first‑time feature delivery and are captured under Added/Changed.)*
+- *(No additional user‑facing fixes this sprint — all stability improvements were part of first‑time feature delivery and are captured under Added/Changed.)*
 
 ## [Sprint 7] - 2026-05-11
 | Story  | Title                              | Issue |
@@ -67,10 +67,10 @@ All notable changes to this project will be documented in this file.
 | US-171 | CI Path-Based Test Skipping        | #192 |
 
 ### Added
-- Public HTTPS‑hosted Camp Fit Fur Dogs API, enabling external access to dog profiles, registration flows, and future customer‑facing features.
-- Automatic deployment pipeline for all updates merged into `main`, ensuring customers always receive the latest stable functionality without manual intervention.
+- Public HTTPS‑hosted Camp Fit Fur Dogs API, enabling external access to dog profiles, registration flows, and future user‑facing features.
+- Automatic deployment pipeline for all updates merged into `main`, ensuring users always receive the latest stable functionality without manual intervention.
 - Public health check endpoint (`/api/health`) for uptime verification and external monitoring tools.
-- Reliable API startup and readiness behavior, reducing customer‑visible downtime during deployments and cold starts.
+- Reliable API startup and readiness behavior, reducing user‑visible downtime during deployments and cold starts.
 - Stable PR Preview environments backed by isolated Neon databases, allowing reviewers to interact with accurate, production‑like previews.
 - Consistent database schema validation through automated migration application in CI, ensuring previews always reflect the latest data model.
 - Developer‑facing API Hosting Guide documenting how the API is deployed, previewed, and tested across Render and Neon.
@@ -187,14 +187,14 @@ All notable changes to this project will be documented in this file.
 | Story  | Title                        | Issue |
 |--------|------------------------------|-------|
 | US-009 | Developer Contributor Guide  | #98   |
-| US-027 | Create Customer Account      | #95   |
+| US-027 | Create User Account      | #95   |
 | US-028 | Register Dog                 | #96   |
 | US-029 | View Dog Profile             | #97   |
 | US-045 | Product Owner Workflow Guide | #99   |
 | US-046 | Scrum Master Workflow Guide  | #100  |
 
 ### Added
-- Create Customer Account — new owners can create an account (US-027)
+- Create User Account — new owners can create an account (US-027)
 - Register Dog — owners can register a dog under their account (US-028)
 - View Dog Profile — owners can view a dog's details with ownership verification (US-029)
 - Developer, Product Owner, and Scrum Master contributor guides (US-009, US-045, US-046)
@@ -261,18 +261,18 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - `AppDbContext` uses `ApplyConfigurationsFromAssembly` — eliminates per-entity `ApplyConfiguration` calls (US-107)
-- `DogRepository` + `CustomerRepository` use `Set<T>()` — eliminates dependency on `DbSet<T>` properties (US-107)
+- `DogRepository` + `UserRepository` use `Set<T>()` — eliminates dependency on `DbSet<T>` properties (US-107)
 - `GetDogProfileReader` uses `Set<T>()` instead of `DbSet<T>` property (US-107)
 - ADR-0015 amended with EF configuration auto-discovery scope (US-107)
 - `copilot-instructions.md` — added EF Core Conventions section (US-107)
 - `di-conventions.md` — added Section 6: EF Entity Configuration Conventions (US-107)
 - `folder-structure.md` — added `Configuration.cs` to slice anatomy, Infrastructure template, and contributor steps (US-107)
 - `GetDogProfileHandler` depends on `IGetDogProfileReader` instead of `IDogRepository` (US-106)
-- Endpoint classes implement `IEndpoint`; group files (`CustomerEndpoints.cs`, `DogEndpoints.cs`) eliminated (US-106)
+- Endpoint classes implement `IEndpoint`; group files (`UserEndpoints.cs`, `DogEndpoints.cs`) eliminated (US-106)
 - `Endpoints.MapEndpoints()` uses assembly scanning instead of manual wiring (US-106)
 
 - `PasswordHash` value object uses BCrypt (`BCrypt.Net-Next`) instead of base64 encoding; added `Create()` and `Verify()` methods (#154)
-- `CreateCustomerHandler` delegates hashing to `PasswordHash.Create()` — removed inline `HashPassword()` helper (#154)
+- `CreateUserHandler` delegates hashing to `PasswordHash.Create()` — removed inline `HashPassword()` helper (#154)
 - DI-dependent guardrails remain in `Api.Tests/Guardrails/`; pure-reflection guardrails moved to `Architecture.Tests` (US-104)
 - 3 `Infrastructure*RegistrationGuardrailTests` consolidated into 1 `[Theory]` parameterized by suffix (US-104)
 - `DispatchGuardrailTests` + `DomainEventGuardrailTests` merged into `DispatcherRegistrationGuardrailTests` (US-104)
@@ -283,7 +283,7 @@ All notable changes to this project will be documented in this file.
 - All `Version=` attributes stripped from 11 csproj files — versions now managed centrally (US-104)
 
 ### Removed
-- `DbSet<Customer>` and `DbSet<Dog>` properties from `AppDbContext` — entity access now uses `Set<T>()` (US-107)
+- `DbSet<User>` and `DbSet<Dog>` properties from `AppDbContext` — entity access now uses `Set<T>()` (US-107)
 
 - Stale `.gitkeep` files from test projects containing real content (US-104)
 - Orphaned `Guardrails/Architecture/` subfolder — sole file flattened up (US-104)
@@ -333,15 +333,15 @@ All notable changes to this project will be documented in this file.
 | Story  | Title                        | Issue |
 |--------|------------------------------|-------|
 | US-009 | Developer Contributor Guide  | #98   |
-| US-027 | Create Customer Account      | #95   |
+| US-027 | Create User Account      | #95   |
 | US-028 | Register Dog                 | #96   |
 | US-029 | View Dog Profile             | #97   |
 | US-045 | Product Owner Workflow Guide | #99   |
 | US-046 | Scrum Master Workflow Guide  | #100  |
 
 ### Added
-- `POST /api/customers` — create customer account (US-027)
-- `POST /api/dogs` — register a dog under a customer (US-028)
+- `POST /api/users` — create user account (US-027)
+- `POST /api/dogs` — register a dog under a user (US-028)
 - `GET /api/dogs/{id}` — view dog profile with ownership guard (US-029)
 - CQRS command pipeline: `ICommand`, `ICommandHandler`, `ICommandDispatcher`
 - CQRS query pipeline: `IQuery<TResponse>`, `IQueryHandler`, `IQueryDispatcher`
@@ -399,7 +399,7 @@ All notable changes to this project will be documented in this file.
 - All 44 stories renamed to `US-{NNN}-{kebab-name}.md` convention (ADR-0009)
 - CONTRIBUTING.md rewritten with 2-step story workflow
 - `docs/governance/governance.md` fixed 6 stale cross-references
-- US-006 directory convention fixed (`features/` to `customer/`)
+- US-006 directory convention fixed (`features/` to `user/`)
 - US-009 scope path fixed (`docs/contributing/` to `docs/guides/`)
 - US-022 expanded to absorb US-010 and US-011 (19 to 42 AC)
 - README.md updated with Current Status section
@@ -467,6 +467,6 @@ All notable changes to this project will be documented in this file.
 - `.github/workflows/ci.yaml` — build and test pipeline
 - `global.json` pinning .NET SDK version
 - Product vision, capability themes, emotional guarantees, definition of ready
-- 44 product stories across infra, docs, and customer domains
+- 44 product stories across infra, docs, and user domains
 
 

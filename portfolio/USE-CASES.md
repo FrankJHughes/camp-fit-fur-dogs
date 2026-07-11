@@ -39,7 +39,7 @@ advancing, not abandoned.
 2. Inspects [`src/`](../src/) → sees clean DDD layer separation (Api, Application,
    Domain, Infrastructure, Frank).
 3. Opens milestone M1 on GitHub → sees which stories are in progress and
-   how domain aggregates map to customer-facing features.
+   how domain aggregates map to user-facing features.
 4. Inspects CI/CD pipeline ([`.github/workflows/ci.yaml`](../.github/workflows/ci.yaml)) → confirms
    deterministic builds and test gates.
 5. Reads recent PRs → evaluates commit hygiene, PR descriptions, and

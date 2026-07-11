@@ -18,7 +18,7 @@ Integration tests ensure that:
 - EF Core migrations apply cleanly against a real PostgreSQL instance  
 - repositories and readers interact with the database correctly  
 - identity resolution and authentication flows behave as expected  
-- vertical slices (customers, dogs, authentication‑dependent flows) work under real conditions  
+- vertical slices (users, dogs, authentication‑dependent flows) work under real conditions  
 - the DI container and middleware pipeline are wired correctly  
 
 Integration tests complement, but do not replace:
@@ -141,7 +141,7 @@ Integration tests must validate:
 ### Vertical Slice Behavior
 Each slice must be tested end‑to‑end:
 
-- customer creation  
+- user creation  
 - dog creation + assignment  
 - authentication‑dependent flows  
 - any slice that touches persistence  
@@ -173,13 +173,13 @@ using CampFitFurDogs.TestUtilities.Factories;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
 
-namespace CampFitFurDogs.IntegrationTests.Customers;
+namespace CampFitFurDogs.IntegrationTests.Users;
 
-public class CreateCustomerTests : IClassFixture<PostgresFixture>
+public class CreateUserTests : IClassFixture<PostgresFixture>
 {
     private readonly ApiFactory _api;
 
-    public CreateCustomerTests(PostgresFixture fixture)
+    public CreateUserTests(PostgresFixture fixture)
     {
         var ctx = new ApiContext()
             .WithDatabase(true, fixture.Container)
@@ -189,11 +189,11 @@ public class CreateCustomerTests : IClassFixture<PostgresFixture>
     }
 
     [Fact]
-    public async Task Should_Create_Customer()
+    public async Task Should_Create_User()
     {
         var client = _api.CreateClient(new ApiClientContext());
 
-        var response = await client.PostAsJsonAsync("/api/customers", new
+        var response = await client.PostAsJsonAsync("/api/users", new
         {
             firstName = "Frank",
             lastName = "Smith",

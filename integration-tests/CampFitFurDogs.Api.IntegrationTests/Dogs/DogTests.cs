@@ -10,10 +10,10 @@ public class DogTests : ApiTestBase
     [Fact(Skip = "Must redesign to authenticate first")]
     public async Task Can_Register_And_Retrieve_Dog_Profile()
     {
-        // STEP 1 — Ensure the placeholder user exists as a customer
+        // STEP 1 — Ensure the placeholder user exists as a user
         // var email = $"preview-{Guid.NewGuid()}@example.com";
 
-        // var createCustomerResponse = await Client.PostAsJsonAsync("/api/customers", new
+        // var createUserResponse = await Client.PostAsJsonAsync("/api/users", new
         // {
         //     // id = PlaceholderUserId,   // <-- IMPORTANT
         //     firstName = "Preview",
@@ -23,11 +23,11 @@ public class DogTests : ApiTestBase
         //     password = "P@ssw0rd!"
         // });
 
-        // Ignore 409/400 — customer may already exist
-        // if (!createCustomerResponse.IsSuccessStatusCode &&
-        //     createCustomerResponse.StatusCode != System.Net.HttpStatusCode.BadRequest)
+        // Ignore 409/400 — user may already exist
+        // if (!createUserResponse.IsSuccessStatusCode &&
+        //     createUserResponse.StatusCode != System.Net.HttpStatusCode.BadRequest)
         // {
-        //     createCustomerResponse.EnsureSuccessStatusCode();
+        //     createUserResponse.EnsureSuccessStatusCode();
         // }
 
         // STEP 2 — Register a dog

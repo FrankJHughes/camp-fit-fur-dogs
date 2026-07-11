@@ -1,10 +1,10 @@
 ---
 id: US-149
-title: "Customer Contact Profile"
-epic: Customer
+title: "User Contact Profile"
+epic: User
 milestone: M2
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-027
@@ -17,7 +17,7 @@ emotional_guarantees:
 legal_guarantees:
 ---
 
-# US-149: Customer Contact Profile
+# US-149: User Contact Profile
 
 ## Intent
 
@@ -40,7 +40,7 @@ can still reach the owner. If a phone number changes, email is the fallback.
 ## Acceptance Criteria
 
 ### Contact data model
-- [ ] Customer entity supports one or more contact methods (email, phone)
+- [ ] User entity supports one or more contact methods (email, phone)
 - [ ] Each contact method has: type (email/phone), value, verified status, verified-at timestamp, and primary flag
 - [ ] At least one verified email is required (established by US-148)
 - [ ] Phone numbers are stored in E.164 format with validation
@@ -86,9 +86,9 @@ can still reach the owner. If a phone number changes, email is the fallback.
 
 ## Notes
 
-- Depends on US-027 (Create Customer Account), US-126 (Create Account Page), US-148 (Email Verification)
+- Depends on US-027 (Create User Account), US-126 (Create Account Page), US-148 (Email Verification)
 - US-150 (SMS Infrastructure) must be in place for phone verification to work
 - E.164 format: international format like +15551234567 — use a validation library (e.g., libphonenumber)
 - Consider: should the registration form (US-126) collect phone number optionally, or only via profile later?
-- Consider: operational staff may need to view customer contact info for manual outreach
+- Consider: operational staff may need to view user contact info for manual outreach
 - **Demo:** Add a phone number to your profile, receive and enter the verification code, set booking reminders to SMS — receive a text when a booking is confirmed

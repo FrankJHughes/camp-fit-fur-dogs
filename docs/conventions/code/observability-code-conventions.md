@@ -22,7 +22,7 @@ slice.module.action
 
 Examples:
 
-- `customer.registration.created`  
+- `user.registration.created`  
 - `infra.email.sent`  
 - `api.owner.login_failed`  
 
@@ -47,7 +47,7 @@ Examples:
 
 - `api.login.duration_ms`  
 - `infra.outbox.retry_count`  
-- `domain.customer.created_count`  
+- `domain.user.created_count`  
 
 Metric names must be:
 

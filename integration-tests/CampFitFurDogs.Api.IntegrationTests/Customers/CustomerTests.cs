@@ -1,14 +1,14 @@
 // using System.Net.Http.Json;
 // using Xunit;
 
-// namespace CampFitFurDogs.Api.IntegrationTests.Tests.Customers;
+// namespace CampFitFurDogs.Api.IntegrationTests.Tests.Users;
 
-// public class CustomerTests : ApiTestBase
+// public class UserTests : ApiTestBase
 // {
 //     [Fact]
-//     public async Task Can_Create_And_List_Customers()
+//     public async Task Can_Create_And_List_Users()
 //     {
-//         var createResponse = await Client.PostAsJsonAsync("/api/customers", new
+//         var createResponse = await Client.PostAsJsonAsync("/api/users", new
 //         {
 //             firstName = "Test",
 //             lastName = "User",
@@ -19,7 +19,7 @@
 
 //         createResponse.EnsureSuccessStatusCode();
 
-//         var listResponse = await Client.GetAsync("/api/customers");
+//         var listResponse = await Client.GetAsync("/api/users");
 //         listResponse.EnsureSuccessStatusCode();
 //     }
 // }

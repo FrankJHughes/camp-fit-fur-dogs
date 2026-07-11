@@ -1,4 +1,6 @@
 using System.Reflection;
+using Frank.Command;
+using Frank.Query;
 using Frank.Registration;
 
 namespace Frank.Tests.DependencyInjection;
@@ -14,7 +16,8 @@ public class AutoRegister_RegistrationTests
     public void All_AutoRegistered_Interfaces_Must_Have_Closed_Registrations()
     {
         var services = new ServiceCollection();
-        services.AddFrank(Assemblies);
+        services.AddFrankCommand(Assemblies);
+        services.AddFrankQuery(Assemblies);
 
         var provider = services.BuildServiceProvider();
 
@@ -40,8 +43,10 @@ public class AutoRegister_RegistrationTests
 
             foreach (var closedIface in closed)
             {
-                if (provider.GetService(closedIface) is null)
+                if (!services.Any(d => d.ServiceType == closedIface))
+                {
                     offenders.Add(closedIface.FullName!);
+                }
             }
         }
 

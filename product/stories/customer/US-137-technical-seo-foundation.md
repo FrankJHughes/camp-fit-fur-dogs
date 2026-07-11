@@ -1,10 +1,10 @@
 ---
 id: US-137
 title: "Technical SEO Foundation"
-epic: Customer
+epic: User
 milestone: M2
 status: backlog
-domain: customer
+domain: user
 vertical_slice: false
 dependencies:
   - US-103

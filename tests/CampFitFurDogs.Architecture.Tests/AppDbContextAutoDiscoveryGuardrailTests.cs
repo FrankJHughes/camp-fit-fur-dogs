@@ -1,5 +1,5 @@
 using System.Reflection;
-using CampFitFurDogs.Infrastructure.Data;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +10,7 @@ public class AppDbContextAutoDiscoveryGuardrailTests
     [Fact]
     public void AppDbContext_Should_Have_No_DbSet_Properties()
     {
-        var dbSetProperties = typeof(AppDbContext)
+        var dbSetProperties = typeof(FrankIdentityDbContext)
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.PropertyType.IsGenericType
                      && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))

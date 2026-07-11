@@ -3,7 +3,7 @@ namespace Frank.Domain;
 public abstract class Entity<TId>
     where TId : ValueObject
 {
-    public TId Id { get; protected set; } = default!;
+    public virtual TId Id { get; protected set; } = default!;
 
     public override bool Equals(object? obj)
     {

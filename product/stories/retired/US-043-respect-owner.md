@@ -17,7 +17,7 @@ dependencies:
 
 ## Intent
 
-As a customer, I want the system to treat me as a responsible, knowledgeable owner of my dog, not as someone who needs to be managed or corrected.
+As a user, I want the system to treat me as a responsible, knowledgeable owner of my dog, not as someone who needs to be managed or corrected.
 
 ## Value
 
@@ -25,10 +25,10 @@ Pet parents who treat their dogs as family expect the same respect from systems 
 
 ## Acceptance Criteria
 
-- Language throughout the system treats the customer as a competent adult
-- The system never implies the customer is doing something wrong when they are within normal bounds
+- Language throughout the system treats the user as a competent adult
+- The system never implies the user is doing something wrong when they are within normal bounds
 - Help and guidance is offered, never imposed
-- The customer's relationship with their dog is treated with dignity
+- The user's relationship with their dog is treated with dignity
 - Tone is warm, professional, and peer-level — not instructional or parental
 
 ## Emotional Guarantees

@@ -27,7 +27,7 @@ public class EditDogProfileHandlerTests
         var repo = new FakeDogRepository();
         await repo.AddAsync(dog);
 
-        var uow = new FakeUnitOfWork();
+        var uow = new FakeAppUnitOfWork();
         var handler = new EditDogProfileHandler(repo, uow);
 
         var command = new EditDogProfileCommand(
@@ -57,7 +57,7 @@ public class EditDogProfileHandlerTests
     {
         // Arrange
         var repo = new FakeDogRepository();
-        var uow = new FakeUnitOfWork();
+        var uow = new FakeAppUnitOfWork();
         var handler = new EditDogProfileHandler(repo, uow);
 
         var command = new EditDogProfileCommand(
@@ -93,7 +93,7 @@ public class EditDogProfileHandlerTests
         var repo = new FakeDogRepository();
         await repo.AddAsync(dog);
 
-        var uow = new FakeUnitOfWork();
+        var uow = new FakeAppUnitOfWork();
         var handler = new EditDogProfileHandler(repo, uow);
 
         var command = new EditDogProfileCommand(

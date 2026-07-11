@@ -41,7 +41,7 @@ Queries represent **read‑only operations** and must not modify state.
 
 Examples:
 
-- Get a customer by ID  
+- Get a user by ID  
 - List all dogs for an owner  
 - Retrieve reservation details  
 - Fetch dashboard metrics  
@@ -53,11 +53,11 @@ Examples:
 Inject the dispatcher:
 
 ```csharp
-public class CustomerController
+public class UserController
 {
     private readonly IQueryDispatcher _dispatcher;
 
-    public CustomerController(IQueryDispatcher dispatcher)
+    public UserController(IQueryDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
     }
@@ -68,7 +68,7 @@ public class CustomerController
 
 ```csharp
 var result = await _dispatcher.DispatchAsync(
-    new GetCustomerByIdQuery(customerId),
+    new GetUserByIdQuery(userId),
     ct);
 ```
 
@@ -86,8 +86,8 @@ The dispatcher:
 Queries always return a value.
 
 ```csharp
-public sealed record GetCustomerByIdQuery(Guid CustomerId)
-    : IQuery<CustomerDto>;
+public sealed record GetUserByIdQuery(Guid UserId)
+    : IQuery<UserDto>;
 ```
 
 Queries should be:
@@ -101,10 +101,10 @@ Queries should be:
 ## 5. How to Implement a Handler
 
 ```csharp
-public sealed class GetCustomerByIdHandler
-    : IQueryHandler<GetCustomerByIdQuery, CustomerDto>
+public sealed class GetUserByIdHandler
+    : IQueryHandler<GetUserByIdQuery, UserDto>
 {
-    public async Task<CustomerDto> HandleAsync(GetCustomerByIdQuery query, CancellationToken ct)
+    public async Task<UserDto> HandleAsync(GetUserByIdQuery query, CancellationToken ct)
     {
         // fetch data
         return dto;
@@ -121,11 +121,11 @@ Handlers are automatically registered via `AutoRegister`.
 If you add a FluentValidation validator for a query:
 
 ```csharp
-public sealed class GetCustomerByIdValidator : AbstractValidator<GetCustomerByIdQuery>
+public sealed class GetUserByIdValidator : AbstractValidator<GetUserByIdQuery>
 {
-    public GetCustomerByIdValidator()
+    public GetUserByIdValidator()
     {
-        RuleFor(x => x.CustomerId).NotEmpty();
+        RuleFor(x => x.UserId).NotEmpty();
     }
 }
 ```

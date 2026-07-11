@@ -988,7 +988,8 @@
         "dependencies": {
           "Frank": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )"
+          "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
         }
       },
       "frank.testing": {
@@ -1012,7 +1013,8 @@
           "Frank.Api": "[1.0.0, )",
           "Frank.Testing": "[1.0.0, )",
           "Microsoft.AspNetCore.Mvc.Testing": "[10.0.0, )",
-          "Microsoft.NET.Test.Sdk": "[17.14.1, )"
+          "Microsoft.NET.Test.Sdk": "[17.14.1, )",
+          "xunit": "[2.9.3, )"
         }
       },
       "BCrypt.Net-Next": {

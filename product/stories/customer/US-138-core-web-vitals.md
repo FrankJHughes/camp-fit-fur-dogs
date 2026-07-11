@@ -1,10 +1,10 @@
 ---
 id: US-138
 title: "Core Web Vitals & Performance"
-epic: Customer
+epic: User
 milestone: M2
 status: backlog
-domain: customer
+domain: user
 vertical_slice: false
 dependencies:
   - US-103
@@ -19,7 +19,7 @@ legal_guarantees:
 
 ## Intent
 
-As a **potential customer**, I should experience fast page loads and smooth
+As a **potential user**, I should experience fast page loads and smooth
 interactions so that I don't abandon the site before discovering what Camp Fit
 Fur Dogs offers.
 

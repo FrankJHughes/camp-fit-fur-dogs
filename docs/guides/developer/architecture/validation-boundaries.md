@@ -142,7 +142,7 @@ This is where use‑case‑specific validation lives.
 
 - `"email" must be unique"`  
 - `"owner must exist before creating a pet"`  
-- `"cannot delete a customer with active bookings"`
+- `"cannot delete a user with active bookings"`
 
 Application validation ensures the request is **semantically valid**.
 

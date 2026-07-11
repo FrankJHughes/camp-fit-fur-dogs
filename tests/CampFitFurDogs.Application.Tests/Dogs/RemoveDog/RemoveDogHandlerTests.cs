@@ -26,7 +26,7 @@ public class RemoveDogHandlerTests
         var repo = new FakeDogRepository();
         await repo.AddAsync(dog);
 
-        var uow = new FakeUnitOfWork();
+        var uow = new FakeAppUnitOfWork();
         var handler = new RemoveDogHandler(repo, uow);
 
         var command = new RemoveDogCommand(
@@ -48,7 +48,7 @@ public class RemoveDogHandlerTests
     {
         // Arrange
         var repo = new FakeDogRepository();
-        var uow = new FakeUnitOfWork();
+        var uow = new FakeAppUnitOfWork();
         var handler = new RemoveDogHandler(repo, uow);
 
         var command = new RemoveDogCommand(
@@ -80,7 +80,7 @@ public class RemoveDogHandlerTests
         var repo = new FakeDogRepository();
         await repo.AddAsync(dog);
 
-        var uow = new FakeUnitOfWork();
+        var uow = new FakeAppUnitOfWork();
         var handler = new RemoveDogHandler(repo, uow);
 
         var command = new RemoveDogCommand(

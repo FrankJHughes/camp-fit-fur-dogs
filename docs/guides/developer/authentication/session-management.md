@@ -133,7 +133,7 @@ Sessions are stored in the database using the domain `Session` entity.
 |--------|---------|
 | `Id` | Primary key |
 | `TokenHash` | SHA‑256 hash of the session token |
-| `CustomerId` | Internal owner identifier |
+| `UserId` | Internal owner identifier |
 | `CreatedAt` | Audit timestamp |
 | `ExpiresAt` | Absolute expiration |
 | `LastUsedAt` | For idle timeout (future) |
@@ -149,7 +149,7 @@ Session creation occurs inside the **Application Auth Callback Pipeline**, not i
 ### Inputs:
 
 - Normalized identity from Frank  
-- `CustomerId`  
+- `UserId`  
 - `Now`  
 - `TokenHash`  
 

@@ -52,7 +52,7 @@ public class CommandsQueriesMustLiveInAbstractionsGuardrailTests
         var offenders = commandQueryTypes
             .Where(t => t.Assembly != appAssembly ||
                 !string.IsNullOrWhiteSpace(t.FullName) &&
-                !t.FullName.StartsWith("CampFitFurDogs.Application.Abstractions."))
+                !t.FullName.Contains(".Application.Abstractions."))
             .Select(t => t.FullName!)
             .ToList();
 

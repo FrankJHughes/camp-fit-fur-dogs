@@ -31,7 +31,7 @@ The team needed a pattern that:
 
 We will resolve the current user's identity server-side via an
 `ICurrentUser` abstraction. Endpoints never accept identity
-fields (e.g., `OwnerId`, `UserId`, `CustomerId`) in the request body.
+fields (e.g., `OwnerId`, `UserId`, `UserId`) in the request body.
 
 ### Pattern Structure
 

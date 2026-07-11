@@ -17,7 +17,7 @@ Authentication, session management, and other cross‑cutting concerns are **hor
 - **[Abstractions Contract](../abstractions-contract.md)**  
   How commands, queries, DTOs, and interfaces define the Application layer’s public API.
 
-- **[Create Customer Slice](../create-customer-slice.md)**  
+- **[Create User Slice](../create-user-slice.md)**  
   Vertical slice for onboarding a new Owner.  
   Triggered by the OIDC callback (not a form).  
   Domain behavior: Owner aggregate creation.

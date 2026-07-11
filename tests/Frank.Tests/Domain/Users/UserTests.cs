@@ -19,19 +19,19 @@ public class UserTests
     [Fact]
     public void Create_ExternalIdentity_Succeeds()
     {
-        var customer = User.Create(
+        var user = User.Create(
             firstName: ValidFirstName,
             lastName: ValidLastName,
             email: ValidEmail,
             externalId: ValidExternalId,
             phone: ValidPhone);
 
-        customer.Id.Value.Should().NotBe(Guid.Empty);
-        customer.ExternalId.Should().Be(ValidExternalId);
-        customer.FirstName.Should().Be(ValidFirstName);
-        customer.LastName.Should().Be(ValidLastName);
-        customer.Email.Should().Be(ValidEmail);
-        customer.Phone.Should().Be(ValidPhone);
+        user.Id.Value.Should().NotBe(Guid.Empty);
+        user.ExternalId.Should().Be(ValidExternalId);
+        user.FirstName.Should().Be(ValidFirstName);
+        user.LastName.Should().Be(ValidLastName);
+        user.Email.Should().Be(ValidEmail);
+        user.Phone.Should().Be(ValidPhone);
     }
 
     // ───────────────────────────────────────────────────────────────

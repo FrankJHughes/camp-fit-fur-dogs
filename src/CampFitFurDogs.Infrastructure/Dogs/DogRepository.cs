@@ -1,5 +1,5 @@
 using CampFitFurDogs.Domain.Dogs;
-using CampFitFurDogs.Infrastructure.Data;
+using CampFitFurDogs.Infrastructure.Persistence;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;
 

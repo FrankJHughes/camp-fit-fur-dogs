@@ -21,6 +21,7 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
 {
     private TContext _ctx;
     private PostgreSqlContainer? _db;
+    public IServiceCollection ServiceCollection { get; private set; } = default!;
 
     protected MutatedWebApplicationFactory(TContext ctx)
     {
@@ -71,6 +72,8 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
 
         builder.ConfigureServices((context, services) =>
         {
+            ServiceCollection = services;
+
             // ------------------------------------------------------------
             // AUTH SCHEME ADJUSTMENTS FOR TESTING
             // Force challenges to use the cookie scheme, not OIDC

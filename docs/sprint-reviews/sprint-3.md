@@ -2,14 +2,14 @@
 
 ## Sprint Goal
 
-Ship the first customer vertical (M1) end-to-end and complete contributor onboarding guides for all three Scrum roles.
+Ship the first user vertical (M1) end-to-end and complete contributor onboarding guides for all three Scrum roles.
 
 ## What Shipped
 
 | Story  | Title                        | Issue | Notes |
 |--------|------------------------------|-------|-------|
 | US-009 | Developer Contributor Guide  | #98   | Full TDD workflow, branching model, source control safety |
-| US-027 | Create Customer Account      | #95   | POST /api/customers — first vertical slice |
+| US-027 | Create User Account      | #95   | POST /api/users — first vertical slice |
 | US-028 | Register a Dog               | #96   | POST /api/dogs — ownership guard established |
 | US-029 | View Dog Profile             | #97   | GET /api/dogs/{id} — query pipeline introduced |
 | US-045 | Product Owner Workflow Guide | #99   | Role-specific contributor guide |
@@ -34,7 +34,7 @@ Ship the first customer vertical (M1) end-to-end and complete contributor onboar
 
 ## What Went Well
 
-- **M1 milestone complete** — all three vertical slices shipped (Create Customer, Register Dog, View Dog Profile)
+- **M1 milestone complete** — all three vertical slices shipped (Create User, Register Dog, View Dog Profile)
 - **TDD discipline held** — red-green-refactor followed on every feature slice with no shortcuts
 - **CQRS patterns established** — both command and query pipelines reusable for future stories
 - **Contributor guides shipped** — all three roles (Dev, PO, SM) have onboarding paths

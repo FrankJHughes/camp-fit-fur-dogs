@@ -101,7 +101,7 @@ Users can:
 
 Users can:
 
-- Trace customer requests  
+- Trace user requests  
 - Diagnose failures  
 - Monitor performance  
 - Understand system health  

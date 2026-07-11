@@ -40,7 +40,7 @@ Characteristics:
 Example shape:
 
 ```csharp
-public sealed record DogRegisteredDomainEvent(DogId DogId, CustomerId OwnerId);
+public sealed record DogRegisteredDomainEvent(DogId DogId, UserId OwnerId);
 ```
 
 Events are raised inside aggregate methods, not handlers.

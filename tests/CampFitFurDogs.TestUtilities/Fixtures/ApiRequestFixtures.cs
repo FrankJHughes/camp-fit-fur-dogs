@@ -5,7 +5,7 @@ namespace CampFitFurDogs.TestUtilities.Fixtures;
 
 public static class ApiRequestFixtures
 {
-    public static object Customer()
+    public static object User()
         => new UserBuilder().BuildApiRequest();
 
     public static object Dog()

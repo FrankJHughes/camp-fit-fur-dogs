@@ -1,16 +1,16 @@
+using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Dog.EditDogProfile;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Abstractions.Command;
-using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Dogs.EditDogProfile;
 
 public class EditDogProfileHandler : ICommandHandler<EditDogProfileCommand>
 {
     private readonly IDogRepository _dogRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppUnitOfWork _unitOfWork;
 
-    public EditDogProfileHandler(IDogRepository dogRepository, IUnitOfWork unitOfWork)
+    public EditDogProfileHandler(IDogRepository dogRepository, IAppUnitOfWork unitOfWork)
     {
         _dogRepository = dogRepository;
         _unitOfWork = unitOfWork;

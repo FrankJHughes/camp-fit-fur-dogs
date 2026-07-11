@@ -178,7 +178,7 @@ Once the capability expands, developers will:
 ### 5.1 Define an Aggregate
 
 ```csharp
-public sealed class Customer : AggregateRoot<CustomerId>
+public sealed class User : AggregateRoot<UserId>
 {
     public Email Email { get; private set; }
 }
@@ -187,12 +187,12 @@ public sealed class Customer : AggregateRoot<CustomerId>
 ### 5.2 Define the EF Core Configuration
 
 ```csharp
-public sealed class CustomerConfiguration
-    : AggregateRootConfiguration<Customer, CustomerId>
+public sealed class UserConfiguration
+    : AggregateRootConfiguration<User, UserId>
 {
-    protected override string TableName => "Customers";
+    protected override string TableName => "Users";
 
-    protected override void ConfigureAggregateRoot(EntityTypeBuilder<Customer> builder)
+    protected override void ConfigureAggregateRoot(EntityTypeBuilder<User> builder)
     {
         builder.Property(c => c.Email)
             .HasConversion(

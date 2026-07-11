@@ -1,10 +1,10 @@
 ---
 id: US-136
 title: "Page-Level SEO & Social Sharing"
-epic: Customer
+epic: User
 milestone: M2
 status: backlog
-domain: customer
+domain: user
 vertical_slice: false
 dependencies:
   - US-103
@@ -19,7 +19,7 @@ legal_guarantees:
 
 ## Intent
 
-As a **potential customer**, I should see a clear, compelling preview when Camp
+As a **potential user**, I should see a clear, compelling preview when Camp
 Fit Fur Dogs appears in search results or when someone shares a link on social
 media, so that I understand what the service offers before clicking.
 

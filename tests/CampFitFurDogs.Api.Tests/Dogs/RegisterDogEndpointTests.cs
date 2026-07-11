@@ -94,10 +94,10 @@ public class RegisterDogEndpointTests : IAsyncLifetime
     }
 
     // ------------------------------------------------------------
-    // AUTH — MISSING CUSTOMER ID
+    // AUTH — MISSING USER ID
     // ------------------------------------------------------------
     [Fact]
-    public async Task RegisterDog_MissingCustomerId_Returns401()
+    public async Task RegisterDog_MissingUserId_Returns401()
     {
         // Create anonymous client
         var anon = _api.CreateClient(new ApiClientContext());

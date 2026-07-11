@@ -2,7 +2,7 @@
 *How HTTP security headers are applied, validated, and enforced across CampFitFurDogs and Frank.*
 
 Security headers are a mandatory part of the API boundary.  
-They protect customers from browser‑based attacks, enforce safe defaults, and ensure consistent security behavior across all environments.
+They protect users from browser‑based attacks, enforce safe defaults, and ensure consistent security behavior across all environments.
 
 This guide explains **how security headers work**, **how Frank enforces them**, and **how the API integrates with them**.
 
@@ -256,7 +256,7 @@ All changes must be tested in:
 # 10. Summary
 
 Security headers are a critical part of the API boundary.  
-They protect customers, enforce safe browser behavior, and ensure consistent security across all environments.
+They protect users, enforce safe browser behavior, and ensure consistent security across all environments.
 
 Frank provides:
 

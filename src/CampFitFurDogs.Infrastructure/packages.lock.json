@@ -627,7 +627,8 @@
         "dependencies": {
           "Frank": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )"
+          "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
         }
       },
       "BCrypt.Net-Next": {

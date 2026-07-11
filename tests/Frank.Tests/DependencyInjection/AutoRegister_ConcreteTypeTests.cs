@@ -1,4 +1,6 @@
 using System.Reflection;
+using Frank.Command;
+using Frank.Query;
 using Frank.Registration;
 
 namespace Frank.Tests.DependencyInjection;
@@ -7,6 +9,7 @@ public class AutoRegister_ConcreteTypeTests
 {
     private static readonly Assembly[] Assemblies =
     [
+        // Scan all assemblies that contain Frank command handlers
         typeof(RegistrationAttribute).Assembly
     ];
 
@@ -14,11 +17,15 @@ public class AutoRegister_ConcreteTypeTests
     public void Concrete_Types_Must_Be_Registered_When_Requested()
     {
         var services = new ServiceCollection();
-        services.AddFrank(Assemblies);
+        services.AddFrankCommand(Assemblies);
+        services.AddFrankQuery(Assemblies);
 
         var descriptors = services.ToList();
         var offenders = new List<string>();
 
+        //
+        // STEP 1 — Find all attributed interfaces
+        //
         var attributed =
             from asm in Assemblies
             from type in asm.DefinedTypes
@@ -26,17 +33,24 @@ public class AutoRegister_ConcreteTypeTests
             where type.IsInterface && attr is not null && attr.RegisterConcreteType
             select type.AsType();
 
+        //
+        // STEP 2 — For each attributed interface, find concrete implementations
+        //
         foreach (var openIface in attributed)
         {
             var closed =
                 from asm in Assemblies
                 from t in asm.DefinedTypes
                 where t.IsClass && !t.IsAbstract
-                from implIface in t.ImplementedInterfaces
+                from implIface in t.GetInterfaces() // IMPORTANT: inherited interfaces included
                 where implIface.IsConstructedGenericType &&
-                      implIface.GetGenericTypeDefinition() == openIface
+                      // Compare generic type definitions by FullName — fixes load‑context mismatches
+                      implIface.GetGenericTypeDefinition().FullName == openIface.FullName
                 select (closedIface: implIface, implType: t.AsType());
 
+            //
+            // STEP 3 — Ensure concrete types are registered
+            //
             foreach (var (closedIface, implType) in closed)
             {
                 var hasConcrete = descriptors.Any(d => d.ServiceType == implType);
@@ -46,7 +60,7 @@ public class AutoRegister_ConcreteTypeTests
             }
         }
 
-        Assert.False(offenders.Any(),
+        Assert.False(offenders.Count != 0,
             "Missing concrete registrations:\n" + string.Join("\n", offenders));
     }
 }

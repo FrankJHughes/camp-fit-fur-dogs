@@ -160,8 +160,8 @@ Validate:
 ### Example
 
 ```csharp
-var entity = model.FindEntityType(typeof(Customer));
-Assert.Equal("Customers", entity.GetTableName());
+var entity = model.FindEntityType(typeof(User));
+Assert.Equal("Users", entity.GetTableName());
 ```
 
 ---

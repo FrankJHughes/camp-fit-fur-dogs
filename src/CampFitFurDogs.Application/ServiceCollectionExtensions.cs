@@ -4,8 +4,7 @@ using Frank.Authentication.Callback;
 using Frank.Command;
 using Frank.Query;
 
-using CampFitFurDogs.Application.Authentication.Callback;
-using CampFitFurDogs.Application.Settings;
+using Frank.Application.Identity.Callback;
 using Frank.Event;
 
 namespace CampFitFurDogs.Application;
@@ -17,29 +16,19 @@ public static class ServiceCollectionExtensions
     {
         services.AddFrankAuthCallback(); // IImmutableContextBuilder<FrankAuthCallbackRequest, OidcAuthCallbackContext, FrankAuthCallbackResult>
 
-        services
-            .AddOptions<AuthCallbackSettings>()
-            .BindConfiguration("Frontend")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
         services.AddApplicationAuthCallback();
 
         services.AddFrankCommand([
-            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
+            typeof(Frank.AssemblyMarker).Assembly // user commands
         ]);
 
         services.AddFrankQuery([
-            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
+            typeof(Frank.AssemblyMarker).Assembly // user queries
         ]);
 
         services.AddFrankEvent(); // none implemented yet
-
-        services
-            .AddOptions<FrontendSettings>()
-            .BindConfiguration("Frontend")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
 
         return services;
     }

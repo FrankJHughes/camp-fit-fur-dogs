@@ -12,6 +12,8 @@ using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
 using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
+using CampFitFurDogs.Application.Abstractions;
+using Frank.TestUtilities.Fakes;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 
@@ -30,13 +32,10 @@ public partial class AutoRegistrationTests
 
         // Stub dependencies so handlers can be constructed
         services.AddSingleton<IDogRepository, FakeDogRepository>();
-        services.AddSingleton<IUserRepository, FakeCustomerRepository>();
-        services.AddSingleton<IUnitOfWork, FakeUnitOfWork>();
+        services.AddSingleton<IAppUnitOfWork, FakeAppUnitOfWork>();
 
         // Act
         var provider = services.BuildServiceProvider();
-
-        services.AddSingleton<IUnitOfWork, FakeUnitOfWork>();
 
         // Assert
         var handler = provider.GetService<ICommandHandler<RegisterDogCommand, Guid>>();
@@ -56,8 +55,8 @@ public partial class AutoRegistrationTests
 
         // Provide required fakes so handlers/validators can be constructed
         services.AddSingleton<IDogRepository, FakeDogRepository>();
-        services.AddSingleton<IUserRepository, FakeCustomerRepository>();
-        services.AddSingleton<IUnitOfWork, FakeUnitOfWork>();
+        services.AddSingleton<IUserRepository, FakeUserRepository>();
+        services.AddSingleton<IUnitOfWork, FakeAppUnitOfWork>();
 
         // Act
         var provider = services.BuildServiceProvider();

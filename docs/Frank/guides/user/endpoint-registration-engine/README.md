@@ -32,11 +32,11 @@ As a user of the Endpoint Registration Engine:
 
 ### ✔ You define endpoints by implementing `IEndpoint`
 ```csharp
-public sealed class GetCustomerEndpoint : IEndpoint
+public sealed class GetUserEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/customers/{id}", (Guid id) =>
+        app.MapGet("/users/{id}", (Guid id) =>
         {
             return Results.Ok(new { Id = id });
         });
@@ -116,11 +116,11 @@ These features will arrive in future capability expansions.
 ## 5.1 Define an endpoint
 
 ```csharp
-public sealed class GetCustomerEndpoint : IEndpoint
+public sealed class GetUserEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/customers/{id}", (Guid id) =>
+        app.MapGet("/users/{id}", (Guid id) =>
         {
             return Results.Ok(new { Id = id });
         });
@@ -197,10 +197,10 @@ The engine does not log or report discovery/mapping behavior.
 
 ```
 /Endpoints
-    GetCustomerEndpoint.cs
-    CreateCustomerEndpoint.cs
-    DeleteCustomerEndpoint.cs
-    ListCustomersEndpoint.cs
+    GetUserEndpoint.cs
+    CreateUserEndpoint.cs
+    DeleteUserEndpoint.cs
+    ListUsersEndpoint.cs
 ```
 
 Startup:

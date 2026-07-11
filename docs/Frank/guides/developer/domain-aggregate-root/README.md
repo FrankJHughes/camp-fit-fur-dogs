@@ -194,9 +194,9 @@ Once the capability expands, developers will:
 ### 5.1 Define an Aggregate ID
 
 ```csharp
-public sealed class CustomerId : AggregateId
+public sealed class UserId : AggregateId
 {
-    public CustomerId(Guid value) : base(value) { }
+    public UserId(Guid value) : base(value) { }
 }
 ```
 
@@ -222,21 +222,21 @@ public sealed class Email : ValueObject
 ### 5.3 Define an Aggregate Root
 
 ```csharp
-public sealed class Customer : AggregateRoot<CustomerId>
+public sealed class User : AggregateRoot<UserId>
 {
     public Email Email { get; private set; }
 
-    public Customer(CustomerId id, Email email)
+    public User(UserId id, Email email)
         : base(id)
     {
         Email = email;
-        RaiseDomainEvent(new CustomerCreated(id.Value));
+        RaiseDomainEvent(new UserCreated(id.Value));
     }
 
     public void ChangeEmail(Email newEmail)
     {
         Email = newEmail;
-        RaiseDomainEvent(new CustomerEmailChanged(Id.Value, newEmail.Value));
+        RaiseDomainEvent(new UserEmailChanged(Id.Value, newEmail.Value));
     }
 }
 ```

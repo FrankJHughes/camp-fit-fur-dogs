@@ -119,21 +119,21 @@ foreach (var endpoint in endpoints)
 ## 4.1 Implement an endpoint
 
 ```csharp
-public sealed class GetCustomerEndpoint : IEndpoint
+public sealed class GetUserEndpoint : IEndpoint
 {
-    private readonly ICustomerService _service;
+    private readonly IUserService _service;
 
-    public GetCustomerEndpoint(ICustomerService service)
+    public GetUserEndpoint(IUserService service)
     {
         _service = service;
     }
 
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/customers/{id}", async (Guid id) =>
+        app.MapGet("/users/{id}", async (Guid id) =>
         {
-            var customer = await _service.GetAsync(id);
-            return Results.Ok(customer);
+            var user = await _service.GetAsync(id);
+            return Results.Ok(user);
         });
     }
 }
@@ -143,7 +143,7 @@ public sealed class GetCustomerEndpoint : IEndpoint
 
 ```csharp
 services.AddFrankEndpoints([
-    typeof(GetCustomerEndpoint).Assembly
+    typeof(GetUserEndpoint).Assembly
 ]);
 ```
 
@@ -186,7 +186,7 @@ app.MapFrankEndpoints();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddFrankEndpoints([
-    typeof(GetCustomerEndpoint).Assembly
+    typeof(GetUserEndpoint).Assembly
 ]);
 
 var app = builder.Build();

@@ -4,7 +4,7 @@
 Accepted
 
 ## Context  
-The application requires a consistent, deterministic, and testable approach to building forms across multiple domains (customer onboarding, dog registration, authentication, staff workflows, admin tools). Prior to this decision, form handling was ad‑hoc, validation was inconsistent, and TypeScript types were duplicated or manually maintained.
+The application requires a consistent, deterministic, and testable approach to building forms across multiple domains (user onboarding, dog registration, authentication, staff workflows, admin tools). Prior to this decision, form handling was ad‑hoc, validation was inconsistent, and TypeScript types were duplicated or manually maintained.
 
 Upcoming stories (e.g., US‑126 Create Account, US‑027 Register Dog, US‑110 Owner Login, US‑148 Email Verification) all require:
 

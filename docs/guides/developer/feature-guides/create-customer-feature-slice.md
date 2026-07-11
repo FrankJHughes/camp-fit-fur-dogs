@@ -1,7 +1,7 @@
-# Create Customer Slice Guide  
+# Create User Slice Guide  
 **Aligned With Exclusive OIDC Authentication & De‑featured Local Identity**
 
-This guide documents the **Create Customer** vertical slice — the domain‑level creation of an Owner record.
+This guide documents the **Create User** vertical slice — the domain‑level creation of an Owner record.
 
 This slice was formerly known as **Create Account**, but after **US‑184 (De‑feature Local Identity)**:
 
@@ -18,7 +18,7 @@ This guide explains how the slice works today.
 
 # Slice Overview
 
-The Create Customer slice is responsible for:
+The Create User slice is responsible for:
 
 - Mapping external Auth0 identity → internal Owner identity  
 - Creating the Owner aggregate (first login only)  
@@ -50,13 +50,13 @@ The callback endpoint:
 - Issues the session cookie  
 - Redirects the user  
 
-The **Application pipeline** contains the Create Customer slice.
+The **Application pipeline** contains the Create User slice.
 
 ---
 
 # Application Layer Behavior (The Slice Itself)
 
-The Create Customer slice lives inside the **Application Auth Callback Pipeline**.
+The Create User slice lives inside the **Application Auth Callback Pipeline**.
 
 ### Responsibilities
 
@@ -75,7 +75,7 @@ The Create Customer slice lives inside the **Application Auth Callback Pipeline*
 src/CampFitFurDogs.Application/Authentication/Callback/
     ApplicationAuthCallbackPipeline.cs
     IdentityMapping.cs
-    CreateCustomerBehavior.cs
+    CreateUserBehavior.cs
     SessionCreationBehavior.cs
 ````
 
@@ -87,7 +87,7 @@ src/CampFitFurDogs.Application/Authentication/Callback/
 
 ### Domain Outputs
 
-- `CustomerId`  
+- `UserId`  
 - `SessionId`  
 - `RedirectUrl`  
 - `CookieValue`  
@@ -108,7 +108,7 @@ The domain layer owns the **Owner aggregate**.
 ### Files
 
 ````text
-src/CampFitFurDogs.Domain/Customers/
+src/CampFitFurDogs.Domain/Users/
     Owner.cs
     OwnerId.cs
 ````
@@ -131,7 +131,7 @@ Infrastructure persists:
 ### Files
 
 ````text
-src/CampFitFurDogs.Infrastructure/Customers/
+src/CampFitFurDogs.Infrastructure/Users/
     OwnerRepository.cs
     OwnerConfiguration.cs
 
@@ -180,7 +180,7 @@ All of that lives in the pipelines.
 
 # Frontend Behavior
 
-There is **no Create Customer form**.
+There is **no Create User form**.
 
 Auth0 handles:
 

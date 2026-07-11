@@ -186,7 +186,7 @@ Frank automatically discovers validators and enforces validation rules before ha
 You write validators using:
 
 ```csharp
-public class CreateCustomerValidator : AbstractValidator<CreateCustomer> { }
+public class CreateUserValidator : AbstractValidator<CreateUser> { }
 ```
 
 ---
@@ -269,9 +269,9 @@ docs/
 ## 4.2 Writing Handlers
 
 ```csharp
-public class CreateCustomerHandler : IRequestHandler<CreateCustomer, CustomerDto>
+public class CreateUserHandler : IRequestHandler<CreateUser, UserDto>
 {
-    public Task<CustomerDto> Handle(CreateCustomer request, CancellationToken ct)
+    public Task<UserDto> Handle(CreateUser request, CancellationToken ct)
     {
         ...
     }
@@ -294,7 +294,7 @@ You focus on business logic.
 
 ```csharp
 [RegisterScoped]
-public class CustomerService : ICustomerService { }
+public class UserService : IUserService { }
 ```
 
 Manual registration:

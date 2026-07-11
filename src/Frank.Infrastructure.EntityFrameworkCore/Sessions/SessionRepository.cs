@@ -1,0 +1,41 @@
+using Frank.Domain.Sessions;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace Frank.Infrastructure.EntityFrameworkCore.Sessions;
+
+public sealed class SessionRepository : ISessionRepository
+{
+    private readonly FrankIdentityDbContext _db;
+
+    public SessionRepository(FrankIdentityDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash)
+    {
+        return await _db.Set<Session>()
+            .FirstOrDefaultAsync(s => s.TokenHash == tokenHash);
+    }
+
+    public Task CreateAsync(Session session)
+    {
+        _db.Set<Session>().Add(session);
+        return Task.CompletedTask;
+    }
+
+    public async Task RevokeAsync(SessionTokenHash tokenHash)
+    {
+        var session = await _db.Set<Session>()
+            .SingleOrDefaultAsync(s => s.TokenHash == tokenHash);
+
+        if (session is null)
+            return;
+
+        // Domain behavior
+        session.Revoke(DateTimeOffset.UtcNow);
+
+        // EF will track the change; SaveChanges is handled by the unit of work
+    }
+}

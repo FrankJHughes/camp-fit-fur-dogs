@@ -39,7 +39,7 @@ Camp Fit Fur Dogs is a platform for:
 - Dog profile management  
 - Booking appointments  
 - Staff operations  
-- Customer communication  
+- User communication  
 - Operational workflows  
 
 The product exposes:
@@ -174,7 +174,7 @@ Staff can:
 
 - View daily schedule  
 - Manage bookings  
-- Manage customer accounts  
+- Manage user accounts  
 - Perform operational tasks  
 
 ---

@@ -41,8 +41,9 @@ public class NoManualInfrastructureRegistrationGuardrailTests : IAsyncLifetime
     public void Should_Not_Have_Manual_Infrastructure_Registrations()
     {
         var factory = CreateFactory();
+        _ = factory.CreateClient();
 
-        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.ServiceCollectionExtensions).Assembly;
+        var infraAssembly = typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly;
 
         var infraTypes =
             DiRegistrationScanner.FindTypesWithInterfaces(
@@ -60,7 +61,9 @@ public class NoManualInfrastructureRegistrationGuardrailTests : IAsyncLifetime
         {
             iface.Should().NotBeNull();
 
-            var registrations = GetAll(factory, iface!);
+            var registrations = factory.ServiceCollection
+                .Where(d => d.ServiceType == iface)
+                .ToList();
 
             registrations.Should().ContainSingle(
                 $"{type.Name} must be registered exactly once via Scrutor, not manually");

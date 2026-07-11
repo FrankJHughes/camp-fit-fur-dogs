@@ -23,7 +23,7 @@ Each reader interface:
 - Returns the query's response DTO directly — no domain aggregates cross the boundary.
 - Has its Infrastructure implementation registered via Scrutor's `Reader` suffix scan.
 
-Repositories (`IDogRepository`, `ICustomerRepository`) remain exclusively for
+Repositories (`IDogRepository`, `IUserRepository`) remain exclusively for
 command handlers that need aggregate persistence.
 
 An architecture guardrail test enforces the boundary: no `IQueryHandler`

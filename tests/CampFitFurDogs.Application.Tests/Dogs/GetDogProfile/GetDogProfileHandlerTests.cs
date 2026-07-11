@@ -17,7 +17,7 @@ public class GetDogProfileHandlerTests
     }
 
     [Fact]
-    public async Task Handle_DogExistsAndOwnedByCustomer_ReturnsProfile()
+    public async Task Handle_DogExistsAndOwnedByUser_ReturnsProfile()
     {
         var ownerId = UserId.From(Guid.NewGuid());
         var dog = Domain.Dogs.Dog.Create(
@@ -50,7 +50,7 @@ public class GetDogProfileHandlerTests
     }
 
     [Fact]
-    public async Task Handle_DogExistsButNotOwnedByCustomer_ReturnsNull()
+    public async Task Handle_DogExistsButNotOwnedByUser_ReturnsNull()
     {
         var ownerA = Guid.NewGuid();
         var ownerB = Guid.NewGuid();

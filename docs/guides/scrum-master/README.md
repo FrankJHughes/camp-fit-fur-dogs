@@ -108,7 +108,7 @@ A sprint goal connects the sprint’s Tasks to a milestone objective.
 Examples:
 
 - *Deliver the authentication foundation (M1).*  
-- *Complete the first customer vertical (M1).*  
+- *Complete the first user vertical (M1).*  
 
 The sprint goal appears in:
 

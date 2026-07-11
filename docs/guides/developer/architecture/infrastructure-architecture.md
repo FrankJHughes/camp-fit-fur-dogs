@@ -65,7 +65,7 @@ CampFitFurDogs.Infrastructure/
   Audit/
   Authentication/
     Sessions/
-  Customers/
+  Users/
   Data/
   Dogs/
   Identity/
@@ -81,8 +81,8 @@ Implements `IAuditLogger`.
 ## **3.2 Authentication/Sessions**
 Implements session persistence and lookup.
 
-## **3.3 Customers**
-Implements customer readers and repositories.
+## **3.3 Users**
+Implements user readers and repositories.
 
 ## **3.4 Dogs**
 Implements dog readers and repositories.

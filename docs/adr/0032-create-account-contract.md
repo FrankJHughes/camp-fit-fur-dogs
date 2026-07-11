@@ -4,7 +4,7 @@
 Accepted
 
 ## Context  
-During implementation of the **Create Customer Account** vertical slice (US‑027, US‑126), integration tests revealed significant **contract drift** between the frontend, backend, and domain layers:
+During implementation of the **Create User Account** vertical slice (US‑027, US‑126), integration tests revealed significant **contract drift** between the frontend, backend, and domain layers:
 
 - The **frontend** and **backend** enforce different required fields  
 - The **backend** and **domain** enforce different validation rules  
@@ -41,7 +41,7 @@ This contract becomes the **single source of truth** for:
 - Backend request validation  
 - Domain ValueObject invariants  
 - Integration tests  
-- Future slices that depend on customer identity  
+- Future slices that depend on user identity  
 
 ### 1. Request DTO (Canonical)
 
@@ -98,7 +98,7 @@ All fields are **required**.
 - Email: not empty, contains `'@'`, lowercased  
 - Phone: not empty  
 - PasswordHash: must be hashed  
-- CustomerId: wraps a Guid  
+- UserId: wraps a Guid  
 
 #### Future (Planned)  
 - Email: RFC‑lite validation, no double dots, valid domain  
@@ -122,7 +122,7 @@ Backend must enforce **exactly the same rules** as the frontend:
 ### 5. Response Semantics
 
 #### 201 Created  
-`Location: /api/customers/{id}`
+`Location: /api/users/{id}`
 
 #### 400 Validation Error  
 ```json
@@ -166,7 +166,7 @@ Integration tests must verify:
 - Domain errors (only for actual domain invariants)  
 - Duplicate email (409)  
 - Password hashing (BCrypt)  
-- Persistence using `CustomerId` ValueObject  
+- Persistence using `UserId` ValueObject  
 
 Tests must **not** assert domain errors for invariants that do not exist.
 

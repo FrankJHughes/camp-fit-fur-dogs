@@ -88,10 +88,10 @@ public class GetDogProfileEndpointTests : IAsyncLifetime
     }
 
     // ------------------------------------------------------------
-    // AUTH — MISSING CUSTOMER ID
+    // AUTH — MISSING USER ID
     // ------------------------------------------------------------
     [Fact]
-    public async Task GetDog_MissingCustomerId_Returns401()
+    public async Task GetDog_MissingUserId_Returns401()
     {
         var anon = _api.CreateClient(new ApiClientContext());
 

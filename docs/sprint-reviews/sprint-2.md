@@ -63,6 +63,6 @@
 
 ## Next Sprint Focus
 
-> Ship the first customer-facing feature. All infrastructure, architecture,
-> CI, and DX stories are complete. Customer stories US-027 through US-044
+> Ship the first user-facing feature. All infrastructure, architecture,
+> CI, and DX stories are complete. User stories US-027 through US-044
 > are eligible for sprint selection.

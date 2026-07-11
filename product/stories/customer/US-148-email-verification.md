@@ -1,10 +1,10 @@
 ---
 id: US-148
 title: "Email Verification"
-epic: Customer
+epic: User
 milestone: M1+
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-027
@@ -24,7 +24,7 @@ Verification ensures:
 
 - The email truly belongs to the owner  
 - Password resets and booking confirmations reach the right person  
-- Typos and disposable emails don’t pollute the customer database  
+- Typos and disposable emails don’t pollute the user database  
 - The communication channel is trustworthy before sensitive actions occur  
 
 This story also establishes the sequencing rules for the welcome email (US‑145).
@@ -34,7 +34,7 @@ This story also establishes the sequencing rules for the welcome email (US‑145
 ### Registration Flow
 - After successful account creation (US‑126), the owner sees a **“Check your email”** confirmation page.
 - The page explains what to expect and includes a **“Resend verification email”** option.
-- A `CustomerCreated` domain event triggers a verification email via the outbox (US‑143 → US‑144).
+- A `UserCreated` domain event triggers a verification email via the outbox (US‑143 → US‑144).
 - The verification email contains:
   - A unique, time‑limited, single‑use token embedded in a link  
   - Warm, branded messaging  
@@ -57,7 +57,7 @@ This story also establishes the sequencing rules for the welcome email (US‑145
   - Returns a **generic error** (no token structure revealed)
 
 ### Account State
-- Customer entity includes `EmailVerified` or `EmailVerifiedAt`.
+- User entity includes `EmailVerified` or `EmailVerifiedAt`.
 - Unverified accounts:
   - Can log in  
   - See a persistent, non‑blocking banner prompting verification  
@@ -89,8 +89,8 @@ This story also establishes the sequencing rules for the welcome email (US‑145
 > Accounts created via social login skip verification entirely and are immediately active.
 
 ## Notes
-- Depends on US‑027 (Create Customer Account), US‑126 (Create Account Page), US‑143 (Outbox), US‑144 (Email).
-- Welcome email sequencing changes: welcome is sent on `EmailVerified`, not `CustomerCreated`.
+- Depends on US‑027 (Create User Account), US‑126 (Create Account Page), US‑143 (Outbox), US‑144 (Email).
+- Welcome email sequencing changes: welcome is sent on `EmailVerified`, not `UserCreated`.
 - The verification email **is the first impression** — invest in tone and design.
 - Consider whether the verification link should auto‑log‑in the owner or redirect to login.
 - Consider a grace period before restricting unverified accounts.

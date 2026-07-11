@@ -8,7 +8,7 @@ namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
 public class RegisterDogHandlerTests
 {
     private readonly FakeDogRepository _repo = new();
-    private readonly FakeUnitOfWork _unitOfWork = new();
+    private readonly FakeAppUnitOfWork _unitOfWork = new();
     private readonly RegisterDogHandler _handler;
 
     public RegisterDogHandlerTests()

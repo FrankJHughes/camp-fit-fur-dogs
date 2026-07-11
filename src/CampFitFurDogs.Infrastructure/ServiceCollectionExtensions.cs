@@ -1,16 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Application.Abstractions.Audit;
-using CampFitFurDogs.Infrastructure.Audit;
-using CampFitFurDogs.Infrastructure.Data;
-using CampFitFurDogs.Infrastructure.Identity;
+using Frank.Application.Abstractions.Audit;
+using Frank.Infrastructure.Audit;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
+using Frank.Infrastructure.Identity;
 using Frank.Infrastructure.EntityFrameworkCore.UnitOfWork;
 using Frank.Infrastructure.Environment;
-using CampFitFurDogs.Infrastructure.Customers;
+using Frank.Infrastructure.EntityFrameworkCore.Users;
 using CampFitFurDogs.Infrastructure.Dogs;
 using Frank.Infrastructure.Time;
-using CampFitFurDogs.Infrastructure.Sessions;
+using Frank.Infrastructure.EntityFrameworkCore.Sessions;
+using CampFitFurDogs.Infrastructure.Persistence;
 
 namespace CampFitFurDogs.Infrastructure;
 
@@ -22,23 +23,31 @@ public static class ServiceCollectionExtensions
         )
     {
         return services
+            .AddHttpContextAccessor()
+
+            .AddDbContext<FrankIdentityDbContext>(options =>
+                {
+                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+                })
+            .AddFrankIdentityUnitOfWork() // IFrankIdentityUnitOfWork
+
+            .AddFrankEnvironment() // IEnvironment
+            .AddFrankTime() // IClock
+
+            .AddFrankUsersInfrastructure()
+            .AddFrankSessionsInfrastructure()
+            .AddFrankIdentity()
+
+            .AddSingleton<IAuditLogger, AuditLogger>()
+
             .AddDbContext<AppDbContext>(options =>
                 {
                     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
                 })
+            .AddAppUnitOfWork() // IAppUnitOfWork
 
-            .AddHttpContextAccessor()
+            .AddDogInfrastructure();
 
-            .AddFrankEnvironment() // IEnvironment
-            .AddFrankTime() // IClock
-            .AddFrankEntityFrameworkCoreUnitOfWork<AppDbContext>() // IUnitOfWork
-
-            .AddCustomerInfrastructure()
-            .AddDogInfrastructure()
-            .AddIdentityInfrastructure()
-            .AddSessionInfrastructure()
-
-            .AddSingleton<IAuditLogger, AuditLogger>();
 
     }
 }

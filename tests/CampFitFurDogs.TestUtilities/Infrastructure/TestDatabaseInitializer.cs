@@ -1,11 +1,11 @@
-using CampFitFurDogs.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace CampFitFurDogs.TestUtilities.Infrastructure;
 
-public class TestDatabaseInitializer : IHostedService
+public sealed class TestDatabaseInitializer<TContext> : IHostedService
+    where TContext : DbContext
 {
     private readonly IServiceProvider _provider;
 
@@ -17,7 +17,7 @@ public class TestDatabaseInitializer : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         using var scope = _provider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TContext>();
 
         await db.Database.MigrateAsync(cancellationToken);
     }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 
-using CampFitFurDogs.Infrastructure.Data;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 
@@ -43,7 +43,7 @@ public class DbContextGuardrailTests : IAsyncLifetime
         var factory = CreateFactory();
 
         using var scope = factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<FrankIdentityDbContext>();
 
         db.Database.ProviderName.Should().Contain("Npgsql");
     }
@@ -59,7 +59,7 @@ public class DbContextGuardrailTests : IAsyncLifetime
         using var scope = factory.Services.CreateScope();
 
         var all = scope.ServiceProvider
-            .GetServices<DbContextOptions<AppDbContext>>()
+            .GetServices<DbContextOptions<FrankIdentityDbContext>>()
             .ToList();
 
         all.Should().HaveCount(1);

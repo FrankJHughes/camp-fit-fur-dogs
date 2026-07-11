@@ -12,16 +12,16 @@ Horizontals (cross‑cutting concerns) are **not** slices and are not listed her
 
 ---
 
-# Customer Slices
+# User Slices
 
 ```
-src/CampFitFurDogs.Application/Customers
-    CreateCustomer
+src/CampFitFurDogs.Application/Users
+    CreateUser
 ```
 
 | Slice | Description | Guide |
 |-------|-------------|--------|
-| **CreateCustomer** | Owner onboarding — creates the customer aggregate | [Create Customer Slice Guide](ca://s?q=Show_create_customer_slice_guide) |
+| **CreateUser** | Owner onboarding — creates the user aggregate | [Create User Slice Guide](ca://s?q=Show_create_user_slice_guide) |
 
 ---
 

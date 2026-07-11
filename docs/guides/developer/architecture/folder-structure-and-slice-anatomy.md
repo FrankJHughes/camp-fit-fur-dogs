@@ -240,7 +240,7 @@ Endpoints map HTTP → Application commands/queries.
 CampFitFurDogs.Application/
   Abstractions/
   Authentication/
-  Customers/
+  Users/
   Dogs/
   Errors/
   Exceptions/
@@ -254,9 +254,9 @@ Abstractions/
   Audit/
   Authentication/
     Callback/
-  Customer/
-    CreateCustomer/
-    FindCustomerByExternalId/
+  User/
+    CreateUser/
+    FindUserByExternalId/
   Dog/
     EditDogProfile/
     GetDogProfile/
@@ -279,8 +279,8 @@ Authentication/
   Callback/
     Steps/
 
-Customers/
-  CreateCustomer/
+Users/
+  CreateUser/
 
 Dogs/
   EditDogProfile/
@@ -305,7 +305,7 @@ CampFitFurDogs.Domain/
   Authentication/
     Sessions/
       Errors/
-  Customers/
+  Users/
     Errors/
   Dogs/
   Errors/
@@ -328,7 +328,7 @@ Domain has **no dependencies** on Application, Infrastructure, or Api.
 CampFitFurDogs.Infrastructure/
   Audit/
   Authentication/
-  Customers/
+  Users/
   Data/
   Dogs/
   Identity/

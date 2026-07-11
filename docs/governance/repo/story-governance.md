@@ -74,7 +74,7 @@ Each story must declare a milestone:
 - **M0** — Foundation  
 - **M1** — Authentication & Core UX  
 - **M2** — Hosting, Deployment, and Security  
-- **M3** — Booking & Customer Experience  
+- **M3** — Booking & User Experience  
 
 Milestones govern:
 

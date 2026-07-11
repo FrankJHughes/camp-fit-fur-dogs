@@ -19,7 +19,7 @@ legal_guarantees:
 
 ## Intent
 
-As a **potential customer**, I need to understand what data Camp Fit Fur Dogs
+As a **potential user**, I need to understand what data Camp Fit Fur Dogs
 collects, how it is used, and what my rights are before I create an account,
 so that I can make an informed decision about trusting the service with my
 information.

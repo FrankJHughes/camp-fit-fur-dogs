@@ -1,4 +1,4 @@
-using Frank.Abstractions.Authentication.Callback;
+using Frank.Abstractions.Identity.Callback;
 
 namespace Frank.Abstractions.Identity;
 

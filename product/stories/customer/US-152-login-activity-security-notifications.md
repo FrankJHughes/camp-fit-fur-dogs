@@ -1,10 +1,10 @@
 ---
 id: US-152
 title: "Login Activity & Security Notifications"
-epic: Customer
+epic: User
 milestone: M2
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-110

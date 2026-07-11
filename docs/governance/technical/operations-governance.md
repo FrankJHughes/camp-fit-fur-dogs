@@ -9,7 +9,7 @@ Operations governance ensures:
 - Stable hosting environments  
 - Safe configuration management  
 - Clear operational responsibilities  
-- Reliable customer experience  
+- Reliable user experience  
 - Deterministic observability  
 - Zero‑surprise behavior in production  
 
@@ -25,7 +25,7 @@ Operations must follow these principles:
 - **Observability** — failures are visible, structured, correlated, and diagnosable  
 - **Safety** — no operational action may risk data loss  
 - **Reversibility** — every deployment must be reversible  
-- **Zero Surprises** — customers should never experience unexpected downtime  
+- **Zero Surprises** — users should never experience unexpected downtime  
 - **Separation of Concerns** — hosting, deployment, and configuration are isolated  
 - **Fail Fast** — misconfigured environments must prevent startup  
 - **Determinism** — operational behavior must not depend on hidden state  

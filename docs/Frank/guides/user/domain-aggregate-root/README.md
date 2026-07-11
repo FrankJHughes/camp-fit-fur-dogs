@@ -82,8 +82,8 @@ These features will make aggregates more powerful and easier to use.
 Aggregates are created using constructors or factory methods.
 
 ```csharp
-var customer = new Customer(
-    new CustomerId(Guid.NewGuid()),
+var user = new User(
+    new UserId(Guid.NewGuid()),
     new Email("test@example.com"));
 ```
 
@@ -92,7 +92,7 @@ var customer = new Customer(
 Call methods on the aggregate to perform business actions.
 
 ```csharp
-customer.ChangeEmail(new Email("new@example.com"));
+user.ChangeEmail(new Email("new@example.com"));
 ```
 
 ## 3.3 Retrieve domain events
@@ -100,7 +100,7 @@ customer.ChangeEmail(new Email("new@example.com"));
 Aggregates raise domain events when meaningful changes occur.
 
 ```csharp
-var events = customer.DomainEvents;
+var events = user.DomainEvents;
 ```
 
 ## 3.4 Clear domain events after dispatch
@@ -108,7 +108,7 @@ var events = customer.DomainEvents;
 After dispatching events, clear them.
 
 ```csharp
-customer.ClearDomainEvents();
+user.ClearDomainEvents();
 ```
 
 ## 3.5 Use strongly‑typed IDs
@@ -116,7 +116,7 @@ customer.ClearDomainEvents();
 IDs are value objects, not raw GUIDs.
 
 ```csharp
-var id = customer.Id; // CustomerId
+var id = user.Id; // UserId
 ```
 
 ## 3.6 Use value objects for domain concepts
@@ -175,31 +175,31 @@ Aggregates enforce only their own invariants.
 # 6. Example: Using an Aggregate in an Application Handler
 
 ```csharp
-public sealed class ChangeCustomerEmailHandler
+public sealed class ChangeUserEmailHandler
 {
-    private readonly ICustomerRepository _repo;
+    private readonly IUserRepository _repo;
     private readonly IDomainEventDispatcher _dispatcher;
 
-    public ChangeCustomerEmailHandler(
-        ICustomerRepository repo,
+    public ChangeUserEmailHandler(
+        IUserRepository repo,
         IDomainEventDispatcher dispatcher)
     {
         _repo = repo;
         _dispatcher = dispatcher;
     }
 
-    public async Task HandleAsync(ChangeCustomerEmailCommand cmd, CancellationToken ct)
+    public async Task HandleAsync(ChangeUserEmailCommand cmd, CancellationToken ct)
     {
-        var customer = await _repo.GetAsync(cmd.CustomerId, ct);
+        var user = await _repo.GetAsync(cmd.UserId, ct);
 
-        customer.ChangeEmail(new Email(cmd.NewEmail));
+        user.ChangeEmail(new Email(cmd.NewEmail));
 
-        foreach (var evt in customer.DomainEvents)
+        foreach (var evt in user.DomainEvents)
             await _dispatcher.DispatchAsync(evt, ct);
 
-        customer.ClearDomainEvents();
+        user.ClearDomainEvents();
 
-        await _repo.SaveAsync(customer, ct);
+        await _repo.SaveAsync(user, ct);
     }
 }
 ```

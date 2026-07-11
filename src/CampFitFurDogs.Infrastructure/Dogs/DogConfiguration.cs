@@ -25,10 +25,10 @@ public sealed class DogConfiguration : AggregateRootConfiguration<Domain.Dogs.Do
             .HasColumnName("owner_id")
             .IsRequired();
 
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(d => d.OwnerId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasOne<User>()
+        //     .WithMany()
+        //     .HasForeignKey(d => d.OwnerId)
+        //     .OnDelete(DeleteBehavior.Cascade);
 
         builder.OwnsOne(d => d.Name, name =>
         {

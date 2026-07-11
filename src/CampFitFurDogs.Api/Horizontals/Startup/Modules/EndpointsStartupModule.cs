@@ -1,6 +1,7 @@
 using FluentValidation;
 using Frank.Abstractions.Startup;
 using Frank.Api.Endpoints;
+using Frank.Api.Endpoints.Identity;
 
 
 namespace CampFitFurDogs.Api.Horizontals.Startup.Modules;
@@ -12,6 +13,8 @@ public class EndpointsStartupModule : IStartupModule
     {
         var services = builder.Services;
 
+        services.AddFrankIdentityEndpoints();
+
         services.AddValidatorsFromAssemblies([
             typeof(CampFitFurDogs.Domain.AssemblyMarker).Assembly,
             typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
@@ -20,6 +23,7 @@ public class EndpointsStartupModule : IStartupModule
 
         services.AddFrankEndpoints([
             typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly]);
+
     }
 
     public void Use(WebApplication app)

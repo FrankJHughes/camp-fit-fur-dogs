@@ -17,7 +17,7 @@ our facility **treats every stay as a developmental experience with certified st
 
 ---
 
-## Customer
+## User
 
 | Attribute        | Detail |
 |------------------|--------|

@@ -46,7 +46,7 @@ any friction here directly impacts revenue.
 - [ ] Booking is created atomically — slot capacity is decremented in the same transaction
 
 ### Domain model
-- [ ] `Booking` aggregate with: Id, CustomerId, DogId, ServiceId, ScheduleSlotDate, StartTime, EndTime, Status (Confirmed, Cancelled, Completed, NoShow), BookedAt, CancelledAt
+- [ ] `Booking` aggregate with: Id, UserId, DogId, ServiceId, ScheduleSlotDate, StartTime, EndTime, Status (Confirmed, Cancelled, Completed, NoShow), BookedAt, CancelledAt
 - [ ] `BookingCreated` domain event is raised on successful booking
 - [ ] Booking enforces invariants: no double-booking the same dog for overlapping times, slot capacity not exceeded
 - [ ] Concurrency handling: if two owners book the last slot simultaneously, one succeeds and one receives a "slot no longer available" message
@@ -69,7 +69,7 @@ any friction here directly impacts revenue.
 
 ## Notes
 
-- Depends on US-027 (Customer), US-018 (Dog), US-159 (Catalog), US-160 (Schedule), US-161 (Browse)
+- Depends on US-027 (User), US-018 (Dog), US-159 (Catalog), US-160 (Schedule), US-161 (Browse)
 - Payment is NOT part of this story — bookings are confirmed without payment initially. Payment integration (future story) adds a payment step before confirmation.
 - Concurrency: use optimistic concurrency on the slot capacity or a database-level constraint
 - Consider: booking for multiple dogs in one flow (owner with 3 dogs)

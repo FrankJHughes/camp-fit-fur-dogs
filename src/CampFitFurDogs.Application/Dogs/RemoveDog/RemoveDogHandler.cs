@@ -1,16 +1,16 @@
+using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Dog.RemoveDog;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Abstractions.Command;
-using Frank.Abstractions.UnitOfWork;
 
 namespace CampFitFurDogs.Application.Dogs.RemoveDog;
 
 public sealed class RemoveDogHandler : ICommandHandler<RemoveDogCommand>
 {
     private readonly IDogRepository _dogRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppUnitOfWork _unitOfWork;
 
-    public RemoveDogHandler(IDogRepository dogRepository, IUnitOfWork unitOfWork)
+    public RemoveDogHandler(IDogRepository dogRepository, IAppUnitOfWork unitOfWork)
     {
         _dogRepository = dogRepository;
         _unitOfWork = unitOfWork;

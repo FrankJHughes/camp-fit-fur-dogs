@@ -4,7 +4,7 @@ title: "Edit Dog Profile"
 epic: 
 milestone: M0
 status: shipped
-domain: customer
+domain: user
 urgency: 
 importance: 
 covey_quadrant: 
@@ -16,13 +16,13 @@ dependencies:
 # US-030 — Edit Dog Profile
 
 ## Intent
-As a customer, I want to update my dog’s information so that it stays accurate over time.
+As a user, I want to update my dog’s information so that it stays accurate over time.
 
 ## Value
 Supports change without fear or confusion.
 
 ## Acceptance Criteria
-- Customer can modify existing information
+- User can modify existing information
 - Changes are confirmed explicitly
 - Invalid updates are explained clearly
 - Updates are reflected immediately

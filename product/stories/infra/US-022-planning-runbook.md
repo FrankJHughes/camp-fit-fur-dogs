@@ -66,7 +66,7 @@ overlap and ensure every fact lives in one place.
       (check highest `US-NNN` in `product/stories/`).
 - [x] Explains the naming convention (`US-{NNN}-{kebab-name}.md`)
       and links to ADR-0009.
-- [x] Lists the available story domains (`infra`, `docs`, `customer`)
+- [x] Lists the available story domains (`infra`, `docs`, `user`)
       and when to use each.
 - [x] Documents when a story requires a companion ADR (technology
       or tool selection, structural patterns, cross-cutting
@@ -87,7 +87,7 @@ overlap and ensure every fact lives in one place.
 
 - [x] Explains the point scale used by the project and what each
       level represents (complexity, not time).
-- [x] Documents prioritization criteria: customer value, technical
+- [x] Documents prioritization criteria: user value, technical
       dependency, risk reduction, team capacity.
 - [x] Explains how to split stories that exceed the sprint capacity
       threshold.

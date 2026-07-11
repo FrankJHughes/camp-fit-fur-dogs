@@ -4,7 +4,7 @@ title: "Remove Dog"
 epic: 
 milestone: M0
 status: shipped
-domain: customer
+domain: user
 urgency: 
 importance: 
 covey_quadrant: 
@@ -16,13 +16,13 @@ dependencies:
 # US-032 — Remove a Dog
 
 ## Intent
-As a customer, I want to remove a dog from my account so that my records stay current.
+As a user, I want to remove a dog from my account so that my records stay current.
 
 ## Value
 Allows safe cleanup without accidental loss.
 
 ## Acceptance Criteria
-- Customer can remove a dog they own
+- User can remove a dog they own
 - Removal requires confirmation
 - Removed dogs no longer appear
 

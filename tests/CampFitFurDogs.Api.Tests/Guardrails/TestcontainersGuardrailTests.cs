@@ -1,4 +1,4 @@
-using CampFitFurDogs.Infrastructure.Data;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
@@ -41,7 +41,7 @@ public class TestcontainersGuardrailTests : IAsyncLifetime
         var factory = CreateFactory();
 
         using var scope = factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<FrankIdentityDbContext>();
 
         var canConnect = await db.Database.CanConnectAsync();
         canConnect.Should().BeTrue();

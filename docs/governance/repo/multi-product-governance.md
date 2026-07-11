@@ -16,12 +16,12 @@ This governance ensures:
 # 1. Product Definitions
 
 ## Camp Fit Fur Dogs (Primary Product)
-The customer-facing application consisting of:
+The user-facing application consisting of:
 
 - Backend (ASP.NET Core API)  
 - Frontend (Next.js)  
 - Product-specific domain logic  
-- Booking, customer, and operational features  
+- Booking, user, and operational features  
 
 ## Frank (Frank)
 A standalone product providing:
@@ -105,7 +105,7 @@ Camp Fit Fur Dogs milestones:
 - M0 — Foundation  
 - M1 — Authentication & Core UX  
 - M2 — Hosting, Deployment, Security  
-- M3 — Booking & Customer Experience  
+- M3 — Booking & User Experience  
 
 Frank milestones:
 

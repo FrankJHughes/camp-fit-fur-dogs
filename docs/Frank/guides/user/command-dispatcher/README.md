@@ -39,7 +39,7 @@ You use the Command Dispatcher whenever you want to:
 
 Examples:
 
-- Create a customer  
+- Create a user  
 - Register a dog  
 - Send a welcome email  
 - Update a reservation  
@@ -54,11 +54,11 @@ Commands represent **intent**, not data structures.
 Inject the dispatcher:
 
 ````csharp
-public class CustomerController
+public class UserController
 {
     private readonly ICommandDispatcher _dispatcher;
 
-    public CustomerController(ICommandDispatcher dispatcher)
+    public UserController(ICommandDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
     }
@@ -69,7 +69,7 @@ public class CustomerController
 
 ````csharp
 var result = await _dispatcher.DispatchAsync(
-    new CreateCustomerCommand(...),
+    new CreateUserCommand(...),
     ct);
 ````
 
@@ -90,13 +90,13 @@ That’s it — the dispatcher handles everything else.
 ### Commands with no return value
 
 ````csharp
-public sealed record SendWelcomeEmailCommand(Guid CustomerId) : ICommand;
+public sealed record SendWelcomeEmailCommand(Guid UserId) : ICommand;
 ````
 
 ### Commands with a return value
 
 ````csharp
-public sealed record CreateCustomerCommand(string Name, string Email)
+public sealed record CreateUserCommand(string Name, string Email)
     : ICommand<Guid>;
 ````
 
@@ -128,13 +128,13 @@ public sealed class SendWelcomeEmailHandler
 ### Handler for a command with a return value
 
 ````csharp
-public sealed class CreateCustomerHandler
-    : ICommandHandler<CreateCustomerCommand, Guid>
+public sealed class CreateUserHandler
+    : ICommandHandler<CreateUserCommand, Guid>
 {
-    public async Task<Guid> HandleAsync(CreateCustomerCommand command, CancellationToken ct)
+    public async Task<Guid> HandleAsync(CreateUserCommand command, CancellationToken ct)
     {
-        // create customer
-        return customerId;
+        // create user
+        return userId;
     }
 }
 ````
@@ -148,9 +148,9 @@ Handlers are automatically registered via `AutoRegister`.
 If you add a FluentValidation validator for a command:
 
 ````csharp
-public sealed class CreateCustomerValidator : AbstractValidator<CreateCustomerCommand>
+public sealed class CreateUserValidator : AbstractValidator<CreateUserCommand>
 {
-    public CreateCustomerValidator()
+    public CreateUserValidator()
     {
         RuleFor(x => x.Email).EmailAddress();
         RuleFor(x => x.Name).NotEmpty();

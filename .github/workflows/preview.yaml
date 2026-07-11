@@ -242,7 +242,12 @@ jobs:
       - run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       - run: dotnet restore
 
-      - name: Apply Migrations
+      - name: Apply Identity Migrations
+        run: |
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
+          dotnet ef database update -s src/CampFitFurDogs.Api -p src/Frank.Infrastructure.EntityFrameworkCore
+
+      - name: Apply Application Migrations
         run: |
           ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
           dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure

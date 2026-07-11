@@ -28,14 +28,14 @@ As a **developer**, I want introducing a new vertical slice to require only addi
 
 ## Problem
 
-Today, adding a new slice (e.g., GetCustomerProfile) requires modifying **4 existing files**:
+Today, adding a new slice (e.g., GetUserProfile) requires modifying **4 existing files**:
 
 | Modified File | Root Cause |
 |---------------|-----------|
-| `ICustomerRepository.cs` | Shared repository interface grows with every new read path |
-| `CustomerRepository.cs` | Implementation follows the interface |
-| `FakeCustomerRepository.cs` | Test fake follows the interface |
-| `CustomerEndpoints.cs` | Central route file grows with every new endpoint |
+| `IUserRepository.cs` | Shared repository interface grows with every new read path |
+| `UserRepository.cs` | Implementation follows the interface |
+| `FakeUserRepository.cs` | Test fake follows the interface |
+| `UserEndpoints.cs` | Central route file grows with every new endpoint |
 
 Two root causes produce all four modification points.
 
@@ -55,24 +55,24 @@ public interface IEndpoint
 
 A one-time `DiscoverEndpoints()` extension in Program.cs scans the assembly for `IEndpoint` implementations and calls `Map()` on each. Same Scrutor-style pattern already trusted for handlers.
 
-**Result:** New endpoints are add-only. No more editing `CustomerEndpoints.cs` or `DogEndpoints.cs`.
+**Result:** New endpoints are add-only. No more editing `UserEndpoints.cs` or `DogEndpoints.cs`.
 
 ### Part B: Query-Side Readers (ADR-0014)
 
 Queries define their own data access contract inside the slice folder, not on the shared aggregate repository:
 
 ```
-Application/Customers/GetCustomerProfile/
-├── GetCustomerProfileQueryHandler.cs
-├── ICustomerProfileReader.cs          ← slice-scoped read contract
+Application/Users/GetUserProfile/
+├── GetUserProfileQueryHandler.cs
+├── IUserProfileReader.cs          ← slice-scoped read contract
 
-Infrastructure/Customers/GetCustomerProfile/
-├── CustomerProfileReader.cs           ← slice-scoped implementation
+Infrastructure/Users/GetUserProfile/
+├── UserProfileReader.cs           ← slice-scoped implementation
 ```
 
-Scrutor auto-registers `CustomerProfileReader` → `ICustomerProfileReader` by naming convention. Repositories stay focused on writes (`AddAsync`, `UpdateAsync`, `GetByIdAsync` for command-side rehydration).
+Scrutor auto-registers `UserProfileReader` → `IUserProfileReader` by naming convention. Repositories stay focused on writes (`AddAsync`, `UpdateAsync`, `GetByIdAsync` for command-side rehydration).
 
-**Result:** New query slices never touch `ICustomerRepository`, `CustomerRepository`, or `FakeCustomerRepository`.
+**Result:** New query slices never touch `IUserRepository`, `UserRepository`, or `FakeUserRepository`.
 
 ### Part C: Retrofit Existing Query Slices
 
@@ -80,7 +80,7 @@ Move the read path from `IDogRepository.GetByIdAsync` into a `IDogProfileReader`
 
 ## File Inventory — Before vs After
 
-### Before (GetCustomerProfile)
+### Before (GetUserProfile)
 
 | Type | Count |
 |------|-------|
@@ -88,7 +88,7 @@ Move the read path from `IDogRepository.GetByIdAsync` into a `IDogProfileReader`
 | Modified files | 4 |
 | **Total touch points** | **10** |
 
-### After (GetCustomerProfile)
+### After (GetUserProfile)
 
 | Type | Count |
 |------|-------|
@@ -104,7 +104,7 @@ Move the read path from `IDogRepository.GetByIdAsync` into a `IDogProfileReader`
 - [ ] `DiscoverEndpoints()` extension method
 - [ ] Program.cs wired with `app.DiscoverEndpoints()`
 - [ ] Existing endpoints retrofitted to implement `IEndpoint`
-- [ ] `ICustomerProfileReader` / `CustomerProfileReader` example (if GetCustomerProfile slice exists)
+- [ ] `IUserProfileReader` / `UserProfileReader` example (if GetUserProfile slice exists)
 - [ ] `IDogProfileReader` / `DogProfileReader` retrofit for ViewDogProfile
 - [ ] `IDogRepository.GetByIdAsync` removed (read path moved to reader)
 - [ ] `FakeDogRepository.GetByIdAsync` removed

@@ -1,10 +1,10 @@
 ---
 id: US-157
 title: "Cookie Consent & Tracking Transparency"
-epic: Customer
+epic: User
 milestone: M2+
 status: backlog
-domain: customer
+domain: user
 vertical_slice: false
 dependencies:
   - US-103

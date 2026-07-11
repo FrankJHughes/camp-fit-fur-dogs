@@ -56,13 +56,13 @@ Example:
 
 ```csharp
 [Fact]
-public async Task Can_Create_Customer()
+public async Task Can_Create_User()
 {
     var factory = new MutatedWebApplicationFactory();
 
     var client = factory.CreateClient();
 
-    var response = await client.PostAsJsonAsync("/customers", new {
+    var response = await client.PostAsJsonAsync("/users", new {
         Name = "Alice"
     });
 

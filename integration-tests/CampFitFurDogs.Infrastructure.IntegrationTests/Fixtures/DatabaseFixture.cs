@@ -1,4 +1,4 @@
-using CampFitFurDogs.Infrastructure.Data;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,7 +6,7 @@ namespace CampFitFurDogs.Infrastructure.IntegrationTests.Fixtures;
 
 public class DatabaseFixture : IAsyncLifetime
 {
-    public AppDbContext DbContext { get; private set; } = null!;
+    public FrankIdentityDbContext DbContext { get; private set; } = null!;
 
     public async Task InitializeAsync()
     {
@@ -15,12 +15,12 @@ public class DatabaseFixture : IAsyncLifetime
 
         var services = new ServiceCollection();
 
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddDbContext<FrankIdentityDbContext>(options =>
             options.UseNpgsql(connectionString));
 
         var provider = services.BuildServiceProvider();
 
-        DbContext = provider.GetRequiredService<AppDbContext>();
+        DbContext = provider.GetRequiredService<FrankIdentityDbContext>();
 
         await DbContext.Database.MigrateAsync();
     }

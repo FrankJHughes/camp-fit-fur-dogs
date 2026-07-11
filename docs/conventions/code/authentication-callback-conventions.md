@@ -36,7 +36,7 @@ It must not:
 
 The callback builder must produce:
 
-- `CustomerId`  
+- `UserId`  
 - `SessionId`  
 - `TokenHash`  
 - `CookieValue` (opaque session token)  

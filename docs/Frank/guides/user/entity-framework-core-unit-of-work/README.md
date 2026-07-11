@@ -112,12 +112,12 @@ These features will make UoW a full transactional orchestration capability rathe
 ### 3.1 Inject the Unit of Work
 
 ```csharp
-public class CreateCustomerHandler
+public class CreateUserHandler
 {
     private readonly IUnitOfWork _uow;
-    private readonly ICustomerRepository _repo;
+    private readonly IUserRepository _repo;
 
-    public CreateCustomerHandler(IUnitOfWork uow, ICustomerRepository repo)
+    public CreateUserHandler(IUnitOfWork uow, IUserRepository repo)
     {
         _uow = uow;
         _repo = repo;
@@ -128,7 +128,7 @@ public class CreateCustomerHandler
 ### 3.2 Perform operations using repositories
 
 ```csharp
-_repo.Add(new Customer(cmd.Id, cmd.Name));
+_repo.Add(new User(cmd.Id, cmd.Name));
 ```
 
 ### 3.3 Commit the transaction

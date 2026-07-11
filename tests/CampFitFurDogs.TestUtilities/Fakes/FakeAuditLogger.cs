@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Audit;
+using Frank.Application.Abstractions.Audit;
 
 namespace CampFitFurDogs.TestUtilities.Fakes
 {
@@ -9,15 +9,15 @@ namespace CampFitFurDogs.TestUtilities.Fakes
     {
         public Exception? ExceptionToThrow { get; set; }
 
-        public Guid? CapturedCustomerId { get; private set; }
+        public Guid? CapturedUserId { get; private set; }
         public string? CapturedExternalId { get; private set; }
 
-        public Task LoginSucceeded(Guid customerId, string externalId)
+        public Task LoginSucceeded(Guid userId, string externalId)
         {
             if (ExceptionToThrow is not null)
                 throw ExceptionToThrow;
 
-            CapturedCustomerId = customerId;
+            CapturedUserId = userId;
             CapturedExternalId = externalId;
 
             return Task.CompletedTask;

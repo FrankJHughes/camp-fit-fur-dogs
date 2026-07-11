@@ -292,7 +292,7 @@ The authentication callback flow must follow a **three‑layer architecture**:
 
 ### 2. Application Pipeline (Business Layer)
 - Resolves identity  
-- Creates or loads customer  
+- Creates or loads user  
 - Creates session  
 - Produces redirect URL  
 - Produces cookie value  
