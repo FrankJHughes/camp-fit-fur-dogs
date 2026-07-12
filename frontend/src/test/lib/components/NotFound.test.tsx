@@ -6,8 +6,8 @@ describe('NotFound', () => {
     heading: "We couldn't find that dog",
     message: 'They may have been removed, or the link might be outdated.',
     links: [
-      { label: 'View your dogs', href: '/dogs' },
-      { label: 'Register a new dog', href: '/dogs/register' },
+      { label: 'View your dogs', href: '/api/dogs' },
+      { label: 'Register a new dog', href: '/api/dogs' },
     ],
   };
 
@@ -33,8 +33,8 @@ describe('NotFound', () => {
 
   it('renders each link with the correct href', () => {
     render(<NotFound {...defaultProps} />);
-    expect(screen.getByRole('link', { name: /view your dogs/i })).toHaveAttribute('href', '/dogs');
-    expect(screen.getByRole('link', { name: /register a new dog/i })).toHaveAttribute('href', '/dogs/register');
+    expect(screen.getByRole('link', { name: /view your dogs/i })).toHaveAttribute('href', '/api/dogs');
+    expect(screen.getByRole('link', { name: /register a new dog/i })).toHaveAttribute('href', '/api/dogs');
   });
 
   it('renders without links when none are provided', () => {

@@ -5,14 +5,14 @@ export interface DogFormValues {
   name: string;
   breed: string;
   dateOfBirth: string;
-  sex: '' | 'Male' | 'Female';
+  sex: 'Male' | 'Female';
 }
 
 export const dogFormDefaultValues: DogFormValues = {
   name: '',
   breed: '',
   dateOfBirth: '',
-  sex: '',
+  sex: 'Male', // default must match schema
 };
 
 export const dogFormLabels: Record<keyof DogFormValues, string> = {
@@ -29,14 +29,14 @@ export interface RegisterDogCommand {
   name: string;
   breed: string;
   dateOfBirth: string;
-  sex: string;
+  sex: 'Male' | 'Female';
 }
 
 export interface EditDogProfileCommand {
   name: string;
   breed: string;
   dateOfBirth: string;
-  sex: string;
+  sex: 'Male' | 'Female';
 }
 
 export function mapDogFormValuesToRegisterCommand(
@@ -60,7 +60,7 @@ export interface DogProfile {
   name: string;
   breed: string;
   dateOfBirth: string;
-  sex: string;
+  sex: 'Male' | 'Female';
 }
 
 export interface DogListItem {

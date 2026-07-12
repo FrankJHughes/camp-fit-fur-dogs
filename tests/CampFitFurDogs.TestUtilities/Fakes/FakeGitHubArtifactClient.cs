@@ -1,6 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
-using CampFitFurDogs.Api.Horizontals.Hosting.Modules;
+using CampFitFurDogs.Api.HostingModules;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 

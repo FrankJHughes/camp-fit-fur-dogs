@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentAssertions;
+using Frank.Abstractions.Endpoints;
 
 namespace CampFitFurDogs.Architecture.Tests;
 
@@ -13,7 +14,7 @@ public class EndpointDiscoveryGuardrailTests
     {
         var implementations = ApiAssembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface
-                        && typeof(Frank.Abstractions.IEndpoint).IsAssignableFrom(t))
+                        && typeof(IEndpoint).IsAssignableFrom(t))
             .ToList();
 
         implementations.Should().NotBeEmpty(
@@ -27,7 +28,7 @@ public class EndpointDiscoveryGuardrailTests
         var nonConforming = ApiAssembly.GetTypes()
             .Where(t => !t.IsInterface
                         && t.Name.EndsWith("Endpoint", StringComparison.Ordinal)
-                        && !typeof(Frank.Abstractions.IEndpoint).IsAssignableFrom(t))
+                        && !typeof(IEndpoint).IsAssignableFrom(t))
             .Select(t => t.FullName)
             .ToList();
 

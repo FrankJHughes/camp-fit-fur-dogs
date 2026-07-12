@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.TestUtilities.Builders;
 

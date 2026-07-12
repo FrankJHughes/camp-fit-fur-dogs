@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Frank.Abstractions.ImmutableContext;
 using Frank.Settings;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Frank.Authentication.Callback.Oidc.Steps;
@@ -14,9 +15,9 @@ public sealed class ValidateTokensStep : IImmutableContextBuildStep<OidcAuthCall
     public IImmutableContextBuildStepMetadata Metadata { get; } =
         new ImmutableContextBuildStepMetadata("oidc.validate-tokens", "Validate ID Token");
 
-    public ValidateTokensStep(AuthCallbackOidcSettings options, HttpClient http)
+    public ValidateTokensStep(IOptionsMonitor<AuthCallbackOidcSettings> options, HttpClient http)
     {
-        _options = options;
+        _options = options.CurrentValue;
         _http = http;
     }
 
@@ -63,7 +64,7 @@ public sealed class ValidateTokensStep : IImmutableContextBuildStep<OidcAuthCall
 
     private async Task<TokenValidationParameters> BuildValidationParametersAsync(CancellationToken ct)
     {
-        var jwksUri = $"https://{_options.Authority}/.well-known/jwks.json";
+        var jwksUri = $"{_options.Authority}/.well-known/jwks.json";
 
         var response = await _http.GetAsync(jwksUri, ct);
         if (!response.IsSuccessStatusCode)
@@ -74,7 +75,7 @@ public sealed class ValidateTokensStep : IImmutableContextBuildStep<OidcAuthCall
 
         return new TokenValidationParameters
         {
-            ValidIssuer = $"https://{_options.Authority}/",
+            ValidIssuer = $"{_options.Authority}/",
             ValidAudience = _options.ClientId,
             IssuerSigningKeys = jwks.Keys,
             ValidateIssuer = true,

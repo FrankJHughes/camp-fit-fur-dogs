@@ -1,9 +1,8 @@
+using Frank.Abstractions.Observations;
+using Frank.Infrastructure.Observations.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
-using Frank.Abstractions.Observations;
-using Frank.Infrastructure.Observations.Http;
 
 namespace Frank.Infrastructure.Observations;
 
@@ -17,6 +16,18 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMetrics, Metrics>();
         services.AddSingleton<ICorrelationContext, CorrelationContext>();
         services.AddSingleton<IErrorBoundaryObserver, ErrorBoundaryObserver>();
+
+        services.AddTransient<Func<string, string, IObservationContext>>(sp =>
+        {
+            var env = sp.GetRequiredService<IHostEnvironment>();
+
+            return (channel, agent) =>
+                SystemObservationContext.Create(
+                    channel: channel,
+                    agent: agent,
+                    environment: env
+                );
+        });
 
         // Make ObservabilityContext available per-request
         services.AddScoped<IRequestObservationContext>(provider =>

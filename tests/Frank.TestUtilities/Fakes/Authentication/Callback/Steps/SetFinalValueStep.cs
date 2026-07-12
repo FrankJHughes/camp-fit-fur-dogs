@@ -1,8 +1,8 @@
-using Frank.Application.Abstractions.Identity.Callback;
-using Frank.Abstractions.ImmutableContext;
 using System;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
+using Frank.Abstractions.ImmutableContext;
+using Frank.Application.Abstractions.Identity.Callback;
 
 namespace Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
 
@@ -12,20 +12,17 @@ public sealed class SetFinalValuesStep : IImmutableContextBuildStep<ApplicationA
     private readonly Guid _sessionId;
     private readonly string _tokenHash;
     private readonly string _cookieValue;
-    private readonly string _redirectUrl;
 
     public SetFinalValuesStep(
         Guid userId,
         Guid sessionId,
         string tokenHash,
-        string cookieValue,
-        string redirectUrl)
+        string cookieValue)
     {
         _userId = userId;
         _sessionId = sessionId;
         _tokenHash = tokenHash;
         _cookieValue = cookieValue;
-        _redirectUrl = redirectUrl;
     }
 
     public IImmutableContextBuildStepMetadata Metadata =>
@@ -41,7 +38,6 @@ public sealed class SetFinalValuesStep : IImmutableContextBuildStep<ApplicationA
                 SessionId = _sessionId,
                 TokenHash = _tokenHash,
                 CookieValue = _cookieValue,
-                RedirectUrl = _redirectUrl
             }
         );
 }

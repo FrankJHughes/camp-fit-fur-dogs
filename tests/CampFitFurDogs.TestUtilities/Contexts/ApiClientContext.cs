@@ -7,7 +7,5 @@ public sealed record ApiClientContext
 {
     public ApiClientContext()
     {
-        // CampFitFurDogs-specific cookie scheme
-        SignInScheme = "cfd.session";
     }
 }

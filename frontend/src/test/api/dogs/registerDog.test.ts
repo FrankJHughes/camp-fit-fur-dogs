@@ -26,7 +26,7 @@ describe('registerDog', () => {
 
     const result = await registerDog(formData);
 
-    expect(mockPost).toHaveBeenCalledWith('/dogs/register', formData);
+    expect(mockPost).toHaveBeenCalledWith('/api/dogs', formData);
     expect(result).toEqual({ success: true });
   });
 

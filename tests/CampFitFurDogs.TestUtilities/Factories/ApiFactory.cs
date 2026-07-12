@@ -1,13 +1,17 @@
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
+using System.Net.Http.Json;
+using CampFitFurDogs.Infrastructure.Persistence;
 using CampFitFurDogs.TestUtilities.Contexts;
+using CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 using CampFitFurDogs.TestUtilities.Infrastructure;
+using Frank.Api.Middleware.Sessions;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using Frank.Testing.Factories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.PostgreSql;
-using CampFitFurDogs.Infrastructure.Persistence;
 
 namespace CampFitFurDogs.TestUtilities.Factories;
 
@@ -16,6 +20,20 @@ public sealed class ApiFactory
 {
     public ApiFactory(ApiContext ctx) : base(ctx)
     {
+    }
+
+    protected override async Task ApplyAuthenticationAsync(HttpClient client, ApiClientContext clientCtx)
+    {
+        if (clientCtx.AuthenticatedUserSub is string sub)
+        {
+            var request = new SignInRequest(sub);
+
+            var response = await client.PostAsJsonAsync(
+                "/__test__/sign-in",
+                request);
+
+            response.EnsureSuccessStatusCode();
+        }
     }
 
     protected override void ConfigureDatabase(WebHostBuilderContext context, IServiceCollection services, PostgreSqlContainer postgres)

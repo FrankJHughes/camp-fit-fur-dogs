@@ -1,12 +1,12 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentValidation;
+using Frank.Abstractions.Command;
 using Frank.Application.Abstractions.Users.CreateUser;
 using Frank.Application.Users.CreateUser;
 using Frank.Domain.Users.Exceptions;
-using FluentValidation;
-using Frank.Abstractions.Command;
-using System;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Linq;
 
 namespace Frank.TestUtilities.Fakes;
 

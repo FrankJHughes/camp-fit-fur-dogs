@@ -1,10 +1,10 @@
+using Frank.Abstractions.UnitOfWork;
 using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Application.Identity.Callback.Steps;
-using Frank.TestUtilities.Fakes.Authentication.Callback;
 using Frank.Domain.Sessions;
-using Frank.Abstractions.UnitOfWork;
+using Frank.TestUtilities.Fakes.Authentication.Callback;
 
-namespace CampFitFurDogs.Application.Tests.Authentication.Callback.Steps;
+namespace Frank.Application.Tests.Authentication.Callback.Steps;
 
 public sealed class CreateSessionStepTests
 {
@@ -18,26 +18,26 @@ public sealed class CreateSessionStepTests
         public SessionTokenHash? LookupHash { get; private set; }
         public Session? LookupResult { get; set; }
 
-        public Task CreateAsync(Session session)
+        public Task CreateAsync(Session session, CancellationToken ct)
         {
             Created = session;
             return Task.CompletedTask;
         }
 
-        public Task<Session?> GetByTokenHashAsync(SessionTokenHash hash)
+        public Task<Session?> GetByTokenHashAsync(SessionTokenHash hash, CancellationToken ct)
         {
             LookupHash = hash;
             return Task.FromResult(LookupResult);
         }
 
-        public Task RevokeAsync(SessionTokenHash hash)
+        public Task RevokeAsync(SessionTokenHash hash, CancellationToken ct)
         {
             RevokedHash = hash;
             return Task.CompletedTask;
         }
     }
 
-    private sealed class FakeUnitOfWork : IFrankIdentityUnitOfWork
+    private sealed class FakeFrankIdentityUnitOfWork : IFrankIdentityUnitOfWork
     {
         public bool Committed { get; private set; }
 
@@ -52,7 +52,7 @@ public sealed class CreateSessionStepTests
     public async Task ExecuteAsync_CreatesSession_AndSetsSessionId()
     {
         var repo = new FakeSessionRepository();
-        var uow = new FakeUnitOfWork();
+        var uow = new FakeFrankIdentityUnitOfWork();
         var step = new CreateSessionStep(repo, uow);
 
         var ctx = new ApplicationAuthCallbackContext
@@ -73,7 +73,7 @@ public sealed class CreateSessionStepTests
     [Fact]
     public void CanExecute_OnlyWhenUserIdAndTokenHashAreSet_AndSessionIdIsNull()
     {
-        var step = new CreateSessionStep(new FakeSessionRepository(), new FakeUnitOfWork());
+        var step = new CreateSessionStep(new FakeSessionRepository(), new FakeFrankIdentityUnitOfWork());
 
         var valid = new ApplicationAuthCallbackContext
         {

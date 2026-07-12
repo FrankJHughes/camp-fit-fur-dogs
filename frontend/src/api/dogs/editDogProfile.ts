@@ -11,7 +11,7 @@ export async function editDogProfile(
 ): Promise<CommandResult> {
   try {
     // Tests expect the client to be called with /dogs/:id
-    const result = await client.put<void>(`/dogs/${dogId}`, data);
+    const result = await client.put<void>(`/api/dogs/${dogId}`, data);
     return toCommandResult(result);
   } catch (err: any) {
     // eslint-disable-next-line no-console

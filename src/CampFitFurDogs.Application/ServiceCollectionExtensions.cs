@@ -1,11 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
-
+using Frank.Application.Identity.Callback;
 using Frank.Authentication.Callback;
 using Frank.Command;
-using Frank.Query;
-
-using Frank.Application.Identity.Callback;
 using Frank.Event;
+using Frank.Query;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application;
 

@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Persistence;
+using Frank.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;

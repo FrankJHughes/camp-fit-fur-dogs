@@ -2,7 +2,7 @@ using Frank.Domain.Sessions;
 using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Sessions;
+namespace CampFitFurDogs.Infrastructure.Sessions;
 
 public sealed class SessionRepository : ISessionRepository
 {
@@ -13,22 +13,22 @@ public sealed class SessionRepository : ISessionRepository
         _db = db;
     }
 
-    public async Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash)
+    public async Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken)
     {
         return await _db.Set<Session>()
-            .FirstOrDefaultAsync(s => s.TokenHash == tokenHash);
+            .FirstOrDefaultAsync(s => s.TokenHash == tokenHash, cancellationToken);
     }
 
-    public Task CreateAsync(Session session)
+    public Task CreateAsync(Session session, CancellationToken cancellationToken)
     {
         _db.Set<Session>().Add(session);
         return Task.CompletedTask;
     }
 
-    public async Task RevokeAsync(SessionTokenHash tokenHash)
+    public async Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken)
     {
         var session = await _db.Set<Session>()
-            .SingleOrDefaultAsync(s => s.TokenHash == tokenHash);
+            .SingleOrDefaultAsync(s => s.TokenHash == tokenHash, cancellationToken);
 
         if (session is null)
             return;

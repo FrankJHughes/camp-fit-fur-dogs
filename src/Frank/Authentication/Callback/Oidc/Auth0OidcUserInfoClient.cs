@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Frank.Settings;
+using Microsoft.Extensions.Options;
 
 namespace Frank.Authentication.Callback.Oidc;
 
@@ -9,15 +10,15 @@ public sealed class Auth0OidcUserInfoClient : IOidcUserInfoClient
     private readonly HttpClient _http;
     private readonly AuthCallbackOidcSettings _options;
 
-    public Auth0OidcUserInfoClient(HttpClient http, AuthCallbackOidcSettings options)
+    public Auth0OidcUserInfoClient(HttpClient http, IOptionsMonitor<AuthCallbackOidcSettings> options)
     {
         _http = http;
-        _options = options;
+        _options = options.CurrentValue;
     }
 
     public async Task<OidcUserInfo> GetUserInfoAsync(string accessToken, CancellationToken ct)
     {
-        var endpoint = $"https://{_options.Authority}/userinfo";
+        var endpoint = $"{_options.Authority}/userinfo";
 
         using var req = new HttpRequestMessage(HttpMethod.Get, endpoint);
         req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);

@@ -1,5 +1,5 @@
-using Frank.Application.Abstractions.Users.CreateUser;
 using FluentValidation;
+using Frank.Application.Abstractions.Users.CreateUser;
 
 namespace Frank.Application.Users.CreateUser;
 

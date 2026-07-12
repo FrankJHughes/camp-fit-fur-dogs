@@ -2,9 +2,9 @@ namespace Frank.Domain.Sessions;
 
 public interface ISessionRepository
 {
-    Task CreateAsync(Session session);
+    Task CreateAsync(Session session, CancellationToken cancellationToken);
 
-    Task RevokeAsync(SessionTokenHash tokenHash);
+    Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken);
 
-    Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash);
+    Task<Session?> GetByTokenHashAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken);
 }

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Frank.Abstractions.Identity;
 using Frank.Abstractions.Observations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Frank.Infrastructure.Observations.Http;
@@ -19,18 +20,14 @@ public sealed class InboundObservationContextMiddleware
     public async Task InvokeAsync(
         HttpContext httpContext,
         IHostEnvironment env,
-        ICurrentUser currentUser,
         ICorrelationContext correlation)
     {
-        // -----------------------------
-        // 1. Extract correlation ID
-        // -----------------------------
+        // Resolve scoped service INSIDE the request scope
+        var currentUser = httpContext.RequestServices.GetRequiredService<ICurrentUser>();
+
         var incomingCorrelationId = ExtractCorrelationId(httpContext);
         var correlationId = correlation.Propagate(incomingCorrelationId);
 
-        // -----------------------------
-        // 2. Safely extract user ID
-        // -----------------------------
         string? userId = null;
         try
         {
@@ -38,12 +35,9 @@ public sealed class InboundObservationContextMiddleware
         }
         catch
         {
-            // User is not authenticated — leave userId = null
+            // User not authenticated
         }
 
-        // -----------------------------
-        // 3. Build RequestObservabilityContext
-        // -----------------------------
         var context = new RequestObservationContext(
             userId: userId,
             correlationId: correlationId,
@@ -56,9 +50,6 @@ public sealed class InboundObservationContextMiddleware
                 ["method"] = httpContext.Request.Method
             });
 
-        // -----------------------------
-        // 4. Store for downstream
-        // -----------------------------
         httpContext.Items[nameof(IRequestObservationContext)] = context;
 
         await _next(httpContext);
@@ -66,7 +57,6 @@ public sealed class InboundObservationContextMiddleware
 
     private static string ExtractCorrelationId(HttpContext http)
     {
-        // 1. Prefer W3C traceparent
         if (http.Request.Headers.TryGetValue("traceparent", out var traceparent))
         {
             var traceId = ParseTraceId(traceparent!);
@@ -74,11 +64,9 @@ public sealed class InboundObservationContextMiddleware
                 return traceId;
         }
 
-        // 2. Fallback to X-Correlation-ID
         if (http.Request.Headers.TryGetValue("X-Correlation-ID", out var correlation))
             return correlation!;
 
-        // 3. Fallback to HttpContext.TraceIdentifier
         return http.TraceIdentifier;
     }
 

@@ -12,8 +12,8 @@ public sealed class OidcAuthCallbackContextBuilder
     public OidcAuthCallbackContextBuilder(
         IEnumerable<IImmutableContextBuildStep<OidcAuthCallbackContext>> steps,
         IObservationSink sink,
-        IObservationContext systemContext)
-        : base(steps, sink, systemContext)
+        Func<string, string, IObservationContext> contextFactory)
+        : base(steps, sink, contextFactory("System", "OidcAuthCallbackContextBuilder"))
     {
     }
 

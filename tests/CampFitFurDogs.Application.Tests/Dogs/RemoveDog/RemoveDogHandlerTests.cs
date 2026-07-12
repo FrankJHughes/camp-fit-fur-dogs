@@ -1,9 +1,9 @@
 using CampFitFurDogs.Application.Abstractions.Dog.RemoveDog;
 using CampFitFurDogs.Application.Dogs.RemoveDog;
 using CampFitFurDogs.Application.Tests.Fakes;
-using Frank.Domain.Users;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.RemoveDog;
 

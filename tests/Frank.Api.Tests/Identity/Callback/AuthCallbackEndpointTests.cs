@@ -1,19 +1,18 @@
 using System.Net;
-using Frank.Application.Abstractions.Identity.Callback;
+using System.Text.Json;
 using FluentAssertions;
 using Frank.Abstractions.Identity.Callback;
 using Frank.Abstractions.ImmutableContext;
+using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Authentication.Callback.Oidc;
 using Frank.Testing.Contexts;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
+using Frank.TestUtilities.Contexts;
+using Frank.TestUtilities.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
-using Frank.TestUtilities.Factories;
-using Frank.TestUtilities.Contexts;
 
-namespace Frank.Api.Tests.Identity.Callback;
+namespace CampFitFurDogs.Api.Tests.Authentication.Callback;
 
 public sealed class AuthCallbackEndpointTests : IAsyncLifetime
 {
@@ -70,7 +69,6 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
                 SessionId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                 TokenHash = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
                 CookieValue = "cookie-value",
-                RedirectUrl = "http://localhost:5173/dashboard"
             });
         }
     }
@@ -82,7 +80,6 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     {
         _ctx = new ApiContext()
             .WithDatabase(false)
-            .WithCookieAuthOnly(false)
             .WithServiceOverride(services =>
             {
                 // Remove real engines
@@ -106,13 +103,6 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
                     ApplicationAuthCallbackRequest,
                     ApplicationAuthCallbackContext,
                     ApplicationAuthCallbackContextBuilderResult>, FakeAppEngine>();
-
-                // Ensure cookie auth works in TestServer
-                services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
-                {
-                    opts.Cookie.SecurePolicy = CookieSecurePolicy.None;
-                    opts.Cookie.SameSite = SameSiteMode.Lax;
-                });
             });
 
         _api = new ApiFactory(_ctx);
@@ -128,16 +118,21 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     // ERROR PATH
     // ------------------------------------------------------------
     [Fact]
-    public async Task Missing_code_returns_bad_request()
+    public async Task Missing_code_returns_without_session()
     {
         var client = CreateClient();
 
-        var response = await client.GetAsync("/api/auth/callback");
+        // Encode state as JSON
+        var returnUrl = "/dashboard";
+        var stateObj = new { return_url = returnUrl };
+        var stateJson = JsonSerializer.Serialize(stateObj);
+        var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var response = await client.GetAsync($"/api/identity/callback?state={Uri.EscapeDataString(state)}");
 
-        var body = await response.Content.ReadAsStringAsync();
-        body.Should().Contain("Missing authorization code");
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+
+        response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeFalse();
     }
 
     // ------------------------------------------------------------
@@ -148,16 +143,22 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     {
         var client = CreateClient();
 
-        var response = await client.GetAsync("/api/auth/callback?code=abc123");
+        // Encode state as JSON
+        var returnUrl = "/dashboard";
+        var stateObj = new { return_url = returnUrl };
+        var stateJson = JsonSerializer.Serialize(stateObj);
+        var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
+
+        var response = await client.GetAsync($"/api/identity/callback?code=abc123&state={Uri.EscapeDataString(state)}");
 
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
         response.Headers.Location!.ToString()
-            .Should().Be("http://localhost:5173/dashboard");
+            .Should().Be("/dashboard");
 
-        // Cookie issued
+        // Cookie issued (domain session cookie)
         response.Headers.TryGetValues("Set-Cookie", out var cookies).Should().BeTrue();
-        cookies!.Any(c => c.Contains("cfd.session", StringComparison.OrdinalIgnoreCase))
+        cookies!.Any(c => c.Contains("session=", StringComparison.OrdinalIgnoreCase))
             .Should().BeTrue();
     }
 }

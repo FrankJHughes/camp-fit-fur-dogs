@@ -1,4 +1,4 @@
-using CampFitFurDogs.Api.Horizontals.Cors.Middleware;
+using Frank.Api.Middleware.Cors;
 using CampFitFurDogs.TestUtilities.Fakes;
 using FluentAssertions;
 using Microsoft.AspNetCore.Cors.Infrastructure;

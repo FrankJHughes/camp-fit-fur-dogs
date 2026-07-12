@@ -1,6 +1,6 @@
 using FluentAssertions;
-using Frank.Api.Hosting;
 using Frank.Abstractions.Hosting;
+using Frank.Api.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Xunit;
 

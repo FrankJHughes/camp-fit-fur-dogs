@@ -1,9 +1,9 @@
-using Frank.Application.Abstractions.Users.CreateUser;
-using Frank.Infrastructure.Identity;
-using Frank.Abstractions.Identity.Callback;
 using FluentAssertions;
 using Frank.Abstractions.Command;
+using Frank.Abstractions.Identity.Callback;
+using Frank.Application.Abstractions.Users.CreateUser;
 using Frank.Application.Abstractions.Users.FindUserByExternalId;
+using Frank.Infrastructure.Identity;
 using Xunit;
 
 namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Identity;

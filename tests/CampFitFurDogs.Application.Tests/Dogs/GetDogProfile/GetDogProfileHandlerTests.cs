@@ -1,8 +1,8 @@
 using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
 using CampFitFurDogs.Application.Dogs.GetDogProfile;
 using CampFitFurDogs.Application.Tests.Fakes;
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.GetDogProfile;
 

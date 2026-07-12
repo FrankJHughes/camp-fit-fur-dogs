@@ -1,10 +1,11 @@
+using Frank.Application.Abstractions.Authentication;
 using Frank.Application.Abstractions.Identity;
 using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Application.Identity.Callback.Steps;
-using Frank.TestUtilities.Fakes.Authentication.Callback;
 using Frank.Domain.Sessions;
+using Frank.TestUtilities.Fakes.Authentication.Callback;
 
-namespace CampFitFurDogs.Application.Tests.Authentication.Callback.Steps;
+namespace Frank.Application.Tests.Authentication.Callback.Steps;
 
 public sealed class BuildCookieStepTests
 {
@@ -23,11 +24,16 @@ public sealed class BuildCookieStepTests
 
             Returned = new GeneratedSessionToken(
                 PlaintextToken: plaintext,
-                Hash: SessionTokenHash.From(finalHash)
+                HashedToken: SessionTokenHash.From(finalHash)
             );
         }
 
         public GeneratedSessionToken Generate() => Returned;
+
+        public SessionTokenHash Hash(string plaintextToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Fact]

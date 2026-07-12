@@ -1,8 +1,8 @@
-using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Abstractions.Identity;
+using Frank.Abstractions.Identity.Callback;
+using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Application.Identity.Callback.Steps;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
-using Frank.Abstractions.Identity.Callback;
 
 namespace CampFitFurDogs.Application.Tests.Authentication.Callback.Steps;
 

@@ -1,11 +1,11 @@
 using System.Net;
+using CampFitFurDogs.Api.StartupModules;
 using FluentAssertions;
-using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
 namespace CampFitFurDogs.Api.Tests.Startup;
 

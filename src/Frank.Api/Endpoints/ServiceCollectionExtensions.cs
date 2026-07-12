@@ -1,5 +1,5 @@
 using System.Reflection;
-using Frank.Abstractions;
+using Frank.Abstractions.Endpoints;
 using Frank.Registration;
 using Microsoft.Extensions.DependencyInjection;
 

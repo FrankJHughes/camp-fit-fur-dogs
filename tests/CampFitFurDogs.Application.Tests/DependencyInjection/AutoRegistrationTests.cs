@@ -1,19 +1,16 @@
-using Microsoft.Extensions.DependencyInjection;
-
+using CampFitFurDogs.Application.Abstractions;
+using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
+using CampFitFurDogs.Application.Dogs.RegisterDog;
+using CampFitFurDogs.Application.Tests.Fakes;
+using CampFitFurDogs.Domain.Dogs;
 using FluentValidation;
-
 using Frank;
 using Frank.Abstractions.Command;
 using Frank.Abstractions.UnitOfWork;
 using Frank.Command;
-
-using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
-using CampFitFurDogs.Application.Dogs.RegisterDog;
-using CampFitFurDogs.Application.Tests.Fakes;
 using Frank.Domain.Users;
-using CampFitFurDogs.Domain.Dogs;
-using CampFitFurDogs.Application.Abstractions;
 using Frank.TestUtilities.Fakes;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
 

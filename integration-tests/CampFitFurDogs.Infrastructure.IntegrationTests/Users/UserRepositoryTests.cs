@@ -1,5 +1,5 @@
-using Frank.Domain.Users;
 using CampFitFurDogs.Infrastructure.IntegrationTests.Fixtures;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Infrastructure.IntegrationTests.Users;
 

@@ -9,5 +9,4 @@ public sealed record ApplicationAuthCallbackContextBuilderResult : ImmutableCont
 
     public required string TokenHash { get; init; }
     public required string CookieValue { get; init; }
-    public required string RedirectUrl { get; init; }
 }

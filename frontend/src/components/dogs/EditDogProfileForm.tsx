@@ -1,4 +1,3 @@
-// src/components/dogs/EditDogProfileForm.tsx
 'use client';
 
 import React from 'react';

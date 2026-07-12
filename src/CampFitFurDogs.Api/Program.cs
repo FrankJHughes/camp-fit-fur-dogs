@@ -1,5 +1,4 @@
-using CampFitFurDogs.Api.Horizontals.Hosting;
-using CampFitFurDogs.Api.Horizontals.Startup;
+using CampFitFurDogs.Api.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,6 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Frank.Api.SecurityHeaders;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace Frank.Api.Tests.SecurityHeaders;

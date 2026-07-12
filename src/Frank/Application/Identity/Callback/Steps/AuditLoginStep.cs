@@ -1,6 +1,6 @@
+using Frank.Abstractions.ImmutableContext;
 using Frank.Application.Abstractions.Audit;
 using Frank.Application.Abstractions.Identity.Callback;
-using Frank.Abstractions.ImmutableContext;
 
 namespace Frank.Application.Identity.Callback.Steps;
 

@@ -1,6 +1,6 @@
 using System.Reflection;
-using Frank.Abstractions;
 using Frank.Abstractions.Command;
+using Frank.Abstractions.Endpoints;
 using Frank.Abstractions.Event;
 using Frank.Abstractions.Exceptions;
 using Frank.Abstractions.Query;

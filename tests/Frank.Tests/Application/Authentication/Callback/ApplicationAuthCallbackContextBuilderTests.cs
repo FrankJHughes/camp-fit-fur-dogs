@@ -1,27 +1,39 @@
+using System.Text.Json;
+using Frank.Abstractions.ImmutableContext;
 using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Application.Identity.Callback;
-using Frank.Abstractions.ImmutableContext;
-using Frank.TestUtilities.Fakes.Authentication.Callback;
 using Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
+using Frank.TestUtilities.Fakes.Authentication.Callback;
 using Frank.TestUtilities.Fakes.Observability;
 
-namespace Frank.Tests.Application.Authentication.Callback;
+namespace CampFitFurDogs.Application.Tests.Authentication.Callback;
 
 public sealed class ApplicationAuthCallbackContextBuilderTests
 {
-    private static ApplicationAuthCallbackRequest NewRequest => new()
+    private static ApplicationAuthCallbackRequest NewRequest
     {
-        External = FakeFrankAuthCallbackResult.Create("sub-123"),
-        Now = new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero),
-        RequestedRedirectUrl = "/dashboard"
-    };
+        get
+        {
+            // Encode state as JSON
+            var returnUrl = "/dashboard";
+            var stateObj = new { return_url = returnUrl };
+            var stateJson = JsonSerializer.Serialize(stateObj);
+            var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
+
+            return new()
+            {
+                External = FakeFrankAuthCallbackResult.Create("sub-123"),
+                Now = new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero),
+            };
+        }
+    }
 
     private static ApplicationAuthCallbackContextBuilder CreateBuilder(
         params IImmutableContextBuildStep<ApplicationAuthCallbackContext>[] steps)
-        => new ApplicationAuthCallbackContextBuilder(
+        => new(
             steps,
             new FakeObservabilitySink(),
-            new FakeObservabilityContext());
+            (_, _) => new FakeObservabilityContext());
 
     // -------------------------------------------------------------
     // 1. INITIAL CONTEXT CREATION
@@ -36,8 +48,7 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "hash",
-                "cookie",
-                "/dashboard")
+                "cookie")
         };
 
         var builder = CreateBuilder(steps);
@@ -45,7 +56,7 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
         var result = await builder.BuildAsync(NewRequest, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.RedirectUrl.Should().Be("/dashboard");
+        result.CookieValue.Should().Be("cookie");
     }
 
     // -------------------------------------------------------------
@@ -105,28 +116,26 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
     [Fact]
     public async Task BuildAsync_MapsFinalContextToResult()
     {
-        var userId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var customerId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         var sessionId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
 
         var steps = new IImmutableContextBuildStep<ApplicationAuthCallbackContext>[]
         {
             new SetFinalValuesStep(
-                userId,
+                customerId,
                 sessionId,
                 tokenHash: "hash-abc",
-                cookieValue: "cookie-xyz",
-                redirectUrl: "/final")
+                cookieValue: "cookie-xyz")
         };
 
         var builder = CreateBuilder(steps);
 
         var result = await builder.BuildAsync(NewRequest, CancellationToken.None);
 
-        result.UserId.Should().Be(userId);
+        result.UserId.Should().Be(customerId);
         result.SessionId.Should().Be(sessionId);
         result.TokenHash.Should().Be("hash-abc");
         result.CookieValue.Should().Be("cookie-xyz");
-        result.RedirectUrl.Should().Be("/final");
     }
 
     // -------------------------------------------------------------
@@ -146,8 +155,7 @@ public sealed class ApplicationAuthCallbackContextBuilderTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "hash",
-                "cookie",
-                "/redirect")
+                "cookie")
         };
 
         var builder = CreateBuilder(steps);

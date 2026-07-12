@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Frank.Abstractions;
+using Frank.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

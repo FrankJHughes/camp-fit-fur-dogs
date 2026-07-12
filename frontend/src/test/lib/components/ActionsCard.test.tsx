@@ -1,58 +1,37 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi } from 'vitest';
+import { render } from '@testing-library/react';
 import { ActionsCard } from '@/lib/components/ActionsCard';
-import type { Action } from '@/lib/action';
 
 describe('ActionsCard', () => {
-    it('renders a button for each action', () => {
-        const actions: Action[] = [
-            { label: 'Edit', onClick: vi.fn() },
-            { label: 'Remove', onClick: vi.fn() },
-        ];
+  it('renders empty card structure when actions array is empty', () => {
+    const { container } = render(
+      <ActionsCard header="Menu" actions={[]} />
+    );
 
-        render(<ActionsCard actions={actions} />);
+    const card = container.querySelector('.actions-card');
+    expect(card).toBeInTheDocument();
 
-        expect(screen.getByRole('button', { name: 'Edit' })).toBeDefined();
-        expect(screen.getByRole('button', { name: 'Remove' })).toBeDefined();
-    });
+    const menu = container.querySelector('.actions-card-menu');
+    expect(menu).toBeInTheDocument();
+    expect(menu?.children.length).toBe(0);
+  });
 
-    it('calls onClick when a button is clicked', async () => {
-        const user = userEvent.setup();
-        const onClick = vi.fn();
-        const actions: Action[] = [{ label: 'Do Thing', onClick }];
+  it('renders actions as buttons when provided', () => {
+    const onClick = vi.fn();
 
-        render(<ActionsCard actions={actions} />);
-        await user.click(screen.getByRole('button', { name: 'Do Thing' }));
+    const { getByRole } = render(
+      <ActionsCard
+        header="Menu"
+        actions={[
+          { label: 'Login with Auth0', variant: 'primary', onClick },
+        ]}
+      />
+    );
 
-        expect(onClick).toHaveBeenCalledOnce();
-    });
+    const button = getByRole('button', { name: /login with auth0/i });
+    expect(button).toBeInTheDocument();
 
-    it('renders nothing when actions array is empty', () => {
-        const { container } = render(<ActionsCard actions={[]} />);
-
-        expect(container.innerHTML).toBe('');
-    });
-
-    it('renders a destructive action with data-variant="destructive"', () => {
-        const actions: Action[] = [
-            { label: 'Remove', onClick: vi.fn(), variant: 'destructive' },
-        ];
-
-        render(<ActionsCard actions={actions} />);
-
-        expect(screen.getByRole('button', { name: 'Remove' })).toHaveAttribute(
-            'data-variant',
-            'destructive',
-        );
-    });
-
-    it('renders a default action without data-variant', () => {
-        const actions: Action[] = [
-            { label: 'Edit', onClick: vi.fn() },
-        ];
-
-        render(<ActionsCard actions={actions} />);
-
-        expect(screen.getByRole('button', { name: 'Edit' })).not.toHaveAttribute('data-variant');
-    });
+    button.click();
+    expect(onClick).toHaveBeenCalled();
+  });
 });

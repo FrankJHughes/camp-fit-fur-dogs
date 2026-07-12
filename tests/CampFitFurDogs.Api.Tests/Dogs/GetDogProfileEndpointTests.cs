@@ -3,10 +3,8 @@ using System.Net.Http.Json;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
-using Testcontainers.PostgreSql;
-
 using Frank.Testing.Contexts;
-
+using Testcontainers.PostgreSql;
 using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;

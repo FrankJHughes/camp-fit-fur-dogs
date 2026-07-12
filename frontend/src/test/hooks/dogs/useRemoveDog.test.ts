@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useRemoveDog } from '@/hooks/dogs/useRemoveDog';
+import { useRemoveDog } from '@/lib/dogs/useRemoveDog';
 import { removeDog } from '@/api/dogs/removeDog';
 
 vi.mock('@/api/dogs/removeDog');
@@ -45,7 +45,7 @@ describe('useRemoveDog', () => {
         await act(async () => result.current.dialogProps.onConfirm());
 
         expect(removeDog).toHaveBeenCalledWith('abc-123');
-        expect(push).toHaveBeenCalledWith('/dogs');
+        expect(push).toHaveBeenCalledWith('/api/dogs');
         expect(result.current.dialogProps.isOpen).toBe(false);
     });
 

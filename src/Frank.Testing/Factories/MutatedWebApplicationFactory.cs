@@ -1,10 +1,7 @@
-using System.Net.Http.Json;
 using Frank.Api.Endpoints;
 using Frank.Testing.Contexts;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,7 +18,7 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
 {
     private TContext _ctx;
     private PostgreSqlContainer? _db;
-    public IServiceCollection ServiceCollection { get; private set; } = default!;
+    public IServiceCollection? ServiceCollection { get; private set; }
 
     protected MutatedWebApplicationFactory(TContext ctx)
     {
@@ -42,19 +39,17 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
         foreach (var kvp in clientCtx.DefaultHeaders)
             client.DefaultRequestHeaders.Add(kvp.Key, kvp.Value);
 
-        if (clientCtx.AuthenticatedUserSub is string id)
-        {
-            var payload = new
-            {
-                Sub = id,
-                Scheme = clientCtx.SignInScheme
-            };
-
-            var response = client.PostAsJsonAsync("/__test__/sign-in", payload).Result;
-            response.EnsureSuccessStatusCode();
-        }
+        ApplyAuthenticationAsync(client, clientCtx).GetAwaiter().GetResult();
 
         return client;
+    }
+
+    // ------------------------------------------------------------
+    // AUTHENTICATION EXTENSION POINT
+    // ------------------------------------------------------------
+    protected virtual Task ApplyAuthenticationAsync(HttpClient client, TClientContext clientCtx)
+    {
+        return Task.CompletedTask;
     }
 
     // ------------------------------------------------------------
@@ -74,64 +69,15 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
         {
             ServiceCollection = services;
 
-            // ------------------------------------------------------------
-            // AUTH SCHEME ADJUSTMENTS FOR TESTING
-            // Force challenges to use the cookie scheme, not OIDC
-            // ------------------------------------------------------------
-            services.PostConfigure<AuthenticationOptions>(opts =>
-            {
-                opts.DefaultAuthenticateScheme = "cfd.session";
-                opts.DefaultChallengeScheme = "cfd.session";
-            });
-
-            // ------------------------------------------------------------
-            // COOKIE AUTH ADJUSTMENTS FOR TESTING (MERGE, DO NOT OVERWRITE)
-            // ------------------------------------------------------------
-
-            // Test environment may relax SameSite/SecurePolicy
-            services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
-            {
-                opts.Cookie.SecurePolicy = CookieSecurePolicy.None;
-                opts.Cookie.SameSite = SameSiteMode.Lax;
-            });
-
-            if (_ctx.UseCookieAuthOnly)
-            {
-                services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
-                {
-                    opts.Cookie.HttpOnly = true;
-                });
-            }
-
-            if (!_ctx.OverrideCookiesForHttp)
-            {
-                services.PostConfigureAll<CookieAuthenticationOptions>(opts =>
-                {
-                    opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                });
-            }
-
-            foreach (var apply in _ctx.CookieOptionsOverrides)
-                services.PostConfigureAll(apply);
-
-            // ------------------------------------------------------------
-            // SERVICE OVERRIDES
-            // ------------------------------------------------------------
             foreach (var apply in _ctx.ServiceOverrides)
                 apply(services);
 
-            // ------------------------------------------------------------
-            // FAKE SERVICE REGISTRATIONS
-            // ------------------------------------------------------------
             foreach (var kvp in _ctx.Fakes)
             {
                 services.RemoveAll(kvp.Key);
                 services.AddSingleton(kvp.Key, kvp.Value);
             }
 
-            // ------------------------------------------------------------
-            // DATABASE HANDLING
-            // ------------------------------------------------------------
             if (!_ctx.DisableDatabase && _ctx.Postgres is not null)
             {
                 ConfigureDatabase(context, services, _ctx.Postgres);
@@ -141,15 +87,17 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
                 ConfigureDatabaseDisabled(context, services);
             }
 
-            // ------------------------------------------------------------
-            // ENDPOINT DISCOVERY
-            // ------------------------------------------------------------
             services.AddFrankEndpoints(_ctx.EndpointAssemblies);
 
-            // ------------------------------------------------------------
-            // ALLOW SUBCLASSES TO MUTATE SERVICES
-            // ------------------------------------------------------------
             ConfigureMutations(context, services);
+
+            // ------------------------------------------------------------
+            // COOKIE DOWNGRADE VIA STARTUP FILTER
+            // ------------------------------------------------------------
+            if (_ctx.OverrideCookiesForHttp)
+            {
+                services.AddSingleton<IStartupFilter>(new CookieRewriteStartupFilter());
+            }
         });
     }
 
@@ -201,5 +149,50 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     {
         base.Dispose(disposing);
         _db?.DisposeAsync().AsTask().Wait();
+    }
+}
+
+// ------------------------------------------------------------
+// STARTUP FILTER FOR COOKIE REWRITE
+// ------------------------------------------------------------
+public sealed class CookieRewriteStartupFilter : IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
+        {
+            app.Use(nextDelegate => async context =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    if (context.Response.Headers.TryGetValue("Set-Cookie", out var setCookieHeaders))
+                    {
+                        var rewritten = new List<string>();
+
+                        foreach (var header in setCookieHeaders)
+                        {
+                            if (header is null)
+                            {
+                                continue;
+                            }
+
+                            var modified = header
+                                .Replace("Secure;", "", StringComparison.OrdinalIgnoreCase)
+                                .Replace("Secure", "", StringComparison.OrdinalIgnoreCase);
+
+                            rewritten.Add(modified);
+                        }
+
+                        context.Response.Headers["Set-Cookie"] = rewritten.ToArray();
+                    }
+
+                    return Task.CompletedTask;
+                });
+
+                await nextDelegate(context);
+            });
+
+            next(app);
+        };
     }
 }

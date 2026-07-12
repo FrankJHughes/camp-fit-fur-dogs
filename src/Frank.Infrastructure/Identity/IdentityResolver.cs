@@ -1,7 +1,7 @@
-using Frank.Application.Abstractions.Users.CreateUser;
+using Frank.Abstractions.Command;
 using Frank.Abstractions.Identity;
 using Frank.Abstractions.Identity.Callback;
-using Frank.Abstractions.Command;
+using Frank.Application.Abstractions.Users.CreateUser;
 using Frank.Application.Abstractions.Users.FindUserByExternalId;
 
 namespace Frank.Infrastructure.Identity;

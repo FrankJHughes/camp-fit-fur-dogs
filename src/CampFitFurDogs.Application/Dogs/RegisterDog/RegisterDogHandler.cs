@@ -1,9 +1,9 @@
 
+using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Abstractions.Command;
-using CampFitFurDogs.Application.Abstractions;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Application.Dogs.RegisterDog;
 

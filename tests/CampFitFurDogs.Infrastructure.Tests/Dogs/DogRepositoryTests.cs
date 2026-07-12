@@ -1,15 +1,15 @@
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
-using Frank.Infrastructure.EntityFrameworkCore.Users;
 using CampFitFurDogs.Infrastructure.Dogs;
+using CampFitFurDogs.Infrastructure.Persistence;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+using Frank.Domain.Users;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
+using Frank.Infrastructure.EntityFrameworkCore.Users;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
-using CampFitFurDogs.Infrastructure.Persistence;
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 

@@ -1,10 +1,10 @@
 using CampFitFurDogs.Application.Abstractions.Dog.EditDogProfile;
 using CampFitFurDogs.Application.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Tests.Fakes;
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.EditDogProfile;
 

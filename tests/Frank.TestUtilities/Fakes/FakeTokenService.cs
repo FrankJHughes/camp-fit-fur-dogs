@@ -1,3 +1,5 @@
+using System;
+using Frank.Application.Abstractions.Authentication;
 using Frank.Application.Abstractions.Identity;
 using Frank.Domain.Sessions;
 
@@ -18,7 +20,12 @@ public sealed class FakeTokenService : ISessionTokenService
 
         return new GeneratedSessionToken(
             PlaintextToken: plaintext,
-            Hash: hash
+            HashedToken: hash
         );
+    }
+
+    public SessionTokenHash Hash(string plaintextToken)
+    {
+        throw new NotImplementedException();
     }
 }

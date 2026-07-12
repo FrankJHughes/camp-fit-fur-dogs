@@ -1,5 +1,5 @@
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
+using Frank.Domain.Users;
 using Frank.Infrastructure.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

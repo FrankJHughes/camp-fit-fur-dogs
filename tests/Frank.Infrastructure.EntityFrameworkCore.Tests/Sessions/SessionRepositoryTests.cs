@@ -1,12 +1,12 @@
+using CampFitFurDogs.Infrastructure.Sessions;
+using FluentAssertions;
 using Frank.Domain.Sessions;
 using Frank.Domain.Users;
-using Frank.Infrastructure.EntityFrameworkCore.Sessions;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using Frank.Infrastructure.EntityFrameworkCore.Users;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using Xunit;
 
 namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Sessions;
@@ -52,7 +52,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
             .CreatedAtFromFixture()
             .Build();
 
-        await repo.CreateAsync(session);
+        await repo.CreateAsync(session, CancellationToken.None);
         await ctx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
@@ -87,14 +87,14 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
                 .CreatedAtFromFixture()
                 .Build();
 
-            await repo.CreateAsync(session);
+            await repo.CreateAsync(session, CancellationToken.None);
             await ctx.SaveChangesAsync();
         }
 
         await using var readCtx = _fixture.CreateContext();
         var readRepo = new SessionRepository(readCtx);
 
-        var retrieved = await readRepo.GetByTokenHashAsync(tokenHash);
+        var retrieved = await readRepo.GetByTokenHashAsync(tokenHash, CancellationToken.None);
 
         retrieved.Should().NotBeNull();
         retrieved!.TokenHash.Should().Be(tokenHash);
@@ -113,7 +113,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
             Guid.NewGuid().ToString("N").PadLeft(64, 'c')
         );
 
-        var result = await repo.GetByTokenHashAsync(missingHash);
+        var result = await repo.GetByTokenHashAsync(missingHash, CancellationToken.None);
 
         result.Should().BeNull();
     }
@@ -140,7 +140,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
                 .CreatedAtFromFixture()
                 .Build();
 
-            await repo.CreateAsync(session);
+            await repo.CreateAsync(session, CancellationToken.None);
             await ctx.SaveChangesAsync();
         }
 
@@ -150,7 +150,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
         await using (var ctx = _fixture.CreateContext())
         {
             var repo = new SessionRepository(ctx);
-            await repo.RevokeAsync(tokenHash);
+            await repo.RevokeAsync(tokenHash, CancellationToken.None);
             await ctx.SaveChangesAsync();
         }
 
@@ -158,7 +158,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
         await using (var readCtx = _fixture.CreateContext())
         {
             var repo = new SessionRepository(readCtx);
-            var retrieved = await repo.GetByTokenHashAsync(tokenHash);
+            var retrieved = await repo.GetByTokenHashAsync(tokenHash, CancellationToken.None);
 
             retrieved.Should().NotBeNull();
             retrieved!.RevokedAt.Should().NotBeNull();

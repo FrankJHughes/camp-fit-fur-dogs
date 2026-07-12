@@ -1,13 +1,15 @@
 using System.Net;
-using Frank.Testing.Contexts;
+using System.Net.Http.Json;
 using FluentAssertions;
+using Frank.Api.Endpoints.Identity;
+using Frank.Testing.Contexts;
+using Frank.TestUtilities.Contexts;
+using Frank.TestUtilities.Factories;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Xunit;
-using Frank.TestUtilities.Contexts;
-using Frank.TestUtilities.Factories;
 
-namespace Frank.Api.Tests.Identity.Login;
+namespace CampFitFurDogs.Api.Tests.Authentication.Login;
 
 public class AuthLoginEndpointTests : IAsyncLifetime
 {
@@ -47,7 +49,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
     // SUCCESS PATH
     // ------------------------------------------------------------
     [Fact]
-    public async Task Login_redirects_to_auth0_authorize_url()
+    public async Task Login_returns_auth0_authorize_url()
     {
         var client = CreateClientWithOverrides(cfg =>
         {
@@ -56,26 +58,26 @@ public class AuthLoginEndpointTests : IAsyncLifetime
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
                 ["Authentication:Callback:Oidc:ClientSecret"] = "secret123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback",
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback",
                 ["Authentication:Callback:PostLoginRedirectUrl"] = "http://localhost:5173/",
                 ["Authentication:Callback:Oidc:Disabled"] = "false"
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
 
-        var location = response.Headers.Location!.ToString();
-        location.Should().StartWith("https://dev-fake.auth0.com/authorize?");
+        loginResponse!.NextUrl.Should().StartWith("https://dev-fake.auth0.com/authorize?");
 
-        var uri = new Uri(location);
+        var uri = new Uri(loginResponse!.NextUrl);
         var query = QueryHelpers.ParseQuery(uri.Query);
 
         query["scope"].ToString().Should().Be("openid profile email");
         query["response_type"].ToString().Should().Be("code");
         query["client_id"].ToString().Should().Be("client123");
-        query["redirect_uri"].ToString().Should().Be("http://localhost/api/auth/callback");
+        query["redirect_uri"].ToString().Should().Be("http://localhost/api/identity/callback");
     }
 
     // ------------------------------------------------------------
@@ -94,7 +96,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
@@ -111,11 +113,11 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "",
                 ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
@@ -132,11 +134,11 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             {
                 ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
                 ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/auth/callback"
+                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
             });
         });
 
-        var response = await client.GetAsync("/api/auth/login");
+        var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 

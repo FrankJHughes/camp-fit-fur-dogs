@@ -1,5 +1,5 @@
-using Frank.Domain.Users;
 using CampFitFurDogs.Domain.Dogs;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Domain.Tests.Dogs;
 

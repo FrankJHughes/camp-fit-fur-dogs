@@ -18,10 +18,10 @@ describe('ListDogsByCurrentUserCard', () => {
 
     const links = screen.getAllByRole('link');
     expect(links).toHaveLength(2);
-    expect(links[0]).toHaveAttribute('href', '/dogs/1');
+    expect(links[0]).toHaveAttribute('href', '/api/dogs/1');
     expect(links[0]).toHaveTextContent(/Biscuit/);
     expect(links[0]).toHaveTextContent(/Golden Retriever/);
-    expect(links[1]).toHaveAttribute('href', '/dogs/2');
+    expect(links[1]).toHaveAttribute('href', '/api/dogs/2');
     expect(links[1]).toHaveTextContent(/Maple/);
     expect(links[1]).toHaveTextContent(/Beagle/);
   });

@@ -1,11 +1,10 @@
+using CampFitFurDogs.TestUtilities.Contexts;
+using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
-
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
-using CampFitFurDogs.TestUtilities.Contexts;
-using CampFitFurDogs.TestUtilities.Factories;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
 

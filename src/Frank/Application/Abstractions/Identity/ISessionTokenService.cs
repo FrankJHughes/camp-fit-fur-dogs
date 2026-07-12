@@ -1,13 +1,10 @@
+using Frank.Application.Abstractions.Identity;
 using Frank.Domain.Sessions;
 
-namespace Frank.Application.Abstractions.Identity;
-
-public sealed record GeneratedSessionToken(
-    string PlaintextToken,
-    SessionTokenHash Hash
-);
+namespace Frank.Application.Abstractions.Authentication;
 
 public interface ISessionTokenService
 {
     GeneratedSessionToken Generate();
+    SessionTokenHash Hash(string plaintextToken);
 }

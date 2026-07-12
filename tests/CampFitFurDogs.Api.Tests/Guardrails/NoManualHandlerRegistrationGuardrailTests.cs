@@ -63,7 +63,7 @@ public class NoManualHandlerRegistrationGuardrailTests : IAsyncLifetime
         {
             iface.Should().NotBeNull();
 
-            var registrations = factory.ServiceCollection
+            var registrations = factory.ServiceCollection!
                 .Where(d => d.ServiceType == iface)
                 .ToList();
 

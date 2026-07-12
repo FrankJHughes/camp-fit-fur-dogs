@@ -9,7 +9,7 @@ export async function registerDog(
   data: RegisterDogCommand
 ): Promise<CommandResult> {
   try {
-    const result = await client.post<void>('/dogs/register', data);
+    const result = await client.post<void>('/api/dogs', data);
     return toCommandResult(result);
   } catch (err: any) {
     // eslint-disable-next-line no-console

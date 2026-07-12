@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Logging;
 using Frank.Application.Abstractions.Audit;
+using Microsoft.Extensions.Logging;
 
 namespace Frank.Infrastructure.Audit;
 

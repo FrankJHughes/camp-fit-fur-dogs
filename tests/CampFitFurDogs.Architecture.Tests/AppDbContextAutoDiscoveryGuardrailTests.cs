@@ -1,6 +1,6 @@
 using System.Reflection;
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using FluentAssertions;
+using Frank.Infrastructure.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Architecture.Tests;

@@ -1,8 +1,8 @@
+using CampFitFurDogs.Api.StartupModules;
 using FluentAssertions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using CampFitFurDogs.Api.Horizontals.Startup.Modules;
 
 namespace CampFitFurDogs.Api.Tests.Startup;
 

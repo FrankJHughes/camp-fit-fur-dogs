@@ -1,7 +1,7 @@
-using Frank.Application.Abstractions.Users.CreateUser;
-using Frank.Domain.Users;
 using Frank.Abstractions.Command;
 using Frank.Abstractions.UnitOfWork;
+using Frank.Application.Abstractions.Users.CreateUser;
+using Frank.Domain.Users;
 
 namespace Frank.Application.Users.CreateUser;
 

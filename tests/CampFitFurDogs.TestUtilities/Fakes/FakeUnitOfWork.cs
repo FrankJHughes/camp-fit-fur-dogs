@@ -1,8 +1,8 @@
-using Frank.Abstractions.UnitOfWork;
+using CampFitFurDogs.Application.Abstractions;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 
-public sealed class FakeUnitOfWork : IUnitOfWork
+public sealed class FakeAppUnitOfWork : IAppUnitOfWork
 {
     public int CommitCount { get; private set; }
 

@@ -1,4 +1,4 @@
-using Frank.Abstractions;
+using Frank.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Routing;
 
 namespace Frank.Api.Tests.Fakes;

@@ -1,8 +1,8 @@
+using System.Threading;
+using System.Threading.Tasks;
+using Frank.Abstractions.ImmutableContext;
 using Frank.Application.Abstractions.Identity.Callback;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
-using Frank.Abstractions.ImmutableContext;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
 

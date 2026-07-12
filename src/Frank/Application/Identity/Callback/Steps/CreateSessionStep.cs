@@ -1,8 +1,8 @@
+using Frank.Abstractions.ImmutableContext;
+using Frank.Abstractions.UnitOfWork;
 using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Domain.Sessions;
 using Frank.Domain.Users;
-using Frank.Abstractions.ImmutableContext;
-using Frank.Abstractions.UnitOfWork;
 
 namespace Frank.Application.Identity.Callback.Steps;
 
@@ -43,7 +43,7 @@ public sealed class CreateSessionStep
             createdAt: ctx.Now
         );
 
-        await _repo.CreateAsync(session);
+        await _repo.CreateAsync(session, ct);
         await _uow.CommitAsync(ct);
 
         return ctx with { SessionId = session.Id.Value };

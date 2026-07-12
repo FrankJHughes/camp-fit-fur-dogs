@@ -2,6 +2,7 @@ using Frank.Authentication.Callback.Oidc;
 using Frank.Authentication.Callback.Oidc.Steps;
 using Frank.Settings;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc;
+using Frank.TestUtilities.Fakes;
 
 namespace Frank.Tests.Authentication.Callback.Oidc.Steps;
 
@@ -9,7 +10,7 @@ public sealed class ExchangeCodeStepTests
 {
     private static AuthCallbackOidcSettings Settings => new()
     {
-        Authority = "example.auth0.com",
+        Authority = "https://example.auth0.com",
         ClientId = "client-id",
         ClientSecret = "client-secret",
         CallbackUrl = "https://app/callback"
@@ -30,7 +31,12 @@ public sealed class ExchangeCodeStepTests
         };
 
         var http = fake.CreateClient();
-        var step = new ExchangeCodeStep(http, Settings);
+
+        // FIX: wrap settings in OptionsMonitorFake
+        var step = new ExchangeCodeStep(
+            http,
+            new FakeOptionsMonitor<AuthCallbackOidcSettings>(Settings)
+        );
 
         var ctx = new OidcAuthCallbackContext
         {
@@ -56,7 +62,12 @@ public sealed class ExchangeCodeStepTests
         };
 
         var http = fake.CreateClient();
-        var step = new ExchangeCodeStep(http, Settings);
+
+        // FIX: wrap settings in OptionsMonitorFake
+        var step = new ExchangeCodeStep(
+            http,
+            new FakeOptionsMonitor<AuthCallbackOidcSettings>(Settings)
+        );
 
         var ctx = new OidcAuthCallbackContext
         {

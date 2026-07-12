@@ -1,7 +1,7 @@
-using Frank.Application.Abstractions.Identity;
+using Frank.Abstractions.ImmutableContext;
+using Frank.Application.Abstractions.Authentication;
 using Frank.Application.Abstractions.Identity.Callback;
 using Frank.Domain.Sessions;
-using Frank.Abstractions.ImmutableContext;
 
 namespace Frank.Application.Identity.Callback.Steps;
 
@@ -38,7 +38,7 @@ public sealed class BuildCookieStep
         return Task.FromResult(
             ctx with
             {
-                TokenHash = generated.Hash.Value,
+                TokenHash = generated.HashedToken.Value,
                 CookieValue = cookie.Value
             }
         );

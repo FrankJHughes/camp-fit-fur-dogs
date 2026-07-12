@@ -8,7 +8,7 @@ export async function getDogProfile(
   dogId: string
 ): Promise<QueryResult<DogProfile>> {
   try {
-    const result = await client.get<DogProfile>(`/dogs/${dogId}`);
+    const result = await client.get<DogProfile>(`/api/dogs/${dogId}`);
 
     if (result.ok) {
       return { success: true, data: result.data };
@@ -21,7 +21,6 @@ export async function getDogProfile(
 
     return {
       success: false,
-      notFound: false,
       error: result.error?.message ?? 'Unexpected server error',
     };
   } catch (err: any) {
@@ -29,7 +28,6 @@ export async function getDogProfile(
     console.error('getDogProfile error', err);
     return {
       success: false,
-      notFound: false,
       error: err?.message ?? 'Network error',
     };
   }

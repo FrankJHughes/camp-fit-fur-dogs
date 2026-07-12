@@ -1,9 +1,9 @@
 using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
 using CampFitFurDogs.Application.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Application.Tests.Fakes;
-using Frank.Domain.Users;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
+using Frank.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.ListDogsByOwner;
 
