@@ -79,8 +79,8 @@ jobs:
         with:
           projects: |
             tests/Frank.Tests
-            tests/Frank.Core.Api.Tests
-            tests/Frank.Core.EntityFrameworkCore.Tests
+            tests/Frank.Api.Tests
+            tests/Frank.EntityFrameworkCore.Tests
 
   backend:
     name: Backend Tests
