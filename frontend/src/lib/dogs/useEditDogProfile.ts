@@ -15,7 +15,7 @@ export function useEditDogProfile(id: string) {
       const cmd: EditDogProfileCommand = mapDogFormValuesToEditCommand(values);
       return editDogProfile(id, cmd);
     },
-    onSuccess: () => router.push(`/api/dogs/${id}`),
+    onSuccess: () => router.push(`/dogs/${id}`),
   });
 
   return { command };

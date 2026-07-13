@@ -1,8 +1,8 @@
 using System.Net;
-using Frank.Infrastructure.Tests.Observability.Helpers;
+using Frank.Core.Infrastructure.Tests.Observability.Helpers;
 using Xunit;
 
-namespace Frank.Infrastructure.Tests.Observability;
+namespace Frank.Core.Infrastructure.Tests.Observability;
 
 public class CorrelationTests : ObservabilityTestBase
 {

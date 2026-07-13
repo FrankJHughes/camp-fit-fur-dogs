@@ -1,4 +1,4 @@
-using Frank.Domain;
+using Frank.Core.Domain;
 
 public sealed class FakeEntityId : ValueObject
 {

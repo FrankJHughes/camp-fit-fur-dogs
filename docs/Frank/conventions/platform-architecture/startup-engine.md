@@ -60,7 +60,7 @@ services.AddSingleton<IStartupModule, CorsStartupModule>();
 services.AddSingleton<IStartupModule, SwaggerStartupModule>();
 ```
 
-Modules are **not** registered through Frank.Registration.  
+Modules are **not** registered through Frank.Core.Application.Registration.  
 Modules do **not** use `RegistrationAttribute`.  
 Modules are **product‑owned**, not platform‑owned.
 

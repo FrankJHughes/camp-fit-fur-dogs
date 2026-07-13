@@ -1,4 +1,4 @@
-using Frank.Authentication.Callback.Oidc;
+using Frank.Identity.Application.Callback.Oidc;
 
 namespace Frank.Tests.Fakes.Authentication.Callback.Oidc;
 

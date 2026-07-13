@@ -1,6 +1,6 @@
-using Frank.Domain;
+using Frank.Core.Domain;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
+namespace Frank.Core.EntityFrameworkCore.Tests.Fakes;
 
 public sealed class FakeAggregate : AggregateRoot<FakeAggregateId>
 {

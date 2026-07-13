@@ -1,19 +1,19 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Frank.Abstractions.ImmutableContext;
-using Frank.Application.Abstractions.Identity.Callback;
+using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Identity.Application.Abstractions.Callback.Save;
 
 namespace Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
 
-public sealed class NoOpStep : IImmutableContextBuildStep<ApplicationAuthCallbackContext>
+public sealed class NoOpStep : IImmutableContextBuildStep<SaveCallbackContext>
 {
     public IImmutableContextBuildStepMetadata Metadata =>
         new ImmutableContextBuildStepMetadata("NoOp", "No‑Op Step");
 
-    public bool CanExecute(ApplicationAuthCallbackContext ctx) => true;
+    public bool CanExecute(SaveCallbackContext ctx) => true;
 
-    public Task<ApplicationAuthCallbackContext> ExecuteAsync(
-        ApplicationAuthCallbackContext ctx,
+    public Task<SaveCallbackContext> ExecuteAsync(
+        SaveCallbackContext ctx,
         CancellationToken ct)
         => Task.FromResult(ctx);
 }

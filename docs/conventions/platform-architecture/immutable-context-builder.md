@@ -7,7 +7,7 @@ Frank for multi‑stage, append‑only transformations of immutable context obje
 
 It is currently used exclusively in:
 
-- `ApplicationAuthCallbackContextBuilder`
+- `SaveCallbackContextBuilder`
 - `OidcAuthCallbackCallbackContextBuilder`
 
 These builders define the **canonical pattern** for how multi‑stage pipelines

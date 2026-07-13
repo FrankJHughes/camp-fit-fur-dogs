@@ -5,9 +5,9 @@ This guide documents how to test the **current, concrete** Domain Event Dispatch
 
 Frank’s Domain Event pipeline is now a **real capability**, consisting of:
 
-- `IEvent`  
-- `IEventHandler<TEvent>`  
-- `IEventDispatcher`  
+- `IDomainEvent`  
+- `IDomainEventHandler<TEvent>`  
+- `IDomainEventDispatcher`  
 - `EventDispatcher` (concrete implementation)  
 - Registration via the **Registration Engine** (`DiscoveryOptions`, `Orchestrator`)  
 
@@ -21,9 +21,9 @@ Based on the real implementation:
 
 ```csharp
 public async Task DispatchAsync<TEvent>(TEvent domainEvent, CancellationToken ct = default)
-    where TEvent : IEvent
+    where TEvent : IDomainEvent
 {
-    var handlers = _provider.GetServices<IEventHandler<TEvent>>().ToList();
+    var handlers = _provider.GetServices<IDomainEventHandler<TEvent>>().ToList();
 
     if (handlers.Count == 0)
         return;
@@ -130,7 +130,7 @@ Because `AddFrankEvent` uses the **current Registration Engine**, testers must v
 
 ### Interface discovery
 
-`IEventHandler<TEvent>` must:
+`IDomainEventHandler<TEvent>` must:
 
 - be generic  
 - be decorated with `[Registration]`  
@@ -138,7 +138,7 @@ Because `AddFrankEvent` uses the **current Registration Engine**, testers must v
 
 ### Implementation discovery
 
-Any class implementing `IEventHandler<TEvent>` must:
+Any class implementing `IDomainEventHandler<TEvent>` must:
 
 - be included via `IncludeImplementation`  
 - be registered with the correct lifetime  
@@ -159,13 +159,13 @@ Validate:
 ## 4.1 Fake Events
 
 ```csharp
-public sealed record TestEvent(string Value) : IEvent;
+public sealed record TestEvent(string Value) : IDomainEvent;
 ```
 
 ## 4.2 Tracking Handlers
 
 ```csharp
-public sealed class TrackingHandler : IEventHandler<TestEvent>
+public sealed class TrackingHandler : IDomainEventHandler<TestEvent>
 {
     public bool Called { get; private set; }
 
@@ -188,7 +188,7 @@ Use to verify:
 ## 4.3 Exception‑Throwing Handlers
 
 ```csharp
-public sealed class ThrowingHandler : IEventHandler<TestEvent>
+public sealed class ThrowingHandler : IDomainEventHandler<TestEvent>
 {
     public Task HandleAsync(TestEvent domainEvent, CancellationToken ct)
         => throw new InvalidOperationException("boom");

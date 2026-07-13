@@ -1,6 +1,6 @@
 using System.Reflection;
-using Frank;
-using Frank.Registration;
+using Frank.Core.Application;
+using Frank.Core.Application.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
@@ -20,7 +20,7 @@ public class DiGuardrailTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankValidators(
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
         var descriptors = services.ToList();

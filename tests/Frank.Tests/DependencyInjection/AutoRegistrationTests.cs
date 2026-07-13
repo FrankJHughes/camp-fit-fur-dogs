@@ -1,9 +1,10 @@
-using Frank.Abstractions.Command;
-using Frank.Abstractions.Event;
-using Frank.Abstractions.Query;
-using Frank.Command;
-using Frank.Event;
-using Frank.Query;
+using Frank.Core.Application;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.DomainEvents;
+using Frank.Core.Application.Abstractions.Query;
+using Frank.Core.Application.Command;
+using Frank.Core.Application.DomainEvents;
+using Frank.Core.Application.Query;
 
 using Frank.Tests.DependencyInjection.Fakes;
 
@@ -16,7 +17,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankCommand(
+        services.AddFrankCommands(
             [typeof(FakeCommand).Assembly]
         );
 
@@ -47,7 +48,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankValidators(
             new[] { typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
         );
 
@@ -63,13 +64,13 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankEvent([
+        services.AddFrankDomainEvents([
             typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly
         ]);
 
         using var provider = services.BuildServiceProvider();
 
-        var handlers = provider.GetServices<IEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
+        var handlers = provider.GetServices<IDomainEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
 
         handlers.Should().NotBeEmpty();
     }

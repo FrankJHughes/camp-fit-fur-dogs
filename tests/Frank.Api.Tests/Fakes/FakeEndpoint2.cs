@@ -1,7 +1,7 @@
-using Frank.Abstractions.Endpoints;
+using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Routing;
 
-namespace Frank.Api.Tests.Fakes;
+namespace Frank.Core.Api.Tests.Fakes;
 
 public sealed class FakeEndpoint2 : IEndpoint
 {

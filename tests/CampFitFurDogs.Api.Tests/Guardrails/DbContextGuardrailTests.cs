@@ -1,7 +1,7 @@
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;

@@ -148,7 +148,7 @@ var handler = _provider.GetRequiredService(handlerType);
 ### Invariants
 
 - Exactly one handler must exist  
-- Handlers must be registered via Frank.Registration  
+- Handlers must be registered via Frank.Core.Application.Registration  
 - Handlers must be scoped  
 
 ---

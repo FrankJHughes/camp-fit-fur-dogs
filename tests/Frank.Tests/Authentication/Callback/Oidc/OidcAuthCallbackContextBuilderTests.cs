@@ -1,6 +1,6 @@
-using Frank.Abstractions.Identity.Callback;
-using Frank.Abstractions.ImmutableContext;
-using Frank.Authentication.Callback.Oidc;
+using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Callback.Oidc;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc.Steps;
 using Frank.TestUtilities.Fakes.Observability;
@@ -9,17 +9,17 @@ namespace Frank.Tests.Authentication.Callback.Oidc;
 
 public sealed class OidcAuthCallbackContextBuilderTests
 {
-    private static OidcAuthCallbackContextBuilder CreateBuilder(
-        params IImmutableContextBuildStep<OidcAuthCallbackContext>[] steps)
+    private static OidcCallbackContextBuilder CreateBuilder(
+        params IImmutableContextBuildStep<OidcCallbackContext>[] steps)
         => new(
             steps,
             new FakeObservabilitySink(),
             (_, _) => new FakeObservabilityContext());
 
     [Fact]
-    public async Task ProcessAsync_WithValidFlow_ProducesFrankAuthCallbackResult()
+    public async Task ProcessAsync_WithValidFlow_ProducesOidcCallbackResult()
     {
-        var steps = new IImmutableContextBuildStep<OidcAuthCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<OidcCallbackContext>[]
         {
             new FakeExchangeCodeStep("access-token"),
             new FakeFetchUserInfoStep(FakeUserInfo.Basic),
@@ -28,7 +28,7 @@ public sealed class OidcAuthCallbackContextBuilderTests
 
         var engine = CreateBuilder(steps);
 
-        var request = new FrankAuthCallbackRequest
+        var request = new OidcCallbackContextBuilderRequest
         {
             Code = "abc123"
         };
@@ -46,14 +46,14 @@ public sealed class OidcAuthCallbackContextBuilderTests
     [Fact]
     public async Task ProcessAsync_WhenStepThrows_EnginePropagatesException()
     {
-        var steps = new IImmutableContextBuildStep<OidcAuthCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<OidcCallbackContext>[]
         {
             new ThrowingStep()
         };
 
         var engine = CreateBuilder(steps);
 
-        var request = new FrankAuthCallbackRequest
+        var request = new OidcCallbackContextBuilderRequest
         {
             Code = "abc123"
         };
@@ -68,7 +68,7 @@ public sealed class OidcAuthCallbackContextBuilderTests
     {
         var recorder = new List<string>();
 
-        var steps = new IImmutableContextBuildStep<OidcAuthCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<OidcCallbackContext>[]
         {
             new RecordingStep("1", recorder),
             new RecordingStep("2", recorder),
@@ -77,7 +77,7 @@ public sealed class OidcAuthCallbackContextBuilderTests
 
         var engine = CreateBuilder(steps);
 
-        var request = new FrankAuthCallbackRequest
+        var request = new OidcCallbackContextBuilderRequest
         {
             Code = "abc123"
         };

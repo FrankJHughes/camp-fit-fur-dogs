@@ -1,3 +1,3 @@
-namespace Frank.Api.Tests;
+namespace Frank.Core.Api.Tests;
 
 public sealed class AssemblyMarker;

@@ -34,7 +34,7 @@ describe('Register Dog (integration)', () => {
     await user.click(screen.getByRole('button', { name: /register/i }));
 
     await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith('/api/dogs/success');
+      expect(pushMock).toHaveBeenCalledWith('/dogs/success');
     });
 
     expect(apiClientMock.post).toHaveBeenCalledWith(

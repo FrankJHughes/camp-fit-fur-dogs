@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace Frank.Infrastructure.Tests.DependencyInjection;
+namespace Frank.Core.Infrastructure.Tests.DependencyInjection;
 
 public class SmokeTests
 {

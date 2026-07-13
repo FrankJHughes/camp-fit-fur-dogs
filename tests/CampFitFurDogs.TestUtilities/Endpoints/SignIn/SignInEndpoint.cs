@@ -2,13 +2,13 @@ using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Frank.Abstractions.Identity;
-using Frank.Abstractions.UnitOfWork;
-using Frank.Abstractions.Endpoints;
-using Frank.Application.Abstractions.Authentication;
-using Frank.Domain.Sessions;
-using Frank.Abstractions.Identity.Callback;
-using Frank.Domain.Users;
+using Frank.Identity.Abstractions;
+using Frank.Core.Application.Abstractions.UnitOfWork;
+using Frank.Core.Application.Abstractions.Endpoints;
+using Frank.Core.Application.Abstractions.Authentication;
+using Frank.Identity.Domain.Sessions;
+using Frank.Identity.Domain.Users;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 
@@ -25,7 +25,7 @@ public sealed partial class SignInEndpoint : IEndpoint
             IFrankIdentityUnitOfWork unitOfWork) =>
         {
             // 1. Build a fake Frank authentication callback result
-            var callback = new FrankAuthCallbackResult
+            var callback = new OidcCallbackContextBuilderResult
             {
                 SubjectId = req.Sub,
                 GivenName = "Test",

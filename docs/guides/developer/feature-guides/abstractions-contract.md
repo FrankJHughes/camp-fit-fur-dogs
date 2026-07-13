@@ -39,7 +39,7 @@ Abstractions define **what** the Application layer exposes — not **how** it wo
 A typical structure looks like:
 
 ````text
-src/CampFitFurDogs.Application/Abstractions/
+src/CampFitFurDogs/Application/Abstractions/
   Users/
     CreateUserCommand.cs
     CreateUserResult.cs

@@ -8,7 +8,8 @@
       "args": [
         "build",
         "${workspaceFolder}/CampFitFurDogs.slnx",
-        "--configuration", "Debug"
+        "--configuration",
+        "Debug"
       ],
       "problemMatcher": "$msCompile",
       "group": {
@@ -23,8 +24,10 @@
       "args": [
         "test",
         "${workspaceFolder}/CampFitFurDogs.slnx",
-        "--configuration", "Debug",
-        "--verbosity", "normal"
+        "--configuration",
+        "Debug",
+        "--verbosity",
+        "normal"
       ],
       "problemMatcher": "$msCompile",
       "group": {
@@ -38,8 +41,10 @@
       "type": "process",
       "args": [
         "watch",
-        "--project", "${workspaceFolder}/src/CampFitFurDogs.Api",
-        "--", "run"
+        "--project",
+        "${workspaceFolder}/src/CampFitFurDogs/Api",
+        "--",
+        "run"
       ],
       "problemMatcher": "$msCompile",
       "isBackground": true

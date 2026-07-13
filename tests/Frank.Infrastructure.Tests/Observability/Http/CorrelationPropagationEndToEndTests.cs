@@ -1,10 +1,10 @@
 #nullable enable
 using System.Net;
 using System.Net.Http.Json;
-using Frank.Infrastructure.Tests.Observability.Helpers;
+using Frank.Core.Infrastructure.Tests.Observability.Helpers;
 using Xunit;
 
-namespace Frank.Infrastructure.Tests.Observability.Http;
+namespace Frank.Core.Infrastructure.Tests.Observability.Http;
 
 public class CorrelationPropagationEndToEndTests : ObservabilityTestBase
 {

@@ -8,7 +8,7 @@ components that must not mutate shared state.
 
 Today, Immutable Context is used by:
 
-- `ApplicationAuthCallbackContext`
+- `SaveCallbackContext`
 - `OidcAuthCallbackCallbackContext`
 
 These contexts demonstrate the **canonical pattern** for how immutable,
@@ -72,7 +72,7 @@ They do not contain behavior.
 
 ## Current Implementations
 
-### `ApplicationAuthCallbackContext`
+### `SaveCallbackContext`
 Used during application‑level authentication callbacks.
 
 It provides:

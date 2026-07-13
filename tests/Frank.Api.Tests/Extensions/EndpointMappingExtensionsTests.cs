@@ -1,10 +1,10 @@
 using FluentAssertions;
-using Frank.Api.Endpoints;
-using Frank.Api.Tests.Fakes;
+using Frank.Core.Api.Endpoints;
+using Frank.Core.Api.Tests.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Frank.Api.Tests.Extensions;
+namespace Frank.Core.Api.Tests.Extensions;
 
 public sealed class EndpointMappingExtensionsTests
 {

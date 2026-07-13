@@ -1,4 +1,4 @@
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

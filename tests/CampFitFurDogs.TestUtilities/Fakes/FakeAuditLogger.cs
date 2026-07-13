@@ -1,4 +1,4 @@
-using Frank.Application.Abstractions.Audit;
+using Frank.Core.Application.Abstractions.Audit;
 
 namespace CampFitFurDogs.TestUtilities.Fakes
 {

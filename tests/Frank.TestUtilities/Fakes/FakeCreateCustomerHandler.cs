@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Frank.Abstractions.Command;
-using Frank.Application.Abstractions.Users.CreateUser;
-using Frank.Application.Users.CreateUser;
-using Frank.Domain.Users.Exceptions;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Identity.Application.Abstractions.Users.CreateUser;
+using Frank.Identity.Application.Users.CreateUser;
+using Frank.Identity.Domain.Users.Exceptions;
 
 namespace Frank.TestUtilities.Fakes;
 

@@ -1,5 +1,5 @@
 using System;
-using Frank.Abstractions.Identity;
+using Frank.Identity.Abstractions;
 
 namespace Frank.TestUtilties.Fakes;
 

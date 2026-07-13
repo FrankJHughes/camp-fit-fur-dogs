@@ -7,7 +7,7 @@ Testers validate that the pipeline:
 - validates tokens cryptographically  
 - fetches userinfo reliably  
 - enforces immutability rules  
-- produces a correct `FrankAuthCallbackResult`  
+- produces a correct `OidcCallbackResult`  
 - fails safely and predictably on protocol violations  
 
 This guide describes how to test the capability end‑to‑end.
@@ -25,7 +25,7 @@ Testers must ensure:
 - ID tokens are validated cryptographically  
 - UserInfo is fetched correctly  
 - Claims and profile fields are extracted correctly  
-- The pipeline produces a valid `FrankAuthCallbackResult`  
+- The pipeline produces a valid `OidcCallbackResult`  
 - The pipeline throws the correct exceptions on failure  
 - No identity provider tokens are persisted  
 - No domain logic leaks into the pipeline  
@@ -139,7 +139,7 @@ AssertValidTransition()
 
 ## 2.6 Final Result Tests
 
-The builder must produce a valid `FrankAuthCallbackResult`.
+The builder must produce a valid `OidcCallbackResult`.
 
 ### What to test
 
@@ -245,7 +245,7 @@ Testers ensure that the Authentication Callback pipeline:
 - enforces immutability  
 - validates tokens correctly  
 - fetches userinfo correctly  
-- produces a correct `FrankAuthCallbackResult`  
+- produces a correct `OidcCallbackResult`  
 - fails safely on protocol violations  
 - never leaks identity provider tokens  
 - remains pure and side‑effect free  

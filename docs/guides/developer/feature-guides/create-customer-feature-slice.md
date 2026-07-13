@@ -72,8 +72,8 @@ The Create User slice lives inside the **Application Auth Callback Pipeline**.
 ### Files (conceptual)
 
 ````text
-src/CampFitFurDogs.Application/Authentication/Callback/
-    ApplicationAuthCallbackPipeline.cs
+src/CampFitFurDogs/Application/Authentication/Callback/
+    SaveCallbackPipeline.cs
     IdentityMapping.cs
     CreateUserBehavior.cs
     SessionCreationBehavior.cs
@@ -108,7 +108,7 @@ The domain layer owns the **Owner aggregate**.
 ### Files
 
 ````text
-src/CampFitFurDogs.Domain/Users/
+src/CampFitFurDogs/Domain/Users/
     Owner.cs
     OwnerId.cs
 ````
@@ -131,11 +131,11 @@ Infrastructure persists:
 ### Files
 
 ````text
-src/CampFitFurDogs.Infrastructure/Users/
+src/CampFitFurDogs/Infrastructure/Users/
     OwnerRepository.cs
     OwnerConfiguration.cs
 
-src/CampFitFurDogs.Infrastructure/Sessions/
+src/CampFitFurDogs/Infrastructure/Sessions/
     SessionRepository.cs
     SessionConfiguration.cs
 ````
@@ -163,7 +163,7 @@ It only:
 ### File
 
 ````text
-src/CampFitFurDogs.Api/Authentication/AuthCallbackEndpoint.cs
+src/CampFitFurDogs/Api/Authentication/AuthCallbackEndpoint.cs
 ````
 
 ### Rules

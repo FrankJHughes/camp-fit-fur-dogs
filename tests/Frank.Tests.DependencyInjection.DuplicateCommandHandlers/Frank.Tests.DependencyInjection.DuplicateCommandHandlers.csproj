@@ -5,6 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Frank\Frank.csproj" />
+    <ProjectReference Include="..\..\src\Frank\Core\Application\Frank.Core.Application.csproj" />
   </ItemGroup>
 </Project>

@@ -85,9 +85,9 @@ Identity mapping occurs **only** inside:
 
 ```
 IImmutableContextBuilder<
-    ApplicationAuthCallbackRequest,
-    ApplicationAuthCallbackContext,
-    ApplicationAuthCallbackContextBuilderResult>
+    SaveCallbackRequest,
+    SaveCallbackContext,
+    SaveCallbackContextBuilderResult>
 ```
 
 It is **never** performed in:
@@ -164,7 +164,7 @@ Identity mapping produces:
 - `OwnerId` (Guid)  
 - `IsNewOwner` (bool)  
 
-These values are stored in the **ApplicationAuthCallbackContext** and flow into:
+These values are stored in the **SaveCallbackContext** and flow into:
 
 - Session creation  
 - Redirect computation  

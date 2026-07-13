@@ -267,7 +267,7 @@ https://campfitfurdogs.com
 ## 1. Start the API
 
 ```
-dotnet run --project src/CampFitFurDogs.Api
+dotnet run --project src/CampFitFurDogs/Api
 ```
 
 ## 2. Start the frontend

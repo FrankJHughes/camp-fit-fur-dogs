@@ -121,9 +121,9 @@ Session creation occurs **only** inside the Application Auth Callback Pipeline:
 
 ```
 IImmutableContextBuilder<
-    ApplicationAuthCallbackRequest,
-    ApplicationAuthCallbackContext,
-    ApplicationAuthCallbackContextBuilderResult>
+    SaveCallbackRequest,
+    SaveCallbackContext,
+    SaveCallbackContextBuilderResult>
 ```
 
 ### Responsibilities

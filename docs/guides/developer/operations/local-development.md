@@ -10,7 +10,7 @@ It reflects the current hosting architecture, Frank hosting abstractions, and al
 The API can be run locally using:
 
 ```
-dotnet run --project src/CampFitFurDogs.Api
+dotnet run --project src/CampFitFurDogs/Api
 ```
 
 Local configuration is loaded from:
@@ -55,7 +55,7 @@ All behavior follows:
 The hosted API runs inside a **Dockerized .NET 10 container** built from:
 
 ```
-src/CampFitFurDogs.Api/Dockerfile
+src/CampFitFurDogs/Api/Dockerfile
 ```
 
 ## Hosted Environment Characteristics

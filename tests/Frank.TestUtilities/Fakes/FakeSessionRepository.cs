@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Frank.Domain.Sessions;
+using Frank.Identity.Domain.Sessions;
 
 namespace Frank.TestUtilities.Fakes;
 

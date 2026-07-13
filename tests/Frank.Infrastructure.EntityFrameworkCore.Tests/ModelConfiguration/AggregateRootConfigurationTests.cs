@@ -1,10 +1,10 @@
 using FluentAssertions;
-using Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
+using Frank.Core.EntityFrameworkCore.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Xunit;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Tests.ModelConfiguration;
+namespace Frank.Core.EntityFrameworkCore.Tests.ModelConfiguration;
 
 public sealed class AggregateRootConfigurationTests
 {

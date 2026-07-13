@@ -1,9 +1,9 @@
-using Frank.Abstractions.ImmutableContext;
-using Frank.Authentication.Callback.Oidc;
+using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Tests.Fakes.Authentication.Callback.Oidc.Steps;
 
-public sealed class FakeExchangeCodeStep : IImmutableContextBuildStep<OidcAuthCallbackContext>
+public sealed class FakeExchangeCodeStep : IImmutableContextBuildStep<OidcCallbackContext>
 {
     private readonly string _accessToken;
     private readonly string? _idToken;
@@ -14,10 +14,10 @@ public sealed class FakeExchangeCodeStep : IImmutableContextBuildStep<OidcAuthCa
         _idToken = idToken;
     }
 
-    public bool CanExecute(OidcAuthCallbackContext ctx) => true;
+    public bool CanExecute(OidcCallbackContext ctx) => true;
 
-    public Task<OidcAuthCallbackContext> ExecuteAsync(
-        OidcAuthCallbackContext ctx,
+    public Task<OidcCallbackContext> ExecuteAsync(
+        OidcCallbackContext ctx,
         CancellationToken ct)
     {
         return Task.FromResult(ctx with

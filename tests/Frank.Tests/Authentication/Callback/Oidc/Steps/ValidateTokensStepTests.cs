@@ -1,6 +1,7 @@
-using Frank.Authentication.Callback.Oidc;
-using Frank.Authentication.Callback.Oidc.Steps;
-using Frank.Settings;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Callback.Oidc;
+using Frank.Identity.Application.Callback.Oidc.Steps;
+using Frank.Identity.Application.Settings;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc;
 using Frank.TestUtilities.Fakes;
 
@@ -8,7 +9,7 @@ namespace Frank.Tests.Authentication.Callback.Oidc.Steps;
 
 public sealed class ValidateTokensStepTests
 {
-    private static AuthCallbackOidcSettings Settings => new()
+    private static OidcCallbackSettings Settings => new()
     {
         Authority = "https://example.auth0.com",
         ClientId = "client-id",
@@ -26,9 +27,9 @@ public sealed class ValidateTokensStepTests
         };
 
         var http = fake.CreateClient();
-        var step = new ValidateTokensStep(new FakeOptionsMonitor<AuthCallbackOidcSettings>(Settings), http);
+        var step = new ValidateTokensStep(new FakeOptionsMonitor<OidcCallbackSettings>(Settings), http);
 
-        var ctx = new OidcAuthCallbackContext
+        var ctx = new OidcCallbackContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,
@@ -52,9 +53,9 @@ public sealed class ValidateTokensStepTests
         };
 
         var http = fake.CreateClient();
-        var step = new ValidateTokensStep(new FakeOptionsMonitor<AuthCallbackOidcSettings>(Settings), http);
+        var step = new ValidateTokensStep(new FakeOptionsMonitor<OidcCallbackSettings>(Settings), http);
 
-        var ctx = new OidcAuthCallbackContext
+        var ctx = new OidcCallbackContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,

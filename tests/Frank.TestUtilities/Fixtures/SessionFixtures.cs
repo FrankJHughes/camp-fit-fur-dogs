@@ -1,6 +1,6 @@
 using System;
-using Frank.Domain.Sessions;
-using Frank.Domain.Users;
+using Frank.Identity.Domain.Sessions;
+using Frank.Identity.Domain.Users;
 
 namespace Frank.TestUtilities.Fixtures;
 

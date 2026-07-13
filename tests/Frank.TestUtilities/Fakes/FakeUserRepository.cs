@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Frank.Domain.Users;
+using Frank.Identity.Domain.Users;
 
 namespace Frank.TestUtilities.Fakes;
 

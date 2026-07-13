@@ -1,12 +1,12 @@
 using FluentAssertions;
-using Frank.Abstractions.UnitOfWork;
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
-using Frank.Infrastructure.EntityFrameworkCore.UnitOfWork;
+using Frank.Core.Application.Abstractions.UnitOfWork;
+using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Tests.DependencyInjection;
+namespace Frank.Core.EntityFrameworkCore.Tests.DependencyInjection;
 
 public sealed class AddFrankEfCoreTests
 {
@@ -16,7 +16,7 @@ public sealed class AddFrankEfCoreTests
         var services = new ServiceCollection();
 
         services.AddDbContext<FrankIdentityDbContext>(o => o.UseInMemoryDatabase("test"));
-        services.AddFrankEntityFrameworkCoreInfrastructure();
+        services.AddFrankIdentityUnitOfWork();
 
         var provider = services.BuildServiceProvider();
 

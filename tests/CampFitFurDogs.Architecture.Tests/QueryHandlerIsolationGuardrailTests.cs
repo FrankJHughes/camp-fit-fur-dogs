@@ -1,6 +1,6 @@
 using System.Reflection;
 using FluentAssertions;
-using Frank.Abstractions.Query;
+using Frank.Core.Application.Abstractions.Query;
 
 namespace CampFitFurDogs.Architecture.Tests;
 

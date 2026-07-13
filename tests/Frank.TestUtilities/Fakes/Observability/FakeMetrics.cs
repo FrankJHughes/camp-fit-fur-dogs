@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Frank.Abstractions.Observations;
+using Frank.Core.Application.Abstractions.Observations;
 
 namespace Frank.TestUtilities.Fakes.Observability;
 

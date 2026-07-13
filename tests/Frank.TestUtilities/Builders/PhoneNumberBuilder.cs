@@ -1,4 +1,4 @@
-using Frank.Domain.Users;
+using Frank.Identity.Domain.Users;
 using Frank.TestUtilities.Fixtures;
 
 namespace Frank.TestUtilities.Builders;

@@ -1,4 +1,4 @@
-using Frank.Command;
+using Frank.Core.Application.Command;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -11,7 +11,7 @@ public sealed class AutoRegistration_NegativeTests
 
         var services = new ServiceCollection();
 
-        Action act = () => services.AddFrankCommand([
+        Action act = () => services.AddFrankCommands([
             typeof(Frank.Tests.DependencyInjection.DuplicateCommandHandlers.AssemblyMarker).Assembly
         ]);
 

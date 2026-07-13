@@ -1,9 +1,9 @@
-using Frank.Abstractions.ImmutableContext;
-using Frank.Authentication.Callback.Oidc;
+using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Tests.Fakes.Authentication.Callback.Oidc.Steps;
 
-public sealed class RecordingStep : IImmutableContextBuildStep<OidcAuthCallbackContext>
+public sealed class RecordingStep : IImmutableContextBuildStep<OidcCallbackContext>
 {
     private readonly string _id;
     private readonly List<string> _recorder;
@@ -14,9 +14,9 @@ public sealed class RecordingStep : IImmutableContextBuildStep<OidcAuthCallbackC
         _recorder = recorder;
     }
 
-    public bool CanExecute(OidcAuthCallbackContext ctx) => true;
+    public bool CanExecute(OidcCallbackContext ctx) => true;
 
-    public Task<OidcAuthCallbackContext> ExecuteAsync(OidcAuthCallbackContext ctx, CancellationToken ct)
+    public Task<OidcCallbackContext> ExecuteAsync(OidcCallbackContext ctx, CancellationToken ct)
     {
         _recorder.Add(_id);
         throw new InvalidOperationException("Stop pipeline");

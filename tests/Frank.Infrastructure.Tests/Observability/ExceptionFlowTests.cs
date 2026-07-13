@@ -1,8 +1,8 @@
 using System.Net;
-using Frank.Infrastructure.Tests.Observability.Helpers;
+using Frank.Core.Infrastructure.Tests.Observability.Helpers;
 using Xunit;
 
-namespace Frank.Api.Tests.Observability;
+namespace Frank.Core.Api.Tests.Observability;
 
 public class ExceptionFlowTests : ObservabilityTestBase
 {

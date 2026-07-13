@@ -1,5 +1,6 @@
-using Frank.Abstractions.Event;
-using Frank.Event;
+using Frank.Core.Application;
+using Frank.Core.Application.Abstractions.DomainEvents;
+using Frank.Core.Application.DomainEvents;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -10,13 +11,13 @@ public sealed class AutoRegistration_DomainEventHandlerTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankEvent([
+        services.AddFrankDomainEvents([
             typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly
         ]);
 
         using var provider = services.BuildServiceProvider();
 
-        var handlers = provider.GetServices<IEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
+        var handlers = provider.GetServices<IDomainEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
 
         handlers.Should().HaveCountGreaterThan(1);
     }
@@ -26,14 +27,14 @@ public sealed class AutoRegistration_DomainEventHandlerTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankValidators(
             new[] { typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
         );
 
         using var provider = services.BuildServiceProvider();
 
         // Get all registered handlers for FakeDomainEvent
-        var handlers = provider.GetServices<IEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
+        var handlers = provider.GetServices<IDomainEventHandler<Frank.Tests.DependencyInjection.Fakes.FakeDomainEvent>>();
 
         // Assert that none of the registered handlers are abstract
         handlers.Should().OnlyContain(h => !h.GetType().IsAbstract);

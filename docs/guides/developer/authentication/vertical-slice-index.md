@@ -15,7 +15,7 @@ Horizontals (cross‑cutting concerns) are **not** slices and are not listed her
 # User Slices
 
 ```
-src/CampFitFurDogs.Application/Users
+src/CampFitFurDogs/Application/Users
     CreateUser
 ```
 
@@ -28,7 +28,7 @@ src/CampFitFurDogs.Application/Users
 # Dog Slices
 
 ```
-src/CampFitFurDogs.Application/Dogs
+src/CampFitFurDogs/Application/Dogs
     EditDogProfile
     GetDogProfile
     ListDogsByOwner

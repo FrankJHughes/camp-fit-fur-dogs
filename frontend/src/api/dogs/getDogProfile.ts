@@ -8,7 +8,7 @@ export async function getDogProfile(
   dogId: string
 ): Promise<QueryResult<DogProfile>> {
   try {
-    const result = await client.get<DogProfile>(`/api/dogs/${dogId}`);
+    const result = await client.get<DogProfile>(`/dogs/${dogId}`);
 
     if (result.ok) {
       return { success: true, data: result.data };

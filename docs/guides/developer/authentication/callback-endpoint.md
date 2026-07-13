@@ -71,7 +71,7 @@ This is the only validation the endpoint performs.
 The endpoint calls:
 
 ````csharp
-FrankAuthCallbackPipeline.BuildAsync(...)
+OidcCallbackPipeline.BuildAsync(...)
 ````
 
 Frank performs all **OIDC protocol work**:
@@ -101,7 +101,7 @@ Frank pipeline errors are shaped by Frank’s error boundary.
 The endpoint then calls:
 
 ````csharp
-ApplicationAuthCallbackPipeline.BuildAsync(...)
+SaveCallbackPipeline.BuildAsync(...)
 ````
 
 Application performs all **business logic**:

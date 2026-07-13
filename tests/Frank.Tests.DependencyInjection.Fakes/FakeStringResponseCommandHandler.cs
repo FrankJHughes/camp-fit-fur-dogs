@@ -1,4 +1,4 @@
-using Frank.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Command;
 
 namespace Frank.Tests.DependencyInjection.Fakes;
 

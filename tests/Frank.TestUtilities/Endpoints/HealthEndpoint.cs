@@ -1,4 +1,4 @@
-using Frank.Abstractions.Endpoints;
+using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

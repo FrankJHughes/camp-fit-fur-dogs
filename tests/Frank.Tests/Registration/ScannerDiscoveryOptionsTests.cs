@@ -1,6 +1,6 @@
-using Frank.Registration.Shapes;
+using Frank.Core.Application.Registration.Shapes;
 
-namespace Frank.Registration.Tests;
+namespace Frank.Core.Application.Registration.Tests;
 
 // ------------------------------------------------------------
 // Test types used for scanning

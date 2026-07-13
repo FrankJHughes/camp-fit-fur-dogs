@@ -1,7 +1,7 @@
 using System.Reflection;
-using Frank.Command;
-using Frank.Query;
-using Frank.Registration;
+using Frank.Core.Application.Command;
+using Frank.Core.Application.Query;
+using Frank.Core.Application.Registration;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -16,7 +16,7 @@ public class AutoRegister_RegistrationTests
     public void All_AutoRegistered_Interfaces_Must_Have_Closed_Registrations()
     {
         var services = new ServiceCollection();
-        services.AddFrankCommand(Assemblies);
+        services.AddFrankCommands(Assemblies);
         services.AddFrankQuery(Assemblies);
 
         var provider = services.BuildServiceProvider();

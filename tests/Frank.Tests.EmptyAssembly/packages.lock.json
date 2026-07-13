@@ -43,7 +43,7 @@
           "Microsoft.IdentityModel.Logging": "8.1.0"
         }
       },
-      "frank": {
+      "frank.core.domain": {
         "type": "Project",
         "dependencies": {
           "BCrypt.Net-Next": "[4.1.0, )",

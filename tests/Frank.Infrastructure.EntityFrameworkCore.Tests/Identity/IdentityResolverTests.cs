@@ -1,12 +1,12 @@
 using FluentAssertions;
-using Frank.Abstractions.Command;
-using Frank.Abstractions.Identity.Callback;
-using Frank.Application.Abstractions.Users.CreateUser;
-using Frank.Application.Abstractions.Users.FindUserByExternalId;
-using Frank.Infrastructure.Identity;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Users.CreateUser;
+using Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
+using Frank.Core.Infrastructure.Identity;
 using Xunit;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Identity;
+namespace Frank.Core.EntityFrameworkCore.Tests.Identity;
 
 public sealed class IdentityResolverTests
 {
@@ -49,7 +49,7 @@ public sealed class IdentityResolverTests
         }
     }
 
-    private static FrankAuthCallbackResult External(
+    private static OidcCallbackContextBuilderResult External(
         string sub = "sub-123",
         string given = "John",
         string family = "Doe",

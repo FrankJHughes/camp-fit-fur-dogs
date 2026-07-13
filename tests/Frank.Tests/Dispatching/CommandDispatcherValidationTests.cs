@@ -1,6 +1,6 @@
 
-using Frank.Abstractions.Command;
-using Frank.Command;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Command;
 using Frank.Tests.Fakes;
 
 namespace Frank.Tests.Dispatching;

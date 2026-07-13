@@ -1,10 +1,10 @@
-using Frank.Abstractions.UnitOfWork;
-using Frank.Application.Abstractions.Identity.Callback;
-using Frank.Application.Identity.Callback.Steps;
-using Frank.Domain.Sessions;
+using Frank.Core.Application.Abstractions.UnitOfWork;
+using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Callback.Save.Steps;
+using Frank.Identity.Domain.Sessions;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 
-namespace Frank.Application.Tests.Authentication.Callback.Steps;
+namespace Frank.Core.Application.Tests.Authentication.Callback.Steps;
 
 public sealed class CreateSessionStepTests
 {
@@ -55,9 +55,9 @@ public sealed class CreateSessionStepTests
         var uow = new FakeFrankIdentityUnitOfWork();
         var step = new CreateSessionStep(repo, uow);
 
-        var ctx = new ApplicationAuthCallbackContext
+        var ctx = new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create(),
+            External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
             TokenHash = ValidHash
@@ -75,9 +75,9 @@ public sealed class CreateSessionStepTests
     {
         var step = new CreateSessionStep(new FakeSessionRepository(), new FakeFrankIdentityUnitOfWork());
 
-        var valid = new ApplicationAuthCallbackContext
+        var valid = new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create(),
+            External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = Guid.NewGuid(),
             TokenHash = ValidHash,

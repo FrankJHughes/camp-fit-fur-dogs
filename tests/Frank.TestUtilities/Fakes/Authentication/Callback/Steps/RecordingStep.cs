@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Frank.Abstractions.ImmutableContext;
-using Frank.Application.Abstractions.Identity.Callback;
+using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Identity.Application.Abstractions.Callback.Save;
 
 namespace Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
 
-public sealed class RecordingStep : IImmutableContextBuildStep<ApplicationAuthCallbackContext>
+public sealed class RecordingStep : IImmutableContextBuildStep<SaveCallbackContext>
 {
     private readonly string _id;
     private readonly List<string> _recorder;
@@ -20,10 +20,10 @@ public sealed class RecordingStep : IImmutableContextBuildStep<ApplicationAuthCa
     public IImmutableContextBuildStepMetadata Metadata =>
         new ImmutableContextBuildStepMetadata(_id, $"Recording Step {_id}");
 
-    public bool CanExecute(ApplicationAuthCallbackContext ctx) => true;
+    public bool CanExecute(SaveCallbackContext ctx) => true;
 
-    public Task<ApplicationAuthCallbackContext> ExecuteAsync(
-        ApplicationAuthCallbackContext ctx,
+    public Task<SaveCallbackContext> ExecuteAsync(
+        SaveCallbackContext ctx,
         CancellationToken ct)
     {
         _recorder.Add(_id);

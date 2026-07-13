@@ -17,7 +17,7 @@ The Authentication Callback capability:
 2. Exchanges it for tokens  
 3. Validates the ID token  
 4. Fetches user profile information  
-5. Produces a `FrankAuthCallbackResult`  
+5. Produces a `OidcCallbackResult`  
 6. Hands that result to your identity resolution logic  
 
 You do **not** need to handle any OIDC protocol details yourself — the capability does all of that for you.
@@ -50,15 +50,15 @@ Inject the builder:
 public class AuthCallbackHandler
 {
     private readonly IImmutableContextBuilder<
-        FrankAuthCallbackRequest,
+        OidcCallbackRequest,
         OidcAuthCallbackContext,
-        FrankAuthCallbackResult> _builder;
+        OidcCallbackResult> _builder;
 
     public AuthCallbackHandler(
         IImmutableContextBuilder<
-            FrankAuthCallbackRequest,
+            OidcCallbackRequest,
             OidcAuthCallbackContext,
-            FrankAuthCallbackResult> builder)
+            OidcCallbackResult> builder)
     {
         _builder = builder;
     }
@@ -69,11 +69,11 @@ Then call it:
 
 ````csharp
 var result = await _builder.BuildAsync(
-    new FrankAuthCallbackRequest { Code = code },
+    new OidcCallbackRequest { Code = code },
     cancellationToken);
 ````
 
-If the callback succeeds, you receive a `FrankAuthCallbackResult`.
+If the callback succeeds, you receive a `OidcCallbackResult`.
 
 ---
 
@@ -82,7 +82,7 @@ If the callback succeeds, you receive a `FrankAuthCallbackResult`.
 A successful callback returns:
 
 ````csharp
-public sealed record FrankAuthCallbackResult
+public sealed record OidcCallbackResult
 {
     public string SubjectId { get; init; }
     public IReadOnlyDictionary<string, string> Claims { get; init; }
@@ -109,7 +109,7 @@ This object is safe to use for identity resolution and session creation.
 
 ## 5. What You Do Next
 
-Once you have a `FrankAuthCallbackResult`, you typically:
+Once you have a `OidcCallbackResult`, you typically:
 
 1. Pass it to your **identity resolver**:
 

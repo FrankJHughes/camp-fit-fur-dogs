@@ -1,7 +1,7 @@
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
 using FluentAssertions;
-using Frank.Abstractions.Event;
+using Frank.Core.Application.Abstractions.DomainEvents;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 
@@ -55,7 +55,7 @@ public class DomainEventHandlerRegistrationGuardrailTests : IAsyncLifetime
                 !t.IsInterface &&
                 t.GetInterfaces().Any(i =>
                     i.IsGenericType &&
-                    i.GetGenericTypeDefinition() == typeof(IEventHandler<>)))
+                    i.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>)))
             .ToList();
 
         if (handlerTypes.Count == 0)
@@ -67,7 +67,7 @@ public class DomainEventHandlerRegistrationGuardrailTests : IAsyncLifetime
             var iface = handlerType.GetInterfaces()
                 .First(i =>
                     i.IsGenericType &&
-                    i.GetGenericTypeDefinition() == typeof(IEventHandler<>));
+                    i.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>));
 
             // Resolve all registrations for this closed generic
             var resolved = ResolveAll(factory, iface);

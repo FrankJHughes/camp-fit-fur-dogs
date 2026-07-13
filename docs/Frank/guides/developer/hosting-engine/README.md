@@ -12,7 +12,7 @@ This guide describes how the system works end‑to‑end.
 
 ---
 
-# 1. Core Abstractions (Frank.Abstractions.Hosting)
+# 1. Core Abstractions (Frank.Core.Application.Abstractions.Hosting)
 
 ## 1.1 HostingModuleAttribute
 
@@ -67,7 +67,7 @@ They only *produce* overrides.
 
 ---
 
-# 2. Hosting Engine Runtime (Frank.Api.Hosting)
+# 2. Hosting Engine Runtime (Frank.Core.Api.Hosting)
 
 ## 2.1 HostingConfigurationProvider
 

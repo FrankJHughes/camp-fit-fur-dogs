@@ -1,4 +1,4 @@
-using Frank.Domain;
+using Frank.Core.Domain;
 using Frank.Tests.Fakes;
 
 namespace Frank.Tests.Domain;

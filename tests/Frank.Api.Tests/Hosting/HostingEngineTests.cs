@@ -1,10 +1,10 @@
 using FluentAssertions;
-using Frank.Abstractions.Hosting;
-using Frank.Api.Hosting;
+using Frank.Core.Application.Abstractions.Hosting;
+using Frank.Core.Api.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Xunit;
 
-namespace Frank.Api.Tests.Hosting;
+namespace Frank.Core.Api.Tests.Hosting;
 
 public sealed class HostingEngineTests
 {

@@ -29,7 +29,7 @@ jobs:
         with:
           filters: |
             backend:
-              - 'src/CampFitFurDogs.*/**'
+              - 'src/CampFitFurDogs/*/**'
               - 'tests/CampFitFurDogs.*/**'
             frontend:
               - 'frontend/**'
@@ -79,8 +79,8 @@ jobs:
         with:
           projects: |
             tests/Frank.Tests
-            tests/Frank.Api.Tests
-            tests/Frank.Infrastructure.EntityFrameworkCore.Tests
+            tests/Frank.Core.Api.Tests
+            tests/Frank.Core.EntityFrameworkCore.Tests
 
   backend:
     name: Backend Tests

@@ -1,10 +1,9 @@
 using System.Net;
 using System.Text.Json;
 using FluentAssertions;
-using Frank.Abstractions.Identity.Callback;
-using Frank.Abstractions.ImmutableContext;
-using Frank.Application.Abstractions.Identity.Callback;
-using Frank.Authentication.Callback.Oidc;
+using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Callback.Save;
 using Frank.Testing.Contexts;
 using Frank.TestUtilities.Contexts;
 using Frank.TestUtilities.Factories;
@@ -25,19 +24,19 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
 
     private sealed class FakeFrankEngine
         : IImmutableContextBuilder<
-            FrankAuthCallbackRequest,
-            OidcAuthCallbackContext,
-            FrankAuthCallbackResult>
+            OidcCallbackContextBuilderRequest,
+            OidcCallbackContext,
+            OidcCallbackContextBuilderResult>
     {
-        public FrankAuthCallbackRequest? ReceivedRequest { get; private set; }
+        public OidcCallbackContextBuilderRequest? ReceivedRequest { get; private set; }
 
-        public Task<FrankAuthCallbackResult> BuildAsync(
-            FrankAuthCallbackRequest request,
+        public Task<OidcCallbackContextBuilderResult> BuildAsync(
+            OidcCallbackContextBuilderRequest request,
             CancellationToken cancellationToken)
         {
             ReceivedRequest = request;
 
-            return Task.FromResult(new FrankAuthCallbackResult
+            return Task.FromResult(new OidcCallbackContextBuilderResult
             {
                 SubjectId = "sub-123",
                 Claims = new Dictionary<string, string>(),
@@ -51,19 +50,19 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
 
     private sealed class FakeAppEngine
         : IImmutableContextBuilder<
-            ApplicationAuthCallbackRequest,
-            ApplicationAuthCallbackContext,
-            ApplicationAuthCallbackContextBuilderResult>
+            SaveCallbackContextBuilderRequest,
+            SaveCallbackContext,
+            SaveCallbackContextBuilderResult>
     {
-        public ApplicationAuthCallbackRequest? ReceivedRequest { get; private set; }
+        public SaveCallbackContextBuilderRequest? ReceivedRequest { get; private set; }
 
-        public Task<ApplicationAuthCallbackContextBuilderResult> BuildAsync(
-            ApplicationAuthCallbackRequest request,
+        public Task<SaveCallbackContextBuilderResult> BuildAsync(
+            SaveCallbackContextBuilderRequest request,
             CancellationToken cancellationToken)
         {
             ReceivedRequest = request;
 
-            return Task.FromResult(new ApplicationAuthCallbackContextBuilderResult
+            return Task.FromResult(new SaveCallbackContextBuilderResult
             {
                 UserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                 SessionId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
@@ -84,25 +83,25 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
             {
                 // Remove real engines
                 services.RemoveAll<IImmutableContextBuilder<
-                    FrankAuthCallbackRequest,
-                    OidcAuthCallbackContext,
-                    FrankAuthCallbackResult>>();
+                    OidcCallbackContextBuilderRequest,
+                    OidcCallbackContext,
+                    OidcCallbackContextBuilderResult>>();
 
                 services.RemoveAll<IImmutableContextBuilder<
-                    ApplicationAuthCallbackRequest,
-                    ApplicationAuthCallbackContext,
-                    ApplicationAuthCallbackContextBuilderResult>>();
+                    SaveCallbackContextBuilderRequest,
+                    SaveCallbackContext,
+                    SaveCallbackContextBuilderResult>>();
 
                 // Register fakes
                 services.AddSingleton<IImmutableContextBuilder<
-                    FrankAuthCallbackRequest,
-                    OidcAuthCallbackContext,
-                    FrankAuthCallbackResult>, FakeFrankEngine>();
+                    OidcCallbackContextBuilderRequest,
+                    OidcCallbackContext,
+                    OidcCallbackContextBuilderResult>, FakeFrankEngine>();
 
                 services.AddSingleton<IImmutableContextBuilder<
-                    ApplicationAuthCallbackRequest,
-                    ApplicationAuthCallbackContext,
-                    ApplicationAuthCallbackContextBuilderResult>, FakeAppEngine>();
+                    SaveCallbackContextBuilderRequest,
+                    SaveCallbackContext,
+                    SaveCallbackContextBuilderResult>, FakeAppEngine>();
             });
 
         _api = new ApiFactory(_ctx);

@@ -76,9 +76,9 @@ It provides reusable architectural primitives and eliminates boilerplate.
 ````text
 src/
   Frank/
-  Frank.Api/
-  Frank.Infrastructure/
-  Frank.Infrastructure.EntityFrameworkCore/
+  Frank.Core.Api/
+  Frank.Core.Infrastructure/
+  Frank.Core.EntityFrameworkCore/
   Frank.Testing/
 ````
 
@@ -117,11 +117,11 @@ Frank/
   Settings/
 ````
 
-### Frank.Api  
+### Frank.Core.Api  
 API‑level primitives:
 
 ````text
-Frank.Api/
+Frank.Core.Api/
   Endpoints/
   Exceptions/
     Middleware/
@@ -130,11 +130,11 @@ Frank.Api/
   Startup/
 ````
 
-### Frank.Infrastructure  
+### Frank.Core.Infrastructure  
 Cross‑cutting infrastructure primitives:
 
 ````text
-Frank.Infrastructure/
+Frank.Core.Infrastructure/
   Authorization/
   Environment/
   Exceptions/
@@ -144,11 +144,11 @@ Frank.Infrastructure/
   Time/
 ````
 
-### Frank.Infrastructure.EntityFrameworkCore  
+### Frank.Core.EntityFrameworkCore  
 EF Core helpers:
 
 ````text
-Frank.Infrastructure.EntityFrameworkCore/
+Frank.Core.EntityFrameworkCore/
   Configurations/
   UnitOfWork/
 ````
@@ -364,9 +364,9 @@ tests/
 
 ````text
 tests/
-  Frank.Api.Tests/
-  Frank.Infrastructure.Tests/
-  Frank.Infrastructure.EntityFrameworkCore.Tests/
+  Frank.Core.Api.Tests/
+  Frank.Core.Infrastructure.Tests/
+  Frank.Core.EntityFrameworkCore.Tests/
   Frank.Tests/
   Frank.TestUtilities/
 ````

@@ -1,6 +1,6 @@
 
-using Frank.Abstractions.Query;
-using Frank.Query;
+using Frank.Core.Application.Abstractions.Query;
+using Frank.Core.Application.Query;
 
 namespace Frank.Tests.Dispatching;
 

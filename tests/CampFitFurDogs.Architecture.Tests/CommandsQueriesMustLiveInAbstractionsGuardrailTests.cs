@@ -7,7 +7,7 @@ public class CommandsQueriesMustLiveInAbstractionsGuardrailTests
     [Fact]
     public void Commands_And_Queries_Must_Live_In_Application_Abstractions()
     {
-        var FrankAssembly = typeof(Frank.AssemblyMarker).Assembly;
+        var FrankAssembly = typeof(Frank.Core.Application.AssemblyMarker).Assembly;
 
         // Find ICommand<T> and IQuery<T> interfaces
         var commandInterface = FrankAssembly
@@ -27,7 +27,7 @@ public class CommandsQueriesMustLiveInAbstractionsGuardrailTests
         commandInterface.Should().NotBeNull("ICommand<TResponse> must exist");
         queryInterface.Should().NotBeNull("IQuery<TResponse> must exist");
 
-        var appAssembly = typeof(Frank.AssemblyMarker).Assembly;
+        var appAssembly = typeof(Frank.Core.Application.AssemblyMarker).Assembly;
 
         var allTypes = appAssembly.GetTypes();
 

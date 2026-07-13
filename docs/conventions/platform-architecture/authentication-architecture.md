@@ -69,7 +69,7 @@ The Application layer handles **business‑level authentication behavior**.
 
 It is implemented using:
 
-`IImmutableContextBuilder<ApplicationAuthCallbackRequest, ApplicationAuthCallbackContext, ApplicationAuthCallbackContextBuilderResult>`
+`IImmutableContextBuilder<SaveCallbackRequest, SaveCallbackContext, SaveCallbackContextBuilderResult>`
 
 This pipeline uses:
 

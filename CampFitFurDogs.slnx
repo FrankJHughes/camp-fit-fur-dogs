@@ -1,15 +1,21 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj" />
-    <Project Path="src/CampFitFurDogs.Application/CampFitFurDogs.Application.csproj" />
-    <Project Path="src/CampFitFurDogs.Domain/CampFitFurDogs.Domain.csproj" />
-    <Project Path="src/CampFitFurDogs.Infrastructure/CampFitFurDogs.Infrastructure.csproj" />
+    <Project Path="src/CampFitFurDogs/Api/CampFitFurDogs.Api.csproj" />
+    <Project Path="src/CampFitFurDogs/Application/CampFitFurDogs.Application.csproj" />
+    <Project Path="src/CampFitFurDogs/Domain/CampFitFurDogs.Domain.csproj" />
+    <Project Path="src/CampFitFurDogs/Infrastructure/CampFitFurDogs.Infrastructure.csproj" />
+    <Project Path="src/Frank/Core/Api/Frank.Core.Api.csproj" />
+    <Project Path="src/Frank/Core/Application/Frank.Core.Application.csproj" />
+    <Project Path="src/Frank/Core/Domain/Frank.Core.Domain.csproj" />
+    <Project Path="src/Frank/Core/EntityFrameworkCore/Frank.Core.EntityFrameworkCore.csproj" />
+    <Project Path="src/Frank/Core/Infrastructure/Frank.Core.Infrastructure.csproj" />
+    <Project Path="src/Frank/Identity/Api/Frank.Identity.Api.csproj" />
+    <Project Path="src/Frank/Identity/Application/Frank.Identity.Application.csproj" />
+    <Project Path="src/Frank/Identity/Domain/Frank.Identity.Domain.csproj" />
+    <Project Path="src/Frank/Identity/EntityFrameworkCore/Frank.Identity.EntityFrameworkCore.csproj" />
+    <Project Path="src/Frank/Identity/Infrastructure/Frank.Identity.Infrastructure.csproj" />
+    <Project Path="src/Frank/Testing/Frank.Testing.csproj" />
 
-    <Project Path="src/Frank/Frank.csproj" />
-    <Project Path="src/Frank.Api/Frank.Api.csproj" />
-    <Project Path="src/Frank.Infrastructure.EntityFrameworkCore/Frank.Infrastructure.EntityFrameworkCore.csproj" />
-    <Project Path="src/Frank.Infrastructure/Frank.Infrastructure.csproj" />
-    <Project Path="src/Frank.Testing/Frank.Testing.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj" />
@@ -21,6 +27,12 @@
     <Project Path="tests/CampFitFurDogs.TestUtilities/CampFitFurDogs.TestUtilities.csproj" />
 
     <Project Path="tests/Frank.Api.Tests/Frank.Api.Tests.csproj" />
+    <Project Path="tests/Frank.Application.Tests/Frank.Application.Tests.csproj" />
+    <Project Path="tests/Frank.Identity/Api.Tests/Api.Tests.csproj" />
+    <Project Path="tests/Frank.Identity/Application.Tests/Application.Tests.csproj" />
+    <Project Path="tests/Frank.Identity/Domain.Tests/Domain.Tests.csproj" />
+    <Project Path="tests/Frank.Identity/EntityFrameworkCore.Tests/EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Frank.Identity/Infrastructure.Tests/Infrastructure.Tests.csproj" />
     <Project Path="tests/Frank.Infrastructure.EntityFrameworkCore.Tests/Frank.Infrastructure.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Frank.Infrastructure.Tests/Frank.Infrastructure.Tests.csproj" />
     <Project Path="tests/Frank.Tests/Frank.Tests.csproj" />

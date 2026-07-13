@@ -25,21 +25,21 @@ Domain events are **facts**, not requests — they are not validated and do not 
 
 # 2. Domain Event Abstractions
 
-## 2.1 `IEvent`
+## 2.1 `IDomainEvent`
 
 ```csharp
-public interface IEvent { }
+public interface IDomainEvent { }
 ```
 
 Represents a domain event.
 
 ---
 
-## 2.2 `IEventHandler<TEvent>`
+## 2.2 `IDomainEventHandler<TEvent>`
 
 ```csharp
-public interface IEventHandler<in TEvent>
-    where TEvent : IEvent
+public interface IDomainEventHandler<in TEvent>
+    where TEvent : IDomainEvent
 {
     Task HandleAsync(TEvent domainEvent, CancellationToken cancellationToken = default);
 }
@@ -50,13 +50,13 @@ Multiple handlers may exist for the same event.
 
 ---
 
-## 2.3 `IEventDispatcher`
+## 2.3 `IDomainEventDispatcher`
 
 ```csharp
-public interface IEventDispatcher
+public interface IDomainEventDispatcher
 {
     Task DispatchAsync<TEvent>(TEvent domainEvent, CancellationToken ct = default)
-        where TEvent : IEvent;
+        where TEvent : IDomainEvent;
 }
 ```
 
@@ -69,7 +69,7 @@ The dispatcher is the single entry point for raising events.
 Frank ships a concrete dispatcher:
 
 ```csharp
-public sealed class EventDispatcher : IEventDispatcher
+public sealed class EventDispatcher : IDomainEventDispatcher
 {
     private readonly IServiceProvider _provider;
 
@@ -79,9 +79,9 @@ public sealed class EventDispatcher : IEventDispatcher
     }
 
     public async Task DispatchAsync<TEvent>(TEvent domainEvent, CancellationToken ct = default)
-        where TEvent : IEvent
+        where TEvent : IDomainEvent
     {
-        var handlers = _provider.GetServices<IEventHandler<TEvent>>().ToList();
+        var handlers = _provider.GetServices<IDomainEventHandler<TEvent>>().ToList();
 
         if (handlers.Count == 0)
             return;
@@ -117,8 +117,8 @@ public static IServiceCollection AddFrankEvent(
 
 ### What it registers
 
-- `IEventDispatcher` → `EventDispatcher` (scoped)
-- All `IEventHandler<TEvent>` implementations discovered via `DiscoveryOptions`
+- `IDomainEventDispatcher` → `EventDispatcher` (scoped)
+- All `IDomainEventHandler<TEvent>` implementations discovered via `DiscoveryOptions`
 
 ### Discovery rules used
 
@@ -126,18 +126,18 @@ public static IServiceCollection AddFrankEvent(
 options.IncludeInterface(iface =>
     HasRegistrationAttribute(iface) &&
     iface.IsGenericType &&
-    iface.GetGenericTypeDefinition() == typeof(IEventHandler<>));
+    iface.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>));
 
 options.IncludeImplementation(impl =>
     impl.ImplementedInterfaces.Any(i =>
         i.IsGenericType &&
-        i.GetGenericTypeDefinition() == typeof(IEventHandler<>)));
+        i.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>)));
 ```
 
 Meaning:
 
 - Only interfaces marked with `[Registration]` are governed  
-- Only classes implementing `IEventHandler<>` are included  
+- Only classes implementing `IDomainEventHandler<>` are included  
 - Concrete handlers are auto‑registered  
 
 ---
@@ -146,8 +146,8 @@ Meaning:
 
 Developers must:
 
-- Define event types (`IEvent`)  
-- Implement handlers (`IEventHandler<TEvent>`)  
+- Define event types (`IDomainEvent`)  
+- Implement handlers (`IDomainEventHandler<TEvent>`)  
 - Mark handler interfaces with `[Registration]`  
 - Ensure assemblies are included in the orchestrator call  
 

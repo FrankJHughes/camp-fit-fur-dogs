@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Frank.Api.Endpoints.Identity;
+using Frank.Identity.Api.Endpoints;
 using Frank.Testing.Contexts;
 using Frank.TestUtilities.Contexts;
 using Frank.TestUtilities.Factories;

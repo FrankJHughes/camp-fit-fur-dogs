@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using FluentAssertions;
-using Frank.Abstractions.Identity;
-using Frank.Infrastructure.Identity;
+using Frank.Identity.Abstractions;
+using Frank.Core.Infrastructure.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 

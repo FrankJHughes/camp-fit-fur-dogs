@@ -268,7 +268,7 @@ public static IServiceCollection AddFrankCommand(
 
     Orchestrator.Orchestrate(
         services,
-        [typeof(Frank.AssemblyMarker).Assembly, .. assemblies],
+        [typeof(Frank.Core.Application.AssemblyMarker).Assembly, .. assemblies],
         options);
 
     return services;

@@ -13,7 +13,7 @@ See: Adding a New Feature Slice Guide
 # 2. Running the API
 
 ````bash
-dotnet run --project src/CampFitFurDogs.Api
+dotnet run --project src/CampFitFurDogs/Api
 ````
 
 ---
@@ -47,7 +47,7 @@ npm test
 
 # 6. Folder Structure
 
-Backend: `src/CampFitFurDogs.*`  
+Backend: `src/CampFitFurDogs/*`  
 Frontend: `frontend/src/*`  
 Docs: `docs/guides/*`
 

@@ -1,11 +1,11 @@
-using Frank.Application.Abstractions.Authentication;
-using Frank.Application.Abstractions.Identity;
-using Frank.Application.Abstractions.Identity.Callback;
-using Frank.Application.Identity.Callback.Steps;
-using Frank.Domain.Sessions;
+using Frank.Core.Application.Abstractions.Authentication;
+using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Callback.Save.Steps;
+using Frank.Identity.Domain.Sessions;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 
-namespace Frank.Application.Tests.Authentication.Callback.Steps;
+namespace Frank.Core.Application.Tests.Authentication.Callback.Steps;
 
 public sealed class BuildCookieStepTests
 {
@@ -42,9 +42,9 @@ public sealed class BuildCookieStepTests
         var tokens = new FakeTokenService(hash: ValidHash);
         var step = new BuildCookieStep(tokens);
 
-        var ctx = new ApplicationAuthCallbackContext
+        var ctx = new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create(),
+            External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow
         };
 

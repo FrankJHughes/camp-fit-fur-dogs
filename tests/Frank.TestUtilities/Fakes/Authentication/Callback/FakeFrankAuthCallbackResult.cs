@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Frank.Abstractions.Identity.Callback;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.TestUtilities.Fakes.Authentication.Callback;
 
-public static class FakeFrankAuthCallbackResult
+public static class FakeOidcCallbackResult
 {
-    public static FrankAuthCallbackResult Create(string subjectId = "sub-123")
+    public static OidcCallbackContextBuilderResult Create(string subjectId = "sub-123")
         => new()
         {
             SubjectId = subjectId,

@@ -1,12 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Frank.Abstractions.ImmutableContext;
-using Frank.Application.Abstractions.Identity.Callback;
+using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Identity.Application.Abstractions.Callback.Save;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 
 namespace Frank.Tests.Fakes.Application.Authentication.Callback.Steps;
 
-public sealed class MutatingStep : IImmutableContextBuildStep<ApplicationAuthCallbackContext>
+public sealed class MutatingStep : IImmutableContextBuildStep<SaveCallbackContext>
 {
     private readonly bool _modifyExternal;
     private readonly bool _modifyNow;
@@ -22,15 +22,15 @@ public sealed class MutatingStep : IImmutableContextBuildStep<ApplicationAuthCal
     public IImmutableContextBuildStepMetadata Metadata =>
         new ImmutableContextBuildStepMetadata("Mutate", "Mutating Step");
 
-    public bool CanExecute(ApplicationAuthCallbackContext ctx) => true;
+    public bool CanExecute(SaveCallbackContext ctx) => true;
 
-    public Task<ApplicationAuthCallbackContext> ExecuteAsync(ApplicationAuthCallbackContext ctx, CancellationToken ct)
+    public Task<SaveCallbackContext> ExecuteAsync(SaveCallbackContext ctx, CancellationToken ct)
     {
         if (_returnNull)
-            return Task.FromResult<ApplicationAuthCallbackContext>(null!);
+            return Task.FromResult<SaveCallbackContext>(null!);
 
         var external = _modifyExternal
-            ? FakeFrankAuthCallbackResult.Create("DIFFERENT")
+            ? FakeOidcCallbackResult.Create("DIFFERENT")
             : ctx.External;
 
         var now = _modifyNow ? ctx.Now.AddMinutes(5) : ctx.Now;

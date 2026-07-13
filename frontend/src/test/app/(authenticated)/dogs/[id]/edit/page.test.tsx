@@ -120,7 +120,7 @@ describe('EditDogProfilePage', () => {
     });
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/api/dogs/dog-123');
+      expect(mockPush).toHaveBeenCalledWith('/dogs/dog-123');
     });
   }, 10000);
 

@@ -34,7 +34,7 @@ All behavior follows:
 - GitHub Actions does **not** deploy to production.  
 - Render builds the Dockerfile at:  
   ```
-  src/CampFitFurDogs.Api/Dockerfile
+  src/CampFitFurDogs/Api/Dockerfile
   ```
 - Environment variables are injected by Render at runtime.  
 - API startup uses **Frank hosting abstractions** — never `Environment.GetEnvironmentVariable`.
@@ -203,7 +203,7 @@ docker run --rm `
 
 ```powershell
 $env:ConnectionStrings__DefaultConnection = "Host=localhost;Port=5432;Database=campfitfurdogs;Username=dev;Password=pass;"
-dotnet run --project src/CampFitFurDogs.Api
+dotnet run --project src/CampFitFurDogs/Api
 ```
 
 ---
@@ -277,8 +277,8 @@ $cs = Get-Content .\db-conn.txt -Raw
 $env:ConnectionStrings__DefaultConnection = $cs
 
 dotnet ef database update `
-  -s src/CampFitFurDogs.Api `
-  -p src/CampFitFurDogs.Infrastructure
+  -s src/CampFitFurDogs/Api `
+  -p src/CampFitFurDogs/Infrastructure
 
 dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests `
   --logger "trx"

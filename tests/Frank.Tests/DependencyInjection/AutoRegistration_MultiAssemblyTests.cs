@@ -1,7 +1,7 @@
-using Frank.Abstractions.Command;
-using Frank.Abstractions.Query;
-using Frank.Command;
-using Frank.Query;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Query;
+using Frank.Core.Application.Command;
+using Frank.Core.Application.Query;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -12,7 +12,7 @@ public sealed class AutoRegistration_MultiAssemblyTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankCommand([
+        services.AddFrankCommands([
             typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly
         ]);
 

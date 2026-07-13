@@ -41,8 +41,8 @@ As a **developer**, I want the reusable architectural foundation (CQRS pipeline,
 - **Clean product projects** — Application, Infrastructure, and Api contain only Camp Fit Fur Dogs handlers, readers, repositories, endpoints, and configuration. No framework noise.
 - **Portable foundation** — Frank stays ORM-agnostic and host-agnostic. EF Core and ASP.NET Core dependencies. No framework noise.
 - **Portable foundation** — Frank stays ORM-agnostic and host-agnostic. EF Core and ASP.NET Core dependencies are isolated in companion projects that a different product can swap.
-- **Self-enforcing boundaries** — Frank.Testing provides inheritable guardrails and `AddFrank()` validates boundaries at startup. A new product gets are isolated in companion projects that a different product can swap.
-- **Self-enforcing boundaries** — Frank.Testing provides inheritable guardrails and `AddFrank()` validates boundaries at startup. A new product gets 18 architecture tests by providing 4 assembly markers.
+- **Self-enforcing boundaries** — Frank.Testing provides inheritable guardrails and `AddFrankValidators()` validates boundaries at startup. A new product gets are isolated in companion projects that a different product can swap.
+- **Self-enforcing boundaries** — Frank.Testing provides inheritable guardrails and `AddFrankValidators()` validates boundaries at startup. A new product gets 18 architecture tests by providing 4 assembly markers.
 - **Onboarding clarity** — "Frank is 18 architecture tests by providing 4 assembly markers.
 - **Onboarding clarity** — "Frank is the framework. Everything else is the product." One sentence, no ambiguity.
 
@@ -143,10 +143,10 @@ src/Frank/
 
 New dependencies for Frank: `Microsoft.Extensions.DependencyInjection.Abstractions`, `Scrutor`.
 
-### Part B: Create Frank.Infrastructure (Tier 3 — EF Core)
+### Part B: Create Frank.Core.Infrastructure (Tier 3 — EF Core)
 
 ```
-src/Frank.Infrastructure/
+src/Frank.Core.Infrastructure/
   AggregateConfiguration.cs            (from Infrastructure) half)
     DomainEventRegistration.cs
     AssemblyMarker.cs
@@ -154,20 +154,20 @@ src/Frank.Infrastructure/
 
 New dependencies for Frank: `Microsoft.Extensions.DependencyInjection.Abstractions`, `Scrutor`.
 
-### Part B: Create Frank.Infrastructure (Tier 3 — EF Core)
+### Part B: Create Frank.Core.Infrastructure (Tier 3 — EF Core)
 
 ```
-src/Frank.Infrastructure/
+src/Frank.Core.Infrastructure/
   AggregateConfiguration.cs            (from Infrastructure)
   EfUnitOfWork.cs                      (from Infrastructure)
 ```
 
 Dependencies: `Microsoft.EntityFrameworkCore`. References: `Frank`.
 
-### Part C: Create Frank.Api (Tier 4 — ASP.NET Core routing)
+### Part C: Create Frank.Core.Api (Tier 4 — ASP.NET Core routing)
 
 ```
-src/Frank.Api/
+src/Frank.Core.Api/
   IEndpoint.cs                         (from Api)
   Endpoints.cs                         (from Api)
   EfUnitOfWork.cs                      (from Infrastructure)
@@ -175,10 +175,10 @@ src/Frank.Api/
 
 Dependencies: `Microsoft.EntityFrameworkCore`. References: `Frank`.
 
-### Part C: Create Frank.Api (Tier 4 — ASP.NET Core routing)
+### Part C: Create Frank.Core.Api (Tier 4 — ASP.NET Core routing)
 
 ```
-src/CampFitFurDogs.SharedK
+src/CampFitFurDogs/SharedK
 ```
 
 Dependencies: `Microsoft.AspNetCore.Routing.Abstractions`. References: none.
@@ -274,20 +274,20 @@ Dependencies
 
 Dependencies: `NetArchTest.Rules`, `FluentAssertions`, `xunit`.
 
-### Part E: Runtime boundary validation in AddFrank()
+### Part E: Runtime boundary validation in AddFrankValidators()
 
-`AddFrank()` validates architecture boundaries at application startup:
+`AddFrankValidators()` validates architecture boundaries at application startup:
 
 ```csharp
-public static IServiceCollection AddFrank(
+public static IServiceCollection AddFrankValidators(
     this IServiceCollection services,: `NetArchTest.Rules`, `FluentAssertions`, `xunit`.
 
-### Part E: Runtime boundary validation in AddFrank()
+### Part E: Runtime boundary validation in AddFrankValidators()
 
-`AddFrank()` validates architecture boundaries at application startup:
+`AddFrankValidators()` validates architecture boundaries at application startup:
 
 ```csharp
-public static IServiceCollection AddFrank(
+public static IServiceCollection AddFrankValidators(
     this IServiceCollection services,
     FrankOptions options)
 {
@@ -357,7 +357,7 @@ Frank                          (M.E.DI.Abstractions, Scrutor)
 ```
 Frank                          (M.E.DI.Abstractions, Scrutor)
     ^           ^
-    |    Frank.Infrastructure   (EF Core)
+    |    Frank.Core.Infrastructure   (EF Core)
     |           ^
   Domain        |
     ^           |
@@ -365,11 +365,11 @@ Application     |
     ^           |
 Infrastructure -+
     ^
-   Api --> Frank.Api            (ASP.NET Core routing)
+   Api --> Frank.Core.Api            (ASP.NET Core routing)
 ```
 
 - Frank depends^           ^
-    |    Frank.Infrastructure   (EF Core)
+    |    Frank.Core.Infrastructure   (EF Core)
     |           ^
   Domain        |
     ^           |
@@ -379,17 +379,17 @@ Infrastructure -+
     ^
    Api --> on nothing but two lightweight NuGet packages.
 - Domain depends on Frank only (pure domain, unchanged).
-- Application depends on Domain (gets Frank transit Frank.Api            (ASP.NET Core routing)
+- Application depends on Domain (gets Frank transit Frank.Core.Api            (ASP.NET Core routing)
 ```
 
 - Frank depends on nothing but two lightweight NuGet packages.
 - Domain depends on Frank only (pure domain, unchanged).
 - Application depends on Domain (gets Frank transitively).
-- Infrastructure depends on Application + Domain + Frank.Infrastructure.
-- Api depends on Application + Infrastructure + Frank.Api.
+- Infrastructure depends on Application + Domain + Frank.Core.Infrastructure.
+- Api depends on Application + Infrastructure + Frank.Core.Api.
 - All acyclic. Compilerively).
-- Infrastructure depends on Application + Domain + Frank.Infrastructure.
-- Api depends on Application + Infrastructure + Frank.Api.
+- Infrastructure depends on Application + Domain + Frank.Core.Infrastructure.
+- Api depends on Application + Infrastructure + Frank.Core.Api.
 - All acyclic. Compiler-enforced.
 
 ### Part H: Migrate product Architecture.Tests
@@ -424,14 +424,14 @@ Guardrail migration summary:
 
 ### Part I: Update DI wiring
 
-Frank exposes a generic `AddFrank(FrankOptions)` extension that product projects call from their composition root. Product-specific DI registrations stay in Infrastructure's `DependencyInjection.cs`.
+Frank exposes a generic `AddFrankValidators(FrankOptions)` extension that product projects call from their composition root. Product-specific DI registrations stay in Infrastructure's `DependencyInjection.cs`.
 
 Product `Program DI wiring
 
-Frank exposes a generic `AddFrank(FrankOptions)` extension that product projects call from their composition root. Product-specific DI registrations stay.cs`:
+Frank exposes a generic `AddFrankValidators(FrankOptions)` extension that product projects call from their composition root. Product-specific DI registrations stay.cs`:
 
 ```csharp
-services.AddFrank(new FrankOptions
+services.AddFrankValidators(new FrankOptions
 {
     ApplicationAssemblies = new[]
     {
@@ -442,7 +442,7 @@ services.AddFrank(new FrankOptions
 Product `Program.cs`:
 
 ```csharp
-services.AddFrank(new FrankOptions
+services.AddFrankValidators(new FrankOptions
 {
     ApplicationAssemblies = new[]
     {
@@ -522,26 +522,26 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 | Application | `DependencyInjection/DependencyInjection.cs` (foundation half) | `Frank/Application/` |
 | Application | `DependencyInjection/DomainEventRegistration.cs` | `Frank/Application/` |
 
-### Files moving to Frank.Infrastructure
+### Files moving to Frank.Core.Infrastructure
 
 | Source | File | Destination |
 |--------|------|-------------|
-| Infrastructure | `Data/Configurations/AggregateConfiguration.cs` | `Frank.Infrastructure/` |
-| Infrastructure | `Data/EfUnitOfWork.cs` | `Frank.Infrastructure `Frank/Application/` |
+| Infrastructure | `Data/Configurations/AggregateConfiguration.cs` | `Frank.Core.Infrastructure/` |
+| Infrastructure | `Data/EfUnitOfWork.cs` | `Frank.Core.Infrastructure `Frank/Application/` |
 
-### Files moving to Frank.Infrastructure
-
-| Source | File | Destination |
-|--------|------|-------------|
-| Infrastructure | `Data/Configurations/AggregateConfiguration.cs` | `Frank.Infrastructure/` |
-| Infrastructure | `Data/EfUnitOfWork.cs` | `Frank.Infrastructure/` |
-
-### Files moving to Frank.Api
+### Files moving to Frank.Core.Infrastructure
 
 | Source | File | Destination |
 |--------|------|-------------|
-| Api | `IEndpoint.cs` | `Frank.Api/` |
-| Api | `Endpoints.cs` | `Frank.Api/` |
+| Infrastructure | `Data/Configurations/AggregateConfiguration.cs` | `Frank.Core.Infrastructure/` |
+| Infrastructure | `Data/EfUnitOfWork.cs` | `Frank.Core.Infrastructure/` |
+
+### Files moving to Frank.Core.Api
+
+| Source | File | Destination |
+|--------|------|-------------|
+| Api | `IEndpoint.cs` | `Frank.Core.Api/` |
+| Api | `Endpoints.cs` | `Frank.Core.Api/` |
 
 ### Files staying in product projects (no change)
 
@@ -549,12 +549,12 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 |---------|-------|----------|
 | Domain | 13 | Aggregates, V/` |
 
-### Files moving to Frank.Api
+### Files moving to Frank.Core.Api
 
 | Source | File | Destination |
 |--------|------|-------------|
-| Api | `IEndpoint.cs` | `Frank.Api/` |
-| Api | `Endpoints.cs` | `Frank.Api/` |
+| Api | `IEndpoint.cs` | `Frank.Core.Api/` |
+| Api | `Endpoints.cs` | `Frank.Core.Api/` |
 
 ### Files staying in product projects (no change)
 
@@ -578,16 +578,16 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 - [ ] ADR-0022: Foundation Extraction — Frank Expansion
 - [ ] `Frank.csproj` updated with `M.E.DI.Abstractions` and `Scrutor` deps
 - [ ] `Frank/Application/` subfolder with all 15 moved files
-- [ ] Namespaces updated from `CampFitFurDogs.Application.*` to `Frank.Application.*`
+- [ ] Namespaces updated from `CampFitFurDogs.Application.*` to `Frank.Core.Application.*`
 - [ ] `C updated with `M.E.DI.Abstractions` and `Scrutor` deps
 - [ ] `Frank/Application/` subfolder with all 15 moved files
-- [ ] Namespaces updated fromampFitFurDogs.Frank.Infrastructure` project created
+- [ ] Namespaces updated fromampFitFurDogs.Frank.Core.Infrastructure` project created
 - [ ] `AggregateConfiguration.cs` and `EfUnitOfWork.cs` moved and re-namespaced
-- [ ] `Frank.Api` project created
-- [ ] `IEndpoint.cs` and `Endpoints.cs` moved and re- `CampFitFurDogs.Application.*` to `Frank.Application.*`
-- [ ] `Frank.Infrastructure` project created
+- [ ] `Frank.Core.Api` project created
+- [ ] `IEndpoint.cs` and `Endpoints.cs` moved and re- `CampFitFurDogs.Application.*` to `Frank.Core.Application.*`
+- [ ] `Frank.Core.Infrastructure` project created
 - [ ] `AggregateConfiguration.cs` and `EfUnitOfWork.cs` moved and re-namespaced
-- [ ] `Frank.Api` project created
+- [ ] `Frank.Core.Api` project created
 - [ ] `IEndpoint.cs` and `Endpoints.cs` moved and re-namespaced
 - [ ] `Frank.Testing` project created
 - [ ] `CleanArchitectureGuardrails` abstract base class with 18 inherited tests
@@ -602,11 +602,11 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 - [ ] `ArchitectureViolationException`
 - [ ] All four new/expanded projects added to `CampFitFurDogs.sln`
 - [ ] Product `.csproj` references updated
-- [ ] `AddFrank()` extension method created with runtime validation
-- [ ] Product `DependencyInjection.cs` calls `AddFrank()sln`
+- [ ] `AddFrankValidators()` extension method created with runtime validation
+- [ ] Product `DependencyInjection.cs` calls `AddFrankValidators()sln`
 - [ ] Product `.csproj` references updated
-- [ ] `AddFrank()` extension method created with runtime validation
-- [ ] Product `DependencyInjection.cs` calls `AddFrank()` and keeps only product registrations
+- [ ] `AddFrankValidators()` extension method created with runtime validation
+- [ ] Product `DependencyInjection.cs` calls `AddFrankValidators()` and keeps only product registrations
 - [ ] Product `Architecture.Tests` migrated to single inheriting class
 - [ ] `` and keeps only product registrations
 - [ ] Product `Architecture.Tests` migrated to single inheriting class
@@ -619,7 +619,7 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 ## Acceptance Criteria
 
 - [ ] Frank contains zero product-specific types (no Camp Fit Fur Dogs handlers, commands, queries, DTOs, or domain entities)
-- [ ] Frank.Infrastructure contains zero product-specific types (no AppDbContext, nousing` statements updated across all product files
+- [ ] Frank.Core.Infrastructure contains zero product-specific types (no AppDbContext, nousing` statements updated across all product files
 - [ ] `folder-structure.md` updated with new project layout
 - [ ] `copilot-instructions.md` updated with foundation vs. product boundary rules
 - [ ] CHANGELOG updated
@@ -628,10 +628,10 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 ## Acceptance Criteria
 
 - [ ] Frank contains zero product-specific types (no Camp Fit Fur Dogs handlers, commands, queries, DTOs, or domain entities)
-- [ ] Frank.Infrastructure contains zero product-specific types (no AppDbContext, no entity configurations, no repositories)
-- [ ] Frank.Api contains zero product-specific types (no product endpoints)
+- [ ] Frank.Core.Infrastructure contains zero product-specific types (no AppDbContext, no entity configurations, no repositories)
+- [ ] Frank.Core.Api contains zero product-specific types (no product endpoints)
 - [ ] Application, Infrastructure, and Api contain zero foundation types (no CQRS interfaces, no dispatchers, no DI scanning entity configurations, no repositories)
-- [ ] Frank.Api contains zero product-specific types (no product endpoints)
+- [ ] Frank.Core.Api contains zero product-specific types (no product endpoints)
 - [ ] Application, Infrastructure, and Api contain zero foundation types (no CQRS interfaces, no dispatchers, no DI scanning conventions, no AggregateConfiguration, no EfUnitOfWork, no IEndpoint/Endpoints)
 - [ ] Domain project is unchanged
 - [ ] Reference conventions, no AggregateConfiguration, no EfUnitOfWork, no IEndpoint/Endpoints)
@@ -641,18 +641,18 @@ services.AddInfrastructure(configuration);  // product-specific: DbContext, repo
 - [ ] All existing graph is acyclic — verified by Architecture.Tests
 - [ ] All existing guardrail rules pass via inherited `CleanArchitectureGuardrails`
 - [ ] All existing unit and integration tests pass without modification (beyond `using` statement updates)
-- [ ] `AddFrank()` accepts `FrankOptions` and registers all dispatchers, handlers, validators unit and integration tests pass without modification (beyond `using` statement updates)
-- [ ] `AddFrank()` accepts `FrankOptions` and registers all dispatchers, handlers, validators, and readers
-- [ ] `AddFrank()` throws `ArchitectureViolationException` on boundary violations when `ValidateBoundariesAtStartup` is `true`
-- [ ] `AddFrank()` skips validation when `ValidateBoundariesAtStartup` is `false`
+- [ ] `AddFrankValidators()` accepts `FrankOptions` and registers all dispatchers, handlers, validators unit and integration tests pass without modification (beyond `using` statement updates)
+- [ ] `AddFrankValidators()` accepts `FrankOptions` and registers all dispatchers, handlers, validators, and readers
+- [ ] `AddFrankValidators()` throws `ArchitectureViolationException` on boundary violations when `ValidateBoundariesAtStartup` is `true`
+- [ ] `AddFrankValidators()` skips validation when `ValidateBoundariesAtStartup` is `false`
 - [ ] Product `Architecture.Tests` is a single class (~10 lines) providing, and readers
-- [ ] `AddFrank()` throws `ArchitectureViolationException` on boundary violations when `ValidateBoundariesAtStartup` is `true`
-- [ ] `AddFrank()` skips validation when `ValidateBoundariesAtStartup` is `false`
+- [ ] `AddFrankValidators()` throws `ArchitectureViolationException` on boundary violations when `ValidateBoundariesAtStartup` is `true`
+- [ ] `AddFrankValidators()` skips validation when `ValidateBoundariesAtStartup` is `false`
 - [ ] Product `Architecture.Tests` is a single class (~10 lines) providing 4 assembly markers
 - [ ] A new product gets 18 architecture tests by inheriting `CleanArchitectureGuardrails`
-- [ ] A hypothetical new product could reference Frank + Frank.Infrastructure + SharedK 4 assembly markers
+- [ ] A hypothetical new product could reference Frank + Frank.Core.Infrastructure + SharedK 4 assembly markers
 - [ ] A new product gets 18 architecture tests by inheriting `CleanArchitectureGuardrails`
-- [ ] A hypothetical new product could reference Frank + Frank.Infrastructure + Frank.Api and get the full CQRS + DI + endpoint + EF pipeline with zero Camp Fit Fur Dogs code
+- [ ] A hypothetical new product could reference Frank + Frank.Core.Infrastructure + Frank.Core.Api and get the full CQRS + DI + endpoint + EF pipeline with zero Camp Fit Fur Dogs code
 - [ ] ADR-0022 acceptedernel.Api and get the full CQRS + DI + endpoint + EF pipeline with zero Camp Fit Fur Dogs code
 - [ ] ADR-0022 accepted and indexed
 - [ ] CI passes

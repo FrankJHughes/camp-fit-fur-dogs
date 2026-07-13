@@ -1,6 +1,6 @@
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
-using Frank.Domain.Users;
+using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.TestUtilities.Factories;
 

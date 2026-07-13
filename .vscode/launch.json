@@ -6,9 +6,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/CampFitFurDogs.Api/bin/Debug/net10.0/CampFitFurDogs.Api.dll",
+      "program": "${workspaceFolder}/src/CampFitFurDogs/Api/bin/Debug/net10.0/CampFitFurDogs.Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/CampFitFurDogs.Api",
+      "cwd": "${workspaceFolder}/src/CampFitFurDogs/Api",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"

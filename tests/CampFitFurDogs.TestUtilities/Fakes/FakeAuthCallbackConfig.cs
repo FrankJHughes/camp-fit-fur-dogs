@@ -1,4 +1,4 @@
-using Frank.Domain.Users;
+using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 

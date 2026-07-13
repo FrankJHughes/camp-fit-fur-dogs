@@ -5,8 +5,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <VSTestUseDotNet>true</VSTestUseDotNet>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Frank\Frank.csproj" />
-  </ItemGroup>
 </Project>

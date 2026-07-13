@@ -1,5 +1,5 @@
 using System;
-using Frank.Domain.Users;
+using Frank.Identity.Domain.Users;
 
 namespace Frank.TestUtilities.Builders;
 

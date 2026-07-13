@@ -1,3 +1,5 @@
+using Frank.Core.Application;
+
 namespace Frank.Tests.DependencyInjection;
 
 public sealed class AutoRegistration_ValidatorTests
@@ -7,7 +9,7 @@ public sealed class AutoRegistration_ValidatorTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankValidators(
             new[] { typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
         );
 
@@ -23,7 +25,7 @@ public sealed class AutoRegistration_ValidatorTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankValidators(
             new[] { typeof(Frank.Tests.DependencyInjection.Fakes.AssemblyMarker).Assembly }
         );
 

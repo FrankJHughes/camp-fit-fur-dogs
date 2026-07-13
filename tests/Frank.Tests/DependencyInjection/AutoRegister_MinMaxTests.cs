@@ -1,5 +1,6 @@
 using System.Reflection;
-using Frank.Registration;
+using Frank.Core.Application;
+using Frank.Core.Application.Registration;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -14,7 +15,7 @@ public class AutoRegister_MinMaxTests
     public void AutoRegister_MinMax_Rules_Must_Be_Enforced()
     {
         var services = new ServiceCollection();
-        services.AddFrank(Assemblies);
+        services.AddFrankValidators(Assemblies);
 
         var provider = services.BuildServiceProvider();
 

@@ -141,7 +141,7 @@ These documents define:
 - Required environment variables:
   - `ConnectionStrings__DefaultConnection`
   - `PREVIEW_DB_CONNECTION_STRING`
-- Health check conventions (`/api/health`, `/api/dogs`)
+- Health check conventions (`/health`, `/api/dogs`)
 - Deployment triggers and expectations
 
 Copilot must not propose alternative hosting platforms or deployment models unless explicitly requested.

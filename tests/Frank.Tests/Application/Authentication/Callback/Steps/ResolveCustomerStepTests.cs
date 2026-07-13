@@ -1,7 +1,7 @@
-using Frank.Abstractions.Identity;
-using Frank.Abstractions.Identity.Callback;
-using Frank.Application.Abstractions.Identity.Callback;
-using Frank.Application.Identity.Callback.Steps;
+using Frank.Identity.Abstractions;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 
 namespace CampFitFurDogs.Application.Tests.Authentication.Callback.Steps;
@@ -11,9 +11,9 @@ public sealed class ResolveUserStepTests
     private sealed class FakeIdentityResolver : IIdentityResolver
     {
         public Guid ReturnedId { get; set; } = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-        public FrankAuthCallbackResult? ReceivedExternal { get; private set; }
+        public OidcCallbackContextBuilderResult? ReceivedExternal { get; private set; }
 
-        public Task<Guid> ResolveAsync(FrankAuthCallbackResult external, CancellationToken ct)
+        public Task<Guid> ResolveAsync(OidcCallbackContextBuilderResult external, CancellationToken ct)
         {
             ReceivedExternal = external;
             return Task.FromResult(ReturnedId);
@@ -26,9 +26,9 @@ public sealed class ResolveUserStepTests
         var resolver = new FakeIdentityResolver();
         var step = new ResolveUserStep(resolver);
 
-        var ctx = new ApplicationAuthCallbackContext
+        var ctx = new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create("sub-123"),
+            External = FakeOidcCallbackResult.Create("sub-123"),
             Now = DateTimeOffset.UtcNow
         };
 
@@ -43,16 +43,16 @@ public sealed class ResolveUserStepTests
     {
         var step = new ResolveUserStep(new FakeIdentityResolver());
 
-        step.CanExecute(new ApplicationAuthCallbackContext
+        step.CanExecute(new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create(),
+            External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = null
         }).Should().BeTrue();
 
-        step.CanExecute(new ApplicationAuthCallbackContext
+        step.CanExecute(new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create(),
+            External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = Guid.NewGuid()
         }).Should().BeFalse();

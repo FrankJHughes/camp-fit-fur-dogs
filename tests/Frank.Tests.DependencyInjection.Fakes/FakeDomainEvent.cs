@@ -1,7 +1,7 @@
-using Frank.Abstractions.Event;
+using Frank.Core.Domain;
 
 namespace Frank.Tests.DependencyInjection.Fakes;
 
-public sealed class FakeDomainEvent : IEvent
+public sealed class FakeDomainEvent : IDomainEvent
 {
 }

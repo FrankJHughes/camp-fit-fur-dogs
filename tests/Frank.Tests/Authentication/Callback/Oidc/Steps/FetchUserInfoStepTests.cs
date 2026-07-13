@@ -1,5 +1,5 @@
-using Frank.Authentication.Callback.Oidc;
-using Frank.Authentication.Callback.Oidc.Steps;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Callback.Oidc.Steps;
 using Frank.Tests.Fakes.Authentication.Callback.Oidc;
 
 namespace Frank.Tests.Authentication.Callback.Oidc.Steps;
@@ -17,7 +17,7 @@ public sealed class FetchUserInfoStepTests
 
         var step = new FetchUserInfoStep(fakeClient);
 
-        var ctx = new OidcAuthCallbackContext
+        var ctx = new OidcCallbackContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,
@@ -45,7 +45,7 @@ public sealed class FetchUserInfoStepTests
 
         var step = new FetchUserInfoStep(fakeClient);
 
-        var ctx = new OidcAuthCallbackContext
+        var ctx = new OidcCallbackContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,

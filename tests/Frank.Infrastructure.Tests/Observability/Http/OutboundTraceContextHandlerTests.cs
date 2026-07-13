@@ -1,10 +1,10 @@
 #nullable enable
 using System.Net;
-using Frank.Abstractions.Observations;
-using Frank.Infrastructure.Observations.Http;
+using Frank.Core.Application.Abstractions.Observations;
+using Frank.Core.Infrastructure.Observations.Http;
 using Xunit;
 
-namespace Frank.Infrastructure.Tests.Observability.Http;
+namespace Frank.Core.Infrastructure.Tests.Observability.Http;
 
 public class OutboundObservabilityContextHandlerTests
 {

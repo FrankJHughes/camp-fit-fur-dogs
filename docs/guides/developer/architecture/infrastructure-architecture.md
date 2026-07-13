@@ -134,7 +134,7 @@ The DbContext must:
 Configuration classes live in:
 
 ```
-Frank.Infrastructure.EntityFrameworkCore/Configurations/
+Frank.Core.EntityFrameworkCore/Configurations/
 ```
 
 Frank scans these automatically.

@@ -11,7 +11,7 @@ This guide provides everything a developer needs to implement, extend, or integr
 
 ---
 
-# 1. Core Abstractions (Frank.Abstractions.ExceptionHandling)
+# 1. Core Abstractions (Frank.Core.Application.Abstractions.ExceptionHandling)
 
 These abstractions define the *contract* for exception handling across all transports (API, workers, CLI, etc.).  
 They contain **no ASP.NET Core dependencies**.

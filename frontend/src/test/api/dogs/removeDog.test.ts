@@ -23,7 +23,7 @@ describe('removeDog', () => {
 
         const result = await removeDog(dogId);
 
-        expect(mockDelete).toHaveBeenCalledWith(`/api/dogs/${dogId}`);
+        expect(mockDelete).toHaveBeenCalledWith(`/dogs/${dogId}`);
         expect(result).toEqual({ success: true });
     });
 

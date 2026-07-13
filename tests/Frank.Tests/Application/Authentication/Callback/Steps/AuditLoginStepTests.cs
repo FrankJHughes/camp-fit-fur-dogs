@@ -1,6 +1,6 @@
-using Frank.Application.Abstractions.Audit;
-using Frank.Application.Abstractions.Identity.Callback;
-using Frank.Application.Identity.Callback.Steps;
+using Frank.Core.Application.Abstractions.Audit;
+using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 
 namespace CampFitFurDogs.Application.Tests.Authentication.Callback.Steps;
@@ -26,9 +26,9 @@ public sealed class AuditLoginStepTests
         var audit = new FakeAuditLogger();
         var step = new AuditLoginStep(audit);
 
-        var ctx = new ApplicationAuthCallbackContext
+        var ctx = new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create("sub-123"),
+            External = FakeOidcCallbackResult.Create("sub-123"),
             Now = DateTimeOffset.UtcNow,
             UserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
         };
@@ -44,16 +44,16 @@ public sealed class AuditLoginStepTests
     {
         var step = new AuditLoginStep(new FakeAuditLogger());
 
-        step.CanExecute(new ApplicationAuthCallbackContext
+        step.CanExecute(new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create(),
+            External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = null
         }).Should().BeFalse();
 
-        step.CanExecute(new ApplicationAuthCallbackContext
+        step.CanExecute(new SaveCallbackContext
         {
-            External = FakeFrankAuthCallbackResult.Create(),
+            External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = Guid.NewGuid()
         }).Should().BeTrue();

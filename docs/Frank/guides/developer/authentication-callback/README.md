@@ -1,7 +1,7 @@
 # Frank - Guides - Developer - Authentication Callback Guide
 
 The Authentication Callback capability implements the **OIDC authorization‑code callback pipeline** for Frank.  
-It exchanges an authorization code for tokens, validates the ID token, fetches user information, and produces a normalized `FrankAuthCallbackResult`.
+It exchanges an authorization code for tokens, validates the ID token, fetches user information, and produces a normalized `OidcCallbackResult`.
 
 This guide documents the architecture, invariants, and extension points for developers implementing or integrating with the Authentication Callback capability.
 
@@ -16,7 +16,7 @@ The Authentication Callback pipeline:
 3. Validates the ID token cryptographically.  
 4. Fetches user profile information from the UserInfo endpoint.  
 5. Normalizes identity into a Frank‑specific result object.  
-6. Returns a `FrankAuthCallbackResult` for downstream identity resolution.
+6. Returns a `OidcCallbackResult` for downstream identity resolution.
 
 The pipeline is **pure**, **deterministic**, and **side‑effect‑free** except for HTTP calls to the identity provider.
 
@@ -34,10 +34,10 @@ A marker base type for callback contexts.
 
 ---
 
-## 2.2 FrankAuthCallbackRequest
+## 2.2 OidcCallbackRequest
 
 ````csharp
-public record FrankAuthCallbackRequest : ImmutableContextBuilderRequestBase
+public record OidcCallbackRequest : ImmutableContextBuilderRequestBase
 {
     public required string Code { get; init; }
 }
@@ -47,10 +47,10 @@ Represents the inbound request from the callback endpoint.
 
 ---
 
-## 2.3 FrankAuthCallbackResult
+## 2.3 OidcCallbackResult
 
 ````csharp
-public sealed record FrankAuthCallbackResult : ImmutableContextBuilderResultBase
+public sealed record OidcCallbackResult : ImmutableContextBuilderResultBase
 {
     public required string SubjectId { get; init; }
     public required IReadOnlyDictionary<string, string> Claims { get; init; }
@@ -190,7 +190,7 @@ Failure → `OidcProtocolException`.
 ````csharp
 public sealed class OidcAuthCallbackContextBuilder
     : ImmutableContextBuilderBase<OidcAuthCallbackContext, IImmutableContextBuildStep<OidcAuthCallbackContext>>,
-      IImmutableContextBuilder<FrankAuthCallbackRequest, OidcAuthCallbackContext, FrankAuthCallbackResult>
+      IImmutableContextBuilder<OidcCallbackRequest, OidcAuthCallbackContext, OidcCallbackResult>
 ````
 
 ### Responsibilities
@@ -201,7 +201,7 @@ public sealed class OidcAuthCallbackContextBuilder
 - Execute all steps in order.  
 - Enforce immutability invariants.  
 - Emit diagnostic events.  
-- Produce a `FrankAuthCallbackResult`.
+- Produce a `OidcCallbackResult`.
 
 ### Critical invariant
 
@@ -216,7 +216,7 @@ OidcProtocolException("OIDC pipeline completed without a SubjectId.")
 # 7. DI Registration
 
 ````csharp
-public static IServiceCollection AddFrankAuthCallback(this IServiceCollection services)
+public static IServiceCollection AddOidcCallback(this IServiceCollection services)
 {
     services.AddOptions<AuthCallbackOidcSettings>()
             .BindConfiguration("Authentication:Callback:Oidc")
@@ -227,7 +227,7 @@ public static IServiceCollection AddFrankAuthCallback(this IServiceCollection se
     services.AddTransient<IImmutableContextBuildStep<OidcAuthCallbackContext>, FetchUserInfoStep>();
     services.AddTransient<IImmutableContextBuildStep<OidcAuthCallbackContext>, ValidateTokensStep>();
 
-    services.AddTransient<IImmutableContextBuilder<FrankAuthCallbackRequest, OidcAuthCallbackContext, FrankAuthCallbackResult>,
+    services.AddTransient<IImmutableContextBuilder<OidcCallbackRequest, OidcAuthCallbackContext, OidcCallbackResult>,
         OidcAuthCallbackContextBuilder>();
 
     return services;
@@ -244,7 +244,7 @@ public static IServiceCollection AddFrankAuthCallback(this IServiceCollection se
 
 # 8. Identity Resolution
 
-The pipeline produces a `FrankAuthCallbackResult`.
+The pipeline produces a `OidcCallbackResult`.
 
 Downstream, the identity resolver maps this to a **Frank internal identity**:
 
@@ -252,7 +252,7 @@ Downstream, the identity resolver maps this to a **Frank internal identity**:
 public interface IIdentityResolver
 {
     Task<Guid> ResolveAsync(
-        FrankAuthCallbackResult authCallbackResult,
+        OidcCallbackResult authCallbackResult,
         CancellationToken cancellationToken);
 }
 ````

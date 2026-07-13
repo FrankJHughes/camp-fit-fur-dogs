@@ -69,7 +69,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Public HTTPS‑hosted Camp Fit Fur Dogs API, enabling external access to dog profiles, registration flows, and future user‑facing features.
 - Automatic deployment pipeline for all updates merged into `main`, ensuring users always receive the latest stable functionality without manual intervention.
-- Public health check endpoint (`/api/health`) for uptime verification and external monitoring tools.
+- Public health check endpoint (`/health`) for uptime verification and external monitoring tools.
 - Reliable API startup and readiness behavior, reducing user‑visible downtime during deployments and cold starts.
 - Stable PR Preview environments backed by isolated Neon databases, allowing reviewers to interact with accurate, production‑like previews.
 - Consistent database schema validation through automated migration application in CI, ensuring previews always reflect the latest data model.
@@ -439,10 +439,10 @@ All notable changes to this project will be documented in this file.
 - ADR-0007: One-Command Local Bootstrap
 - `src/Frank/` — Entity, AggregateRoot, ValueObject,
   IDomainEvent, IRepository base types
-- `src/CampFitFurDogs.Domain/Dogs/` — Dog aggregate, DogId value object
-- `src/CampFitFurDogs.Domain/Guardians/` — Guardian aggregate, GuardianId
-- `src/CampFitFurDogs.Application/DependencyInjection.cs`
-- `src/CampFitFurDogs.Infrastructure/DependencyInjection.cs`
+- `src/CampFitFurDogs/Domain/Dogs/` — Dog aggregate, DogId value object
+- `src/CampFitFurDogs/Domain/Guardians/` — Guardian aggregate, GuardianId
+- `src/CampFitFurDogs/Application/DependencyInjection.cs`
+- `src/CampFitFurDogs/Infrastructure/DependencyInjection.cs`
 - Domain and Frank unit tests
 
 ## [Sprint 0] — 2026-03-27
@@ -462,7 +462,7 @@ All notable changes to this project will be documented in this file.
 - CONTRIBUTING.md and `.github/PULL_REQUEST_TEMPLATE.md`
 - `.gitignore` for .NET projects
 - `CampFitFurDogs.slnx` solution file
-- `src/CampFitFurDogs.Api/` project with minimal API
+- `src/CampFitFurDogs/Api/` project with minimal API
 - Test project scaffolds (Api, Application, Domain, Infrastructure, Frank)
 - `.github/workflows/ci.yaml` — build and test pipeline
 - `global.json` pinning .NET SDK version

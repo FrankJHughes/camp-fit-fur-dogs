@@ -107,9 +107,9 @@ Frank is organized into several sub‑products:
 ````text
 src/
   Frank/
-  Frank.Api/
-  Frank.Infrastructure/
-  Frank.Infrastructure.EntityFrameworkCore/
+  Frank.Core.Api/
+  Frank.Core.Infrastructure/
+  Frank.Core.EntityFrameworkCore/
   Frank.Testing/
 ````
 
@@ -213,10 +213,10 @@ Configuration primitives.
 
 ---
 
-# 6. Frank.Api
+# 6. Frank.Core.Api
 
 ````text
-Frank.Api/
+Frank.Core.Api/
   Endpoints/
   Exceptions/
     Middleware/
@@ -262,10 +262,10 @@ API‑level startup helpers.
 
 ---
 
-# 7. Frank.Infrastructure
+# 7. Frank.Core.Infrastructure
 
 ````text
-Frank.Infrastructure/
+Frank.Core.Infrastructure/
   Authorization/
   Environment/
   Exceptions/
@@ -297,10 +297,10 @@ HTTP observability primitives.
 
 ---
 
-# 8. Frank.Infrastructure.EntityFrameworkCore
+# 8. Frank.Core.EntityFrameworkCore
 
 ````text
-Frank.Infrastructure.EntityFrameworkCore/
+Frank.Core.EntityFrameworkCore/
   Configurations/
   UnitOfWork/
 ````

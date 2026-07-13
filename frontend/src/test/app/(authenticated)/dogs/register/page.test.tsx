@@ -26,14 +26,14 @@ describe('Register Dog Page', () => {
 
     await user.click(screen.getByRole('button', { name: /register/i }));
 
-    expect(apiClientMock.post).toHaveBeenCalledWith('/api/dogs', {
+    expect(apiClientMock.post).toHaveBeenCalledWith('/dogs', {
       name: 'Buddy',
       breed: 'Golden Retriever',
       dateOfBirth: '2023-06-15',
       sex: 'Male',
     });
 
-    expect(pushMock).toHaveBeenCalledWith('/api/dogs/success');
+    expect(pushMock).toHaveBeenCalledWith('/dogs/success');
   });
 
   it('displays validation errors returned by the API', async () => {

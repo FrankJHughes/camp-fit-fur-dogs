@@ -1,4 +1,4 @@
-using Frank.Abstractions.Environment;
+using Frank.Core.Application.Abstractions.Environment;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 

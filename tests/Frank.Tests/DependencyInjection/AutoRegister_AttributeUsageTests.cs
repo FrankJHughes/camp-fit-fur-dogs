@@ -1,10 +1,10 @@
 using System.Reflection;
-using Frank.Abstractions.Command;
-using Frank.Abstractions.Endpoints;
-using Frank.Abstractions.Event;
-using Frank.Abstractions.Exceptions;
-using Frank.Abstractions.Query;
-using Frank.Registration;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Endpoints;
+using Frank.Core.Application.Abstractions.DomainEvents;
+using Frank.Core.Application.Abstractions.Exceptions;
+using Frank.Core.Application.Abstractions.Query;
+using Frank.Core.Application.Registration;
 
 namespace Frank.Tests.DependencyInjection;
 
@@ -19,7 +19,7 @@ public class AutoRegister_AttributeUsageTests
     [
         typeof(ICommandHandler<>),
         typeof(ICommandHandler<,>),
-        typeof(IEventHandler<>),
+        typeof(IDomainEventHandler<>),
         typeof(IExceptionHandler),
         typeof(IQueryHandler<,>),
         typeof(IEndpoint)

@@ -1,12 +1,13 @@
-using Frank.Abstractions.Event;
+using Frank.Core.Application.Abstractions.DomainEvents;
+using Frank.Core.Domain;
 
 namespace Frank.Tests.Events;
 
 public sealed class DomainEventHandlerTests
 {
-    private sealed class TestEvent : IEvent { }
+    private sealed class TestEvent : IDomainEvent { }
 
-    private sealed class TrackingHandler : IEventHandler<TestEvent>
+    private sealed class TrackingHandler : IDomainEventHandler<TestEvent>
     {
         public int CallCount { get; private set; }
         public TestEvent? LastEvent { get; private set; }

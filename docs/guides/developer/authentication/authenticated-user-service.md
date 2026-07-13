@@ -31,10 +31,10 @@ It is used by:
 ````csharp
 using System.Security.Claims;
 using CampFitFurDogs.Application.Exceptions;
-using Frank.Abstractions;
+using Frank.Core.Application.Abstractions;
 using Microsoft.AspNetCore.Http;
 
-namespace Frank.Infrastructure.Identity;
+namespace Frank.Core.Infrastructure.Identity;
 
 public sealed class AuthenticatedUser : ICurrentUser
 {

@@ -25,7 +25,7 @@ export default function EditDogProfilePage() {
       const cmd: EditDogProfileCommand = mapDogFormValuesToEditCommand(values);
       return editDogProfile(id, cmd);
     },
-    onSuccess: () => router.push(`/api/dogs/${id}`),
+    onSuccess: () => router.push(`/dogs/${id}`),
   });
 
   // Loading

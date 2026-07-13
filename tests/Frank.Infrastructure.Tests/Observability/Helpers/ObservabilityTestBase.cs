@@ -1,10 +1,10 @@
 #nullable enable
-using Frank.Abstractions.Observations;
+using Frank.Core.Application.Abstractions.Observations;
 using Frank.TestUtilities.Contexts;
 using Frank.TestUtilities.Factories;
 using Frank.TestUtilities.Fakes.Observability;
 
-namespace Frank.Infrastructure.Tests.Observability.Helpers;
+namespace Frank.Core.Infrastructure.Tests.Observability.Helpers;
 
 public abstract class ObservabilityTestBase : IDisposable, IAsyncDisposable
 {

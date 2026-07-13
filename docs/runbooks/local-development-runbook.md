@@ -5,7 +5,7 @@ Procedures for running the full stack locally.
 ## Backend
 
 \\\ash
-cd src/CampFitFurDogs.Api
+cd src/CampFitFurDogs/Api
 dotnet restore
 dotnet run
 \\\

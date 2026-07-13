@@ -37,9 +37,9 @@ Identity mapping runs inside the Application Auth Callback Pipeline:
 
 ````csharp
 IImmutableContextBuilder<
-    ApplicationAuthCallbackRequest,
-    ApplicationAuthCallbackContext,
-    ApplicationAuthCallbackContextBuilderResult>
+    SaveCallbackRequest,
+    SaveCallbackContext,
+    SaveCallbackContextBuilderResult>
 ````
 
 Flow:

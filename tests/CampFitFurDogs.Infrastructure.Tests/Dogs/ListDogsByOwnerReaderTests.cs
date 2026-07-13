@@ -3,9 +3,9 @@ using CampFitFurDogs.Infrastructure.Dogs;
 using CampFitFurDogs.Infrastructure.Persistence;
 using CampFitFurDogs.TestUtilities.Builders;
 using FluentAssertions;
-using Frank.Domain.Users;
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
-using Frank.Infrastructure.EntityFrameworkCore.Users;
+using Frank.Identity.Domain.Users;
+using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.Users;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
 

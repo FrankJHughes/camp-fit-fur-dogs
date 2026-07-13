@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace Frank.Api.Tests.Fakes;
+namespace Frank.Core.Api.Tests.Fakes;
 
 public sealed class FakeRouteBuilder : IEndpointRouteBuilder
 {

@@ -1,14 +1,15 @@
-using Frank.Abstractions.Event;
-using Frank.Event;
+using Frank.Core.Application.Abstractions.DomainEvents;
+using Frank.Core.Application.DomainEvents;
+using Frank.Core.Domain;
 using Frank.Tests.Fakes;
 
 namespace Frank.Tests.Events;
 
 public sealed class DomainEventDispatcherTests
 {
-    private sealed class TestEvent : IEvent { }
+    private sealed class TestEvent : IDomainEvent { }
 
-    private sealed class TrackingHandler : IEventHandler<TestEvent>
+    private sealed class TrackingHandler : IDomainEventHandler<TestEvent>
     {
         public List<TestEvent> Received { get; } = new();
 
@@ -19,7 +20,7 @@ public sealed class DomainEventDispatcherTests
         }
     }
 
-    private sealed class ThrowingHandler : IEventHandler<TestEvent>
+    private sealed class ThrowingHandler : IDomainEventHandler<TestEvent>
     {
         public Task HandleAsync(TestEvent domainEvent, CancellationToken cancellationToken)
             => throw new InvalidOperationException("boom");
@@ -32,9 +33,9 @@ public sealed class DomainEventDispatcherTests
         var handler = new TrackingHandler();
 
         var sp = new FakeServiceProvider();
-        sp.AddHandler<IEventHandler<TestEvent>>(handler);
+        sp.AddHandler<IDomainEventHandler<TestEvent>>(handler);
 
-        var dispatcher = new EventDispatcher(sp);
+        var dispatcher = new DomainEventDispatcher(sp);
 
         await dispatcher.DispatchAsync(evt);
 
@@ -49,10 +50,10 @@ public sealed class DomainEventDispatcherTests
         var h2 = new TrackingHandler();
 
         var sp = new FakeServiceProvider();
-        sp.AddHandler<IEventHandler<TestEvent>>(h1);
-        sp.AddHandler<IEventHandler<TestEvent>>(h2);
+        sp.AddHandler<IDomainEventHandler<TestEvent>>(h1);
+        sp.AddHandler<IDomainEventHandler<TestEvent>>(h2);
 
-        var dispatcher = new EventDispatcher(sp);
+        var dispatcher = new DomainEventDispatcher(sp);
 
         await dispatcher.DispatchAsync(evt);
 
@@ -67,9 +68,9 @@ public sealed class DomainEventDispatcherTests
         var handler = new ThrowingHandler();
 
         var sp = new FakeServiceProvider();
-        sp.AddHandler<IEventHandler<TestEvent>>(handler);
+        sp.AddHandler<IDomainEventHandler<TestEvent>>(handler);
 
-        var dispatcher = new EventDispatcher(sp);
+        var dispatcher = new DomainEventDispatcher(sp);
 
         Func<Task> act = () => dispatcher.DispatchAsync(evt);
 
@@ -83,7 +84,7 @@ public sealed class DomainEventDispatcherTests
     {
         var evt = new TestEvent();
         var sp = new FakeServiceProvider();
-        var dispatcher = new EventDispatcher(sp);
+        var dispatcher = new DomainEventDispatcher(sp);
 
         Func<Task> act = () => dispatcher.DispatchAsync(evt);
 

@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Frank.Abstractions.UnitOfWork;
+using Frank.Core.Application.Abstractions.UnitOfWork;
 
 namespace Frank.TestUtilities.Fakes;
 

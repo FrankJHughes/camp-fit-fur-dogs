@@ -1,9 +1,9 @@
 using FluentAssertions;
-using Frank.Api.SecurityHeaders;
+using Frank.Core.Api.Middleware.SecurityHeaders;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace Frank.Api.Tests.SecurityHeaders;
+namespace Frank.Core.Api.Tests.SecurityHeaders;
 
 public sealed class SecurityHeadersMiddlewareTests
 {

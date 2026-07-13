@@ -213,9 +213,9 @@ Errors must be:
 ## 10.1 Frank Authentication Callback Pipeline
 
 ````text
-FrankAuthCallbackRequest
+OidcCallbackRequest
     → OidcAuthCallbackContext
-        → FrankAuthCallbackResult
+        → OidcCallbackResult
 ````
 
 Frank pipeline performs:
@@ -232,9 +232,9 @@ All pure protocol logic.
 ## 10.2 Application Authentication Callback Pipeline
 
 ````text
-ApplicationAuthCallbackRequest
-    → ApplicationAuthCallbackContext
-        → ApplicationAuthCallbackResult
+SaveCallbackRequest
+    → SaveCallbackContext
+        → SaveCallbackResult
 ````
 
 Application pipeline performs:

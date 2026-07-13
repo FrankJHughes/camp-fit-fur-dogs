@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Frank.Application.Abstractions.Users.FindUserByExternalId;
+using Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
 
 namespace Frank.TestUtilities.Fakes;
 

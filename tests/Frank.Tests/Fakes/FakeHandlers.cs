@@ -1,5 +1,5 @@
-using Frank.Abstractions.Command;
-using Frank.Abstractions.Query;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Query;
 
 namespace Frank.Tests.Fakes;
 

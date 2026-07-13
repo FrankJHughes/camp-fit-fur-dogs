@@ -56,7 +56,7 @@ Each step receives an immutable context and returns a new immutable context.
 The callback system is registered via:
 
 ```csharp
-services.AddFrankAuthCallback();
+services.AddOidcCallback();
 ```
 
 This registers:
@@ -105,7 +105,7 @@ The callback handler must:
   - nonce  
   - state  
 - extract required claims  
-- produce a `FrankAuthCallbackResult`  
+- produce a `OidcCallbackResult`  
 
 The handler must **not**:
 

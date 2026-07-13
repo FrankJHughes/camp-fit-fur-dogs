@@ -40,7 +40,7 @@ Zones determine which test suites run.
 ## Backend Zone
 Paths:
 
-- `src/CampFitFurDogs.*/**`  
+- `src/CampFitFurDogs/*/**`  
 - `tests/CampFitFurDogs.*/**`
 
 Triggers:

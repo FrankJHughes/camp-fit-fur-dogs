@@ -4,11 +4,11 @@ using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Dogs;
 using FluentValidation;
-using Frank;
-using Frank.Abstractions.Command;
-using Frank.Abstractions.UnitOfWork;
-using Frank.Command;
-using Frank.Domain.Users;
+using Frank.Core.Application;
+using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.UnitOfWork;
+using Frank.Core.Application.Command;
+using Frank.Identity.Domain.Users;
 using Frank.TestUtilities.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,7 +22,7 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddFrankCommand([
+        services.AddFrankCommands([
             typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
         ]);
 
@@ -47,7 +47,7 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddFrank(
+        services.AddFrankValidators(
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
         // Provide required fakes so handlers/validators can be constructed

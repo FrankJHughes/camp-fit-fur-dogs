@@ -12,7 +12,7 @@ export function useRegisterDog() {
     run: (values) => {
       return registerDog(values);
     },
-    onSuccess: () => router.push('/api/dogs/success'),
+    onSuccess: () => router.push('/dogs/register/success'),
   });
 
   return { command };

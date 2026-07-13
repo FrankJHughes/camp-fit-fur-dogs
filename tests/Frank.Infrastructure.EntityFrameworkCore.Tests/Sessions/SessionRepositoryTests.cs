@@ -1,15 +1,15 @@
 using CampFitFurDogs.Infrastructure.Sessions;
 using FluentAssertions;
-using Frank.Domain.Sessions;
-using Frank.Domain.Users;
-using Frank.Infrastructure.EntityFrameworkCore.Persistence;
-using Frank.Infrastructure.EntityFrameworkCore.Users;
+using Frank.Identity.Domain.Sessions;
+using Frank.Identity.Domain.Users;
+using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.Users;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Sessions;
+namespace Frank.Core.EntityFrameworkCore.Tests.Sessions;
 
 public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentityDbContext>>
 {

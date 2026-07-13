@@ -47,7 +47,7 @@ Test creation, invariants, and domain event emission.
 ### GREEN — add production code
 
 ````text
-src/CampFitFurDogs.Domain/<Feature>/
+src/CampFitFurDogs/Domain/<Feature>/
     <Entity>.cs
     <ValueObject>.cs
     <Entity><Action>DomainEvent.cs
@@ -93,7 +93,7 @@ Mock the repository. Assert:
 ### GREEN — abstractions + handler
 
 ````text
-src/CampFitFurDogs.Application/Abstractions/<Feature>/
+src/CampFitFurDogs/Application/Abstractions/<Feature>/
     <UseCase>Command.cs
     <UseCase>Result.cs
     I<Entity>Repository.cs   # only if first slice for this aggregate
@@ -102,7 +102,7 @@ src/CampFitFurDogs.Application/Abstractions/<Feature>/
 Then:
 
 ````text
-src/CampFitFurDogs.Application/<Feature>/<UseCase>/
+src/CampFitFurDogs/Application/<Feature>/<UseCase>/
     <UseCase>CommandHandler.cs
     <UseCase>CommandValidator.cs
 ````
@@ -129,7 +129,7 @@ Uses `PostgresFixture` (Testcontainers).
 ### GREEN — repository + configuration
 
 ````text
-src/CampFitFurDogs.Infrastructure/<Feature>/
+src/CampFitFurDogs/Infrastructure/<Feature>/
     <Entity>Repository.cs
     <Entity>Configuration.cs
 ````
@@ -153,7 +153,7 @@ tests/CampFitFurDogs.Api.Tests/<Feature>/<UseCase>EndpointTests.cs
 ### GREEN — endpoint + request DTO
 
 ````text
-src/CampFitFurDogs.Api/<Feature>/
+src/CampFitFurDogs/Api/<Feature>/
     <UseCase>Endpoint.cs
     <UseCase>Request.cs
 ````
@@ -267,7 +267,7 @@ tests/CampFitFurDogs.Application.Tests/<Feature>/<UseCase>/<UseCase>HandlerTests
 ### GREEN — abstractions + handler
 
 ````text
-src/CampFitFurDogs.Application/Abstractions/<Feature>/
+src/CampFitFurDogs/Application/Abstractions/<Feature>/
     <UseCase>Query.cs
     <UseCase>Response.cs
     I<UseCase>Reader.cs
@@ -276,7 +276,7 @@ src/CampFitFurDogs.Application/Abstractions/<Feature>/
 Then:
 
 ````text
-src/CampFitFurDogs.Application/<Feature>/<UseCase>/
+src/CampFitFurDogs/Application/<Feature>/<UseCase>/
     <UseCase>Handler.cs
     <UseCase>QueryValidator.cs
 ````
@@ -300,7 +300,7 @@ tests/CampFitFurDogs.Infrastructure.Tests/<Feature>/<UseCase>ReaderTests.cs
 ### GREEN — reader implementation
 
 ````text
-src/CampFitFurDogs.Infrastructure/<Feature>/
+src/CampFitFurDogs/Infrastructure/<Feature>/
     <UseCase>Reader.cs
 ````
 

@@ -40,7 +40,7 @@ full coverage for cross-cutting changes.
 ### Path detection
 - [ ] CI workflow detects which paths changed in the PR (compared to the base branch)
 - [ ] Changed paths are classified into zones:
-  - **backend**: `src/CampFitFurDogs.*/**`, `tests/CampFitFurDogs.*/**`
+  - **backend**: `src/CampFitFurDogs/*/**`, `tests/CampFitFurDogs.*/**`
   - **frontend**: `frontend/**`
   - **shared-kernel**: `src/Frank/**`, `tests/Frank.*/**`
   - **infra**: `.github/**`, `Makefile`, `docker-compose*`, `*.sln`

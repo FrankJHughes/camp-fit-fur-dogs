@@ -127,9 +127,9 @@ Frank owns the OIDC protocol.
 
 ````csharp
 IImmutableContextBuilder<
-    FrankAuthCallbackRequest,
+    OidcCallbackRequest,
     OidcAuthCallbackContext,
-    FrankAuthCallbackResult>
+    OidcCallbackResult>
 ````
 
 ## Responsibilities
@@ -164,9 +164,9 @@ Application owns identity + session + redirect logic.
 
 ````csharp
 IImmutableContextBuilder<
-    ApplicationAuthCallbackRequest,
-    ApplicationAuthCallbackContext,
-    ApplicationAuthCallbackContextBuilderResult>
+    SaveCallbackRequest,
+    SaveCallbackContext,
+    SaveCallbackContextBuilderResult>
 ````
 
 ## Responsibilities

@@ -4,7 +4,7 @@ using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
-using Frank.Domain.Users;
+using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.EditDogProfile;
 

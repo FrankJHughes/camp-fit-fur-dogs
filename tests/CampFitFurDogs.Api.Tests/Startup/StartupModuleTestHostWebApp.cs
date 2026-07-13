@@ -1,4 +1,4 @@
-using Frank.Abstractions.Startup;
+using Frank.Core.Application.Abstractions.Startup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;

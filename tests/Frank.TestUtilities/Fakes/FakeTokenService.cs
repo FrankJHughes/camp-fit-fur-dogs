@@ -1,7 +1,7 @@
 using System;
-using Frank.Application.Abstractions.Authentication;
-using Frank.Application.Abstractions.Identity;
-using Frank.Domain.Sessions;
+using Frank.Core.Application.Abstractions.Authentication;
+using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Domain.Sessions;
 
 namespace Frank.TestUtilities.Fakes;
 

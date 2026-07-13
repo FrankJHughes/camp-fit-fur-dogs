@@ -1,7 +1,7 @@
-using Frank.Infrastructure.EntityFrameworkCore.Configurations;
+using Frank.Core.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
+namespace Frank.Core.EntityFrameworkCore.Tests.Fakes;
 
 public sealed class FakeAggregateConfiguration
     : AggregateRootConfiguration<FakeAggregate, FakeAggregateId>

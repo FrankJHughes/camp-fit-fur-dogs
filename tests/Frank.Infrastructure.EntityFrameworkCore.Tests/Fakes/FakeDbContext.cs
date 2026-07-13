@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Frank.Infrastructure.EntityFrameworkCore.Tests.Fakes;
+namespace Frank.Core.EntityFrameworkCore.Tests.Fakes;
 
 public sealed class FakeDbContext : DbContext
 {

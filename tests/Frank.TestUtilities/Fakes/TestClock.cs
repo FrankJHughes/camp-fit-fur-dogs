@@ -1,5 +1,5 @@
 using System;
-using Frank.Abstractions.Time;
+using Frank.Core.Application.Abstractions.Time;
 
 namespace Frank.TestUtilities.Fakes;
 

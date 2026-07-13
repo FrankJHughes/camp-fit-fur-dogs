@@ -1,5 +1,4 @@
-using Frank.Abstractions.Event;
-using Frank.Domain;
+using Frank.Core.Domain;
 
 namespace Frank.Tests.Fakes;
 
@@ -18,7 +17,7 @@ public sealed class FakeAggregateWithEvents : AggregateRoot<FakeAggregateId>
     public void RaiseEvent(string message)
         => RaiseDomainEvent(new FakeDomainEvent(message));
 
-    public IReadOnlyCollection<IEvent> DequeueEvents()
+    public IReadOnlyCollection<IDomainEvent> DequeueEvents()
     {
         var events = DomainEvents.ToList();
         ClearDomainEvents();

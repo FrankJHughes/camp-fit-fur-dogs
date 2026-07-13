@@ -419,6 +419,8 @@
         "dependencies": {
           "CampFitFurDogs.Domain": "[1.0.0, )",
           "FluentValidation": "[12.1.1, )",
+          "Frank.Core.Application": "[1.0.0, )",
+          "Frank.Identity.Application": "[1.0.0, )",
           "Microsoft.Extensions.Configuration": "[10.0.0, )",
           "Microsoft.Extensions.DependencyInjection": "[10.0.0, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.0.0, )",
@@ -430,7 +432,8 @@
         "type": "Project",
         "dependencies": {
           "BCrypt.Net-Next": "[4.1.0, )",
-          "Frank": "[1.0.0, )"
+          "Frank.Core.Application": "[1.0.0, )",
+          "Frank.Identity.Domain": "[1.0.0, )"
         }
       },
       "campfitfurdogs.infrastructure": {
@@ -438,8 +441,9 @@
         "dependencies": {
           "CampFitFurDogs.Application": "[1.0.0, )",
           "CampFitFurDogs.Domain": "[1.0.0, )",
-          "Frank.Infrastructure": "[1.0.0, )",
-          "Frank.Infrastructure.EntityFrameworkCore": "[1.0.0, )",
+          "Frank.Core.Domain": "[1.0.0, )",
+          "Frank.Core.Infrastructure": "[1.0.0, )",
+          "Frank.Identity.EntityFrameworkCore": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[10.0.0, )",
           "Microsoft.Extensions.Configuration": "[10.0.0, )",
@@ -451,7 +455,16 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
         }
       },
-      "frank": {
+      "frank.core.application": {
+        "type": "Project",
+        "dependencies": {
+          "FluentValidation": "[12.1.1, )",
+          "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
+          "Frank.Core.Domain": "[1.0.0, )",
+          "Frank.Identity.Domain": "[1.0.0, )"
+        }
+      },
+      "frank.core.domain": {
         "type": "Project",
         "dependencies": {
           "BCrypt.Net-Next": "[4.1.0, )",
@@ -463,16 +476,47 @@
           "System.IdentityModel.Tokens.Jwt": "[8.1.0, )"
         }
       },
-      "frank.infrastructure": {
+      "frank.core.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
-          "Frank": "[1.0.0, )"
+          "Frank.Core.Application": "[1.0.0, )",
+          "Frank.Core.Domain": "[1.0.0, )",
+          "Microsoft.EntityFrameworkCore": "[10.0.0, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
         }
       },
-      "frank.infrastructure.entityframeworkcore": {
+      "frank.core.infrastructure": {
         "type": "Project",
         "dependencies": {
-          "Frank": "[1.0.0, )",
+          "Frank.Core.Application": "[1.0.0, )",
+          "Frank.Core.Domain": "[1.0.0, )",
+          "Frank.Identity.Application": "[1.0.0, )",
+          "Microsoft.Extensions.Hosting": "[10.0.0, )"
+        }
+      },
+      "frank.identity.application": {
+        "type": "Project",
+        "dependencies": {
+          "FluentValidation": "[12.1.1, )",
+          "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
+          "Frank.Core.Application": "[1.0.0, )",
+          "Frank.Identity.Domain": "[1.0.0, )"
+        }
+      },
+      "frank.identity.domain": {
+        "type": "Project",
+        "dependencies": {
+          "Frank.Core.Domain": "[1.0.0, )"
+        }
+      },
+      "frank.identity.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Frank.Core.Application": "[1.0.0, )",
+          "Frank.Core.EntityFrameworkCore": "[1.0.0, )",
+          "Frank.Identity.Application": "[1.0.0, )",
+          "Frank.Identity.Domain": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"

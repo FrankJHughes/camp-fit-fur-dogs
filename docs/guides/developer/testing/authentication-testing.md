@@ -170,7 +170,7 @@ These tests verify:
 ### Application Pipeline Test Example
 
 ```csharp
-public class ApplicationAuthCallbackPipelineTests
+public class SaveCallbackPipelineTests
 {
     [Fact]
     public async Task Pipeline_CreatesSession_And_ComputesCookieValue()

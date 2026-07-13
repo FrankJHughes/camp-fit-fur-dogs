@@ -129,7 +129,7 @@ The pipeline is implemented using the **ImmutableContextBuilder** pattern.
 
 ````text
 Application/Authentication/Callback/
-    ApplicationAuthCallbackPipeline.cs
+    SaveCallbackPipeline.cs
     IdentityMappingBehavior.cs
     OwnerResolutionBehavior.cs
     CreateUserBehavior.cs

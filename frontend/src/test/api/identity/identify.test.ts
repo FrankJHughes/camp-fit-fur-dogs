@@ -22,7 +22,7 @@ describe('identify', () => {
 
     const result = await identify();
 
-    expect(mockGet).toHaveBeenCalledWith('/api/identity');
+    expect(mockGet).toHaveBeenCalledWith('/identity');
 
     expect(result).toEqual({
       success: true,

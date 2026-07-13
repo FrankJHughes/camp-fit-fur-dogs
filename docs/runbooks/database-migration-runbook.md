@@ -3,7 +3,7 @@
 ## Add a migration
 
 \\\ash
-cd src/CampFitFurDogs.Infrastructure
+cd src/CampFitFurDogs/Infrastructure
 dotnet ef migrations add <Name>
 \\\
 
@@ -25,4 +25,4 @@ Handled by Render during deployment.
 
 \\\ash
 dotnet ef database update <PreviousMigration>
-\\\
+\\\

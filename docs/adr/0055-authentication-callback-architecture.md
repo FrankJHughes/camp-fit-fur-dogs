@@ -55,9 +55,9 @@ Implemented as:
 
 ```
 IImmutableContextBuilder<
-    FrankAuthCallbackRequest,
+    OidcCallbackRequest,
     OidcAuthCallbackContext,
-    FrankAuthCallbackResult>
+    OidcCallbackResult>
 ```
 
 ### Responsibilities
@@ -87,9 +87,9 @@ Implemented as:
 
 ```
 IImmutableContextBuilder<
-    ApplicationAuthCallbackRequest,
-    ApplicationAuthCallbackContext,
-    ApplicationAuthCallbackContextBuilderResult>
+    SaveCallbackRequest,
+    SaveCallbackContext,
+    SaveCallbackContextBuilderResult>
 ```
 
 ### Responsibilities

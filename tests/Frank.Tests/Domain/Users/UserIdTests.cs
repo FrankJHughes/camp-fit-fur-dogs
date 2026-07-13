@@ -1,5 +1,5 @@
-using Frank.Domain.Users;
-using Frank.Domain.Users.Exceptions;
+using Frank.Identity.Domain.Users;
+using Frank.Identity.Domain.Users.Exceptions;
 
 namespace Frank.Tests.Domain.Users;
 

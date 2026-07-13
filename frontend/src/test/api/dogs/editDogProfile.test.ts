@@ -30,7 +30,7 @@ describe('editDogProfile', () => {
 
     const result = await editDogProfile(dogId, validData);
 
-    expect(mockPut).toHaveBeenCalledWith(`/api/dogs/${dogId}`, validData);
+    expect(mockPut).toHaveBeenCalledWith(`/dogs/${dogId}`, validData);
     expect(result).toEqual({ success: true });
   });
 
