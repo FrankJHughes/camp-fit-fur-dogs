@@ -19,12 +19,12 @@ describe('DogNotFound', () => {
   it('links to the dog list', () => {
     render(<DogNotFound />);
     const link = screen.getByRole('link', { name: /view your dogs/i });
-    expect(link).toHaveAttribute('href', '/api/dogs');
+    expect(link).toHaveAttribute('href', '/dogs');
   });
 
   it('links to register a new dog', () => {
     render(<DogNotFound />);
     const link = screen.getByRole('link', { name: /register a new dog/i });
-    expect(link).toHaveAttribute('href', '/api/dogs');
+    expect(link).toHaveAttribute('href', '/dogs/register');
   });
 });

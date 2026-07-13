@@ -33,7 +33,7 @@ describe('Register Dog Page', () => {
       sex: 'Male',
     });
 
-    expect(pushMock).toHaveBeenCalledWith('/dogs/success');
+    expect(pushMock).toHaveBeenCalledWith('/dogs/register/success');
   });
 
   it('displays validation errors returned by the API', async () => {
