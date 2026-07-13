@@ -245,12 +245,12 @@ jobs:
       - name: Apply Identity Migrations
         run: |
           ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
-          dotnet ef database update -s src/CampFitFurDogs/Api -p src/Frank/Core/EntityFrameworkCore
+          dotnet ef database update -s src/CampFitFurDogs/Api -p src/Frank/Identity/EntityFrameworkCore --context FrankIdentityDbContext
 
       - name: Apply Application Migrations
         run: |
           ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
-          dotnet ef database update -s src/CampFitFurDogs/Api -p src/CampFitFurDogs/Infrastructure
+          dotnet ef database update -s src/CampFitFurDogs/Api -p src/CampFitFurDogs/Infrastructure --context AppDbContext
 
       - name: Run DB Tests
         run: |
