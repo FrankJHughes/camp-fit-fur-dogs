@@ -80,7 +80,7 @@ jobs:
           projects: |
             tests/Frank.Tests
             tests/Frank.Api.Tests
-            tests/Frank.EntityFrameworkCore.Tests
+            tests/Frank.Infrastructure.EntityFrameworkCore.Tests
 
   backend:
     name: Backend Tests
