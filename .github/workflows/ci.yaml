@@ -78,9 +78,16 @@ jobs:
         uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
-            tests/Frank.Tests
-            tests/Frank.Api.Tests
-            tests/Frank.Infrastructure.EntityFrameworkCore.Tests
+            tests/Frank/Core/Domain.Tests
+            tests/Frank/Core/Application.Tests
+            tests/Frank/Core/Infrastructure.Tests
+            tests/Frank/Core/EntityFrameworkCore.Tests
+            tests/Frank/Core/Api.Tests
+            tests/Frank/Identity/Domain.Tests
+            tests/Frank/Identity/Application.Tests
+            tests/Frank/Identity/Infrastructure.Tests
+            tests/Frank/Identity/EntityFrameworkCore.Tests
+            tests/Frank/Identity/Api.Tests
 
   backend:
     name: Backend Tests
