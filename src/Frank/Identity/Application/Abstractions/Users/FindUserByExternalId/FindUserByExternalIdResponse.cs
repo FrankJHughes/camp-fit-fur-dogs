@@ -1,6 +1,6 @@
 namespace Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
 
-public record FindUsererByExternalIdResponse
+public record FindUserByExternalIdResponse
 (
     Guid Id
 );

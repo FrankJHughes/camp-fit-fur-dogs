@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\Project.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Frank\Core\Api\Frank.Core.Api.csproj" />
+  </ItemGroup>
+
+</Project>

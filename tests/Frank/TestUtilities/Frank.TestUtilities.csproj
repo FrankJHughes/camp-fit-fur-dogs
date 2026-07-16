@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Project.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Frank\Testing\Frank.Testing.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Api\CampFitFurDogs.Api.csproj" />
+  </ItemGroup>
+
+</Project>

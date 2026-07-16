@@ -1,0 +1,65 @@
+using System.Reflection;
+using Frank.Core.Application.Registration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Frank.Core.Application.Tests.Registration;
+
+public class AutoRegister_MinMaxTests
+{
+    private static readonly Assembly[] Assemblies =
+    [
+        typeof(RegistrationAttribute).Assembly
+    ];
+
+    [Fact]
+    public void AutoRegister_MinMax_Rules_Must_Be_Enforced()
+    {
+        var services = new ServiceCollection();
+        services.AddFrankValidators(Assemblies);
+
+        var provider = services.BuildServiceProvider();
+
+        var attributed =
+            from asm in Assemblies
+            from type in asm.DefinedTypes
+            let attr = type.GetCustomAttribute<RegistrationAttribute>()
+            where type.IsInterface && attr is not null
+            select (openIface: type.AsType(), attr);
+
+        var offenders = new List<string>();
+
+        foreach (var (openIface, attr) in attributed)
+        {
+            var closed =
+                from asm in Assemblies
+                from t in asm.DefinedTypes
+                where t.IsClass && !t.IsAbstract
+                from implIface in t.ImplementedInterfaces
+                where implIface.IsConstructedGenericType &&
+                      implIface.GetGenericTypeDefinition() == openIface
+                select implIface;
+
+            foreach (var closedIface in closed)
+            {
+                var implTypes =
+                    services
+                        .Where(d => d.ServiceType == closedIface)
+                        .Select(d => d.ImplementationType)
+                        .Where(t => t is not null)
+                        .Distinct()
+                        .ToList();
+
+                var count = implTypes.Count;
+
+                if (count < attr.MinRegistrationCount || count > attr.MaxRegistrationCount)
+                {
+                    offenders.Add(
+                        $"{closedIface.Name}: found {count}, expected {attr.MinRegistrationCount}-{attr.MaxRegistrationCount}");
+                }
+            }
+        }
+
+        Assert.False(offenders.Any(),
+            "Min/Max violations:\n" + string.Join("\n", offenders));
+    }
+}

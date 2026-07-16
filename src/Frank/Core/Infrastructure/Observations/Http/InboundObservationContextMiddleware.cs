@@ -1,6 +1,6 @@
 #nullable enable
 using System.Text.RegularExpressions;
-using Frank.Identity.Abstractions;
+using Frank.Identity.Application.Abstractions;
 using Frank.Core.Application.Abstractions.Observations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

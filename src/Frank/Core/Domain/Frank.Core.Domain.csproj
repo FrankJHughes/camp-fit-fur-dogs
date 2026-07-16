@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" />
-    <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.IdentityModel.Logging" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />

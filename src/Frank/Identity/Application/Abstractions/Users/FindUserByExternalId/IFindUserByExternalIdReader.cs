@@ -2,6 +2,6 @@ namespace Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
 
 public interface IFindUserByExternalIdReader
 {
-    Task<FindUsererByExternalIdResponse?> FindByExternalIdAsync(
+    Task<FindUserByExternalIdResponse?> FindByExternalIdAsync(
         string externalId, CancellationToken cancellationToken);
 }

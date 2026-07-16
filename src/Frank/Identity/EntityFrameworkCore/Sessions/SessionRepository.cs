@@ -2,7 +2,7 @@ using Frank.Identity.Domain.Sessions;
 using Frank.Identity.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace CampFitFurDogs.Infrastructure.Sessions;
+namespace Frank.Identity.EntityFrameworkCore.Sessions;
 
 public sealed class SessionRepository : ISessionRepository
 {

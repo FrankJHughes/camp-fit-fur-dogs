@@ -18,31 +18,34 @@
 
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/CampFitFurDogs.Api.Tests/CampFitFurDogs.Api.Tests.csproj" />
-    <Project Path="tests/CampFitFurDogs.Application.Tests/CampFitFurDogs.Application.Tests.csproj" />
-    <Project Path="tests/CampFitFurDogs.Architecture.Tests/CampFitFurDogs.Architecture.Tests.csproj" />
-    <Project Path="tests/CampFitFurDogs.Domain.Tests/CampFitFurDogs.Domain.Tests.csproj" />
-    <Project Path="tests/CampFitFurDogs.Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj" />
-    <Project Path="tests/CampFitFurDogs.Integration.Tests/CampFitFurDogs.Integration.Tests.csproj" />
-    <Project Path="tests/CampFitFurDogs.TestUtilities/CampFitFurDogs.TestUtilities.csproj" />
+    <Project Path="tests/CampFitFurDogs/Api.Tests/CampFitFurDogs.Api.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs/Application.Tests/CampFitFurDogs.Application.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs/Architecture.Tests/CampFitFurDogs.Architecture.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs/Domain.Tests/CampFitFurDogs.Domain.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs/Infrastructure.Tests/CampFitFurDogs.Infrastructure.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs/Integration.Tests/CampFitFurDogs.Integration.Tests.csproj" />
+    <Project Path="tests/CampFitFurDogs/TestUtilities/CampFitFurDogs.TestUtilities.csproj" />
 
-    <Project Path="tests/Frank.Api.Tests/Frank.Api.Tests.csproj" />
-    <Project Path="tests/Frank.Application.Tests/Frank.Application.Tests.csproj" />
-    <Project Path="tests/Frank.Identity/Api.Tests/Api.Tests.csproj" />
-    <Project Path="tests/Frank.Identity/Application.Tests/Application.Tests.csproj" />
-    <Project Path="tests/Frank.Identity/Domain.Tests/Domain.Tests.csproj" />
-    <Project Path="tests/Frank.Identity/EntityFrameworkCore.Tests/EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Frank.Identity/Infrastructure.Tests/Infrastructure.Tests.csproj" />
-    <Project Path="tests/Frank.Infrastructure.EntityFrameworkCore.Tests/Frank.Infrastructure.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Frank.Infrastructure.Tests/Frank.Infrastructure.Tests.csproj" />
-    <Project Path="tests/Frank.Tests/Frank.Tests.csproj" />
-    <Project Path="tests/Frank.Tests.DependencyInjection.DuplicateCommandHandlers/Frank.Tests.DependencyInjection.DuplicateCommandHandlers.csproj" />
-    <Project Path="tests/Frank.Tests.DependencyInjection.Fakes/Frank.Tests.DependencyInjection.Fakes.csproj" />
-    <Project Path="tests/Frank.Tests.EmptyAssembly/Frank.Tests.EmptyAssembly.csproj" />
-    <Project Path="tests/Frank.TestUtilities/Frank.TestUtilities.csproj" />
+    <Project Path="tests/Frank/Core/Api.Tests/Frank.Core.Api.Tests.csproj" />
+    <Project Path="tests/Frank/Core/Application.Tests/Frank.Core.Application.Tests.csproj" />
+    <Project Path="tests/Frank/Core/Domain.Tests/Frank.Core.Domain.Tests.csproj" />
+    <Project Path="tests/Frank/Core/EntityFrameworkCore.Tests/Frank.Core.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Frank/Core/Infrastructure.Tests/Frank.Core.Infrastructure.Tests.csproj" />
+
+    <Project Path="tests/Frank/Identity/Api.Tests/Frank.Identity.Api.Tests.csproj" />
+    <Project Path="tests/Frank/Identity/Application.Tests/Frank.Identity.Application.Tests.csproj" />
+    <Project Path="tests/Frank/Identity/Domain.Tests/Frank.Identity.Domain.Tests.csproj" />
+    <Project Path="tests/Frank/Identity/EntityFrameworkCore.Tests/Frank.Identity.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Frank/Identity/Infrastructure.Tests/Frank.Identity.Infrastructure.Tests.csproj" />
+
+    <Project Path="tests/Frank/TestUtilities/Frank.TestUtilities.csproj" />
+    <Project Path="tests/Frank/TestUtilities.InvalidServices/Frank.TestUtilities.InvalidServices.csproj" />
+    <Project Path="tests/Frank/TestUtilities.NoServices/Frank.TestUtilities.NoServices.csproj" />
+    <Project Path="tests/Frank/TestUtilities.ValidServices/Frank.TestUtilities.ValidServices.csproj" />
+
   </Folder>
   <Folder Name="/integration-tests/">
-    <Project Path="integration-tests/CampFitFurDogs.Api.IntegrationTests/CampFitFurDogs.Api.IntegrationTests.csproj" />
-    <Project Path="integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests/CampFitFurDogs.Infrastructure.IntegrationTests.csproj" />
+    <Project Path="integration-tests/CampFitFurDogs/Api.IntegrationTests/CampFitFurDogs.Api.IntegrationTests.csproj" />
+    <Project Path="integration-tests/CampFitFurDogs/Infrastructure.IntegrationTests/CampFitFurDogs.Infrastructure.IntegrationTests.csproj" />
   </Folder>
 </Solution>

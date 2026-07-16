@@ -2,7 +2,7 @@ using System.Diagnostics;
 using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
 using Frank.Core.Application.Abstractions.Command;
 using Frank.Core.Application.Abstractions.Endpoints;
-using Frank.Identity.Abstractions;
+using Frank.Identity.Application.Abstractions;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 

@@ -8,6 +8,15 @@
         "resolved": "4.1.0",
         "contentHash": "5YT3DKllmtkyW68PjURu/V1TOe4MKiByKwsRNVcfYE1S5KuFTeozdmKzyNzolKiQF391OXCaQtINvYT3j1ERzQ=="
       },
+      "Microsoft.Extensions.DependencyInjection": {
+        "type": "Direct",
+        "requested": "[10.0.0, )",
+        "resolved": "10.0.0",
+        "contentHash": "f0RBabswJq+gRu5a+hWIobrLWiUYPKMhCD9WO3sYBAdSy3FFH14LMvLVFZc2kPSCimBLxSuitUhsd6tb0TAY6A==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0"
+        }
+      },
       "Microsoft.Bcl.TimeProvider": {
         "type": "Transitive",
         "resolved": "8.0.1",
@@ -52,7 +61,6 @@
       "frank.core.application": {
         "type": "Project",
         "dependencies": {
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Frank.Core.Domain": "[1.0.0, )",
           "Frank.Identity.Domain": "[1.0.0, )"
@@ -62,7 +70,6 @@
         "type": "Project",
         "dependencies": {
           "BCrypt.Net-Next": "[4.1.0, )",
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Microsoft.IdentityModel.Logging": "[8.1.0, )",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "[8.1.0, )",

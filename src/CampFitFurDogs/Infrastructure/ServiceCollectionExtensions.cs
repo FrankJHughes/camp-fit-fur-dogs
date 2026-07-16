@@ -3,7 +3,7 @@ using CampFitFurDogs.Infrastructure.Persistence;
 using Frank.Core.Application.Abstractions.Audit;
 using Frank.Core.Infrastructure.Audit;
 using Frank.Core.Infrastructure.Environment;
-using Frank.Core.Infrastructure.Identity;
+using Frank.Identity.Infrastructure;
 using Frank.Core.Infrastructure.Time;
 using Frank.Identity.EntityFrameworkCore.Persistence;
 using Frank.Identity.EntityFrameworkCore.Sessions;

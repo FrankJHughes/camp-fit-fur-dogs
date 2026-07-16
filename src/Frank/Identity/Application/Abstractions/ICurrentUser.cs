@@ -1,4 +1,4 @@
-namespace Frank.Identity.Abstractions;
+namespace Frank.Identity.Application.Abstractions;
 
 public interface ICurrentUser
 {

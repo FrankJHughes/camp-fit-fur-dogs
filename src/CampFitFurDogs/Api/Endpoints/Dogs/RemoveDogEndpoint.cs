@@ -2,7 +2,7 @@ using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
 using CampFitFurDogs.Application.Abstractions.Dog.RemoveDog;
 using Frank.Core.Application.Abstractions.Command;
 using Frank.Core.Application.Abstractions.Endpoints;
-using Frank.Identity.Abstractions;
+using Frank.Identity.Application.Abstractions;
 using Frank.Core.Application.Abstractions.Query;
 using Microsoft.AspNetCore.Mvc;
 

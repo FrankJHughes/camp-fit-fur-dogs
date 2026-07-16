@@ -353,7 +353,7 @@ Product projects add an analyzer reference:
 <!-- In Directory.Build.props or each .csproj -->
 <ItemGroup>
   <ProjectReference
-    Include="..\Frank.Analyzers\CampFitFurDogs\ integration
+    Include="..\..\Frank.Analyzers\CampFitFurDogs\ integration
 
 Product projects add an analyzer reference:
 

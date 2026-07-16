@@ -2,12 +2,6 @@
   "version": 2,
   "dependencies": {
     "net10.0": {
-      "FluentValidation": {
-        "type": "Direct",
-        "requested": "[12.1.1, )",
-        "resolved": "12.1.1",
-        "contentHash": "EPpkIe1yh1a0OXyC100oOA8WMbZvqUu5plwhvYcb7oSELfyUZzfxV48BLhvs3kKo4NwG7MGLNgy1RJiYtT8Dpw=="
-      },
       "Microsoft.Extensions.Configuration": {
         "type": "Direct",
         "requested": "[10.0.0, )",
@@ -135,7 +129,6 @@
       "frank.core.application": {
         "type": "Project",
         "dependencies": {
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Frank.Core.Domain": "[1.0.0, )",
           "Frank.Identity.Domain": "[1.0.0, )"
@@ -145,7 +138,6 @@
         "type": "Project",
         "dependencies": {
           "BCrypt.Net-Next": "[4.1.0, )",
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Microsoft.IdentityModel.Logging": "[8.1.0, )",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "[8.1.0, )",
@@ -156,7 +148,6 @@
       "frank.identity.application": {
         "type": "Project",
         "dependencies": {
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Identity.Domain": "[1.0.0, )"
@@ -173,6 +164,12 @@
         "requested": "[4.1.0, )",
         "resolved": "4.1.0",
         "contentHash": "5YT3DKllmtkyW68PjURu/V1TOe4MKiByKwsRNVcfYE1S5KuFTeozdmKzyNzolKiQF391OXCaQtINvYT3j1ERzQ=="
+      },
+      "FluentValidation": {
+        "type": "CentralTransitive",
+        "requested": "[12.1.1, )",
+        "resolved": "12.1.1",
+        "contentHash": "EPpkIe1yh1a0OXyC100oOA8WMbZvqUu5plwhvYcb7oSELfyUZzfxV48BLhvs3kKo4NwG7MGLNgy1RJiYtT8Dpw=="
       },
       "FluentValidation.DependencyInjectionExtensions": {
         "type": "CentralTransitive",

@@ -14,7 +14,7 @@ public sealed class FindUserByExternalIdReader : IFindUserByExternalIdReader
         _db = db;
     }
 
-    public Task<FindUsererByExternalIdResponse?> FindByExternalIdAsync(
+    public Task<FindUserByExternalIdResponse?> FindByExternalIdAsync(
         string externalId,
         CancellationToken ct)
     {
@@ -24,7 +24,7 @@ public sealed class FindUserByExternalIdReader : IFindUserByExternalIdReader
                 c.ExternalId != null &&
                 c.ExternalId.Value == externalId)
             .Select(c =>
-                new FindUsererByExternalIdResponse(
+                new FindUserByExternalIdResponse(
                     Id: c.Id.Value))
             .SingleOrDefaultAsync(ct);
     }

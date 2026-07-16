@@ -1,4 +1,4 @@
-using Frank.Identity.Abstractions;
+using Frank.Identity.Application.Abstractions;
 using Frank.Core.Application.Abstractions.ImmutableContext;
 using Frank.Identity.Application.Abstractions.Callback.Save;
 

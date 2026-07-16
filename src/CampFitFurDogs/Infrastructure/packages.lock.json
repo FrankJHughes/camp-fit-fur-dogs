@@ -682,7 +682,6 @@
         "type": "Project",
         "dependencies": {
           "CampFitFurDogs.Domain": "[1.0.0, )",
-          "FluentValidation": "[12.1.1, )",
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Identity.Application": "[1.0.0, )",
           "Microsoft.Extensions.Configuration": "[10.0.0, )",
@@ -703,7 +702,6 @@
       "frank.core.application": {
         "type": "Project",
         "dependencies": {
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Frank.Core.Domain": "[1.0.0, )",
           "Frank.Identity.Domain": "[1.0.0, )"
@@ -713,7 +711,6 @@
         "type": "Project",
         "dependencies": {
           "BCrypt.Net-Next": "[4.1.0, )",
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Microsoft.IdentityModel.Logging": "[8.1.0, )",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "[8.1.0, )",
@@ -743,7 +740,6 @@
       "frank.identity.application": {
         "type": "Project",
         "dependencies": {
-          "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Identity.Domain": "[1.0.0, )"
@@ -765,6 +761,14 @@
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
+        }
+      },
+      "frank.identity.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "Frank.Core.Application": "[1.0.0, )",
+          "Frank.Identity.Application": "[1.0.0, )",
+          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )"
         }
       },
       "BCrypt.Net-Next": {
@@ -906,7 +910,7 @@
       },
       "SQLitePCLRaw.lib.e_sqlite3": {
         "type": "CentralTransitive",
-        "requested": "[2.1.15, )",
+        "requested": "[3.50.3, )",
         "resolved": "3.50.3",
         "contentHash": "tVyhqQ8wxgedWiiPFChyZhE8I3PkOM/AE1azsj1qsdYUws13ONBFyi3aDxju4tD2kzedB2q5+50WrTyY0h2gMQ=="
       },

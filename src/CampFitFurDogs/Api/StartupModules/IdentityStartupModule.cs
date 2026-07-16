@@ -1,5 +1,5 @@
 using Frank.Core.Application.Abstractions.Startup;
-using Frank.Core.Infrastructure.Identity;
+using Frank.Identity.Infrastructure;
 
 namespace CampFitFurDogs.Api.StartupModules;
 

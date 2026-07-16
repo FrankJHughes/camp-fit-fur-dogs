@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Project.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Frank\Identity\Domain\Frank.Identity.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Frank\Identity\EntityFrameworkCore\Frank.Identity.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
+    <ProjectReference Include="..\TestUtilities\CampFitFurDogs.TestUtilities.csproj" />
+    <ProjectReference Include="..\..\Frank\TestUtilities\Frank.TestUtilities.csproj" />
+  </ItemGroup>
+
+</Project>

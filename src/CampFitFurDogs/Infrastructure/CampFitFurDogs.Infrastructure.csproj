@@ -11,7 +11,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
@@ -22,6 +21,7 @@
     <ProjectReference Include="..\..\Frank\Core\Domain\Frank.Core.Domain.csproj" />
     <ProjectReference Include="..\..\Frank\Core\Infrastructure\Frank.Core.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Frank\Identity\EntityFrameworkCore\Frank.Identity.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\Frank\Identity\Infrastructure\Frank.Identity.Infrastructure.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

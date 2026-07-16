@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\Project.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Frank\Identity\Domain\Frank.Identity.Domain.csproj" />
+    <ProjectReference Include="..\..\..\..\tests\Frank\TestUtilities\Frank.TestUtilities.csproj" />
+  </ItemGroup>
+
+</Project>

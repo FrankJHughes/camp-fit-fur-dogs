@@ -34,7 +34,7 @@ using CampFitFurDogs.Application.Exceptions;
 using Frank.Core.Application.Abstractions;
 using Microsoft.AspNetCore.Http;
 
-namespace Frank.Core.Infrastructure.Identity;
+namespace Frank.Identity.Infrastructure;
 
 public sealed class AuthenticatedUser : ICurrentUser
 {

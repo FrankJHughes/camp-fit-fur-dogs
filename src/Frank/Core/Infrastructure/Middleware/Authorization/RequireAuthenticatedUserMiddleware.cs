@@ -1,6 +1,6 @@
 #nullable enable
 using System.Net;
-using Frank.Identity.Abstractions;
+using Frank.Identity.Application.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\Project.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Frank\Identity\EntityFrameworkCore\Frank.Identity.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Frank\Identity\Infrastructure\Frank.Identity.Infrastructure.csproj" />
+    <!-- <ProjectReference Include="..\..\TestUtilities.ValidServices\Frank.TestUtilities.ValidServices.csproj" />
+    <ProjectReference Include="..\..\TestUtilities.NoServices\Frank.TestUtilities.NoServices.csproj" />
+    <ProjectReference Include="..\..\TestUtilities\Frank.TestUtilities.csproj" /> -->
+  </ItemGroup>
+
+</Project>
