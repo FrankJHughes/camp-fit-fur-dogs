@@ -107,11 +107,11 @@ jobs:
         uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
-            tests/CampFitFurDogs.Api.Tests
-            tests/CampFitFurDogs.Application.Tests
-            tests/CampFitFurDogs.Domain.Tests
-            tests/CampFitFurDogs.Infrastructure.Tests
-            tests/CampFitFurDogs.Integration.Tests
+            tests/CampFitFurDogs/Api.Tests
+            tests/CampFitFurDogs/Application.Tests
+            tests/CampFitFurDogs/Domain.Tests
+            tests/CampFitFurDogs/Infrastructure.Tests
+            tests/CampFitFurDogs/Integration.Tests
 
   frontend:
     name: Frontend Tests
