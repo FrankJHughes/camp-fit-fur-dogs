@@ -26,7 +26,7 @@ Each step links to the section where it is implemented.
 # 1. End‑to‑End Execution Flow (Swimlane Diagram)
 
 ```mermaid
-flowchart LR
+flowchart TD
     %% Lanes
     subgraph API["API Layer"]
         A1["1. GET /api/identity/callback"]
@@ -63,7 +63,7 @@ flowchart LR
         end
     end
 
-    %% Flow
+    %% Flow (Top → Down)
     A1 --> A2 --> A3 --> O4a --> O4b --> O4c --> OResult --> S5
     S5 --> S5a --> S5b --> S5c --> A6 --> A7
 ```
