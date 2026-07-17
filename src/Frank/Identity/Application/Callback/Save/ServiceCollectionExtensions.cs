@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Core.Application.Abstractions.Authentication;
 using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.Core.Application.Settings;
@@ -9,7 +9,7 @@ namespace Frank.Identity.Application.Callback.Save;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddSaveCallback(this IServiceCollection services)
+    public static IServiceCollection AddFrankIdentityCallbackSave(this IServiceCollection services)
     {
 
         services
@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IImmutableContextBuildStep<SaveCallbackContext>, ResolveUserStep>();
 
         services.AddTransient<IImmutableContextBuilder<SaveCallbackContextBuilderRequest, SaveCallbackContext, SaveCallbackContextBuilderResult>,
-            SaveCallbackContextBuilder>();
+            CallbackSaveContextBuilder>();
 
         return services;
     }

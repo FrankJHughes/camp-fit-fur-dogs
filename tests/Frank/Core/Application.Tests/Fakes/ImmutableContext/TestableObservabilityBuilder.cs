@@ -1,5 +1,5 @@
-using Frank.Core.Application.Abstractions.ImmutableContext;
-using Frank.Core.Application.ImmutableContext;
+using Frank.Core.Application.Abstractions.ImmutableContexts;
+using Frank.Core.Application.ImmutableContexts;
 using Frank.TestUtilities.Fakes.Observability;
 
 namespace Frank.Core.Application.Tests.Fakes.ImmutableContext;

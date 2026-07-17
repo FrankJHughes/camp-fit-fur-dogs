@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
 using Frank.Identity.Domain.Users;

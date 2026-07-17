@@ -1,4 +1,3 @@
-using Frank.Core.Application.Abstractions.Errors;
 using Frank.Core.Application.Registration;
 using Microsoft.Extensions.DependencyInjection;
 

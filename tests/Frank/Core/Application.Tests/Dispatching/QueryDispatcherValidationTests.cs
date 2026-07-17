@@ -1,5 +1,5 @@
-using Frank.Core.Application.Abstractions.Query;
-using Frank.Core.Application.Query;
+using Frank.Core.Application.Abstractions.Cqrs.Queries;
+using Frank.Core.Application.Cqrs.Queries;
 using Frank.Core.Application.Tests.Fakes;
 using Frank.Core.Application.Tests.Slices;
 using Frank.Core.Application.Tests.TestInfrastructure;

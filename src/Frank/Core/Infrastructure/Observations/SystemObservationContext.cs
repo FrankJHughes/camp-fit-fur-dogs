@@ -1,6 +1,6 @@
-namespace Frank.Core.Infrastructure.Observations;
-
 using Microsoft.Extensions.Hosting;
+
+namespace Frank.Core.Infrastructure.Observations;
 
 /// <summary>
 /// Observability context for system-scope operations (startup, discovery,

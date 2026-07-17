@@ -1,4 +1,4 @@
-using Frank.Core.Application.Command;
+using Frank.Core.Application.Cqrs.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Core.Application.Tests.Registration;
@@ -12,7 +12,7 @@ public sealed class AutoRegistration_NegativeTests
 
         var services = new ServiceCollection();
 
-        Action act = () => services.AddFrankCommands([
+        Action act = () => services.AddFrankCqrsCommands([
             typeof(Frank.TestUtilities.InvalidServices.AssemblyMarker).Assembly
         ]);
 

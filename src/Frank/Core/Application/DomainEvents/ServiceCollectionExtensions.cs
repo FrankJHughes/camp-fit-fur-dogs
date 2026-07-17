@@ -2,6 +2,7 @@ using System.Reflection;
 using Frank.Core.Application.Abstractions.DomainEvents;
 using Frank.Core.Application.Registration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Frank.Core.Application.DomainEvents;
 
@@ -20,7 +21,7 @@ public static class ServiceCollectionExtensions
         IEnumerable<Assembly> assemblies,
         Action<DiscoveryOptions>? configure = null)
     {
-        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.TryAddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         var options = new DiscoveryOptions();
 

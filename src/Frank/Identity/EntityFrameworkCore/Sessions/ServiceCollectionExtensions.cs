@@ -1,4 +1,3 @@
-using Frank.Identity.EntityFrameworkCore.Sessions;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
 using Frank.Core.Application.Settings;
 using Frank.Identity.Domain.Sessions;

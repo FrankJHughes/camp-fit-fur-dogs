@@ -1,32 +1,36 @@
-using Frank.Core.Application.Command;
+using Frank.Core.Application.Cqrs.Commands;
 using Frank.Core.Application.DomainEvents;
 using Frank.Identity.Application.Callback.Oidc;
 using Frank.Identity.Application.Callback.Save;
-using Frank.Core.Application.Query;
+using Frank.Core.Application.Cqrs.Queries;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(
+    public static IServiceCollection AddApplicationLayer(
         this IServiceCollection services)
     {
-        services.AddOidcCallback(); // IImmutableContextBuilder<OidcCallbackRequest, OidcAuthCallbackContext, OidcCallbackResult>
+        // Frank.Identity
+        services.AddFrankCqrsCommands([
+            typeof(Frank.Identity.Application.AssemblyMarker).Assembly
+        ]);
+        services.AddFrankCqrsQueries([
+            typeof(Frank.Identity.Application.AssemblyMarker).Assembly
+        ]);
+        services.AddFrankIdentityCallbackOidc(); // authenticate
+        services.AddFrankIdentityCallbackSave(); // resolve user and session
 
-        services.AddSaveCallback();
-
-        services.AddFrankCommands([
-            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
-            typeof(Frank.Identity.Application.AssemblyMarker).Assembly // user commands
+        // CampFitFurDogs CQRS
+        services.AddFrankCqrsCommands([
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
+        ]);
+        services.AddFrankCqrsQueries([
+            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
         ]);
 
-        services.AddFrankQuery([
-            typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly,
-            typeof(Frank.Identity.Application.AssemblyMarker).Assembly // user queries
-        ]);
-
-        services.AddFrankDomainEvents(); // none implemented yet
+        services.AddFrankDomainEvents();
 
         return services;
     }

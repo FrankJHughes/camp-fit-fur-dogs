@@ -1,6 +1,6 @@
-using Frank.Core.Application.Abstractions.Environment;
+using Frank.Core.Application.Abstractions.EnvironmentVariables;
 using Frank.Core.Application.Abstractions.Hosting;
-using Frank.Core.Infrastructure.Environment;
+using Frank.Core.Infrastructure.EnvironmentVariables;
 
 namespace CampFitFurDogs.Api.HostingModules;
 
@@ -9,7 +9,7 @@ public sealed class RenderPrPreviewHostingModule : IHostingModule
 {
     private const string ConfigKey_DbConn = "ConnectionStrings:DefaultConnection";
     private const string ConfigKey_FrontendBaseUrl = "Frontend:BaseUrl";
-    private readonly IEnvironment _env;
+    private readonly IEnvironmentVariables _env;
     private readonly IRenderPrParser _prParser;
     private readonly IGitHubArtifactClient _artifacts;
 
@@ -27,12 +27,12 @@ public sealed class RenderPrPreviewHostingModule : IHostingModule
     public string ProviderName => "Render";
 
     public RenderPrPreviewHostingModule() : this(
-            new SystemEnvironment(),
+            new SystemEnvironmentVariables(),
             new RenderPrParser(),
             new GitHubArtifactClient())
     { }
     public RenderPrPreviewHostingModule(
-        IEnvironment env,
+        IEnvironmentVariables env,
         IRenderPrParser prParser,
         IGitHubArtifactClient artifacts)
     {

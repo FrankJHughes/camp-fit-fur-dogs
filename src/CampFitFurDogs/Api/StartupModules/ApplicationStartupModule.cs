@@ -16,7 +16,7 @@ public class ApplicationStartupModule : IStartupModule
         // - Pipeline behaviors
         // - Application services
         // - Any other Application-layer dependencies
-        services.AddApplication();
+        services.AddApplicationLayer();
     }
 
     public void Use(WebApplication app)

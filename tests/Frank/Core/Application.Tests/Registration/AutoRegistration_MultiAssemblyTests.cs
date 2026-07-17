@@ -1,7 +1,7 @@
-using Frank.Core.Application.Abstractions.Command;
-using Frank.Core.Application.Abstractions.Query;
-using Frank.Core.Application.Command;
-using Frank.Core.Application.Query;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
+using Frank.Core.Application.Abstractions.Cqrs.Queries;
+using Frank.Core.Application.Cqrs.Commands;
+using Frank.Core.Application.Cqrs.Queries;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Core.Application.Tests.Registration;
@@ -13,11 +13,11 @@ public sealed class AutoRegistration_MultiAssemblyTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankCommands([
+        services.AddFrankCqrsCommands([
             typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly
         ]);
 
-        services.AddFrankQuery([
+        services.AddFrankCqrsQueries([
             typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly
         ]);
 

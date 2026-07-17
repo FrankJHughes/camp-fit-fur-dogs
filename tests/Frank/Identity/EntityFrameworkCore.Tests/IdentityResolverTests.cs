@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
 using Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;

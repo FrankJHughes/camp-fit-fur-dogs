@@ -1,6 +1,6 @@
 using System.Reflection;
-using Frank.Core.Application.Command;
-using Frank.Core.Application.Query;
+using Frank.Core.Application.Cqrs.Commands;
+using Frank.Core.Application.Cqrs.Queries;
 using Frank.Core.Application.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,8 +18,8 @@ public class AutoRegister_ConcreteTypeTests
     public void Concrete_Types_Must_Be_Registered_When_Requested()
     {
         var services = new ServiceCollection();
-        services.AddFrankCommands(Assemblies);
-        services.AddFrankQuery(Assemblies);
+        services.AddFrankCqrsCommands(Assemblies);
+        services.AddFrankCqrsQueries(Assemblies);
 
         var descriptors = services.ToList();
         var offenders = new List<string>();

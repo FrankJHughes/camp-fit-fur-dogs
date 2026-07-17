@@ -1,5 +1,5 @@
 using System.Reflection;
-using Frank.Core.Application.Abstractions.Query;
+using Frank.Core.Application.Abstractions.Cqrs.Queries;
 
 namespace CampFitFurDogs.Architecture.Tests;
 

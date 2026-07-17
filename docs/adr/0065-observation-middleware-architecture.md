@@ -26,7 +26,7 @@ A dedicated **Observation pipeline middleware architecture** was required.
 
 ## Decision  
 
-We define a **two‑stage Observation middleware pipeline** in `Frank.Core.Infrastructure.Observations`:
+We define a **two‑stage Observation middleware pipeline** in `Frank.Core.Api.Middleware.Observations`:
 
 1. **InboundObservationContextMiddleware** — builds and stores request‑scope Observation context.
 2. **ObservationInstrumentationMiddleware** — emits events and metrics around the HTTP pipeline and surfaces errors to the Observation subsystem.

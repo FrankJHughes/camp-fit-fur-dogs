@@ -1,6 +1,6 @@
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Factories;
-using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.DomainEvents;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;

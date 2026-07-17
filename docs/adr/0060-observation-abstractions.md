@@ -29,7 +29,7 @@ This ADR defines that layer.
 We introduce a unified set of **Observation** abstractions under:
 
 - `Frank.Core.Application.Abstractions.Observations`
-- `Frank.Core.Infrastructure.Observations`
+- `Frank.Core.Api.Middleware.Observations`
 
 These abstractions provide correlation, structured events, metrics, and context propagation across all execution paths.
 
@@ -153,7 +153,7 @@ This ensures correlation continuity across external calls.
 This ADR establishes a unified Observation subsystem across:
 
 - Frank.Core.Application.Abstractions.Observations  
-- Frank.Core.Infrastructure.Observations  
+- Frank.Core.Api.Middleware.Observations  
 
 It defines:
 

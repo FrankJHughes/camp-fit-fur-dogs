@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.Errors;
+using Frank.Core.Application.Abstractions.Exceptions;
 
 namespace CampFitFurDogs.Application.Errors;
 

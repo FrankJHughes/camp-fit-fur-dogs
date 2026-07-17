@@ -1,5 +1,5 @@
 using System.Net;
-using Frank.Core.Infrastructure.Tests.Observability.Helpers;
+using Frank.TestUtilities.Helpers;
 
 namespace Frank.Core.Infrastructure.Tests.Observability;
 

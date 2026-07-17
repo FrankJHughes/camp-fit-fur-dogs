@@ -1,6 +1,5 @@
 using CampFitFurDogs.Application.Errors;
 using CampFitFurDogs.Domain.Errors;
-using Frank.Core.Application.Abstractions.Errors;
 using Frank.Core.Application.Abstractions.Exceptions;
 using Frank.Identity.Application.Abstractions;
 

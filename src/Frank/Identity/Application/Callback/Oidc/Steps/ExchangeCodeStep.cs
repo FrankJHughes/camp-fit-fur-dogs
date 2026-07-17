@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Identity.Application.Settings;
 using Microsoft.Extensions.Options;

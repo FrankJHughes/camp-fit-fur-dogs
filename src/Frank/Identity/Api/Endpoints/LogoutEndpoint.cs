@@ -1,5 +1,5 @@
 using Frank.Core.Application.Abstractions.Endpoints;
-using Frank.Core.Domain.Errors;
+using Frank.Core.Domain.Exceptions;
 using Frank.Identity.Application.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

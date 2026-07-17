@@ -1,7 +1,6 @@
 using CampFitFurDogs.Application.Errors;
-using Frank.Core.Application.Abstractions.Errors;
 using Frank.Core.Application.Abstractions.Exceptions;
-using Frank.Core.Domain.Errors;
+using Frank.Core.Domain.Exceptions;
 
 namespace CampFitFurDogs.Api.ExceptionHandlers;
 

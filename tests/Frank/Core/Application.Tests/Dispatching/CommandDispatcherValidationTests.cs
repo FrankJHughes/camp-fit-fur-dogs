@@ -1,6 +1,6 @@
 
-using Frank.Core.Application.Abstractions.Command;
-using Frank.Core.Application.Command;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
+using Frank.Core.Application.Cqrs.Commands;
 using Frank.Core.Application.Tests.Fakes;
 using Frank.Core.Application.Tests.Slices;
 using Frank.Core.Application.Tests.TestInfrastructure;

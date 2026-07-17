@@ -1,5 +1,5 @@
 
-using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
 
 namespace Frank.Core.Application.Tests.Slices;
 

@@ -1,7 +1,7 @@
-namespace Frank.Core.Infrastructure.Observations;
-
 using Frank.Core.Application.Abstractions.Observations;
 using Microsoft.Extensions.Hosting;
+
+namespace Frank.Core.Infrastructure.Observations;
 
 /// <summary>
 /// Base class for all observability contexts (request-scope and system-scope).

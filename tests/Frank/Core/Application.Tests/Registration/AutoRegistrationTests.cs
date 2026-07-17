@@ -1,9 +1,9 @@
-using Frank.Core.Application.Abstractions.Command;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.DomainEvents;
-using Frank.Core.Application.Abstractions.Query;
-using Frank.Core.Application.Command;
+using Frank.Core.Application.Abstractions.Cqrs.Queries;
+using Frank.Core.Application.Cqrs.Commands;
 using Frank.Core.Application.DomainEvents;
-using Frank.Core.Application.Query;
+using Frank.Core.Application.Cqrs.Queries;
 
 using Frank.TestUtilities.ValidServices;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +17,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankCommands(
+        services.AddFrankCqrsCommands(
             [typeof(FakeCommand).Assembly]
         );
 
@@ -32,7 +32,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankQuery(
+        services.AddFrankCqrsQueries(
             [typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly]
         );
 

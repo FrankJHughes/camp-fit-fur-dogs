@@ -1,7 +1,7 @@
 using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions;
-using Frank.Core.Application.Abstractions.Query;
+using Frank.Core.Application.Abstractions.Cqrs.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;

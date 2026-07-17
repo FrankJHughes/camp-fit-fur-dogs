@@ -1,5 +1,5 @@
 using Frank.Core.Application.Abstractions.Startup;
-using Frank.Core.Infrastructure.Observations;
+using Frank.Core.Api.Middleware.Observations;
 
 namespace CampFitFurDogs.Api.StartupModules;
 

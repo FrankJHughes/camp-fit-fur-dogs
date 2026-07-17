@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Core.Application.Abstractions.ImmutableContexts;
 
 namespace Frank.Identity.Application.Abstractions.Callback.Oidc;
 

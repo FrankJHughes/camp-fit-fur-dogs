@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.Query;
+using Frank.Core.Application.Abstractions.Cqrs.Queries;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
 using Frank.Identity.Domain.Sessions.Errors;
 

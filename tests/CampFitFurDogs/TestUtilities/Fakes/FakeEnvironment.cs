@@ -1,8 +1,8 @@
-using Frank.Core.Application.Abstractions.Environment;
+using Frank.Core.Application.Abstractions.EnvironmentVariables;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 
-public sealed class FakeEnvironment : IEnvironment
+public sealed class FakeEnvironment : IEnvironmentVariables
 {
     private readonly Dictionary<string, string?> _values = [];
 

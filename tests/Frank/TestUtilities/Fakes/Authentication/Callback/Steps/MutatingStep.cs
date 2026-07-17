@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.ImmutableContext;
+using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Identity.Application.Abstractions.Callback.Save;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 
