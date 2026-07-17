@@ -1,7 +1,7 @@
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
-using Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
+using Frank.Identity.Application.Abstractions.Users.GetUserByExternalId;
 using Frank.Identity.Infrastructure;
 
 namespace Frank.Core.EntityFrameworkCore.Tests.Identity;
@@ -12,12 +12,12 @@ public sealed class IdentityResolverTests
     // FAKES
     // ------------------------------------------------------------
 
-    private sealed class FakeReader : IFindUserByExternalIdReader
+    private sealed class FakeReader : IGetUserByExternalIdReader
     {
         public string? ReceivedExternalId { get; private set; }
-        public FindUserByExternalIdResponse? Returned { get; set; }
+        public GetUserByExternalIdResponse? Returned { get; set; }
 
-        public Task<FindUserByExternalIdResponse?> FindByExternalIdAsync(
+        public Task<GetUserByExternalIdResponse?> GetByExternalIdAsync(
             string externalId,
             CancellationToken ct)
         {
@@ -72,7 +72,7 @@ public sealed class IdentityResolverTests
 
         var reader = new FakeReader
         {
-            Returned = new FindUserByExternalIdResponse(existingId)
+            Returned = new GetUserByExternalIdResponse(existingId)
         };
 
         var dispatcher = new FakeDispatcher();

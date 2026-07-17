@@ -65,58 +65,6 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
     }
 
     [Fact]
-    public async Task GetByTokenHashAsync_existing_session_returns_session()
-    {
-        var ownerId = await SeedOwnerAsync();
-
-        SessionTokenHash tokenHash;
-
-        await using (var ctx = _fixture.CreateContext())
-        {
-            var repo = new SessionRepository(ctx);
-
-            tokenHash = SessionTokenHash.From(
-                Guid.NewGuid().ToString("N").PadLeft(64, 'b')
-            );
-
-            var session = new SessionBuilder()
-                .WithOwner(ownerId)
-                .WithTokenHash(tokenHash)
-                .CreatedAtFromFixture()
-                .Build();
-
-            await repo.CreateAsync(session, CancellationToken.None);
-            await ctx.SaveChangesAsync();
-        }
-
-        await using var readCtx = _fixture.CreateContext();
-        var readRepo = new SessionRepository(readCtx);
-
-        var retrieved = await readRepo.GetByTokenHashAsync(tokenHash, CancellationToken.None);
-
-        retrieved.Should().NotBeNull();
-        retrieved!.TokenHash.Should().Be(tokenHash);
-        retrieved.OwnerId.Should().Be(ownerId);
-        retrieved.CreatedAt.Should().Be(SessionFixtures.CreatedAt);
-        retrieved.RevokedAt.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task GetByTokenHashAsync_nonexistent_hash_returns_null()
-    {
-        await using var ctx = _fixture.CreateContext();
-        var repo = new SessionRepository(ctx);
-
-        var missingHash = SessionTokenHash.From(
-            Guid.NewGuid().ToString("N").PadLeft(64, 'c')
-        );
-
-        var result = await repo.GetByTokenHashAsync(missingHash, CancellationToken.None);
-
-        result.Should().BeNull();
-    }
-
-    [Fact]
     public async Task RevokeAsync_marks_session_as_revoked()
     {
         var ownerId = await SeedOwnerAsync();
@@ -155,8 +103,9 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
         // Assert — session still exists but is revoked
         await using (var readCtx = _fixture.CreateContext())
         {
-            var repo = new SessionRepository(readCtx);
-            var retrieved = await repo.GetByTokenHashAsync(tokenHash, CancellationToken.None);
+            var retrieved = await readCtx
+                .Set<Session>()
+                .FirstOrDefaultAsync(s => s.TokenHash == tokenHash);
 
             retrieved.Should().NotBeNull();
             retrieved!.RevokedAt.Should().NotBeNull();

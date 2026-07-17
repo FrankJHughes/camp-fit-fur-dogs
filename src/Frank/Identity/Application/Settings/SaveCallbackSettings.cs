@@ -1,4 +1,4 @@
-namespace Frank.Core.Application.Settings;
+namespace Frank.Identity.Application.Settings;
 
 public sealed class SaveCallbackSettings
 {

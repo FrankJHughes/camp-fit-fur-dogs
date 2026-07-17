@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Frank.Identity.Api.Abstractions.Endpoints;
 using Frank.Identity.Api.Endpoints;
 using Frank.Testing.Contexts;
 using Frank.TestUtilities.Contexts;
@@ -65,7 +66,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         var response = await client.GetAsync("/api/identity/login");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        var loginResponse = await response.Content.ReadFromJsonAsync<GetLoginUrlEndpointResponse>();
 
         loginResponse!.NextUrl.Should().StartWith("https://dev-fake.auth0.com/authorize?");
 

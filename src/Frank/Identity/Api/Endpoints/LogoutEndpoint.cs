@@ -1,5 +1,6 @@
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Domain.Exceptions;
+using Frank.Identity.Api.Abstractions.Endpoints;
 using Frank.Identity.Application.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +49,6 @@ public class LogoutEndpoint : IEndpoint
         }
 
         return Results.Ok(
-            new LogoutResponse(returnUrl));
+            new LogoutEndpointResponse(returnUrl));
     }
 }

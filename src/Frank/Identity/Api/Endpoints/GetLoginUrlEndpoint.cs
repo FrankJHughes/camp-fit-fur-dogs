@@ -1,6 +1,7 @@
 using Frank.Core.Application.Abstractions.Authentication.Oidc;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Domain.Exceptions;
+using Frank.Identity.Api.Abstractions.Endpoints;
 using Frank.Identity.Application.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Frank.Identity.Api.Endpoints;
 
-public class LoginEndpoint : IEndpoint
+public class GetLoginUrlEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
@@ -87,6 +88,6 @@ public class LoginEndpoint : IEndpoint
             $"&state={Uri.EscapeDataString(encodedState!)}";
 
         return Results.Ok(
-            new LoginResponse(nextUrl));
+            new GetLoginUrlEndpointResponse(nextUrl));
     }
 }

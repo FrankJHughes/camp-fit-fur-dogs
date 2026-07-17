@@ -1,20 +1,20 @@
-using Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
+using Frank.Identity.Application.Abstractions.Users.GetUserByExternalId;
 using Frank.Identity.Domain.Users;
 using Frank.Identity.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Frank.Identity.EntityFrameworkCore.Users;
 
-public sealed class FindUserByExternalIdReader : IFindUserByExternalIdReader
+public sealed class GetUserByExternalIdReader : IGetUserByExternalIdReader
 {
     private readonly FrankIdentityDbContext _db;
 
-    public FindUserByExternalIdReader(FrankIdentityDbContext db)
+    public GetUserByExternalIdReader(FrankIdentityDbContext db)
     {
         _db = db;
     }
 
-    public Task<FindUserByExternalIdResponse?> FindByExternalIdAsync(
+    public Task<GetUserByExternalIdResponse?> GetByExternalIdAsync(
         string externalId,
         CancellationToken ct)
     {
@@ -24,7 +24,7 @@ public sealed class FindUserByExternalIdReader : IFindUserByExternalIdReader
                 c.ExternalId != null &&
                 c.ExternalId.Value == externalId)
             .Select(c =>
-                new FindUserByExternalIdResponse(
+                new GetUserByExternalIdResponse(
                     Id: c.Id.Value))
             .SingleOrDefaultAsync(ct);
     }

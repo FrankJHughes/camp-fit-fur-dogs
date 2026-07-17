@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Frank.Identity.EntityFrameworkCore.Persistence;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
-using Frank.Core.Application.Settings;
+using Frank.Identity.Application.Settings;
 using Frank.Identity.Domain.Sessions;
 
 namespace Frank.Identity.EntityFrameworkCore.Sessions;

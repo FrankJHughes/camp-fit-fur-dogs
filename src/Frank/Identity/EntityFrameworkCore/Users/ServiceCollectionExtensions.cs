@@ -1,4 +1,4 @@
-using Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
+using Frank.Identity.Application.Abstractions.Users.GetUserByExternalId;
 using Frank.Identity.Application.Abstractions.Users.GetUserById;
 using Frank.Identity.Domain.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddScoped<IUserRepository, UserRepository>()
-            .AddScoped<IFindUserByExternalIdReader, FindUserByExternalIdReader>()
+            .AddScoped<IGetUserByExternalIdReader, GetUserByExternalIdReader>()
             .AddScoped<IGetUserByIdReader, GetUserByIdReader>();
     }
 }

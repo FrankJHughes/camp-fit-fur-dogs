@@ -2,17 +2,17 @@ using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Identity.Application.Abstractions;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
-using Frank.Identity.Application.Abstractions.Users.FindUserByExternalId;
+using Frank.Identity.Application.Abstractions.Users.GetUserByExternalId;
 
 namespace Frank.Identity.Infrastructure;
 
 public sealed class IdentityResolver : IIdentityResolver
 {
-    private readonly IFindUserByExternalIdReader _reader;
+    private readonly IGetUserByExternalIdReader _reader;
     private readonly ICommandDispatcher _dispatcher;
 
     public IdentityResolver(
-        IFindUserByExternalIdReader reader,
+        IGetUserByExternalIdReader reader,
         ICommandDispatcher dispatcher)
     {
         _reader = reader;
@@ -29,7 +29,7 @@ public sealed class IdentityResolver : IIdentityResolver
         // Command validator will validate identity-source semantics
         // Request validator will validate syntactic rules
 
-        var existing = await _reader.FindByExternalIdAsync(oidcCallbackResult.SubjectId, cancellationToken);
+        var existing = await _reader.GetByExternalIdAsync(oidcCallbackResult.SubjectId, cancellationToken);
         if (existing is not null)
             return existing.Id;
 

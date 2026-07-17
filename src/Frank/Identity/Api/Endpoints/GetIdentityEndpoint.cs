@@ -1,4 +1,5 @@
 using Frank.Core.Application.Abstractions.Endpoints;
+using Frank.Identity.Api.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,7 @@ public class GetIdentityEndpoint : IEndpoint
     {
         app.MapGet("/api/identity", (ICurrentUser currentUser) =>
         {
-            var dto = new GetIdentityResponse
+            var dto = new GetIdentityEndpointResponse
             {
                 Name = currentUser.Name!
             };
