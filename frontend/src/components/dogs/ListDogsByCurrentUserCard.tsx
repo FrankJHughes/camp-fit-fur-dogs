@@ -17,7 +17,7 @@ export function ListDogsByCurrentUserCard({ dogs }: ListDogsByCurrentUserCardPro
           {dogs.map((dog) => (
             <li key={dog.id} className="dog-list-item">
               <Link
-                href={`/api/dogs/${dog.id}`}
+                href={`/dogs/${dog.id}`}
                 className="dog-list-link"
               >
                 <span className="dog-name">{dog.name}</span>

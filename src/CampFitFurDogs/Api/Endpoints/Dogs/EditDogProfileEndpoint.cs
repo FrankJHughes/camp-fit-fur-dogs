@@ -5,6 +5,7 @@ using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions;
 using Frank.Core.Application.Abstractions.Cqrs.Queries;
 using Microsoft.AspNetCore.Mvc;
+using CampFitFurDogs.Api.Abstractions.Endpoints.Dogs;
 
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
@@ -15,7 +16,7 @@ public class EditDogProfileEndpoint : IEndpoint
     {
         app.MapPut("/api/dogs/{id}", async (
             [FromRoute] Guid id,
-            EditDogProfileRequest request,
+            EditDogProfileEndpointRequest request,
             ICurrentUser currentUser,
             IQueryDispatcher queryDispatcher,
             ICommandDispatcher commandDispatcher,

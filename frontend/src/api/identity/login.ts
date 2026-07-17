@@ -11,7 +11,7 @@ export async function login(returnUrl: string): Promise<QueryResult<LoginRespons
   const urlSearchParams = new URLSearchParams();
   urlSearchParams.set('return_url', returnUrl);
 
-  const url = '/api/identity/login?' + urlSearchParams.toString();
+  const url = '/identity/login?' + urlSearchParams.toString();
 
   const result = await client.get<LoginResponse>(url);
 

@@ -25,7 +25,7 @@ describe('login', () => {
     const result = await login(returnUrl);
 
     expect(mockGet).toHaveBeenCalledWith(
-      `/api/identity/login?return_url=${encodeURIComponent(returnUrl)}`
+      `/identity/login?return_url=${encodeURIComponent(returnUrl)}`
     );
 
     expect(result).toEqual({

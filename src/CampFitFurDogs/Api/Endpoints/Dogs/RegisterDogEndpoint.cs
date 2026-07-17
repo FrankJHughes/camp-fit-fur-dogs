@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using CampFitFurDogs.Api.Abstractions.Endpoints.Dogs;
 using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
@@ -11,7 +12,7 @@ public class RegisterDogEndpoint : IEndpoint
     public void Map(IEndpointRouteBuilder app)
     {
         app.MapPost("/api/dogs", async (
-            RegisterDogRequest request,
+            RegisterDogEndpointRequest request,
             ICurrentUser currentUser,
             ICommandDispatcher dispatcher,
             HttpContext httpContext) =>
@@ -27,9 +28,10 @@ public class RegisterDogEndpoint : IEndpoint
                 DateOnly.Parse(request.DateOfBirth),
                 request.Sex);
 
-            var result = await dispatcher.DispatchAsync(command, CancellationToken.None);
+            var commandResponse = await dispatcher.DispatchAsync(command, CancellationToken.None);
 
-            return Results.Created($"/api/dogs/{result}", new { DogId = result });
+            var endpointResponse = new RegisterDogEndpointResponse(commandResponse);
+            return Results.Created($"/api/dogs/{commandResponse}", endpointResponse);
         })
         .DisableCookieRedirect();
     }

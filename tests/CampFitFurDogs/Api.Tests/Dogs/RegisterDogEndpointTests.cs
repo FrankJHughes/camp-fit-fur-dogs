@@ -13,7 +13,7 @@ public class RegisterDogEndpointTests : IAsyncLifetime
     private ApiFactory _api = default!;
     private HttpClient _client = default!;
 
-    private sealed record DogResponse(Guid DogId);
+    private sealed record DogResponse(Guid Id);
     private sealed record WhoAmIResponse(string UserId);
 
     // ------------------------------------------------------------
@@ -70,7 +70,7 @@ public class RegisterDogEndpointTests : IAsyncLifetime
 
         var body = await response.Content.ReadFromJsonAsync<DogResponse>();
         body.Should().NotBeNull();
-        body!.DogId.Should().NotBeEmpty();
+        body!.Id.Should().NotBeEmpty();
     }
 
     // ------------------------------------------------------------

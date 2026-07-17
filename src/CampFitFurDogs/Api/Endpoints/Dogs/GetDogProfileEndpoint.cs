@@ -16,11 +16,23 @@ public class GetDogProfileEndpoint : IEndpoint
             IQueryDispatcher dispatcher) =>
         {
             var query = new GetDogProfileQuery(id, currentUser.Id!.Value);
-            var result = await dispatcher.DispatchAsync(query, CancellationToken.None);
+            var queryResponse = await dispatcher.DispatchAsync(query, CancellationToken.None);
+            if (queryResponse is null)
+            {
+                return Results.NotFound();
+            }
 
-            return result is null
-                ? Results.NotFound()
-                : Results.Ok(result);
+            var endpointResponse = new
+            {
+                Id = queryResponse.Id,
+                OwnerId = queryResponse.OwnerId,
+                Name = queryResponse.Name,
+                Breed = queryResponse.Breed,
+                Sex = queryResponse.Sex,
+                DateOfBirth = queryResponse.DateOfBirth
+            };
+
+            return Results.Ok(endpointResponse);
         });
     }
 }
