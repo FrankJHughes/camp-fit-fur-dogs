@@ -16,7 +16,7 @@ The **GetLoginUrl** slice initiates the authentication flow by constructing an O
 flowchart LR
     %% Lanes
     subgraph API["API Layer"]
-        A1["1. GET /api/identity/login"]
+        A1["1. GET /api/identity/login-url"]
         A2["2. Load OIDC + Frontend settings"]
         A3["3. Validate configuration"]
         A4["4. Determine callback URL"]
@@ -49,7 +49,7 @@ Frank/Identity/Api/Endpoints/GetLoginUrlEndpoint.cs
 **Route:**
 
 ```csharp
-app.MapGet("/api/identity/login", HandleAsync)
+app.MapGet("/api/identity/login-url", HandleAsync)
    .AllowAnonymous();
 ```
 
@@ -269,7 +269,7 @@ throw new BadRequestException("malformed return_url query string parameter value
 
 ## Integration Tests
 
-- `/api/identity/login` returns `200 OK`
+- `/api/identity/login-url` returns `200 OK`
 - Response contains valid `nextUrl`
 - `nextUrl` contains:
   - correct authority

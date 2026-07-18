@@ -63,7 +63,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             });
         });
 
-        var response = await client.GetAsync("/api/identity/login");
+        var response = await client.GetAsync("/api/identity/login-url");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var loginResponse = await response.Content.ReadFromJsonAsync<GetLoginUrlEndpointResponse>();
@@ -95,7 +95,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             });
         });
 
-        var response = await client.GetAsync("/api/identity/login");
+        var response = await client.GetAsync("/api/identity/login-url");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
@@ -116,7 +116,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             });
         });
 
-        var response = await client.GetAsync("/api/identity/login");
+        var response = await client.GetAsync("/api/identity/login-url");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
@@ -137,7 +137,7 @@ public class AuthLoginEndpointTests : IAsyncLifetime
             });
         });
 
-        var response = await client.GetAsync("/api/identity/login");
+        var response = await client.GetAsync("/api/identity/login-url");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 

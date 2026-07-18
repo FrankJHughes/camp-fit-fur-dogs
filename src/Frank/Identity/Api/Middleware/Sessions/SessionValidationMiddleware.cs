@@ -24,7 +24,7 @@ public sealed class SessionValidationMiddleware
         var excludes = new string[]
         {
             "/api/identity/callback",
-            "/api/identity/login",
+            "/api/identity/login-url",
             "/api/identity/logout"
         };
 

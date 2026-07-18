@@ -16,7 +16,7 @@ describe('login', () => {
     mockGet.mockReset();
   });
 
-  it('GETs /api/identity/login and returns success', async () => {
+  it('GETs /api/identity/login-url and returns success', async () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: { nextUrl: '/after-login' },
@@ -25,7 +25,7 @@ describe('login', () => {
     const result = await login(returnUrl);
 
     expect(mockGet).toHaveBeenCalledWith(
-      `/identity/login?return_url=${encodeURIComponent(returnUrl)}`
+      `/identity/login-url?return_url=${encodeURIComponent(returnUrl)}`
     );
 
     expect(result).toEqual({

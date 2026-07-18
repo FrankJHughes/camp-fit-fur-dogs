@@ -16,7 +16,7 @@ public class GetLoginUrlEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/identity/login", HandleAsync)
+        app.MapGet("/api/identity/login-url", HandleAsync)
             .AllowAnonymous();
     }
 
