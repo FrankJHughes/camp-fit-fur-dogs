@@ -10,7 +10,7 @@ namespace Frank.Identity.Application.Tests.Callback.Save;
 
 public sealed class CallbackSaveContextBuilderTests
 {
-    private static SaveCallbackContextBuilderRequest NewRequest
+    private static CallbackSaveContextBuilderRequest NewRequest
     {
         get
         {
@@ -29,7 +29,7 @@ public sealed class CallbackSaveContextBuilderTests
     }
 
     private static CallbackSaveContextBuilder CreateBuilder(
-        params IImmutableContextBuildStep<SaveCallbackContext>[] steps)
+        params IImmutableContextBuildStep<CallbackSaveContext>[] steps)
         => new(
             steps,
             new FakeObservabilitySink(),
@@ -41,7 +41,7 @@ public sealed class CallbackSaveContextBuilderTests
     [Fact]
     public async Task BuildAsync_CreatesInitialContextCorrectly()
     {
-        var steps = new IImmutableContextBuildStep<SaveCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackSaveContext>[]
         {
             new NoOpStep(),
             new SetFinalValuesStep(
@@ -65,7 +65,7 @@ public sealed class CallbackSaveContextBuilderTests
     [Fact]
     public async Task BuildAsync_Throws_WhenStepModifies_External()
     {
-        var steps = new IImmutableContextBuildStep<SaveCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackSaveContext>[]
         {
             new MutatingStep(modifyExternal: true)
         };
@@ -81,7 +81,7 @@ public sealed class CallbackSaveContextBuilderTests
     [Fact]
     public async Task BuildAsync_Throws_WhenStepModifies_Now()
     {
-        var steps = new IImmutableContextBuildStep<SaveCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackSaveContext>[]
         {
             new MutatingStep(modifyNow: true)
         };
@@ -97,7 +97,7 @@ public sealed class CallbackSaveContextBuilderTests
     [Fact]
     public async Task BuildAsync_Throws_WhenStepReturnsNull()
     {
-        var steps = new IImmutableContextBuildStep<SaveCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackSaveContext>[]
         {
             new MutatingStep(returnNull: true)
         };
@@ -119,7 +119,7 @@ public sealed class CallbackSaveContextBuilderTests
         var customerId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         var sessionId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
 
-        var steps = new IImmutableContextBuildStep<SaveCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackSaveContext>[]
         {
             new SetFinalValuesStep(
                 customerId,
@@ -146,7 +146,7 @@ public sealed class CallbackSaveContextBuilderTests
     {
         var recorder = new List<string>();
 
-        var steps = new IImmutableContextBuildStep<SaveCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackSaveContext>[]
         {
             new RecordingStep("1", recorder),
             new RecordingStep("2", recorder),
@@ -171,7 +171,7 @@ public sealed class CallbackSaveContextBuilderTests
     [Fact]
     public async Task BuildAsync_WhenStepThrows_PropagatesException()
     {
-        var steps = new IImmutableContextBuildStep<SaveCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackSaveContext>[]
         {
             new ThrowingStep()
         };

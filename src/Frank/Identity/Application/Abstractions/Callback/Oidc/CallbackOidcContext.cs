@@ -2,7 +2,7 @@ using Frank.Core.Application.Abstractions.ImmutableContexts;
 
 namespace Frank.Identity.Application.Abstractions.Callback.Oidc;
 
-public sealed record OidcCallbackContext : ImmutableContextBase
+public sealed record CallbackOidcContext : ImmutableContextBase
 {
     //
     // OIDC protocol inputs

@@ -1,25 +1,20 @@
+using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.EntityFrameworkCore.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Frank.Identity.EntityFrameworkCore.Sessions;
 
-public sealed class SessionRepository : ISessionRepository
+public sealed class RevokeSessionWriter : IRevokeSessionWriter
 {
     private readonly FrankIdentityDbContext _db;
 
-    public SessionRepository(FrankIdentityDbContext db)
+    public RevokeSessionWriter(FrankIdentityDbContext db)
     {
         _db = db;
     }
 
-    public Task CreateAsync(Session session, CancellationToken cancellationToken)
-    {
-        _db.Set<Session>().Add(session);
-        return Task.CompletedTask;
-    }
-
-    public async Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken)
+    public async Task WriteAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken)
     {
         var session = await _db.Set<Session>()
             .SingleOrDefaultAsync(s => s.TokenHash == tokenHash, cancellationToken);

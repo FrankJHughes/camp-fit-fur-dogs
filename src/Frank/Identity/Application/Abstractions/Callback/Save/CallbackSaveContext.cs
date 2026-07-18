@@ -3,12 +3,12 @@ using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Identity.Application.Abstractions.Callback.Save;
 
-public sealed record SaveCallbackContext : ImmutableContextBase
+public sealed record CallbackSaveContext : ImmutableContextBase
 {
     //
     // Immutable inputs
     //
-    public required OidcCallbackContextBuilderResult External { get; init; }
+    public required CallbackOidcContextBuilderResult External { get; init; }
     public required DateTimeOffset Now { get; init; }
     public string? RequestedRedirectUrl { get; init; }
 

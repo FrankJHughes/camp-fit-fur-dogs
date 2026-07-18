@@ -5,23 +5,23 @@ using Frank.Core.Application.ImmutableContexts;
 
 namespace Frank.Identity.Application.Callback.Oidc;
 
-public sealed class OidcCallbackContextBuilder
-    : ImmutableContextBuilderBase<OidcCallbackContext, IImmutableContextBuildStep<OidcCallbackContext>>,
-      IImmutableContextBuilder<OidcCallbackContextBuilderRequest, OidcCallbackContext, OidcCallbackContextBuilderResult>
+public sealed class CallbackOidcContextBuilder
+    : ImmutableContextBuilderBase<CallbackOidcContext, IImmutableContextBuildStep<CallbackOidcContext>>,
+      ICallbackOidcContextBuilder
 {
-    public OidcCallbackContextBuilder(
-        IEnumerable<IImmutableContextBuildStep<OidcCallbackContext>> steps,
+    public CallbackOidcContextBuilder(
+        IEnumerable<IImmutableContextBuildStep<CallbackOidcContext>> steps,
         IObservationSink sink,
         Func<string, string, IObservationContext> contextFactory)
         : base(steps, sink, contextFactory("System", "OidcAuthCallbackContextBuilder"))
     {
     }
 
-    public async Task<OidcCallbackContextBuilderResult> BuildAsync(
-        OidcCallbackContextBuilderRequest request,
+    public async Task<CallbackOidcContextBuilderResult> BuildAsync(
+        CallbackOidcContextBuilderRequest request,
         CancellationToken ct)
     {
-        var ctx = new OidcCallbackContext
+        var ctx = new CallbackOidcContext
         {
             Code = request.Code,
             Now = DateTimeOffset.UtcNow
@@ -32,7 +32,7 @@ public sealed class OidcCallbackContextBuilder
         if (ctx.SubjectId is null)
             throw new OidcProtocolException("OIDC pipeline completed without a SubjectId.");
 
-        return new OidcCallbackContextBuilderResult
+        return new CallbackOidcContextBuilderResult
         {
             SubjectId = ctx.SubjectId,
             Claims = ctx.Claims ?? new Dictionary<string, string>(),
@@ -45,9 +45,9 @@ public sealed class OidcCallbackContextBuilder
     }
 
     protected override void AssertValidTransition(
-        IImmutableContextBuildStep<OidcCallbackContext> step,
-        OidcCallbackContext before,
-        OidcCallbackContext after)
+        IImmutableContextBuildStep<CallbackOidcContext> step,
+        CallbackOidcContext before,
+        CallbackOidcContext after)
     {
         if (after is null)
             throw new InvalidOperationException(
@@ -63,8 +63,8 @@ public sealed class OidcCallbackContextBuilder
     }
 
     protected override void EmitStartEvent(
-        IImmutableContextBuildStep<OidcCallbackContext> step,
-        OidcCallbackContext before)
+        IImmutableContextBuildStep<CallbackOidcContext> step,
+        CallbackOidcContext before)
     {
         Sink.Emit(
             eventName: "OidcAuthCallback.StepStart",
@@ -81,9 +81,9 @@ public sealed class OidcCallbackContextBuilder
     }
 
     protected override void EmitEndEvent(
-        IImmutableContextBuildStep<OidcCallbackContext> step,
-        OidcCallbackContext before,
-        OidcCallbackContext after,
+        IImmutableContextBuildStep<CallbackOidcContext> step,
+        CallbackOidcContext before,
+        CallbackOidcContext after,
         long durationMs)
     {
         Sink.Emit(

@@ -47,7 +47,7 @@ public sealed class IdentityResolverTests
         }
     }
 
-    private static OidcCallbackContextBuilderResult External(
+    private static CallbackOidcContextBuilderResult External(
         string sub = "sub-123",
         string given = "John",
         string family = "Doe",

@@ -1,4 +1,4 @@
-namespace Frank.Identity.Application.Callback.Oidc;
+namespace Frank.Identity.Application.Abstractions.Oidc;
 
 public interface IOidcTokenClient
 {

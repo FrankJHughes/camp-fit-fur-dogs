@@ -4,7 +4,7 @@ namespace Frank.TestUtilities.Fakes.Authentication.Callback;
 
 public static class FakeOidcCallbackResult
 {
-    public static OidcCallbackContextBuilderResult Create(string subjectId = "sub-123")
+    public static CallbackOidcContextBuilderResult Create(string subjectId = "sub-123")
         => new()
         {
             SubjectId = subjectId,

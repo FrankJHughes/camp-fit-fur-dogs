@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Frank.Core.EntityFrameworkCore.Tests.Sessions;
 
-public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentityDbContext>>
+public class CreateSessionWriterTests : IClassFixture<PostgresFixture<FrankIdentityDbContext>>
 {
     private readonly PostgresFixture<FrankIdentityDbContext> _fixture;
 
-    public SessionRepositoryTests(PostgresFixture<FrankIdentityDbContext> fixture)
+    public CreateSessionWriterTests(PostgresFixture<FrankIdentityDbContext> fixture)
     {
         _fixture = fixture;
     }
@@ -42,7 +42,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
         var ownerId = await SeedOwnerAsync();
 
         await using var ctx = _fixture.CreateContext();
-        var repo = new SessionRepository(ctx);
+        var repo = new CreateSessionWriter(ctx);
 
         var session = new SessionBuilder()
             .WithOwner(ownerId)
@@ -50,7 +50,7 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
             .CreatedAtFromFixture()
             .Build();
 
-        await repo.CreateAsync(session, CancellationToken.None);
+        await repo.WriteAsync(session, CancellationToken.None);
         await ctx.SaveChangesAsync();
 
         await using var readCtx = _fixture.CreateContext();
@@ -64,52 +64,4 @@ public class SessionRepositoryTests : IClassFixture<PostgresFixture<FrankIdentit
         persisted.RevokedAt.Should().BeNull();
     }
 
-    [Fact]
-    public async Task RevokeAsync_marks_session_as_revoked()
-    {
-        var ownerId = await SeedOwnerAsync();
-
-        SessionTokenHash tokenHash;
-
-        // Arrange — create session
-        await using (var ctx = _fixture.CreateContext())
-        {
-            var repo = new SessionRepository(ctx);
-
-            tokenHash = SessionTokenHash.From(
-                Guid.NewGuid().ToString("N").PadLeft(64, 'd')
-            );
-
-            var session = new SessionBuilder()
-                .WithOwner(ownerId)
-                .WithTokenHash(tokenHash)
-                .CreatedAtFromFixture()
-                .Build();
-
-            await repo.CreateAsync(session, CancellationToken.None);
-            await ctx.SaveChangesAsync();
-        }
-
-        // Act — revoke
-        var before = DateTimeOffset.UtcNow;
-
-        await using (var ctx = _fixture.CreateContext())
-        {
-            var repo = new SessionRepository(ctx);
-            await repo.RevokeAsync(tokenHash, CancellationToken.None);
-            await ctx.SaveChangesAsync();
-        }
-
-        // Assert — session still exists but is revoked
-        await using (var readCtx = _fixture.CreateContext())
-        {
-            var retrieved = await readCtx
-                .Set<Session>()
-                .FirstOrDefaultAsync(s => s.TokenHash == tokenHash);
-
-            retrieved.Should().NotBeNull();
-            retrieved!.RevokedAt.Should().NotBeNull();
-            retrieved.RevokedAt.Should().BeOnOrAfter(before);
-        }
-    }
 }

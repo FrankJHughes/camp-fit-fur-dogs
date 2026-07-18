@@ -1,7 +1,8 @@
 using System.Text.Json;
+using Frank.Identity.Application.Abstractions.Oidc;
 using Frank.Identity.Application.Settings;
 
-namespace Frank.Identity.Application.Callback.Oidc;
+namespace Frank.Identity.Application.Auth0;
 
 public sealed class Auth0OidcTokenClient : IOidcTokenClient
 {

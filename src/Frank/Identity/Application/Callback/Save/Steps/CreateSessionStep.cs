@@ -1,20 +1,21 @@
 using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.Domain.Users;
 
 namespace Frank.Identity.Application.Callback.Save.Steps;
 
 public sealed class CreateSessionStep
-    : IImmutableContextBuildStep<SaveCallbackContext>
+    : IImmutableContextBuildStep<CallbackSaveContext>
 {
-    private readonly ISessionRepository _repo;
+    private readonly ICreateSessionWriter _writer;
     private readonly IFrankIdentityUnitOfWork _uow;
 
-    public CreateSessionStep(ISessionRepository repo, IFrankIdentityUnitOfWork uow)
+    public CreateSessionStep(ICreateSessionWriter writer, IFrankIdentityUnitOfWork uow)
     {
-        _repo = repo;
+        _writer = writer;
         _uow = uow;
     }
 
@@ -24,11 +25,11 @@ public sealed class CreateSessionStep
             displayName: "Create Session"
         );
 
-    public bool CanExecute(SaveCallbackContext ctx)
+    public bool CanExecute(CallbackSaveContext ctx)
         => ctx.UserId is not null && ctx.TokenHash is not null && ctx.SessionId is null;
 
-    public async Task<SaveCallbackContext> ExecuteAsync(
-        SaveCallbackContext ctx,
+    public async Task<CallbackSaveContext> ExecuteAsync(
+        CallbackSaveContext ctx,
         CancellationToken ct)
     {
         if (ctx.UserId is null)
@@ -43,7 +44,7 @@ public sealed class CreateSessionStep
             createdAt: ctx.Now
         );
 
-        await _repo.CreateAsync(session, ct);
+        await _writer.WriteAsync(session, ct);
         await _uow.CommitAsync(ct);
 
         return ctx with { SessionId = session.Id.Value };

@@ -1,4 +1,3 @@
-using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Core.Application.Abstractions.Authentication.Oidc;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Routing;
@@ -8,8 +7,9 @@ using Frank.Core.Domain.Exceptions;
 
 using Microsoft.AspNetCore.Builder;
 using Frank.Identity.Application.Abstractions.Callback.Save;
-using SaveCallbackContextBuilderRequest = Frank.Identity.Application.Abstractions.Callback.Save.SaveCallbackContextBuilderRequest;
+using CallbackSaveContextBuilderRequest = Frank.Identity.Application.Abstractions.Callback.Save.CallbackSaveContextBuilderRequest;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Frank.Identity.Api.Endpoints;
 
@@ -24,14 +24,8 @@ public class CallbackEndpoint : IEndpoint
     private static async Task<IResult> HandleAsync(
         HttpContext http,
         IHostEnvironment env,
-        IImmutableContextBuilder<
-            OidcCallbackContextBuilderRequest,
-            OidcCallbackContext,
-            OidcCallbackContextBuilderResult> frankEngine,
-        IImmutableContextBuilder<
-            SaveCallbackContextBuilderRequest,
-            SaveCallbackContext,
-            SaveCallbackContextBuilderResult> appEngine)
+        [FromServices] ICallbackOidcContextBuilder oidcContextBuilder,
+        [FromServices] ICallbackSaveContextBuilder saveContextBuilder)
     {
         // 1a. Extract and decode state
         var query = http.Request.Query;
@@ -64,21 +58,21 @@ public class CallbackEndpoint : IEndpoint
 
         // 2. Run Frank pipeline
         var oidcCallbackRequest =
-            new OidcCallbackContextBuilderRequest
+            new CallbackOidcContextBuilderRequest
             {
                 Code = code!
             };
 
         var oidcCallbackResult =
-            await frankEngine.BuildAsync(oidcCallbackRequest, CancellationToken.None);
+            await oidcContextBuilder.BuildAsync(oidcCallbackRequest, CancellationToken.None);
 
         // 3. Run Application pipeline
-        var appAuthCallbackRequest = new SaveCallbackContextBuilderRequest
+        var appAuthCallbackRequest = new CallbackSaveContextBuilderRequest
         {
             External = oidcCallbackResult,
             Now = DateTimeOffset.UtcNow
         };
-        var appAuthCallbackResult = await appEngine.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
+        var appAuthCallbackResult = await saveContextBuilder.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
 
         if (string.IsNullOrWhiteSpace(appAuthCallbackResult.CookieValue))
         {

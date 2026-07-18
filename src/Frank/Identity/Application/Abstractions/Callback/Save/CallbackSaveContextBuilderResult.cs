@@ -2,7 +2,7 @@ using Frank.Core.Application.Abstractions.ImmutableContexts;
 
 namespace Frank.Identity.Application.Abstractions.Callback.Save;
 
-public sealed record SaveCallbackContextBuilderResult : ImmutableContextBuilderResultBase
+public sealed record CallbackSaveContextBuilderResult : ImmutableContextBuilderResultBase
 {
     public required Guid UserId { get; init; }
     public required Guid SessionId { get; init; }

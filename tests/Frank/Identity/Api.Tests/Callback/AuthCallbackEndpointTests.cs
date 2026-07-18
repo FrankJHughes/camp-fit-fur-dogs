@@ -21,20 +21,17 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     // ------------------------------------------------------------
 
     private sealed class FakeFrankEngine
-        : IImmutableContextBuilder<
-            OidcCallbackContextBuilderRequest,
-            OidcCallbackContext,
-            OidcCallbackContextBuilderResult>
+        : ICallbackOidcContextBuilder
     {
-        public OidcCallbackContextBuilderRequest? ReceivedRequest { get; private set; }
+        public CallbackOidcContextBuilderRequest? ReceivedRequest { get; private set; }
 
-        public Task<OidcCallbackContextBuilderResult> BuildAsync(
-            OidcCallbackContextBuilderRequest request,
+        public Task<CallbackOidcContextBuilderResult> BuildAsync(
+            CallbackOidcContextBuilderRequest request,
             CancellationToken cancellationToken)
         {
             ReceivedRequest = request;
 
-            return Task.FromResult(new OidcCallbackContextBuilderResult
+            return Task.FromResult(new CallbackOidcContextBuilderResult
             {
                 SubjectId = "sub-123",
                 Claims = new Dictionary<string, string>(),
@@ -47,20 +44,17 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
     }
 
     private sealed class FakeAppEngine
-        : IImmutableContextBuilder<
-            SaveCallbackContextBuilderRequest,
-            SaveCallbackContext,
-            SaveCallbackContextBuilderResult>
+        : ICallbackSaveContextBuilder
     {
-        public SaveCallbackContextBuilderRequest? ReceivedRequest { get; private set; }
+        public CallbackSaveContextBuilderRequest? ReceivedRequest { get; private set; }
 
-        public Task<SaveCallbackContextBuilderResult> BuildAsync(
-            SaveCallbackContextBuilderRequest request,
+        public Task<CallbackSaveContextBuilderResult> BuildAsync(
+            CallbackSaveContextBuilderRequest request,
             CancellationToken cancellationToken)
         {
             ReceivedRequest = request;
 
-            return Task.FromResult(new SaveCallbackContextBuilderResult
+            return Task.FromResult(new CallbackSaveContextBuilderResult
             {
                 UserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                 SessionId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
@@ -80,26 +74,14 @@ public sealed class AuthCallbackEndpointTests : IAsyncLifetime
             .WithServiceOverride(services =>
             {
                 // Remove real engines
-                services.RemoveAll<IImmutableContextBuilder<
-                    OidcCallbackContextBuilderRequest,
-                    OidcCallbackContext,
-                    OidcCallbackContextBuilderResult>>();
+                services.RemoveAll<ICallbackOidcContextBuilder>();
 
-                services.RemoveAll<IImmutableContextBuilder<
-                    SaveCallbackContextBuilderRequest,
-                    SaveCallbackContext,
-                    SaveCallbackContextBuilderResult>>();
+                services.RemoveAll<ICallbackSaveContextBuilder>();
 
                 // Register fakes
-                services.AddSingleton<IImmutableContextBuilder<
-                    OidcCallbackContextBuilderRequest,
-                    OidcCallbackContext,
-                    OidcCallbackContextBuilderResult>, FakeFrankEngine>();
+                services.AddSingleton<ICallbackOidcContextBuilder, FakeFrankEngine>();
 
-                services.AddSingleton<IImmutableContextBuilder<
-                    SaveCallbackContextBuilderRequest,
-                    SaveCallbackContext,
-                    SaveCallbackContextBuilderResult>, FakeAppEngine>();
+                services.AddSingleton<ICallbackSaveContextBuilder, FakeAppEngine>();
             });
 
         _api = new ApiFactory(_ctx);

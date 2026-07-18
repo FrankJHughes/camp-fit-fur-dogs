@@ -9,8 +9,8 @@ namespace Frank.Identity.Application.Tests.Callback.Oidc;
 
 public sealed class CallbackOidcContextBuilderTests
 {
-    private static OidcCallbackContextBuilder CreateBuilder(
-        params IImmutableContextBuildStep<OidcCallbackContext>[] steps)
+    private static CallbackOidcContextBuilder CreateBuilder(
+        params IImmutableContextBuildStep<CallbackOidcContext>[] steps)
         => new(
             steps,
             new FakeObservabilitySink(),
@@ -19,7 +19,7 @@ public sealed class CallbackOidcContextBuilderTests
     [Fact]
     public async Task ProcessAsync_WithValidFlow_ProducesOidcCallbackResult()
     {
-        var steps = new IImmutableContextBuildStep<OidcCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackOidcContext>[]
         {
             new FakeExchangeCodeStep("access-token"),
             new FakeFetchUserInfoStep(FakeUserInfo.Basic),
@@ -28,7 +28,7 @@ public sealed class CallbackOidcContextBuilderTests
 
         var engine = CreateBuilder(steps);
 
-        var request = new OidcCallbackContextBuilderRequest
+        var request = new CallbackOidcContextBuilderRequest
         {
             Code = "abc123"
         };
@@ -46,14 +46,14 @@ public sealed class CallbackOidcContextBuilderTests
     [Fact]
     public async Task ProcessAsync_WhenStepThrows_EnginePropagatesException()
     {
-        var steps = new IImmutableContextBuildStep<OidcCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackOidcContext>[]
         {
             new ThrowingStep()
         };
 
         var engine = CreateBuilder(steps);
 
-        var request = new OidcCallbackContextBuilderRequest
+        var request = new CallbackOidcContextBuilderRequest
         {
             Code = "abc123"
         };
@@ -68,7 +68,7 @@ public sealed class CallbackOidcContextBuilderTests
     {
         var recorder = new List<string>();
 
-        var steps = new IImmutableContextBuildStep<OidcCallbackContext>[]
+        var steps = new IImmutableContextBuildStep<CallbackOidcContext>[]
         {
             new RecordingStep("1", recorder),
             new RecordingStep("2", recorder),
@@ -77,7 +77,7 @@ public sealed class CallbackOidcContextBuilderTests
 
         var engine = CreateBuilder(steps);
 
-        var request = new OidcCallbackContextBuilderRequest
+        var request = new CallbackOidcContextBuilderRequest
         {
             Code = "abc123"
         };

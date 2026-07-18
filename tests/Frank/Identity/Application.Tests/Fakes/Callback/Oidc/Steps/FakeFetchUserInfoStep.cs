@@ -1,10 +1,10 @@
 using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
-using Frank.Identity.Application.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Oidc;
 
 namespace Frank.Identity.Application.Tests.Fakes.Callback.Oidc.Steps;
 
-public sealed class FakeFetchUserInfoStep : IImmutableContextBuildStep<OidcCallbackContext>
+public sealed class FakeFetchUserInfoStep : IImmutableContextBuildStep<CallbackOidcContext>
 {
     private readonly OidcUserInfo _info;
 
@@ -13,10 +13,10 @@ public sealed class FakeFetchUserInfoStep : IImmutableContextBuildStep<OidcCallb
         _info = info;
     }
 
-    public bool CanExecute(OidcCallbackContext ctx) => true;
+    public bool CanExecute(CallbackOidcContext ctx) => true;
 
-    public Task<OidcCallbackContext> ExecuteAsync(
-        OidcCallbackContext ctx,
+    public Task<CallbackOidcContext> ExecuteAsync(
+        CallbackOidcContext ctx,
         CancellationToken ct)
     {
         return Task.FromResult(ctx with

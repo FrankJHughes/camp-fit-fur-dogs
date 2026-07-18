@@ -3,7 +3,7 @@ using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Identity.Application.Tests.Fakes.Callback.Oidc.Steps;
 
-public sealed class RecordingStep : IImmutableContextBuildStep<OidcCallbackContext>
+public sealed class RecordingStep : IImmutableContextBuildStep<CallbackOidcContext>
 {
     private readonly string _id;
     private readonly List<string> _recorder;
@@ -14,9 +14,9 @@ public sealed class RecordingStep : IImmutableContextBuildStep<OidcCallbackConte
         _recorder = recorder;
     }
 
-    public bool CanExecute(OidcCallbackContext ctx) => true;
+    public bool CanExecute(CallbackOidcContext ctx) => true;
 
-    public Task<OidcCallbackContext> ExecuteAsync(OidcCallbackContext ctx, CancellationToken ct)
+    public Task<CallbackOidcContext> ExecuteAsync(CallbackOidcContext ctx, CancellationToken ct)
     {
         _recorder.Add(_id);
         throw new InvalidOperationException("Stop pipeline");

@@ -26,7 +26,7 @@ public sealed class AuditLoginStepTests
         var audit = new FakeAuditLogger();
         var step = new AuditLoginStep(audit);
 
-        var ctx = new SaveCallbackContext
+        var ctx = new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create("sub-123"),
             Now = DateTimeOffset.UtcNow,
@@ -44,14 +44,14 @@ public sealed class AuditLoginStepTests
     {
         var step = new AuditLoginStep(new FakeAuditLogger());
 
-        step.CanExecute(new SaveCallbackContext
+        step.CanExecute(new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = null
         }).Should().BeFalse();
 
-        step.CanExecute(new SaveCallbackContext
+        step.CanExecute(new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,

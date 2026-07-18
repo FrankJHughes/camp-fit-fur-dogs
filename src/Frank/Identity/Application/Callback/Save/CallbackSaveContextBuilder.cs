@@ -5,23 +5,23 @@ using Frank.Core.Application.ImmutableContexts;
 
 namespace Frank.Identity.Application.Callback.Save;
 
-public sealed class CallbackSaveContextBuilder
-    : ImmutableContextBuilderBase<SaveCallbackContext, IImmutableContextBuildStep<SaveCallbackContext>>,
-      IImmutableContextBuilder<SaveCallbackContextBuilderRequest, SaveCallbackContext, SaveCallbackContextBuilderResult>
+public sealed class CallbackSaveContextBuilder :
+    ImmutableContextBuilderBase<CallbackSaveContext, IImmutableContextBuildStep<CallbackSaveContext>>,
+    ICallbackSaveContextBuilder
 {
     public CallbackSaveContextBuilder(
-        IEnumerable<IImmutableContextBuildStep<SaveCallbackContext>> steps,
+        IEnumerable<IImmutableContextBuildStep<CallbackSaveContext>> steps,
         IObservationSink sink,
         Func<string, string, IObservationContext> contextFactory)
-        : base(steps, sink, contextFactory("System", "SaveCallbackContextBuilder"))
+        : base(steps, sink, contextFactory("System", "CallbackSaveContextBuilder"))
     {
     }
 
-    public async Task<SaveCallbackContextBuilderResult> BuildAsync(
-        SaveCallbackContextBuilderRequest request,
+    public async Task<CallbackSaveContextBuilderResult> BuildAsync(
+        CallbackSaveContextBuilderRequest request,
         CancellationToken ct)
     {
-        var ctx = new SaveCallbackContext
+        var ctx = new CallbackSaveContext
         {
             External = request.External,
             Now = request.Now
@@ -29,7 +29,7 @@ public sealed class CallbackSaveContextBuilder
 
         ctx = await ProcessAsync(ctx, ct);
 
-        return new SaveCallbackContextBuilderResult
+        return new CallbackSaveContextBuilderResult
         {
             UserId = ctx.UserId!.Value,
             SessionId = ctx.SessionId!.Value,
@@ -39,9 +39,9 @@ public sealed class CallbackSaveContextBuilder
     }
 
     protected override void AssertValidTransition(
-        IImmutableContextBuildStep<SaveCallbackContext> step,
-        SaveCallbackContext before,
-        SaveCallbackContext after)
+        IImmutableContextBuildStep<CallbackSaveContext> step,
+        CallbackSaveContext before,
+        CallbackSaveContext after)
     {
         if (after is null)
             throw new InvalidOperationException(
@@ -57,8 +57,8 @@ public sealed class CallbackSaveContextBuilder
     }
 
     protected override void EmitStartEvent(
-        IImmutableContextBuildStep<SaveCallbackContext> step,
-        SaveCallbackContext before)
+        IImmutableContextBuildStep<CallbackSaveContext> step,
+        CallbackSaveContext before)
     {
         Sink.Emit(
             eventName: "SaveCallback.StepStart",
@@ -75,9 +75,9 @@ public sealed class CallbackSaveContextBuilder
     }
 
     protected override void EmitEndEvent(
-        IImmutableContextBuildStep<SaveCallbackContext> step,
-        SaveCallbackContext before,
-        SaveCallbackContext? after,
+        IImmutableContextBuildStep<CallbackSaveContext> step,
+        CallbackSaveContext before,
+        CallbackSaveContext? after,
         long durationMs)
     {
         Sink.Emit(

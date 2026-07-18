@@ -3,7 +3,7 @@ using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Identity.Application.Tests.Fakes.Callback.Oidc.Steps;
 
-public sealed class FakeExchangeCodeStep : IImmutableContextBuildStep<OidcCallbackContext>
+public sealed class FakeExchangeCodeStep : IImmutableContextBuildStep<CallbackOidcContext>
 {
     private readonly string _accessToken;
     private readonly string? _idToken;
@@ -14,10 +14,10 @@ public sealed class FakeExchangeCodeStep : IImmutableContextBuildStep<OidcCallba
         _idToken = idToken;
     }
 
-    public bool CanExecute(OidcCallbackContext ctx) => true;
+    public bool CanExecute(CallbackOidcContext ctx) => true;
 
-    public Task<OidcCallbackContext> ExecuteAsync(
-        OidcCallbackContext ctx,
+    public Task<CallbackOidcContext> ExecuteAsync(
+        CallbackOidcContext ctx,
         CancellationToken ct)
     {
         return Task.FromResult(ctx with

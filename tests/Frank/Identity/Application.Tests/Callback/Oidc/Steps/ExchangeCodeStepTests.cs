@@ -39,7 +39,7 @@ public sealed class ExchangeCodeStepTests
             new FakeOptionsMonitor<OidcCallbackSettings>(Settings)
         );
 
-        var ctx = new OidcCallbackContext
+        var ctx = new CallbackOidcContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow
@@ -70,7 +70,7 @@ public sealed class ExchangeCodeStepTests
             new FakeOptionsMonitor<OidcCallbackSettings>(Settings)
         );
 
-        var ctx = new OidcCallbackContext
+        var ctx = new CallbackOidcContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow

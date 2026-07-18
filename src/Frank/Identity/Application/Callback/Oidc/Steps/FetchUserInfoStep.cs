@@ -1,9 +1,10 @@
 using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Oidc;
 
 namespace Frank.Identity.Application.Callback.Oidc.Steps;
 
-public sealed class FetchUserInfoStep : IImmutableContextBuildStep<OidcCallbackContext>
+public sealed class FetchUserInfoStep : IImmutableContextBuildStep<CallbackOidcContext>
 {
     private readonly IOidcUserInfoClient _client;
 
@@ -15,11 +16,11 @@ public sealed class FetchUserInfoStep : IImmutableContextBuildStep<OidcCallbackC
         _client = client;
     }
 
-    public bool CanExecute(OidcCallbackContext ctx)
+    public bool CanExecute(CallbackOidcContext ctx)
         => ctx.AccessToken is not null;
 
-    public async Task<OidcCallbackContext> ExecuteAsync(
-        OidcCallbackContext ctx,
+    public async Task<CallbackOidcContext> ExecuteAsync(
+        CallbackOidcContext ctx,
         CancellationToken ct)
     {
         var info = await _client.GetUserInfoAsync(ctx.AccessToken!, ct);

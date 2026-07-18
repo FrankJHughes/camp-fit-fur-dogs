@@ -3,7 +3,7 @@ using Frank.Identity.Application.Abstractions.Callback.Save;
 
 namespace Frank.Core.Application.Tests.Fakes.Application.Authentication.Callback.Steps;
 
-public sealed class SetFinalValuesStep : IImmutableContextBuildStep<SaveCallbackContext>
+public sealed class SetFinalValuesStep : IImmutableContextBuildStep<CallbackSaveContext>
 {
     private readonly Guid _userId;
     private readonly Guid _sessionId;
@@ -25,9 +25,9 @@ public sealed class SetFinalValuesStep : IImmutableContextBuildStep<SaveCallback
     public IImmutableContextBuildStepMetadata Metadata =>
         new ImmutableContextBuildStepMetadata("SetFinalValues", "Set Final Values");
 
-    public bool CanExecute(SaveCallbackContext ctx) => true;
+    public bool CanExecute(CallbackSaveContext ctx) => true;
 
-    public Task<SaveCallbackContext> ExecuteAsync(SaveCallbackContext ctx, CancellationToken ct)
+    public Task<CallbackSaveContext> ExecuteAsync(CallbackSaveContext ctx, CancellationToken ct)
         => Task.FromResult(
             ctx with
             {

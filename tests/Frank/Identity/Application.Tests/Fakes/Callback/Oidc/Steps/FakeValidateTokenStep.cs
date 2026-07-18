@@ -3,7 +3,7 @@ using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Identity.Application.Tests.Fakes.Callback.Oidc.Steps;
 
-public sealed class FakeValidateTokensStep : IImmutableContextBuildStep<OidcCallbackContext>
+public sealed class FakeValidateTokensStep : IImmutableContextBuildStep<CallbackOidcContext>
 {
     private readonly bool _shouldThrow;
 
@@ -12,10 +12,10 @@ public sealed class FakeValidateTokensStep : IImmutableContextBuildStep<OidcCall
         _shouldThrow = shouldThrow;
     }
 
-    public bool CanExecute(OidcCallbackContext ctx) => true;
+    public bool CanExecute(CallbackOidcContext ctx) => true;
 
-    public Task<OidcCallbackContext> ExecuteAsync(
-        OidcCallbackContext ctx,
+    public Task<CallbackOidcContext> ExecuteAsync(
+        CallbackOidcContext ctx,
         CancellationToken cancellationToken)
     {
         if (_shouldThrow)

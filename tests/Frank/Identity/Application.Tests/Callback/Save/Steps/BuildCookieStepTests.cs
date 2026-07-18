@@ -42,7 +42,7 @@ public sealed class BuildCookieStepTests
         var tokens = new FakeTokenService(hash: ValidHash);
         var step = new BuildCookieStep(tokens);
 
-        var ctx = new SaveCallbackContext
+        var ctx = new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow

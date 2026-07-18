@@ -3,12 +3,12 @@ using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Identity.Application.Abstractions.Callback.Save;
 
-public sealed record SaveCallbackContextBuilderRequest : ImmutableContextBuilderRequestBase
+public sealed record CallbackSaveContextBuilderRequest : ImmutableContextBuilderRequestBase
 {
     /// <summary>
     /// The external identity resolved by the protocol layer (Frank).
     /// </summary>
-    public required OidcCallbackContextBuilderResult External { get; init; }
+    public required CallbackOidcContextBuilderResult External { get; init; }
 
     /// <summary>
     /// Optional return URL requested by the client.

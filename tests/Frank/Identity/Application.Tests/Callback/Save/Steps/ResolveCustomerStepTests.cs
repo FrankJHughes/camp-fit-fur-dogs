@@ -11,9 +11,9 @@ public sealed class ResolveUserStepTests
     private sealed class FakeIdentityResolver : IIdentityResolver
     {
         public Guid ReturnedId { get; set; } = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-        public OidcCallbackContextBuilderResult? ReceivedExternal { get; private set; }
+        public CallbackOidcContextBuilderResult? ReceivedExternal { get; private set; }
 
-        public Task<Guid> ResolveAsync(OidcCallbackContextBuilderResult external, CancellationToken ct)
+        public Task<Guid> ResolveAsync(CallbackOidcContextBuilderResult external, CancellationToken ct)
         {
             ReceivedExternal = external;
             return Task.FromResult(ReturnedId);
@@ -26,7 +26,7 @@ public sealed class ResolveUserStepTests
         var resolver = new FakeIdentityResolver();
         var step = new ResolveUserStep(resolver);
 
-        var ctx = new SaveCallbackContext
+        var ctx = new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create("sub-123"),
             Now = DateTimeOffset.UtcNow
@@ -43,14 +43,14 @@ public sealed class ResolveUserStepTests
     {
         var step = new ResolveUserStep(new FakeIdentityResolver());
 
-        step.CanExecute(new SaveCallbackContext
+        step.CanExecute(new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
             UserId = null
         }).Should().BeTrue();
 
-        step.CanExecute(new SaveCallbackContext
+        step.CanExecute(new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,

@@ -1,4 +1,6 @@
+using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
+using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
 using Frank.Identity.Application.Settings;
 using Frank.Identity.Domain.Sessions;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +18,8 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
 
         return services
-            .AddScoped<ISessionRepository, SessionRepository>()
-            .AddScoped<IGetSessionReader, GetSessionReader>();
+            .AddScoped<ICreateSessionWriter, CreateSessionWriter>()
+            .AddScoped<IGetSessionReader, GetSessionReader>()
+            .AddScoped<IRevokeSessionWriter, RevokeSessionWriter>();
     }
 }

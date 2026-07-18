@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Frank.Identity.Application.Callback.Oidc.Steps;
 
-public sealed class ValidateTokensStep : IImmutableContextBuildStep<OidcCallbackContext>
+public sealed class ValidateTokensStep : IImmutableContextBuildStep<CallbackOidcContext>
 {
     private readonly OidcCallbackSettings _options;
     private readonly HttpClient _http;
@@ -22,11 +22,11 @@ public sealed class ValidateTokensStep : IImmutableContextBuildStep<OidcCallback
         _http = http;
     }
 
-    public bool CanExecute(OidcCallbackContext ctx)
+    public bool CanExecute(CallbackOidcContext ctx)
         => ctx.IdToken is not null;
 
-    public async Task<OidcCallbackContext> ExecuteAsync(
-        OidcCallbackContext ctx,
+    public async Task<CallbackOidcContext> ExecuteAsync(
+        CallbackOidcContext ctx,
         CancellationToken ct)
     {
         var idToken = ctx.IdToken!;

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Frank.Identity.Application.Callback.Oidc.Steps;
 
-public sealed class ExchangeCodeStep : IImmutableContextBuildStep<OidcCallbackContext>
+public sealed class ExchangeCodeStep : IImmutableContextBuildStep<CallbackOidcContext>
 {
     private readonly HttpClient _http;
     private readonly OidcCallbackSettings _options;
@@ -20,11 +20,11 @@ public sealed class ExchangeCodeStep : IImmutableContextBuildStep<OidcCallbackCo
         _options = options.CurrentValue;
     }
 
-    public bool CanExecute(OidcCallbackContext ctx)
+    public bool CanExecute(CallbackOidcContext ctx)
         => ctx.Code is not null;
 
-    public async Task<OidcCallbackContext> ExecuteAsync(
-        OidcCallbackContext ctx,
+    public async Task<CallbackOidcContext> ExecuteAsync(
+        CallbackOidcContext ctx,
         CancellationToken ct)
     {
         var tokenEndpoint = $"{_options.Authority}/oauth/token";

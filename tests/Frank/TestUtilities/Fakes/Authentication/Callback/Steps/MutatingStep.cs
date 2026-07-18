@@ -4,7 +4,7 @@ using Frank.TestUtilities.Fakes.Authentication.Callback;
 
 namespace Frank.Core.Application.Tests.Fakes.Application.Authentication.Callback.Steps;
 
-public sealed class MutatingStep : IImmutableContextBuildStep<SaveCallbackContext>
+public sealed class MutatingStep : IImmutableContextBuildStep<CallbackSaveContext>
 {
     private readonly bool _modifyExternal;
     private readonly bool _modifyNow;
@@ -20,12 +20,12 @@ public sealed class MutatingStep : IImmutableContextBuildStep<SaveCallbackContex
     public IImmutableContextBuildStepMetadata Metadata =>
         new ImmutableContextBuildStepMetadata("Mutate", "Mutating Step");
 
-    public bool CanExecute(SaveCallbackContext ctx) => true;
+    public bool CanExecute(CallbackSaveContext ctx) => true;
 
-    public Task<SaveCallbackContext> ExecuteAsync(SaveCallbackContext ctx, CancellationToken ct)
+    public Task<CallbackSaveContext> ExecuteAsync(CallbackSaveContext ctx, CancellationToken ct)
     {
         if (_returnNull)
-            return Task.FromResult<SaveCallbackContext>(null!);
+            return Task.FromResult<CallbackSaveContext>(null!);
 
         var external = _modifyExternal
             ? FakeOidcCallbackResult.Create("DIFFERENT")

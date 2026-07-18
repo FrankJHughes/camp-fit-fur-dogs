@@ -22,13 +22,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISessionTokenService, SessionTokenService>();
 
         // ⭐ Pipeline steps (register as implementations of IAuthCallbackStep so discovery works)
-        services.AddTransient<IImmutableContextBuildStep<SaveCallbackContext>, AuditLoginStep>();
-        services.AddTransient<IImmutableContextBuildStep<SaveCallbackContext>, BuildCookieStep>();
-        services.AddTransient<IImmutableContextBuildStep<SaveCallbackContext>, CreateSessionStep>();
-        services.AddTransient<IImmutableContextBuildStep<SaveCallbackContext>, ResolveUserStep>();
+        services.AddTransient<IImmutableContextBuildStep<CallbackSaveContext>, AuditLoginStep>();
+        services.AddTransient<IImmutableContextBuildStep<CallbackSaveContext>, BuildCookieStep>();
+        services.AddTransient<IImmutableContextBuildStep<CallbackSaveContext>, CreateSessionStep>();
+        services.AddTransient<IImmutableContextBuildStep<CallbackSaveContext>, ResolveUserStep>();
 
-        services.AddTransient<IImmutableContextBuilder<SaveCallbackContextBuilderRequest, SaveCallbackContext, SaveCallbackContextBuilderResult>,
-            CallbackSaveContextBuilder>();
+        services.AddTransient<ICallbackSaveContextBuilder, CallbackSaveContextBuilder>();
 
         return services;
     }

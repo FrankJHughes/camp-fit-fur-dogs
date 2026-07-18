@@ -5,7 +5,7 @@ using Frank.Identity.Application.Abstractions.Callback.Save;
 namespace Frank.Identity.Application.Callback.Save.Steps;
 
 public sealed class ResolveUserStep
-    : IImmutableContextBuildStep<SaveCallbackContext>
+    : IImmutableContextBuildStep<CallbackSaveContext>
 {
     private readonly IIdentityResolver _identityResolver;
 
@@ -20,11 +20,11 @@ public sealed class ResolveUserStep
             displayName: "Resolve User"
         );
 
-    public bool CanExecute(SaveCallbackContext ctx)
+    public bool CanExecute(CallbackSaveContext ctx)
         => ctx.UserId is null; // only run once, at the start
 
-    public async Task<SaveCallbackContext> ExecuteAsync(
-        SaveCallbackContext ctx,
+    public async Task<CallbackSaveContext> ExecuteAsync(
+        CallbackSaveContext ctx,
         CancellationToken ct)
     {
         var external = ctx.External;

@@ -2,7 +2,7 @@ using Frank.Core.Application.Abstractions.ImmutableContexts;
 
 namespace Frank.Identity.Application.Abstractions.Callback.Oidc;
 
-public sealed record OidcCallbackContextBuilderResult : ImmutableContextBuilderResultBase
+public sealed record CallbackOidcContextBuilderResult : ImmutableContextBuilderResultBase
 {
     public required string SubjectId { get; init; }
     public required IReadOnlyDictionary<string, string> Claims { get; init; }

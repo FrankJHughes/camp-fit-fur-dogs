@@ -9,6 +9,8 @@ using Frank.Core.Application.Abstractions.Authentication;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.Domain.Users;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Microsoft.AspNetCore.Mvc;
+using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 
 namespace CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 
@@ -19,13 +21,13 @@ public sealed partial class SignInEndpoint : IEndpoint
         endpoints.MapPost("/__test__/sign-in", async (
             SignInRequest req,
             HttpContext http,
-            IIdentityResolver identityResolver,
-            ISessionTokenService sessionTokenService,
-            ISessionRepository sessionRepository,
-            IFrankIdentityUnitOfWork unitOfWork) =>
+            [FromServices] IIdentityResolver identityResolver,
+            [FromServices] ISessionTokenService sessionTokenService,
+            [FromServices] ICreateSessionWriter sessionWriter,
+            [FromServices] IFrankIdentityUnitOfWork unitOfWork) =>
         {
             // 1. Build a fake Frank authentication callback result
-            var callback = new OidcCallbackContextBuilderResult
+            var callback = new CallbackOidcContextBuilderResult
             {
                 SubjectId = req.Sub,
                 GivenName = "Test",
@@ -49,7 +51,7 @@ public sealed partial class SignInEndpoint : IEndpoint
                 createdAt: DateTimeOffset.UtcNow);
 
             // 6. Persist the session
-            await sessionRepository.CreateAsync(session, http.RequestAborted);
+            await sessionWriter.WriteAsync(session, http.RequestAborted);
             await unitOfWork.CommitAsync(http.RequestAborted);
 
             // 7. Write the plaintext token to the cookie

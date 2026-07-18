@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
             .AddOptions<FrontendSettings>()
             .BindConfiguration("Frontend")
             .ValidateDataAnnotations()
-            .ValidateOnStart(); // AuthLoginEndpoint dependency
+            .ValidateOnStart(); // Dependents: GetLoginUrlEndpoint,LogoutEndpoint
 
         return services.AddFrankEndpoints([typeof(Frank.Identity.Api.AssemblyMarker).Assembly]);
     }

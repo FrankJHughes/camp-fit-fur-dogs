@@ -7,12 +7,12 @@ namespace Frank.Identity.Application.Sessions.RevokeSession;
 
 public sealed class RevokeSessionHandler : ICommandHandler<RevokeSessionCommand>
 {
-    private readonly ISessionRepository _repository;
+    private readonly IRevokeSessionWriter _writer;
     private readonly IFrankIdentityUnitOfWork _unitOfWork;
 
-    public RevokeSessionHandler(ISessionRepository repository, IFrankIdentityUnitOfWork unitOfWork)
+    public RevokeSessionHandler(IRevokeSessionWriter writer, IFrankIdentityUnitOfWork unitOfWork)
     {
-        _repository = repository;
+        _writer = writer;
         _unitOfWork = unitOfWork;
     }
 
@@ -20,7 +20,7 @@ public sealed class RevokeSessionHandler : ICommandHandler<RevokeSessionCommand>
     {
         var tokenHash = SessionTokenHash.From(command.TokenHash);
 
-        await _repository.RevokeAsync(tokenHash, cancellationToken);
+        await _writer.WriteAsync(tokenHash, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
     }
 }

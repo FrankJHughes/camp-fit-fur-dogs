@@ -6,7 +6,7 @@ using Frank.Identity.Domain.Sessions;
 namespace Frank.Identity.Application.Callback.Save.Steps;
 
 public sealed class BuildCookieStep
-    : IImmutableContextBuildStep<SaveCallbackContext>
+    : IImmutableContextBuildStep<CallbackSaveContext>
 {
     private readonly ISessionTokenService _tokens;
 
@@ -21,11 +21,11 @@ public sealed class BuildCookieStep
             displayName: "Build Cookie"
         );
 
-    public bool CanExecute(SaveCallbackContext ctx)
+    public bool CanExecute(CallbackSaveContext ctx)
         => ctx.CookieValue is null; // runs once, before session creation
 
-    public Task<SaveCallbackContext> ExecuteAsync(
-        SaveCallbackContext ctx,
+    public Task<CallbackSaveContext> ExecuteAsync(
+        CallbackSaveContext ctx,
         CancellationToken ct)
     {
         // 1. Generate token + hash

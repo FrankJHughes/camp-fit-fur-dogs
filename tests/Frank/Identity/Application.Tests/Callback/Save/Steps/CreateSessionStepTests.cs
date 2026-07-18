@@ -1,5 +1,6 @@
 using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.Identity.Domain.Sessions;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
@@ -11,28 +12,14 @@ public sealed class CreateSessionStepTests
     private const string ValidHash =
         "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
-    private sealed class FakeSessionRepository : ISessionRepository
+    // NEW: Slice-specific writer instead of ISessionRepository
+    private sealed class FakeCreateSessionWriter : ICreateSessionWriter
     {
         public Session? Created { get; private set; }
-        public SessionTokenHash? RevokedHash { get; private set; }
-        public SessionTokenHash? LookupHash { get; private set; }
-        public Session? LookupResult { get; set; }
 
-        public Task CreateAsync(Session session, CancellationToken ct)
+        public Task WriteAsync(Session session, CancellationToken ct)
         {
             Created = session;
-            return Task.CompletedTask;
-        }
-
-        public Task<Session?> GetByTokenHashAsync(SessionTokenHash hash, CancellationToken ct)
-        {
-            LookupHash = hash;
-            return Task.FromResult(LookupResult);
-        }
-
-        public Task RevokeAsync(SessionTokenHash hash, CancellationToken ct)
-        {
-            RevokedHash = hash;
             return Task.CompletedTask;
         }
     }
@@ -51,11 +38,11 @@ public sealed class CreateSessionStepTests
     [Fact]
     public async Task ExecuteAsync_CreatesSession_AndSetsSessionId()
     {
-        var repo = new FakeSessionRepository();
+        var writer = new FakeCreateSessionWriter();
         var uow = new FakeFrankIdentityUnitOfWork();
-        var step = new CreateSessionStep(repo, uow);
+        var step = new CreateSessionStep(writer, uow);
 
-        var ctx = new SaveCallbackContext
+        var ctx = new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,
@@ -65,7 +52,7 @@ public sealed class CreateSessionStepTests
 
         var result = await step.ExecuteAsync(ctx, CancellationToken.None);
 
-        repo.Created.Should().NotBeNull();
+        writer.Created.Should().NotBeNull();
         uow.Committed.Should().BeTrue();
         result.SessionId.Should().NotBeNull();
     }
@@ -73,9 +60,9 @@ public sealed class CreateSessionStepTests
     [Fact]
     public void CanExecute_OnlyWhenUserIdAndTokenHashAreSet_AndSessionIdIsNull()
     {
-        var step = new CreateSessionStep(new FakeSessionRepository(), new FakeFrankIdentityUnitOfWork());
+        var step = new CreateSessionStep(new FakeCreateSessionWriter(), new FakeFrankIdentityUnitOfWork());
 
-        var valid = new SaveCallbackContext
+        var valid = new CallbackSaveContext
         {
             External = FakeOidcCallbackResult.Create(),
             Now = DateTimeOffset.UtcNow,

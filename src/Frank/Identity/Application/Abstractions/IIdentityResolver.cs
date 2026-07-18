@@ -5,6 +5,6 @@ namespace Frank.Identity.Application.Abstractions;
 public interface IIdentityResolver
 {
     Task<Guid> ResolveAsync(
-        OidcCallbackContextBuilderResult authCallbackResult,
+        CallbackOidcContextBuilderResult authCallbackResult,
         CancellationToken cancellationToken);
 }

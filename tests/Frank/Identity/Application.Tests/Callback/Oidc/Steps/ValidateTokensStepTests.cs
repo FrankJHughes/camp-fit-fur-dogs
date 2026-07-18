@@ -29,7 +29,7 @@ public sealed class ValidateTokensStepTests
         var http = fake.CreateClient();
         var step = new ValidateTokensStep(new FakeOptionsMonitor<OidcCallbackSettings>(Settings), http);
 
-        var ctx = new OidcCallbackContext
+        var ctx = new CallbackOidcContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,
@@ -55,7 +55,7 @@ public sealed class ValidateTokensStepTests
         var http = fake.CreateClient();
         var step = new ValidateTokensStep(new FakeOptionsMonitor<OidcCallbackSettings>(Settings), http);
 
-        var ctx = new OidcCallbackContext
+        var ctx = new CallbackOidcContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,

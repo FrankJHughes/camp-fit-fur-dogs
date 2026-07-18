@@ -20,7 +20,7 @@ public sealed class IdentityResolver : IIdentityResolver
     }
 
     public async Task<Guid> ResolveAsync(
-        OidcCallbackContextBuilderResult oidcCallbackResult,
+        CallbackOidcContextBuilderResult oidcCallbackResult,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

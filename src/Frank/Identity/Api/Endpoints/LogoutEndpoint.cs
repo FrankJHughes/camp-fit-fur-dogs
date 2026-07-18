@@ -1,6 +1,9 @@
+using Frank.Core.Application.Abstractions.Authentication;
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Domain.Exceptions;
 using Frank.Identity.Api.Abstractions.Endpoints;
+using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
 using Frank.Identity.Application.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,23 +22,35 @@ public class LogoutEndpoint : IEndpoint
     }
 
     private async Task<IResult> HandleAsync(
-        HttpContext http,
-        [FromServices] IOptionsMonitor<FrontendSettings> frontendOptionsMonitor)
+        HttpContext httpContext,
+        ISessionTokenService tokenService,
+        ICommandDispatcher commandDispatcher,
+        IOptionsMonitor<FrontendSettings> frontendOptionsMonitor)
     {
-        //
-        // IMPORTANT:
-        //
-        // We no longer use ASP.NET cookie authentication ("cffd.session").
-        // The real authentication cookie is now the domain session cookie: "session".
-        //
-        // So logout simply deletes the domain session cookie.
-        //
-        http.Response.Cookies.Delete("session");
+
+        // 1. Read plaintext token from cookie
+        var plaintextToken = httpContext.Request.Cookies["session"];
+
+        // 2. Hash the plaintext token
+        if (!string.IsNullOrEmpty(plaintextToken))
+        {
+            string tokenHash;
+            try
+            {
+                tokenHash = tokenService.Hash(plaintextToken).Value;
+                var command = new RevokeSessionCommand(tokenHash);
+                await commandDispatcher.DispatchAsync(command, CancellationToken.None);
+            }
+            catch
+            {
+            }
+        }
+        httpContext.Response.Cookies.Delete("session");
 
         //
         // Determine where to redirect after logout.
         //
-        var returnUrl = http.Request.Query["return_url"].ToString();
+        var returnUrl = httpContext.Request.Query["return_url"].ToString();
 
         if (string.IsNullOrWhiteSpace(returnUrl))
         {

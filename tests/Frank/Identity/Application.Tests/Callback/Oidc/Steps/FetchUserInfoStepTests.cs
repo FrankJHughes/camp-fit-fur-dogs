@@ -17,7 +17,7 @@ public sealed class FetchUserInfoStepTests
 
         var step = new FetchUserInfoStep(fakeClient);
 
-        var ctx = new OidcCallbackContext
+        var ctx = new CallbackOidcContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,
@@ -45,7 +45,7 @@ public sealed class FetchUserInfoStepTests
 
         var step = new FetchUserInfoStep(fakeClient);
 
-        var ctx = new OidcCallbackContext
+        var ctx = new CallbackOidcContext
         {
             Code = "abc123",
             Now = DateTimeOffset.UtcNow,
