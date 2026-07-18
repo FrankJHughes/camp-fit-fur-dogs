@@ -8,12 +8,12 @@ namespace Frank.Identity.Application.Users.CreateUser;
 public sealed class CreateUserCommandHandler
     : ICommandHandler<CreateUserCommand, Guid>
 {
-    private readonly IUserRepository _repo;
+    private readonly ICreateUserWriter _writer;
     private readonly IFrankIdentityUnitOfWork _unitOfWork;
 
-    public CreateUserCommandHandler(IUserRepository repo, IFrankIdentityUnitOfWork unitOfWork)
+    public CreateUserCommandHandler(ICreateUserWriter writer, IFrankIdentityUnitOfWork unitOfWork)
     {
-        _repo = repo;
+        _writer = writer;
         _unitOfWork = unitOfWork;
     }
 
@@ -39,7 +39,7 @@ public sealed class CreateUserCommandHandler
         );
 
         // Persist
-        await _repo.AddAsync(user, ct);
+        await _writer.WriteAsync(user, ct);
         await _unitOfWork.CommitAsync(ct);
 
         return user.Id.Value;

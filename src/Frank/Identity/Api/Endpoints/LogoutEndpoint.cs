@@ -7,7 +7,6 @@ using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
 using Frank.Identity.Application.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 

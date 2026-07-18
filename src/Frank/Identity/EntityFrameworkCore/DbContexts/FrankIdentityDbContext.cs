@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Frank.Identity.EntityFrameworkCore.Persistence;
+namespace Frank.Identity.EntityFrameworkCore.DbContexts;
 
-public sealed class FrankIdentityDbContext : DbContext
+public sealed class FrankIdentityDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
     public FrankIdentityDbContext(DbContextOptions<FrankIdentityDbContext> options) : base(options) { }
 

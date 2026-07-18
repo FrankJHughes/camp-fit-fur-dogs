@@ -1,6 +1,6 @@
 using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
 using Frank.Identity.Domain.Sessions;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Frank.Identity.EntityFrameworkCore.Sessions;

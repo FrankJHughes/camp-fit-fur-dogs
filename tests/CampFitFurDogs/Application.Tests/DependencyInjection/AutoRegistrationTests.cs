@@ -7,7 +7,6 @@ using Frank.Core.Application;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Core.Application.Cqrs.Commands;
-using Frank.Identity.Domain.Users;
 using Frank.TestUtilities.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,8 +50,7 @@ public partial class AutoRegistrationTests
 
         // Provide required fakes so handlers/validators can be constructed
         services.AddSingleton<IDogRepository, FakeDogRepository>();
-        services.AddSingleton<IUserRepository, FakeUserRepository>();
-        services.AddSingleton<IUnitOfWork, FakeAppUnitOfWork>();
+        services.AddSingleton<IAppUnitOfWork, FakeAppUnitOfWork>();
 
         // Act
         var provider = services.BuildServiceProvider();

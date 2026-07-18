@@ -1,11 +1,11 @@
 using Frank.Identity.EntityFrameworkCore.Sessions;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.Domain.Users;
-using Frank.Identity.EntityFrameworkCore.Persistence;
-using Frank.Identity.EntityFrameworkCore.Users;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
 using Microsoft.EntityFrameworkCore;
+using Frank.Identity.EntityFrameworkCore.Users;
 
 namespace Frank.Core.EntityFrameworkCore.Tests.Sessions;
 
@@ -21,7 +21,7 @@ public class RevokeSessionWriterTests : IClassFixture<PostgresFixture<FrankIdent
     private async Task<UserId> SeedOwnerAsync()
     {
         await using var ctx = _fixture.CreateContext();
-        var repo = new UserRepository(ctx);
+        var writer = new CreateUserWriter(ctx);
 
         var user = new UserBuilder()
             .WithFirstName(UserFixtures.First.Value)
@@ -30,7 +30,7 @@ public class RevokeSessionWriterTests : IClassFixture<PostgresFixture<FrankIdent
             .WithPhone(UserFixtures.Phone.Value)
             .Build();
 
-        await repo.AddAsync(user, CancellationToken.None);
+        await writer.WriteAsync(user, CancellationToken.None);
         await ctx.SaveChangesAsync();
 
         return user.Id;

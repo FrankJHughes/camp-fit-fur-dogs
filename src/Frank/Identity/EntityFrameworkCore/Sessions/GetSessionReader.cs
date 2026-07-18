@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
 using Frank.Identity.Application.Settings;
 using Frank.Identity.Domain.Sessions;

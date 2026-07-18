@@ -1,6 +1,6 @@
 using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 using Frank.Identity.Domain.Sessions;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 
 namespace Frank.Identity.EntityFrameworkCore.Sessions;
 

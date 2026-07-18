@@ -1,6 +1,6 @@
 using Frank.Identity.Application.Abstractions.Users.GetUserById;
 using Frank.Identity.Domain.Users;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Frank.Identity.EntityFrameworkCore.Users;

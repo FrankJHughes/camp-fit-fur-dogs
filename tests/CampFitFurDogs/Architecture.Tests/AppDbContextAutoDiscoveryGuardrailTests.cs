@@ -1,5 +1,5 @@
 using System.Reflection;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Architecture.Tests;

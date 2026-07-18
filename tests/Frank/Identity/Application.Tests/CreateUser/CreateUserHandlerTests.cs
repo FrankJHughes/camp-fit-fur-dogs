@@ -1,5 +1,6 @@
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
 using Frank.Identity.Application.Users.CreateUser;
+using Frank.Identity.Domain.Users;
 using Frank.TestUtilities.Fakes;
 using Frank.TestUtilities.Fixtures;
 
@@ -7,13 +8,24 @@ namespace Frank.Tests.Application.Users.CreateUser;
 
 public class CreateUserHandlerTests
 {
-    private readonly FakeUserRepository _repo = new();
+    private sealed class FakeCreateUserWriter : ICreateUserWriter
+    {
+        public List<User> Users { get; } = new();
+
+        public Task WriteAsync(User user, CancellationToken ct)
+        {
+            Users.Add(user);
+            return Task.CompletedTask;
+        }
+    }
+
+    private readonly FakeCreateUserWriter _writer = new();
     private readonly FakeFrankIdentityUnitOfWork _unitOfWork = new();
     private readonly CreateUserCommandHandler _handler;
 
     public CreateUserHandlerTests()
     {
-        _handler = new CreateUserCommandHandler(_repo, _unitOfWork);
+        _handler = new CreateUserCommandHandler(_writer, _unitOfWork);
     }
 
     // ───────────────────────────────────────────────────────────────
@@ -34,9 +46,9 @@ public class CreateUserHandlerTests
         var userId = await _handler.HandleAsync(command, CancellationToken.None);
 
         userId.Should().NotBe(Guid.Empty);
-        _repo.Users.Should().HaveCount(1);
+        _writer.Users.Should().HaveCount(1);
 
-        var user = _repo.Users[0];
+        var user = _writer.Users[0];
         user.ExternalId.Value.Should().Be("auth0|abc123");
     }
 

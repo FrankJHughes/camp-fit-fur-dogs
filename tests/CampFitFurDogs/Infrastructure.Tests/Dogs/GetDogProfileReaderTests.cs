@@ -4,7 +4,7 @@ using CampFitFurDogs.Infrastructure.Dogs;
 using CampFitFurDogs.Infrastructure.Persistence;
 using CampFitFurDogs.TestUtilities.Builders;
 using Frank.Identity.Domain.Users;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.Identity.EntityFrameworkCore.Users;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
@@ -37,7 +37,7 @@ public class GetDogProfileReaderTests :
             .WithPhone(UserFixtures.Phone.Value)
             .Build();
 
-        await new UserRepository(identityCtx).AddAsync(user, CancellationToken.None);
+        await new CreateUserWriter(identityCtx).WriteAsync(user, CancellationToken.None);
         await identityCtx.SaveChangesAsync();
 
         // Seed Dog in Dogs DB

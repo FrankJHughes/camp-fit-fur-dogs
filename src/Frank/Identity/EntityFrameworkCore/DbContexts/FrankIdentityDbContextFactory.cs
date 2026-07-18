@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace Frank.Identity.EntityFrameworkCore.Persistence;
+namespace Frank.Identity.EntityFrameworkCore.DbContexts;
 
 public sealed class FrankIdentityDesignTimeDbContextFactory : IDesignTimeDbContextFactory<FrankIdentityDbContext>
 {

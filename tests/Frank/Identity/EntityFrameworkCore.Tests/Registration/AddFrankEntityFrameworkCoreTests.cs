@@ -1,5 +1,5 @@
 using Frank.Core.Application.Abstractions.UnitOfWork;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.Identity.EntityFrameworkCore.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,7 @@ public sealed class AddFrankEntityFrameworkCoreTests
         var services = new ServiceCollection();
 
         services.AddDbContext<FrankIdentityDbContext>(o => o.UseInMemoryDatabase("test"));
-        services.AddFrankIdentityUnitOfWork();
+        services.AddFrankIdentityUnitOfWorkInfrastructure();
 
         var provider = services.BuildServiceProvider();
 

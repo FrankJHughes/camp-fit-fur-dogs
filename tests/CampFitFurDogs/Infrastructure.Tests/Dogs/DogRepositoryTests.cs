@@ -4,7 +4,7 @@ using CampFitFurDogs.Infrastructure.Persistence;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using Frank.Identity.Domain.Users;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.Identity.EntityFrameworkCore.Users;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
@@ -30,7 +30,7 @@ public class DogRepositoryTests :
     private async Task<UserId> SeedOwnerAsync()
     {
         await using var ctx = _identity.CreateContext();
-        var repo = new UserRepository(ctx);
+        var writer = new CreateUserWriter(ctx);
 
         var user = new UserBuilder()
             .WithFirstName(UserFixtures.First.Value)
@@ -39,7 +39,7 @@ public class DogRepositoryTests :
             .WithPhone(UserFixtures.Phone.Value)
             .Build();
 
-        await repo.AddAsync(user, CancellationToken.None);
+        await writer.WriteAsync(user, CancellationToken.None);
         await ctx.SaveChangesAsync();
 
         return user.Id;

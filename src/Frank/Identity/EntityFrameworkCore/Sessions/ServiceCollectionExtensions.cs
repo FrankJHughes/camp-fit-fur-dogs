@@ -2,14 +2,13 @@ using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
 using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
 using Frank.Identity.Application.Settings;
-using Frank.Identity.Domain.Sessions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Identity.EntityFrameworkCore.Sessions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankSessionsInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddFrankIdentitySessionsInfrastructure(this IServiceCollection services)
     {
         services
             .AddOptions<SessionSettings>()

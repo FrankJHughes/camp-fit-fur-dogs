@@ -5,13 +5,14 @@ using Frank.Core.Infrastructure.Audit;
 using Frank.Core.Infrastructure.EnvironmentVariables;
 using Frank.Identity.Infrastructure;
 using Frank.Core.Infrastructure.Time;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.Identity.EntityFrameworkCore.Sessions;
 using Frank.Identity.EntityFrameworkCore.UnitOfWork;
 using Frank.Identity.EntityFrameworkCore.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Frank.Identity.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure;
 
@@ -25,18 +26,12 @@ public static class ServiceCollectionExtensions
         return services
             .AddHttpContextAccessor()
 
-            .AddDbContext<FrankIdentityDbContext>(options =>
-                {
-                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-                })
-            .AddFrankIdentityUnitOfWork() // IFrankIdentityUnitOfWork
+            .AddFrankIdentityInfrastructure(configuration)
+            .AddFrankIdentity()
 
             .AddFrankEnvironment() // IEnvironment
             .AddFrankTime() // IClock
 
-            .AddFrankUsersInfrastructure()
-            .AddFrankSessionsInfrastructure()
-            .AddFrankIdentity()
 
             .AddSingleton<IAuditLogger, AuditLogger>()
 

@@ -3,7 +3,7 @@ using CampFitFurDogs.Infrastructure.Persistence;
 using CampFitFurDogs.TestUtilities.Contexts;
 using CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 using CampFitFurDogs.TestUtilities.Infrastructure;
-using Frank.Identity.EntityFrameworkCore.Persistence;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.Testing.Factories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
