@@ -7,31 +7,28 @@ It simply reads the current authenticated user (`ICurrentUser`) and returns a DT
 
 It spans:
 
-- **API** — `GetIdentityEndpoint`
-- **Application** — `ICurrentUser` abstraction
-- **Authorization** — endpoint requires authentication
+- **API Layer** — `GetIdentityEndpoint`
+- **Application Layer** — `ICurrentUser` abstraction
+- **Authorization Layer** — endpoint requires authentication
 
 ---
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    %% Lanes
-    subgraph CLIENT["Frontend"]
-        C1["1. GET /api/identity"]
-        C2["Client receives identity DTO"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph API["API Layer"]
-        A1["2. RequireAuthorization()"]
-        A2["3. Resolve ICurrentUser from DI"]
-        A3["4. Build GetIdentityEndpointResponse DTO"]
-        A4["5. Return Results.Ok(dto)"]
-    end
+    participant CLIENT as Frontend
+    participant API as API Layer
+    participant APP as Application Layer
 
-    %% Flow
-    C1 --> A1 --> A2 --> A3 --> A4 --> C2
+    CLIENT->>API: 1. GET /api/identity
+    API->>API: 2. RequireAuthorization()
+    API->>APP: 3. Resolve ICurrentUser from DI
+    APP-->>API: 4. Return authenticated user identity
+    API->>API: 5. Build GetIdentityEndpointResponse DTO
+    API-->>CLIENT: 6. Return Results.Ok(dto)
 ```
 
 ---
@@ -68,9 +65,9 @@ app.MapGet("/api/identity", (ICurrentUser currentUser) =>
 
 ### Developer Notes
 
-- This endpoint **does not** perform any business logic.
-- It **does not** interact with domain aggregates (`User`, `Session`).
-- It **does not** touch persistence.
+- This endpoint performs **no business logic**.
+- It does **not** interact with domain aggregates (`User`, `Session`).
+- It does **not** touch persistence.
 - It is purely a read‑only identity projection.
 
 ---
@@ -100,7 +97,7 @@ The endpoint relies on the `ICurrentUser` abstraction:
 ### Developer Notes
 
 - `ICurrentUser.Name` is guaranteed to be non‑null for authenticated users.
-- If the session cookie is missing or invalid, the request will fail authorization before reaching the endpoint.
+- If the session cookie is missing or invalid, authorization fails **before** the endpoint runs.
 
 ---
 
@@ -135,7 +132,7 @@ The endpoint returns:
 ### Developer Notes
 
 - The DTO currently exposes only `Name`.
-- Additional fields (e.g., email, roles, permissions) can be added later.
+- Additional fields (email, roles, permissions) can be added later.
 - The DTO is intentionally minimal to avoid leaking internal identity details.
 
 ---
@@ -153,7 +150,7 @@ Errors arise only from:
 - Expired session  
 - Session not found  
 
-These result in:
+Result:
 
 ```
 401 Unauthorized
@@ -161,7 +158,7 @@ These result in:
 
 ### 6.2 Infrastructure failures
 
-If `ICurrentUser` cannot be resolved, DI will throw — but this indicates a configuration error, not a runtime identity issue.
+If `ICurrentUser` cannot be resolved, DI will throw — indicating a configuration error, not a runtime identity issue.
 
 ---
 
@@ -174,17 +171,19 @@ If `ICurrentUser` cannot be resolved, DI will throw — but this indicates a con
 
 ## Integration Tests
 
-- Authenticated request:
+- **Authenticated request:**
   - Provide valid session cookie
   - Expect `200 OK` with correct DTO
 
-- Unauthenticated request:
+- **Unauthenticated request:**
   - No session cookie
   - Expect `401 Unauthorized`
 
-- Session invalidation:
+- **Session invalidation:**
   - Expired or malformed cookie
   - Expect `401 Unauthorized`
+
+Integration tests use `ApiContext` + `ApiFactory`.
 
 ---
 
@@ -198,4 +197,3 @@ The **GetIdentity** slice:
 - Performs no domain logic, no persistence, and no side effects  
 
 It is the simplest slice in Frank.Identity and serves as the frontend’s primary way to retrieve the current user’s identity.
-

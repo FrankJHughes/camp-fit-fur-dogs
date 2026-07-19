@@ -6,31 +6,29 @@ It is intentionally simple: no pipelines, no domain logic, and no persistence.
 
 It spans:
 
-- **API** — `LogoutEndpoint`
-- **Application** — `FrontendSettings`
-- **Domain** — configuration validation exceptions
+- **API Layer** — `LogoutEndpoint`
+- **Application Layer** — `FrontendSettings`
+- **Domain Layer** — configuration validation exceptions
 
 ---
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    %% Lanes
-    subgraph CLIENT["Frontend"]
-        C1["1. GET /api/identity/logout"]
-        C2["Client receives return_url"]
-        C3["Client navigates to return_url"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph API["API Layer"]
-        A1["2. Delete domain session cookie ('session')"]
-        A2["3. Determine return_url"]
-        A3["4. Return LogoutEndpointResponse(return_url)"]
-    end
+    participant CLIENT as Frontend
+    participant API as API Layer
+    participant APP as Application Layer
 
-    %% Flow
-    C1 --> A1 --> A2 --> A3 --> C2 --> C3
+    CLIENT->>API: 1. GET /api/identity/logout
+    API->>API: 2. Delete domain session cookie ('session')
+    API->>APP: 3. Load FrontendSettings
+    APP-->>API: 4. Return BaseUrl
+    API->>API: 5. Determine return_url (query or fallback)
+    API-->>CLIENT: 6. Return LogoutEndpointResponse(return_url)
+    CLIENT->>CLIENT: 7. Navigate to return_url
 ```
 
 ---
@@ -185,4 +183,3 @@ The **Logout** slice:
 - Leaves redirect behavior to the frontend
 
 It is intentionally minimal, stateless, and consistent with Frank.Identity’s session model.
-

@@ -3,37 +3,37 @@
 
 The **GetLoginUrl** slice initiates the authentication flow by constructing an OIDC authorization URL and returning it to the client. It spans:
 
-- **API** — `GetLoginUrlEndpoint`
-- **Application** — OIDC + Frontend settings
-- **Domain** — configuration validation exceptions
-- **Protocol** — OIDC authorization request to the external IdP
+- **API Layer** — `GetLoginUrlEndpoint`
+- **Application Layer** — OIDC + Frontend settings
+- **Domain Layer** — configuration validation exceptions
+- **Protocol Layer** — OIDC authorization request to the external IdP
 
 ---
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    %% Lanes
-    subgraph API["API Layer"]
-        A1["1. GET /api/identity/login-url"]
-        A2["2. Load OIDC + Frontend settings"]
-        A3["3. Validate configuration"]
-        A4["4. Determine callback URL"]
-        A5["5. Determine return_url"]
-        A6["6. Encode OIDC state"]
-        A7["7. Build OIDC authorize URL"]
-        A8["8. Return GetLoginUrlEndpointResponse(nextUrl)"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph PROTOCOL["OIDC Protocol (External IdP)"]
-        P1["Client navigates to nextUrl"]
-        P2["IdP login page"]
-        P3["IdP redirects to /api/identity/callback"]
-    end
+    participant CLIENT as Frontend
+    participant API as API Layer
+    participant APP as Application Layer
+    participant IDP as External OIDC Provider
 
-    %% Flow
-    A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> A7 --> A8 --> P1 --> P2 --> P3
+    CLIENT->>API: 1. GET /api/identity/login-url
+    API->>APP: 2. Load OIDC + Frontend settings
+    APP-->>API: 3. Return settings
+    API->>API: 4. Validate configuration
+    API->>API: 5. Determine callback URL
+    API->>API: 6. Determine return_url
+    API->>API: 7. Encode OIDC state
+    API->>API: 8. Build OIDC authorize URL
+    API-->>CLIENT: 9. Return GetLoginUrlEndpointResponse(nextUrl)
+
+    CLIENT->>IDP: 10. Navigate to nextUrl
+    IDP->>CLIENT: 11. Display login page
+    IDP-->>CLIENT: 12. Redirect to /api/identity/callback
 ```
 
 ---
@@ -292,4 +292,3 @@ The **GetLoginUrl** slice:
 - Returns `GetLoginUrlEndpointResponse(nextUrl)`  
 
 It is the entry point into the authentication flow, handing off to the **Callback** slice once the IdP redirects back.
-
