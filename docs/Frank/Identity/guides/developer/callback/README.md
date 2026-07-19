@@ -22,7 +22,7 @@ This is the complete execution sequence for the Callback slice.
 Each step links to the section where it is implemented.
 
 ```mermaid
-flowchart LR
+flowchart TD
 
     %% ─────────────────────────────
     %% API LAYER (LEFT)
