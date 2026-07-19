@@ -24,8 +24,13 @@ Each step links to the section where it is implemented.
 ```mermaid
 flowchart TD
 
+    %% Invisible anchors to force column alignment
+    A0[ ]:::invis --> O0[ ]:::invis --> S0[ ]:::invis
+
+    classDef invis fill:none,stroke:none;
+
     %% ─────────────────────────────
-    %% API LAYER (LEFT)
+    %% API LAYER (LEFT COLUMN)
     %% ─────────────────────────────
     subgraph API["API Layer"]
         A1["1. GET /api/identity/callback"]
@@ -39,34 +44,34 @@ flowchart TD
     end
 
     %% ─────────────────────────────
-    %% OIDC PIPELINE (MIDDLE)
+    %% OIDC PIPELINE (MIDDLE COLUMN)
     %% ─────────────────────────────
     subgraph OIDC["OIDC Protocol Pipeline"]
-        O5["5. Exchange Authorization Code<br/>POST /oauth/token"]
+        O5["5. Exchange Authorization Code"]
         O6["6. Validate ID Token"]
         O7["7. Fetch UserInfo"]
         O8R["→ OidcCallbackContextBuilderResult"]
     end
 
     %% ─────────────────────────────
-    %% SAVE CALLBACK PIPELINE (RIGHT)
+    %% SAVE CALLBACK PIPELINE (RIGHT COLUMN)
     %% ─────────────────────────────
-    subgraph APP["Application Layer<br/>Save Callback Pipeline"]
+    subgraph SAVE["Application Layer<br/>Save Callback Pipeline"]
 
-        %% Group 10 — User Resolution / Creation
+        %% Column 1 — User Resolution
         subgraph S10["10. User Resolution / Creation"]
             S10a["Lookup User by external identity"]
             S10b["Create User if first login"]
         end
 
-        %% Group 11 — Session Creation
+        %% Column 2 — Session Creation
         subgraph S11["11. Session Creation"]
             S11a["Generate token"]
             S11b["Hash token"]
             S11c["Persist Session"]
         end
 
-        %% Group 12 — Cookie + Redirect Computation
+        %% Column 3 — Cookie + Redirect Computation
         subgraph S12["12. Cookie + Redirect Computation"]
             S12a["Compute opaque cookie value"]
             S12b["Compute final redirect URL"]
