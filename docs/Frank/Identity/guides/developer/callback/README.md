@@ -1,7 +1,8 @@
 # Frank.Identity — Callback Slice  
 ## Developer Guide
 
-The **Callback** slice handles the complete authentication callback flow. It spans all Identity layers:
+The **Callback** slice implements the full authentication callback flow for Frank.Identity.  
+It spans all layers of the Identity subsystem:
 
 ```
 Identity/
@@ -18,8 +19,11 @@ This guide documents the slice end‑to‑end for developers implementing, maint
 
 # 1. End‑to‑End Execution Flow (Overview)
 
-This is the complete execution sequence for the Callback slice.  
-Each step links to the section where it is implemented.
+The callback flow consists of three cooperating layers:
+
+- **API Layer** — orchestrates the flow  
+- **OIDC Pipeline** — handles protocol concerns  
+- **Save Callback Pipeline** — handles business concerns  
 
 ```mermaid
 sequenceDiagram
@@ -41,39 +45,32 @@ sequenceDiagram
 
     API->>SAVE: 9. Invoke Save Callback pipeline
 
-    SAVE->>SAVE: 10a. Lookup User by external identity
-    SAVE->>SAVE: 10b. Create User if first login
+    SAVE->>SAVE: 10. Resolve User
+    SAVE->>SAVE: 11. Build Cookie (generate token + hash)
+    SAVE->>SAVE: 12. Audit Login
+    SAVE->>SAVE: 13. Create Session
 
-    SAVE->>SAVE: 11a. Generate token
-    SAVE->>SAVE: 11b. Hash token
-    SAVE->>SAVE: 11c. Persist Session
+    SAVE-->>API: 14. Return SaveCallbackContextBuilderResult
 
-    SAVE->>SAVE: 12a. Compute opaque cookie value
-    SAVE->>SAVE: 12b. Compute final redirect URL
-
-    SAVE-->>API: 13. Return SaveCallbackContextBuilderResult
-
-    API->>API: 14. Issue session cookie
-    API->>API: 15. Redirect user
+    API->>API: 15. Issue session cookie
+    API->>API: 16. Redirect user
 ```
 
 ### Section Links
 
-- **API Lane:**  
-  - [CallbackEndpoint (Api Layer)](#callbackendpoint-api-layer)
+- **API Layer:**  
+  - [CallbackEndpoint](#2-callbackendpoint-api-layer)
 
-- **OIDC Protocol Lane:**  
-  - [OIDC Callback Pipeline (Protocol Layer)](#oidc-callback-pipeline-protocol-layer)  
-    - 4a. Exchange Authorization Code  
-    - 4b. Validate ID Token  
-    - 4c. Fetch UserInfo  
+- **OIDC Pipeline:**  
+  - [Exchange Authorization Code](#3-oidc-callback-pipeline-protocol-layer)  
+  - [Validate ID Token](#3-oidc-callback-pipeline-protocol-layer)  
+  - [Fetch UserInfo](#3-oidc-callback-pipeline-protocol-layer)
 
-- **Application Lane:**  
-  - [Save Callback Pipeline (Business Layer)](#save-callback-pipeline-business-layer)  
-    - 5a. User Resolution / Creation  
-    - 5b. Session Creation  
-    - 5c. Cookie + Redirect Computation  
-
+- **Save Callback Pipeline:**  
+  - [Resolve User](#4-save-callback-pipeline-business-layer)  
+  - [Build Cookie](#4-save-callback-pipeline-business-layer)  
+  - [Audit Login](#4-save-callback-pipeline-business-layer)  
+  - [Create Session](#4-save-callback-pipeline-business-layer)
 
 ---
 
@@ -90,25 +87,25 @@ Frank/Identity/Api/Endpoints/CallbackEndpoint.cs
 - Decode `state`  
 - Extract `return_url`  
 - Extract authorization code  
-- Run OIDC pipeline → `OidcCallbackContextBuilderResult`  
-- Run Save Callback pipeline → `SaveCallbackContextBuilderResult`  
+- Invoke OIDC pipeline → `OidcCallbackContextBuilderResult`  
+- Invoke Save Callback pipeline → `SaveCallbackContextBuilderResult`  
 - Issue session cookie  
 - Redirect user  
 
 ### Developer Notes
 
-- The endpoint performs **no business logic**.  
-- All identity and session decisions occur in Application.  
-- Cookie issuance is the only side effect in Api.
+- The API layer performs **no business logic**.  
+- It is the **orchestrator** between the two pipelines.  
+- Cookie issuance is the only side effect.
 
 ### Key excerpt
 
 ```csharp
 var oidcCallbackResult =
-    await frankEngine.BuildAsync(oidcCallbackRequest, CancellationToken.None);
+    await oidcContextBuilder.BuildAsync(oidcCallbackRequest, ct);
 
 var appAuthCallbackResult =
-    await appEngine.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
+    await saveContextBuilder.BuildAsync(appAuthCallbackRequest, ct);
 
 http.Response.Cookies.Append("session", appAuthCallbackResult.CookieValue, ...);
 
@@ -134,9 +131,27 @@ Frank/Identity/Application/Callback/Oidc/*
 - Normalize identity  
 - Produce `OidcCallbackContextBuilderResult`
 
-This pipeline is **pure protocol handling**.
+### Steps
 
-It produces the **external identity** consumed by the Save Callback pipeline.
+#### 5. Exchange Authorization Code  
+`ExchangeCodeStep`  
+- POST `/oauth/token`  
+- Extract `access_token` and `id_token`
+
+#### 6. Validate ID Token  
+`ValidateTokensStep`  
+- Validate issuer, audience, signature, lifetime  
+- Extract subject + claims
+
+#### 7. Fetch UserInfo  
+`FetchUserInfoStep`  
+- GET `/userinfo`  
+- Extract profile attributes
+
+### Notes
+
+- This pipeline is **pure protocol handling**.  
+- It produces the **external identity** consumed by the Save Callback pipeline.
 
 ---
 
@@ -149,7 +164,7 @@ Frank/Identity/Application/Abstractions/Callback/Save/*
 Frank/Identity/Application/Callback/Save/*
 ```
 
-This is the **core business pipeline** for authentication.
+This pipeline performs all business logic required to authenticate a user.
 
 ### Context
 
@@ -158,58 +173,45 @@ public sealed record SaveCallbackContext : ImmutableContextBase
 {
     public required OidcCallbackContextBuilderResult External { get; init; }
     public required DateTimeOffset Now { get; init; }
-    public string? RequestedRedirectUrl { get; init; }
 
     public Guid? UserId { get; init; }
     public Guid? SessionId { get; init; }
     public string? TokenHash { get; init; }
     public string? CookieValue { get; init; }
-    public string? RedirectUrl { get; init; }
 }
 ```
 
-### Request
+### Steps
 
-```csharp
-public sealed record SaveCallbackContextBuilderRequest : ImmutableContextBuilderRequestBase
-{
-    public required OidcCallbackContextBuilderResult External { get; init; }
-    public string? RequestedRedirectUrl { get; init; }
-    public required DateTimeOffset Now { get; init; }
-}
-```
+#### 10. Resolve User  
+`ResolveUserStep`  
+- Lookup user by external identity  
+- Create user if first login  
+- Set `UserId`
 
-### Result
+#### 11. Build Cookie  
+`BuildCookieStep`  
+- Generate session token  
+- Hash token  
+- Build opaque cookie value  
+- Set `TokenHash` + `CookieValue`
 
-```csharp
-public sealed record SaveCallbackContextBuilderResult : ImmutableContextBuilderResultBase
-{
-    public required Guid UserId { get; init; }
-    public required Guid SessionId { get; init; }
-    public required string TokenHash { get; init; }
-    public required string CookieValue { get; init; }
-}
-```
+#### 12. Audit Login  
+`AuditLoginStep`  
+- Log successful login  
+- Uses external subject + internal `UserId`
 
-### Behaviors
+#### 13. Create Session  
+`CreateSessionStep`  
+- Create session aggregate  
+- Persist session  
+- Commit unit of work  
+- Set `SessionId`
 
-```
-IdentityMappingBehavior
-UserResolutionBehavior
-CreateUserBehavior
-SessionCreationBehavior
-RedirectComputationBehavior
-CookieComputationBehavior
-```
+### Notes
 
-Each behavior:
-
-- accepts an immutable context  
-- returns a new immutable context  
-- performs one business responsibility  
-- has no external side effects  
-
-The pipeline composes these behaviors into a deterministic flow.
+- Each step is **pure** and returns a new immutable context.  
+- No side effects occur outside the unit of work commit.
 
 ---
 
@@ -223,16 +225,14 @@ Frank/Identity/Domain/Users/*
 
 ### Responsibilities
 
-- represent authenticated identity  
-- enforce invariants  
-- provide stable identity semantics  
-- created only on first login  
-- looked up by external identity (`sub`)  
+- Represent authenticated identity  
+- Enforce invariants  
+- Created only on first login  
+- Looked up by external identity (`sub`)
 
-### Developer Notes
+### Notes
 
-- The Callback slice **creates a User** only when the external identity has never been seen before.  
-- The User aggregate is the canonical representation of identity in Frank.Identity.
+- The User aggregate is the canonical identity representation in Frank.Identity.
 
 ---
 
@@ -246,17 +246,15 @@ Frank/Identity/Domain/Sessions/*
 
 ### Responsibilities
 
-- represent authenticated session  
-- store hashed session token  
-- enforce expiration  
-- enforce security invariants  
-- created on every login  
-- linked to a `UserId`  
+- Represent authenticated session  
+- Store hashed session token  
+- Enforce expiration  
+- Link to `UserId`  
+- Created on every login
 
-### Developer Notes
+### Notes
 
-- The raw token is never persisted — only the hash.  
-- Session creation is performed by the Save Callback pipeline.
+- Raw tokens are never persisted — only hashes.
 
 ---
 
@@ -272,12 +270,10 @@ Frank/Identity/Infrastructure/IdentityResolver.cs
 
 ### Responsibilities
 
-- resolve User by external identity  
-- create User when needed  
-- coordinate with repositories  
-- return internal `UserId`
-
-Used by the Save Callback pipeline.
+- Resolve user by external identity  
+- Create user when needed  
+- Coordinate with repositories  
+- Return internal `UserId`
 
 ---
 
@@ -293,11 +289,9 @@ Frank/Identity/EntityFrameworkCore/Users/*
 
 ### Responsibilities
 
-- persist User  
-- query User by external identity  
-- enforce uniqueness  
-
----
+- Persist User  
+- Query by external identity  
+- Enforce uniqueness  
 
 ## Session Repository
 
@@ -309,39 +303,41 @@ Frank/Identity/EntityFrameworkCore/Sessions/*
 
 ### Responsibilities
 
-- persist session  
-- store hashed token  
-- enforce expiration  
-- retrieve active sessions  
+- Persist session  
+- Store hashed token  
+- Enforce expiration  
+- Retrieve active sessions  
 
 ---
 
 # 9. Testing Strategy
 
-## Unit Tests
+### Unit Tests
 
-- identity mapping  
-- User resolution  
-- User creation  
-- session creation  
-- redirect computation  
-- cookie computation  
+- Exchange code  
+- Validate tokens  
+- Fetch userinfo  
+- Resolve user  
+- Build cookie  
+- Audit login  
+- Create session  
 
-## Pipeline Tests
+### Pipeline Tests
 
-- full Save Callback pipeline  
-- correct ordering  
-- correct invariants  
-- correct context transitions  
+- Full OIDC pipeline  
+- Full Save Callback pipeline  
+- Correct ordering  
+- Correct invariants  
+- Correct context transitions  
 
-## Integration Tests
+### Integration Tests
 
-- full callback flow  
+- Full callback flow  
 - User creation on first login  
 - User reuse on subsequent login  
-- session creation  
-- cookie issuance  
-- redirect correctness  
+- Session creation  
+- Cookie issuance  
+- Redirect correctness  
 
 Integration tests use `ApiContext` + `ApiFactory`.
 
@@ -349,13 +345,14 @@ Integration tests use `ApiContext` + `ApiFactory`.
 
 # 10. Developer Notes
 
-- All protocol concerns belong to the OIDC pipeline.  
-- All business concerns belong to the Save Callback pipeline.  
-- Api must remain a thin orchestration layer.  
-- Domain aggregates must enforce invariants.  
-- EFCore must persist aggregates without leaking persistence concerns upward.  
-- Infrastructure must provide clean abstractions for identity resolution.  
-- The slice must remain deterministic and side‑effect‑free except at the Api boundary.
+- Protocol concerns → OIDC pipeline  
+- Business concerns → Save Callback pipeline  
+- API must remain thin  
+- Domain aggregates enforce invariants  
+- EFCore persists aggregates  
+- Infrastructure provides clean abstractions  
+- Pipelines must remain deterministic and side‑effect‑free  
+- API boundary is the only place where cookies + redirects occur  
 
 ---
 
@@ -366,11 +363,11 @@ The **Callback** slice:
 - receives OIDC callback  
 - normalizes external identity  
 - resolves or creates User  
+- builds cookie  
+- audits login  
 - creates session  
-- computes redirect  
-- computes cookie value  
-- returns a cohesive result to the Api boundary  
+- returns a cohesive result to the API  
 - issues the real Frank session cookie  
 - redirects the user
 
-This document is the complete developer guide for the **Callback** vertical slice.
+This is the complete developer guide for the **Callback** vertical slice.
