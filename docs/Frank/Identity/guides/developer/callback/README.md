@@ -23,56 +23,59 @@ Each step links to the section where it is implemented.
 
 ```mermaid
 flowchart TD
-
-    %% Invisible anchors to force column alignment
-    A0[ ]:::invis --> O0[ ]:::invis --> S0[ ]:::invis
-
-    classDef invis fill:none,stroke:none;
+    %% Enable grid layout
+    classDef lane fill:#f9f9f9,stroke:#ccc,stroke-width:1px;
 
     %% ─────────────────────────────
-    %% API LAYER (LEFT COLUMN)
+    %% COLUMN 1 — API LAYER
     %% ─────────────────────────────
-    subgraph API["API Layer"]
-        A1["1. GET /api/identity/callback"]
-        A2["2. Decode state / extract return_url"]
-        A3["3. Extract authorization code"]
-        A4["4. Invoke OIDC Callback pipeline"]
-        A8["8. Receive OIDC result"]
-        A9["9. Invoke Save Callback pipeline"]
-        A14["14. Issue session cookie"]
-        A15["15. Redirect user"]
+    subgraph COL_API["API Layer"]
+        direction TB
+        A1["1. GET /api/identity/callback"]:::lane
+        A2["2. Decode state / extract return_url"]:::lane
+        A3["3. Extract authorization code"]:::lane
+        A4["4. Invoke OIDC Callback pipeline"]:::lane
+        A8["8. Receive OIDC result"]:::lane
+        A9["9. Invoke Save Callback pipeline"]:::lane
+        A14["14. Issue session cookie"]:::lane
+        A15["15. Redirect user"]:::lane
     end
 
     %% ─────────────────────────────
-    %% OIDC PIPELINE (MIDDLE COLUMN)
+    %% COLUMN 2 — OIDC PIPELINE
     %% ─────────────────────────────
-    subgraph OIDC["OIDC Protocol Pipeline"]
-        O5["5. Exchange Authorization Code"]
-        O6["6. Validate ID Token"]
-        O7["7. Fetch UserInfo"]
-        O8R["→ OidcCallbackContextBuilderResult"]
+    subgraph COL_OIDC["OIDC Protocol Pipeline"]
+        direction TB
+        O5["5. Exchange Authorization Code"]:::lane
+        O6["6. Validate ID Token"]:::lane
+        O7["7. Fetch UserInfo"]:::lane
+        O8R["→ OidcCallbackContextBuilderResult"]:::lane
     end
 
     %% ─────────────────────────────
-    %% SAVE CALLBACK PIPELINE (RIGHT COLUMN)
+    %% COLUMN 3 — SAVE CALLBACK PIPELINE
     %% ─────────────────────────────
-    subgraph SAVE["Application Layer<br/>Save Callback Pipeline"]
+    subgraph COL_SAVE["Save Callback Pipeline"]
+        direction TB
 
-        %% Column 1 — User Resolution
+        %% Group 10 — User Resolution
         subgraph S10["10. User Resolution / Creation"]
+            direction TB
             S10a["Lookup User by external identity"]
             S10b["Create User if first login"]
         end
 
-        %% Column 2 — Session Creation
+        %% Group 11 — Session Creation
         subgraph S11["11. Session Creation"]
+            direction TB
             S11a["Generate token"]
             S11b["Hash token"]
             S11c["Persist Session"]
         end
 
-        %% Column 3 — Cookie + Redirect Computation
+        %% Group 12 — Cookie + Redirect Computation
         subgraph S12["12. Cookie + Redirect Computation"]
+            direction TB
             S12a["Compute opaque cookie value"]
             S12b["Compute final redirect URL"]
         end
@@ -83,10 +86,8 @@ flowchart TD
     %% ─────────────────────────────
     %% FLOW CONNECTIONS
     %% ─────────────────────────────
-
     A1 --> A2 --> A3 --> A4
     A4 --> O5 --> O6 --> O7 --> O8R --> A8
-
     A8 --> A9
     A9 --> S10 --> S11 --> S12 --> S13 --> A14 --> A15
 ```
