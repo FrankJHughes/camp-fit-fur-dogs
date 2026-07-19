@@ -1,3 +1,4 @@
+
 # Frank.Identity — GetUserByExternalId Slice  
 ## Developer Guide
 
@@ -182,3 +183,4 @@ The **GetUserByExternalId** slice:
 - Supports the login callback pipeline and onboarding flows  
 
 It is a foundational part of Frank.Identity’s external authentication model.
+

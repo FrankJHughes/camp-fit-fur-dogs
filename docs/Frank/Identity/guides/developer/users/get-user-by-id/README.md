@@ -1,3 +1,4 @@
+
 # Frank.Identity — GetUserById Slice  
 ## Developer Guide
 
@@ -202,3 +203,4 @@ The **GetUserById** slice:
 - Supports authenticated flows, admin tools, and profile hydration  
 
 It is a foundational part of Frank.Identity’s user‑profile read model.
+

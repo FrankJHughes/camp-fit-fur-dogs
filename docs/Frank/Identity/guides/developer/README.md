@@ -1,3 +1,4 @@
+
 # Frank.Identity — Developer Guide  
 ## Overview
 
@@ -179,6 +180,19 @@ sequenceDiagram
     DB-->>READER: Session
     READER-->>API: SessionResponse
     API-->>CLIENT: Identity DTO
+
+    %% Logout
+    CLIENT->>API: GET /api/identity/logout?return_url=...
+    API->>API: Delete session cookie
+    API->>APP: (Optional) Resolve tokenHash from cookie
+    API->>WRITER: RevokeAsync(tokenHash)  Note over API,WRITER: Only if server-side revocation is used
+    WRITER->>DB: Query Session by TokenHash
+    DB-->>WRITER: Session or null
+    WRITER->>DOMAIN: session.Revoke(now)
+    WRITER-->>API: Return (idempotent)
+    API->>UOW: CommitAsync()
+    UOW->>DB: SaveChanges persists revocation
+    API-->>CLIENT: return_url (frontend performs redirect)
 ```
 
 ---
@@ -215,3 +229,4 @@ Frank.Identity is designed to be:
 - [CreateSession](./sessions/create-session/README.md)
 - [GetSession](./sessions/get-session/README.md)
 - [RevokeSession](./sessions/revoke-session/README.md)
+

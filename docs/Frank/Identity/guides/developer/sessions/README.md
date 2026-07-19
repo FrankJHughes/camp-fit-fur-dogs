@@ -1,3 +1,4 @@
+
 # Frank.Identity — Sessions  
 ## Overview
 
@@ -246,3 +247,4 @@ Frank.Identity sessions are:
 - **Predictable** — expiration is deterministic  
 - **Atomic** — persistence always flows through `FrankIdentityUnitOfWork`  
 - **Consistent** — all persistence flows through `FrankIdentityDbContext`
+

@@ -1,3 +1,4 @@
+
 # Frank.Identity — GetSession Slice  
 ## Developer Guide
 
@@ -247,3 +248,4 @@ The **GetSession** slice:
 - Throws `SessionNotFoundException` when missing  
 
 It is a core building block of Frank.Identity’s session model and is used by middleware, resolvers, and authentication flows.
+

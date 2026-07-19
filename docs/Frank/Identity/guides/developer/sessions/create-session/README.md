@@ -1,3 +1,4 @@
+
 # Frank.Identity — CreateSession Slice  
 ## Developer Guide
 
@@ -236,3 +237,4 @@ The **CreateSession** slice:
 - Performs no validation and no domain logic  
 
 It is intentionally minimal and is used by the Save Callback Pipeline to create new sessions during login.
+

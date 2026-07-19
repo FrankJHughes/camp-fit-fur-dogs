@@ -1,3 +1,4 @@
+
 # Frank.Identity — Callback Slice  
 ## Developer Guide
 
@@ -374,3 +375,4 @@ The **Callback** slice:
 - redirects the user
 
 This is the complete developer guide for the **Callback** vertical slice.
+

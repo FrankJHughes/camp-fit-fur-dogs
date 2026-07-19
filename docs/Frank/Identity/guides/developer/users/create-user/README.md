@@ -1,3 +1,4 @@
+
 # Frank.Identity — CreateUser Slice  
 ## Developer Guide
 
@@ -328,3 +329,4 @@ The **CreateUser** slice:
 - Returns the new `UserId`  
 
 It is the foundation of owner identity in Frank.Identity and is used by the login callback pipeline to ensure every external identity maps to a domain user.
+

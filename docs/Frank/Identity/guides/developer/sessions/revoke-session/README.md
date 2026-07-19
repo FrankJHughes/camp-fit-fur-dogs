@@ -1,3 +1,4 @@
+
 # Frank.Identity — RevokeSession Slice  
 ## Developer Guide
 
@@ -224,3 +225,4 @@ The **RevokeSession** slice:
 - Treats missing sessions as a no‑op
 
 It is a core building block of Frank.Identity’s session lifecycle and is used by logout flows, admin tools, and session‑validation middleware.
+

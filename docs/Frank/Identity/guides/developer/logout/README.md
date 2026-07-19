@@ -1,3 +1,4 @@
+
 # Frank.Identity — Logout Slice  
 ## Developer Guide
 
@@ -183,3 +184,4 @@ The **Logout** slice:
 - Leaves redirect behavior to the frontend
 
 It is intentionally minimal, stateless, and consistent with Frank.Identity’s session model.
+

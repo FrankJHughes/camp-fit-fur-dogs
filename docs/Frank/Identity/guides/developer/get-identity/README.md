@@ -1,3 +1,4 @@
+
 # Frank.Identity — GetIdentity Slice  
 ## Developer Guide
 
@@ -204,3 +205,4 @@ The **GetIdentity** slice:
 - Performs no domain logic, no persistence, and no side effects  
 
 It is the simplest slice in Frank.Identity and serves as the frontend’s primary way to retrieve the current user’s identity.
+
