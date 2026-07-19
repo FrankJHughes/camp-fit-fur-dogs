@@ -16,7 +16,7 @@ describe('logout', () => {
     mockGet.mockReset();
   });
 
-  it('GETs /api/identity/logout and returns success', async () => {
+  it('GETs /identity/logout and returns success', async () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: { nextUrl: '/after-logout' },
@@ -25,7 +25,7 @@ describe('logout', () => {
     const result = await logout(returnUrl);
 
     expect(mockGet).toHaveBeenCalledWith(
-      `/api/identity/logout?return_url=${encodeURIComponent(returnUrl)}`
+      `/identity/logout?return_url=${encodeURIComponent(returnUrl)}`
     );
 
     expect(result).toEqual({

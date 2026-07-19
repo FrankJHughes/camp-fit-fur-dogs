@@ -21,51 +21,66 @@ This guide documents the slice end‑to‑end for developers implementing, maint
 This is the complete execution sequence for the Callback slice.  
 Each step links to the section where it is implemented.
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
-
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
-
 ```mermaid
 flowchart TD
-    %% Lanes
+
+    %% ─────────────────────────────
+    %% API LAYER
+    %% ─────────────────────────────
     subgraph API["API Layer"]
         A1["1. GET /api/identity/callback"]
         A2["2. Decode state / extract return_url"]
         A3["3. Extract authorization code"]
-        A6["6. Issue session cookie"]
-        A7["7. Redirect user"]
+        A4["4. API invokes OIDC pipeline"]
+        A5["5. API receives OIDC result"]
+        A8["8. Issue session cookie"]
+        A9["9. Redirect user"]
     end
 
-    subgraph OIDC["OIDC Protocol (Frank)"]
+    %% ─────────────────────────────
+    %% OIDC PIPELINE
+    %% ─────────────────────────────
+    subgraph OIDC["OIDC Protocol Pipeline"]
         O4a["4a. Exchange Authorization Code<br/>POST /oauth/token"]
-        O4b["4b. Validate ID Token<br/>issuer / audience / signature / lifetime"]
-        O4c["4c. Fetch UserInfo<br/>GET /userinfo"]
+        O4b["4b. Validate ID Token"]
+        O4c["4c. Fetch UserInfo"]
         OResult["→ OidcCallbackContextBuilderResult"]
     end
 
-    subgraph APP["Application (Save Callback Pipeline)"]
-        S5["5. Run Save Callback Pipeline<br/>→ SaveCallbackContextBuilderResult"]
+    %% ─────────────────────────────
+    %% SAVE CALLBACK PIPELINE
+    %% ─────────────────────────────
+    subgraph APP["Application Layer<br/>Save Callback Pipeline"]
+        S6["6. API invokes Save Callback pipeline"]
 
-        subgraph S5a["5a. User Resolution / Creation"]
-            S5a1["Lookup User by external identity"]
-            S5a2["Create User if first login"]
+        subgraph S6a["6a. User Resolution / Creation"]
+            S6a1["Lookup User by external identity"]
+            S6a2["Create User if first login"]
         end
 
-        subgraph S5b["5b. Session Creation"]
-            S5b1["Generate token"]
-            S5b2["Hash token"]
-            S5b3["Persist Session"]
+        subgraph S6b["6b. Session Creation"]
+            S6b1["Generate token"]
+            S6b2["Hash token"]
+            S6b3["Persist Session"]
         end
 
-        subgraph S5c["5c. Cookie + Redirect Computation"]
-            S5c1["Compute opaque cookie value"]
-            S5c2["Compute final redirect URL"]
+        subgraph S6c["6c. Cookie + Redirect Computation"]
+            S6c1["Compute opaque cookie value"]
+            S6c2["Compute final redirect URL"]
         end
+
+        S6Result["→ SaveCallbackContextBuilderResult"]
     end
 
-    %% Flow (Top → Down)
-    A1 --> A2 --> A3 --> O4a --> O4b --> O4c --> OResult --> S5
-    S5 --> S5a --> S5b --> S5c --> A6 --> A7
+    %% ─────────────────────────────
+    %% FLOW CONNECTIONS
+    %% ─────────────────────────────
+
+    A1 --> A2 --> A3 --> A4
+    A4 --> O4a --> O4b --> O4c --> OResult --> A5
+
+    A5 --> S6
+    S6 --> S6a --> S6b --> S6c --> S6Result --> A8 --> A9
 ```
 
 ### Section Links
