@@ -33,6 +33,7 @@ flowchart TD
         A3["3. Extract authorization code"]
         A4["4. API invokes OIDC pipeline"]
         A5["5. API receives OIDC result"]
+        A6["6. API invokes Save Callback pipeline"]
         A8["8. Issue session cookie"]
         A9["9. Redirect user"]
     end
@@ -51,8 +52,6 @@ flowchart TD
     %% SAVE CALLBACK PIPELINE
     %% ─────────────────────────────
     subgraph APP["Application Layer<br/>Save Callback Pipeline"]
-        S6["6. API invokes Save Callback pipeline"]
-
         subgraph S6a["6a. User Resolution / Creation"]
             S6a1["Lookup User by external identity"]
             S6a2["Create User if first login"]
