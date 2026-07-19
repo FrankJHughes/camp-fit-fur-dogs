@@ -22,10 +22,10 @@ This is the complete execution sequence for the Callback slice.
 Each step links to the section where it is implemented.
 
 ```mermaid
-flowchart TD
+flowchart LR
 
     %% ─────────────────────────────
-    %% API LAYER
+    %% API LAYER (LEFT)
     %% ─────────────────────────────
     subgraph API["API Layer"]
         A1["1. GET /api/identity/callback"]
@@ -34,12 +34,12 @@ flowchart TD
         A4["4. Invoke OIDC Callback pipeline"]
         A8["8. Receive OIDC result"]
         A9["9. Invoke Save Callback pipeline"]
-        A13["13. Issue session cookie"]
-        A14["14. Redirect user"]
+        A14["14. Issue session cookie"]
+        A15["15. Redirect user"]
     end
 
     %% ─────────────────────────────
-    %% OIDC PIPELINE
+    %% OIDC PIPELINE (MIDDLE)
     %% ─────────────────────────────
     subgraph OIDC["OIDC Protocol Pipeline"]
         O5["5. Exchange Authorization Code<br/>POST /oauth/token"]
@@ -49,23 +49,30 @@ flowchart TD
     end
 
     %% ─────────────────────────────
-    %% SAVE CALLBACK PIPELINE
+    %% SAVE CALLBACK PIPELINE (RIGHT)
     %% ─────────────────────────────
     subgraph APP["Application Layer<br/>Save Callback Pipeline"]
-        S10["10. User Resolution / Creation"]
-        S10a["Lookup User by external identity"]
-        S10b["Create User if first login"]
 
-        S11["11. Session Creation"]
-        S11a["Generate token"]
-        S11b["Hash token"]
-        S11c["Persist Session"]
+        %% Group 10 — User Resolution / Creation
+        subgraph S10["10. User Resolution / Creation"]
+            S10a["Lookup User by external identity"]
+            S10b["Create User if first login"]
+        end
 
-        S12["12. Cookie + Redirect Computation"]
-        S12a["Compute opaque cookie value"]
-        S12b["Compute final redirect URL"]
+        %% Group 11 — Session Creation
+        subgraph S11["11. Session Creation"]
+            S11a["Generate token"]
+            S11b["Hash token"]
+            S11c["Persist Session"]
+        end
 
-        S12R["→ SaveCallbackContextBuilderResult"]
+        %% Group 12 — Cookie + Redirect Computation
+        subgraph S12["12. Cookie + Redirect Computation"]
+            S12a["Compute opaque cookie value"]
+            S12b["Compute final redirect URL"]
+        end
+
+        S13["13. → SaveCallbackContextBuilderResult"]
     end
 
     %% ─────────────────────────────
@@ -76,7 +83,7 @@ flowchart TD
     A4 --> O5 --> O6 --> O7 --> O8R --> A8
 
     A8 --> A9
-    A9 --> S10 --> S11 --> S12 --> S12R --> A13 --> A14
+    A9 --> S10 --> S11 --> S12 --> S13 --> A14 --> A15
 ```
 
 ### Section Links
