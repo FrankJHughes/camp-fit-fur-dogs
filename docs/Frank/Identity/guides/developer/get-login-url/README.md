@@ -16,32 +16,38 @@ No database access occurs in this slice.
 
 ## 1. End‑to‑End Execution Flow (4‑Lane Sequence Diagram)
 
+
+# GetLoginUrl — Minimal Correct Diagram
+
 ```mermaid
 sequenceDiagram
     autonumber
 
-    participant CONSUMER as Consumer (API Endpoint / Frontend)
-    participant APP as Application Layer (GetLoginUrl Handler)
-    participant DOMAIN as Domain Layer (OIDC URL Builder)
-    participant INFRA as Infrastructure Layer (OIDC Settings Provider)
-    participant DB as EF Core (DbContext + UnitOfWork)
+    participant CLIENT as Client
+    participant API as GetLoginUrlEndpoint
+    participant APP as Application (Config + OIDC State Encoder)
 
-    %% Request enters the slice
-    CONSUMER->>APP: 1. GetLoginUrl()
+    CLIENT->>API: 1. GET /api/identity/login-url
 
-    %% Load configuration
-    APP->>INFRA: 2. Load OIDC settings (client_id, redirect_uri, scopes)
-    INFRA-->>APP: 3. OIDC settings
+    API->>APP: 2. Load OIDC settings (Authority, ClientId, CallbackUrl)
+    APP-->>API: 3. Return OIDC settings
 
-    %% Domain URL construction
-    APP->>DOMAIN: 4. Build authorize URL from settings + encoded state
-    DOMAIN-->>APP: 5. Fully constructed login URL
+    API->>APP: 4. Load FrontendSettings.BaseUrl
+    APP-->>API: 5. Return BaseUrl
 
-    %% No persistence
-    APP->>DB: 6. (No-op) Note over APP,DB: This slice does not use DbContext or UnitOfWork
+    API->>API: 6. Validate authority, clientId, callback, baseUrl
 
-    %% Response to consumer
-    APP-->>CONSUMER: 7. LoginUrl DTO (nextUrl)
+    API->>API: 7. Determine callback URL (explicit or built from request)
+
+    API->>API: 8. Extract return_url query parameter (optional)
+    API->>API: 9. Validate return_url or fallback to BaseUrl
+
+    API->>APP: 10. Encode state JSON (return_url)
+    APP-->>API: 11. Encoded state string
+
+    API->>API: 12. Build OIDC authorize URL
+
+    API-->>CLIENT: 13. Return nextUrl (GetLoginUrlEndpointResponse)
 ```
 
 ---
