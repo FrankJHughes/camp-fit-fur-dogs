@@ -1,5 +1,5 @@
-using CampFitFurDogs.Application.Abstractions.Dog.EditDogProfile;
-using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions;

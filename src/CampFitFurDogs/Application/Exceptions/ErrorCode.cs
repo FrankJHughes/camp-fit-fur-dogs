@@ -1,6 +1,6 @@
 using Frank.Core.Application.Abstractions.Exceptions;
 
-namespace CampFitFurDogs.Application.Errors;
+namespace CampFitFurDogs.Application.Exceptions;
 
 public sealed class ErrorCode : IErrorCode
 {

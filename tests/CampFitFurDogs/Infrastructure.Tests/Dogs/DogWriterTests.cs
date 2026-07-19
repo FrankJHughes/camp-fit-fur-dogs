@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 
-public class DogRepositoryTests :
+public class DogWriterTests :
     IClassFixture<PostgresFixture<FrankIdentityDbContext>>,
     IClassFixture<PostgresFixture<AppDbContext>>
 {
     private readonly PostgresFixture<FrankIdentityDbContext> _identity;
     private readonly PostgresFixture<AppDbContext> _dogs;
 
-    public DogRepositoryTests(
+    public DogWriterTests(
         PostgresFixture<FrankIdentityDbContext> identity,
         PostgresFixture<AppDbContext> dogs)
     {
@@ -46,12 +46,12 @@ public class DogRepositoryTests :
     }
 
     [Fact]
-    public async Task AddAsync_persists_dog_with_correct_mapping()
+    public async Task WriteAsync_persists_dog_with_correct_mapping()
     {
         var ownerId = await SeedOwnerAsync();
 
         await using var ctx = _dogs.CreateContext();
-        var repo = new DogRepository(ctx);
+        var writer = new RegisterDogWriter(ctx);
 
         var dog = new DogBuilder()
             .WithOwner(ownerId)
@@ -61,7 +61,7 @@ public class DogRepositoryTests :
             .WithSex(DogFixtures.Sex)
             .Build();
 
-        await repo.AddAsync(dog, CancellationToken.None);
+        await writer.WriteAsync(dog, CancellationToken.None);
         await ctx.SaveChangesAsync();
 
         await using var readCtx = _dogs.CreateContext();
@@ -77,12 +77,12 @@ public class DogRepositoryTests :
     }
 
     [Fact]
-    public async Task AddAsync_persists_multiple_dogs_for_same_owner()
+    public async Task WriteAsync_persists_multiple_dogs_for_same_owner()
     {
         var ownerId = await SeedOwnerAsync();
 
         await using var ctx = _dogs.CreateContext();
-        var repo = new DogRepository(ctx);
+        var writer = new RegisterDogWriter(ctx);
 
         var dog1 = new DogBuilder()
             .WithOwner(ownerId)
@@ -100,8 +100,8 @@ public class DogRepositoryTests :
             .WithSex(Sex.Male)
             .Build();
 
-        await repo.AddAsync(dog1, CancellationToken.None);
-        await repo.AddAsync(dog2, CancellationToken.None);
+        await writer.WriteAsync(dog1, CancellationToken.None);
+        await writer.WriteAsync(dog2, CancellationToken.None);
         await ctx.SaveChangesAsync();
 
         await using var readCtx = _dogs.CreateContext();
@@ -119,7 +119,7 @@ public class DogRepositoryTests :
         var ownerId = await SeedOwnerAsync();
 
         await using var writeCtx = _dogs.CreateContext();
-        var writeRepo = new DogRepository(writeCtx);
+        var writer = new RegisterDogWriter(writeCtx);
 
         var dog = new DogBuilder()
             .WithOwner(ownerId)
@@ -129,13 +129,13 @@ public class DogRepositoryTests :
             .WithSex(Sex.Female)
             .Build();
 
-        await writeRepo.AddAsync(dog, CancellationToken.None);
+        await writer.WriteAsync(dog, CancellationToken.None);
         await writeCtx.SaveChangesAsync();
 
         await using var readCtx = _dogs.CreateContext();
         var reader = new GetDogProfileReader(readCtx);
 
-        var result = await reader.GetDogProfileAsync(
+        var result = await reader.ReadAsync(
             dog.Id.Value,
             ownerId.Value,
             CancellationToken.None);
@@ -155,7 +155,7 @@ public class DogRepositoryTests :
         await using var readCtx = _dogs.CreateContext();
         var reader = new GetDogProfileReader(readCtx);
 
-        var result = await reader.GetDogProfileAsync(
+        var result = await reader.ReadAsync(
             Guid.NewGuid(),
             Guid.NewGuid(),
             CancellationToken.None);

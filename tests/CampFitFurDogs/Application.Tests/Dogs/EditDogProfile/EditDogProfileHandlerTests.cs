@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dog.EditDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Dogs.EditDogProfile;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Dogs;
@@ -24,11 +24,13 @@ public class EditDogProfileHandlerTests
             .WithSex(DogFixtures.Sex)
             .Build();
 
-        var repo = new FakeDogRepository();
-        await repo.AddAsync(dog);
+        var dogs = new List<Dog> { dog };
 
+        var writer = new FakeRegisterDogWriter(dogs);
+        await writer.WriteAsync(dog);
+        var reader = new FakeGetDogByIdReader(dogs);
         var uow = new FakeAppUnitOfWork();
-        var handler = new EditDogProfileHandler(repo, uow);
+        var handler = new EditDogProfileHandler(reader, uow);
 
         var command = new EditDogProfileCommand(
             DogId: dog.Id.Value,
@@ -42,7 +44,7 @@ public class EditDogProfileHandlerTests
         await handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
-        var updated = await repo.GetByIdAsync(dog.Id);
+        var updated = await reader.ReadAsync(dog.Id.Value);
 
         updated!.Name.Value.Should().Be("Waffles");
         updated.Breed.Value.Should().Be("Labrador");
@@ -56,9 +58,9 @@ public class EditDogProfileHandlerTests
     public async Task Handle_WhenDogNotFound_ThrowsInvalidOperationException()
     {
         // Arrange
-        var repo = new FakeDogRepository();
+        var reader = new FakeGetDogByIdReader([]);
         var uow = new FakeAppUnitOfWork();
-        var handler = new EditDogProfileHandler(repo, uow);
+        var handler = new EditDogProfileHandler(reader, uow);
 
         var command = new EditDogProfileCommand(
             DogId: Guid.NewGuid(),
@@ -90,11 +92,15 @@ public class EditDogProfileHandlerTests
             .WithSex(DogFixtures.Sex)
             .Build();
 
-        var repo = new FakeDogRepository();
-        await repo.AddAsync(dog);
+        var dogs = new List<Dog>();
 
+        var reader = new FakeGetDogByIdReader(dogs);
+        var writer = new FakeRegisterDogWriter(dogs);
         var uow = new FakeAppUnitOfWork();
-        var handler = new EditDogProfileHandler(repo, uow);
+
+        await writer.WriteAsync(dog);
+
+        var handler = new EditDogProfileHandler(reader, uow);
 
         var command = new EditDogProfileCommand(
             DogId: dog.Id.Value,

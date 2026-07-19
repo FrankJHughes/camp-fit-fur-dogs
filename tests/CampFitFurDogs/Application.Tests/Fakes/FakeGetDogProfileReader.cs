@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dog.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 
 namespace CampFitFurDogs.Application.Tests.Fakes;
 
@@ -8,7 +8,7 @@ public class FakeGetDogProfileReader : IGetDogProfileReader
 
     public void Add(Domain.Dogs.Dog dog) => _dogs.Add(dog);
 
-    public Task<GetDogProfileResponse?> GetDogProfileAsync(
+    public Task<GetDogProfileResponse?> ReadAsync(
         Guid dogId, Guid ownerId, CancellationToken ct)
     {
         var dog = _dogs.FirstOrDefault(d => d.Id.Value == dogId);

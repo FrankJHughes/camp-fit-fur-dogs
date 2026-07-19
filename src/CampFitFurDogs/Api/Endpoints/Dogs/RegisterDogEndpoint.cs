@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using CampFitFurDogs.Api.Abstractions.Endpoints.Dogs;
-using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
+using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions;

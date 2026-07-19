@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
+using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using FluentValidation;
 using Frank.Identity.Application.Abstractions;
 

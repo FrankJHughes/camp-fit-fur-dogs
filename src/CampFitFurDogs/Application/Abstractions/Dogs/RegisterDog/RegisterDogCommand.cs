@@ -1,6 +1,6 @@
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 
-namespace CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
+namespace CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 
 public sealed record RegisterDogCommand(
     Guid OwnerId,

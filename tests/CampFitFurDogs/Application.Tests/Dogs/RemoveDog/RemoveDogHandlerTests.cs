@@ -1,6 +1,7 @@
-using CampFitFurDogs.Application.Abstractions.Dog.RemoveDog;
+using CampFitFurDogs.Application.Abstractions.Dogs.RemoveDog;
 using CampFitFurDogs.Application.Dogs.RemoveDog;
 using CampFitFurDogs.Application.Tests.Fakes;
+using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using Frank.Identity.Domain.Users;
@@ -12,7 +13,6 @@ public class RemoveDogHandlerTests
     [Fact]
     public async Task Handle_WhenDogExistsAndOwnerMatches_RemovesDogAndCommits()
     {
-        // Arrange
         var ownerId = UserId.New();
 
         var dog = new DogBuilder()
@@ -23,21 +23,24 @@ public class RemoveDogHandlerTests
             .WithSex(DogFixtures.Sex)
             .Build();
 
-        var repo = new FakeDogRepository();
-        await repo.AddAsync(dog);
+        var dogs = new List<Dog>
+        {
+            dog
+        };
+
+        var reader = new FakeGetDogByIdReader(dogs);
+        var writer = new FakeRemoveDogWriter(dogs);
 
         var uow = new FakeAppUnitOfWork();
-        var handler = new RemoveDogHandler(repo, uow);
+        var handler = new RemoveDogHandler(reader, writer, uow);
 
         var command = new RemoveDogCommand(
             DogId: dog.Id.Value,
             OwnerId: ownerId.Value);
 
-        // Act
         await handler.HandleAsync(command, CancellationToken.None);
 
-        // Assert
-        var removed = await repo.GetByIdAsync(dog.Id);
+        var removed = await reader.ReadAsync(dog.Id.Value);
         removed.Should().BeNull();
 
         uow.Committed.Should().BeTrue();
@@ -46,19 +49,19 @@ public class RemoveDogHandlerTests
     [Fact]
     public async Task Handle_WhenDogNotFound_ThrowsInvalidOperationException()
     {
-        // Arrange
-        var repo = new FakeDogRepository();
+        var dogs = new List<Dog>();
+        var reader = new FakeGetDogByIdReader(dogs);
+        var writer = new FakeRemoveDogWriter(dogs);
         var uow = new FakeAppUnitOfWork();
-        var handler = new RemoveDogHandler(repo, uow);
+
+        var handler = new RemoveDogHandler(reader, writer, uow);
 
         var command = new RemoveDogCommand(
             DogId: Guid.NewGuid(),
             OwnerId: Guid.NewGuid());
 
-        // Act
         var act = () => handler.HandleAsync(command, CancellationToken.None);
 
-        // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
         uow.Committed.Should().BeFalse();
     }
@@ -66,7 +69,6 @@ public class RemoveDogHandlerTests
     [Fact]
     public async Task Handle_WhenOwnerDoesNotMatch_ThrowsInvalidOperationException()
     {
-        // Arrange
         var ownerId = UserId.New();
 
         var dog = new DogBuilder()
@@ -77,20 +79,19 @@ public class RemoveDogHandlerTests
             .WithSex(DogFixtures.Sex)
             .Build();
 
-        var repo = new FakeDogRepository();
-        await repo.AddAsync(dog);
+        var dogs = new List<Dog> { dog };
+        var reader = new FakeGetDogByIdReader(dogs);
+        var writer = new FakeRemoveDogWriter(dogs);
 
         var uow = new FakeAppUnitOfWork();
-        var handler = new RemoveDogHandler(repo, uow);
+        var handler = new RemoveDogHandler(reader, writer, uow);
 
         var command = new RemoveDogCommand(
             DogId: dog.Id.Value,
             OwnerId: Guid.NewGuid()); // wrong owner
 
-        // Act
         var act = () => handler.HandleAsync(command, CancellationToken.None);
 
-        // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
         uow.Committed.Should().BeFalse();
     }

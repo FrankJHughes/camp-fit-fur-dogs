@@ -54,7 +54,7 @@ public class ListDogsByOwnerReaderTests :
             .WithSex(Sex.Female)
             .Build();
 
-        await new DogRepository(dogsCtx).AddAsync(dog, CancellationToken.None);
+        await new RegisterDogWriter(dogsCtx).WriteAsync(dog, CancellationToken.None);
         await dogsCtx.SaveChangesAsync();
 
         return dog;
@@ -71,7 +71,7 @@ public class ListDogsByOwnerReaderTests :
         await using var readCtx = _dogs.CreateContext();
         var reader = new ListDogsByOwnerReader(readCtx);
 
-        var result = await reader.ListDogsByOwnerAsync(ownerId.Value, CancellationToken.None);
+        var result = await reader.ReadAsync(ownerId.Value, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(2);
         result.Dogs.Should().Contain(d => d.Name == "Biscuit" && d.Breed == "Golden Retriever");
@@ -84,7 +84,7 @@ public class ListDogsByOwnerReaderTests :
         await using var readCtx = _dogs.CreateContext();
         var reader = new ListDogsByOwnerReader(readCtx);
 
-        var result = await reader.ListDogsByOwnerAsync(Guid.NewGuid(), CancellationToken.None);
+        var result = await reader.ReadAsync(Guid.NewGuid(), CancellationToken.None);
 
         result.Dogs.Should().BeEmpty();
     }
@@ -101,7 +101,7 @@ public class ListDogsByOwnerReaderTests :
         await using var readCtx = _dogs.CreateContext();
         var reader = new ListDogsByOwnerReader(readCtx);
 
-        var result = await reader.ListDogsByOwnerAsync(ownerA.Value, CancellationToken.None);
+        var result = await reader.ReadAsync(ownerA.Value, CancellationToken.None);
 
         result.Dogs.Should().HaveCount(1);
         result.Dogs[0].Name.Should().Be("Biscuit");

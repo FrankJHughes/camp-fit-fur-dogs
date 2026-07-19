@@ -1,13 +1,11 @@
 using CampFitFurDogs.Application.Abstractions;
-using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
+using CampFitFurDogs.Application.Abstractions.Dogs;
+using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
-using CampFitFurDogs.Domain.Dogs;
 using Frank.Core.Application;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
-using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Core.Application.Cqrs.Commands;
-using Frank.TestUtilities.Fakes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Application.Tests.DependencyInjection;
@@ -26,7 +24,7 @@ public partial class AutoRegistrationTests
 
 
         // Stub dependencies so handlers can be constructed
-        services.AddSingleton<IDogRepository, FakeDogRepository>();
+        services.AddSingleton<IRegisterDogWriter, FakeRegisterDogWriter>();
         services.AddSingleton<IAppUnitOfWork, FakeAppUnitOfWork>();
 
         // Act
@@ -49,7 +47,7 @@ public partial class AutoRegistrationTests
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
         // Provide required fakes so handlers/validators can be constructed
-        services.AddSingleton<IDogRepository, FakeDogRepository>();
+        services.AddSingleton<IRegisterDogWriter, FakeRegisterDogWriter>();
         services.AddSingleton<IAppUnitOfWork, FakeAppUnitOfWork>();
 
         // Act

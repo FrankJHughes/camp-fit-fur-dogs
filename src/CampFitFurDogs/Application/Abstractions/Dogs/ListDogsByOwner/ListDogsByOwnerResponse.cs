@@ -1,4 +1,4 @@
-namespace CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
+namespace CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 
 public record DogSummary(Guid Id, string Name, string Breed);
 

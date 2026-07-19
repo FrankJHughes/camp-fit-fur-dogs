@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
+using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.TestUtilities.Fixtures;
@@ -7,13 +7,13 @@ namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
 
 public class RegisterDogHandlerTests
 {
-    private readonly FakeDogRepository _repo = new();
+    private readonly FakeRegisterDogWriter _writer = new([]);
     private readonly FakeAppUnitOfWork _unitOfWork = new();
     private readonly RegisterDogHandler _handler;
 
     public RegisterDogHandlerTests()
     {
-        _handler = new RegisterDogHandler(_repo, _unitOfWork);
+        _handler = new RegisterDogHandler(_writer, _unitOfWork);
     }
 
     [Fact]
@@ -29,9 +29,9 @@ public class RegisterDogHandlerTests
         var dogId = await _handler.HandleAsync(command, CancellationToken.None);
 
         dogId.Should().NotBe(Guid.Empty);
-        _repo.Dogs.Should().HaveCount(1);
+        _writer.Dogs.Should().HaveCount(1);
 
-        var dog = _repo.Dogs[0];
+        var dog = _writer.Dogs[0];
         dog.Name.Value.Should().Be(DogFixtures.DefaultName);
         dog.Breed.Value.Should().Be(DogFixtures.DefaultBreed);
         dog.DateOfBirth.Should().Be(DogFixtures.Dob);
@@ -51,7 +51,7 @@ public class RegisterDogHandlerTests
         await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.HandleAsync(command, CancellationToken.None));
 
-        _repo.Dogs.Should().BeEmpty();
+        _writer.Dogs.Should().BeEmpty();
     }
 
     [Fact]

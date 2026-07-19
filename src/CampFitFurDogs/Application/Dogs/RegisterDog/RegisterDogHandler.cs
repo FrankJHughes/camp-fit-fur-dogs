@@ -1,6 +1,7 @@
 
 using CampFitFurDogs.Application.Abstractions;
-using CampFitFurDogs.Application.Abstractions.Dog.RegisterDog;
+using CampFitFurDogs.Application.Abstractions.Dogs;
+using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Identity.Domain.Users;
@@ -9,12 +10,12 @@ namespace CampFitFurDogs.Application.Dogs.RegisterDog;
 
 public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Guid>
 {
-    private readonly IDogRepository _dogRepository;
+    private readonly IRegisterDogWriter _dogWriter;
     private readonly IAppUnitOfWork _unitOfWork;
 
-    public RegisterDogHandler(IDogRepository dogRepository, IAppUnitOfWork unitOfWork)
+    public RegisterDogHandler(IRegisterDogWriter dogRepository, IAppUnitOfWork unitOfWork)
     {
-        _dogRepository = dogRepository;
+        _dogWriter = dogRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -30,7 +31,7 @@ public sealed class RegisterDogHandler : ICommandHandler<RegisterDogCommand, Gui
 
         var dog = Dog.Create(ownerId, name, breed, dob, sex);
 
-        await _dogRepository.AddAsync(dog, ct);
+        await _dogWriter.WriteAsync(dog, ct);
         await _unitOfWork.CommitAsync(ct);
 
         return dog.Id.Value;

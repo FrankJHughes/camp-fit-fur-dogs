@@ -1,6 +1,6 @@
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 
-namespace CampFitFurDogs.Application.Abstractions.Dog.EditDogProfile;
+namespace CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
 
 public sealed record EditDogProfileCommand(
     Guid DogId,

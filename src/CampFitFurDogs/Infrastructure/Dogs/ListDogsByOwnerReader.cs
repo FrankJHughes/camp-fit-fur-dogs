@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
+using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Persistence;
 using Frank.Identity.Domain.Users;
@@ -8,7 +8,7 @@ namespace CampFitFurDogs.Infrastructure.Dogs;
 
 public sealed class ListDogsByOwnerReader(AppDbContext db) : IListDogsByOwnerReader
 {
-    public async Task<ListDogsByOwnerResponse> ListDogsByOwnerAsync(
+    public async Task<ListDogsByOwnerResponse> ReadAsync(
         Guid ownerId, CancellationToken ct)
     {
         var dogs = await db.Set<Dog>()

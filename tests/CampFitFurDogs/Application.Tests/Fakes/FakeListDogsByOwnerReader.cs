@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dog.ListDogsByOwner;
+using CampFitFurDogs.Application.Abstractions.Dogs.ListDogsByOwner;
 
 namespace CampFitFurDogs.Application.Tests.Fakes;
 
@@ -8,7 +8,7 @@ public class FakeListDogsByOwnerReader : IListDogsByOwnerReader
 
     public void Add(Domain.Dogs.Dog dog) => _dogs.Add(dog);
 
-    public Task<ListDogsByOwnerResponse> ListDogsByOwnerAsync(
+    public Task<ListDogsByOwnerResponse> ReadAsync(
         Guid ownerId, CancellationToken ct)
     {
         var summaries = _dogs

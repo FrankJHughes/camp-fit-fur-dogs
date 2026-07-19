@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Errors;
+using CampFitFurDogs.Application.Exceptions;
 using Frank.Core.Application.Abstractions.Exceptions;
 using Frank.Core.Domain;
 using Frank.Identity.Domain.Users.Exceptions;

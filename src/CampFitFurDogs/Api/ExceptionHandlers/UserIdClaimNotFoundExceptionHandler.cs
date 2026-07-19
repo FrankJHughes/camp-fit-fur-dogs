@@ -1,4 +1,3 @@
-using CampFitFurDogs.Application.Errors;
 using CampFitFurDogs.Application.Exceptions;
 using Frank.Core.Application.Abstractions.Exceptions;
 

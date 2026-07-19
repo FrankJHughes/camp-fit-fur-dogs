@@ -50,7 +50,7 @@ public class GetDogProfileReaderTests :
             .WithSex(Sex.Female)
             .Build();
 
-        await new DogRepository(dogsCtx).AddAsync(dog, CancellationToken.None);
+        await new RegisterDogWriter(dogsCtx).WriteAsync(dog, CancellationToken.None);
         await dogsCtx.SaveChangesAsync();
 
         return (user.Id, dog);
@@ -64,7 +64,7 @@ public class GetDogProfileReaderTests :
         await using var readCtx = _dogs.CreateContext();
         var reader = new GetDogProfileReader(readCtx);
 
-        var result = await reader.GetDogProfileAsync(
+        var result = await reader.ReadAsync(
             dog.Id.Value,
             ownerId.Value,
             CancellationToken.None);
@@ -84,7 +84,7 @@ public class GetDogProfileReaderTests :
         await using var ctx = _dogs.CreateContext();
         var reader = new GetDogProfileReader(ctx);
 
-        var result = await reader.GetDogProfileAsync(
+        var result = await reader.ReadAsync(
             Guid.NewGuid(),
             Guid.NewGuid(),
             CancellationToken.None);
@@ -101,7 +101,7 @@ public class GetDogProfileReaderTests :
         await using var readCtx = _dogs.CreateContext();
         var reader = new GetDogProfileReader(readCtx);
 
-        var result = await reader.GetDogProfileAsync(
+        var result = await reader.ReadAsync(
             dog.Id.Value,
             wrongOwnerId,
             CancellationToken.None);
