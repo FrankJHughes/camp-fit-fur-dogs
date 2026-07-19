@@ -31,44 +31,41 @@ flowchart TD
         A1["1. GET /api/identity/callback"]
         A2["2. Decode state / extract return_url"]
         A3["3. Extract authorization code"]
-        A4["4. API invokes OIDC pipeline"]
-        A5["5. API receives OIDC result"]
-        A6["6. API invokes Save Callback pipeline"]
-        A8["8. Issue session cookie"]
-        A9["9. Redirect user"]
+        A4["4. Invoke OIDC Callback pipeline"]
+        A8["8. Receive OIDC result"]
+        A9["9. Invoke Save Callback pipeline"]
+        A13["13. Issue session cookie"]
+        A14["14. Redirect user"]
     end
 
     %% ─────────────────────────────
     %% OIDC PIPELINE
     %% ─────────────────────────────
     subgraph OIDC["OIDC Protocol Pipeline"]
-        O4a["4a. Exchange Authorization Code<br/>POST /oauth/token"]
-        O4b["4b. Validate ID Token"]
-        O4c["4c. Fetch UserInfo"]
-        OResult["→ OidcCallbackContextBuilderResult"]
+        O5["5. Exchange Authorization Code<br/>POST /oauth/token"]
+        O6["6. Validate ID Token"]
+        O7["7. Fetch UserInfo"]
+        O8R["→ OidcCallbackContextBuilderResult"]
     end
 
     %% ─────────────────────────────
     %% SAVE CALLBACK PIPELINE
     %% ─────────────────────────────
     subgraph APP["Application Layer<br/>Save Callback Pipeline"]
-        subgraph S6a["6a. User Resolution / Creation"]
-            S6a1["Lookup User by external identity"]
-            S6a2["Create User if first login"]
-        end
+        S10["10. User Resolution / Creation"]
+        S10a["Lookup User by external identity"]
+        S10b["Create User if first login"]
 
-        subgraph S6b["6b. Session Creation"]
-            S6b1["Generate token"]
-            S6b2["Hash token"]
-            S6b3["Persist Session"]
-        end
+        S11["11. Session Creation"]
+        S11a["Generate token"]
+        S11b["Hash token"]
+        S11c["Persist Session"]
 
-        subgraph S6c["6c. Cookie + Redirect Computation"]
-            S6c1["Compute opaque cookie value"]
-            S6c2["Compute final redirect URL"]
-        end
+        S12["12. Cookie + Redirect Computation"]
+        S12a["Compute opaque cookie value"]
+        S12b["Compute final redirect URL"]
 
-        S6Result["→ SaveCallbackContextBuilderResult"]
+        S12R["→ SaveCallbackContextBuilderResult"]
     end
 
     %% ─────────────────────────────
@@ -76,10 +73,10 @@ flowchart TD
     %% ─────────────────────────────
 
     A1 --> A2 --> A3 --> A4
-    A4 --> O4a --> O4b --> O4c --> OResult --> A5
+    A4 --> O5 --> O6 --> O7 --> O8R --> A8
 
-    A5 --> S6
-    S6 --> S6a --> S6b --> S6c --> S6Result --> A8 --> A9
+    A8 --> A9
+    A9 --> S10 --> S11 --> S12 --> S12R --> A13 --> A14
 ```
 
 ### Section Links
