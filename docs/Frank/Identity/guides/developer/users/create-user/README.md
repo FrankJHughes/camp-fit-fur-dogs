@@ -1,45 +1,48 @@
 # Frank.Identity — CreateUser Slice  
 ## Developer Guide
 
-The **CreateUser** slice is responsible for constructing a new `User` aggregate from value objects, validating external identity semantics, and persisting the user through the repository + unit of work.
+The **CreateUser** slice is responsible for constructing a new `User` aggregate from value objects, validating external identity semantics, and persisting the user through a **slice‑aligned writer** and **FrankIdentityUnitOfWork**.
 
 It spans:
 
 - **Application** — `CreateUserCommandHandler`, `CreateUserCommandValidator`
 - **Domain** — `User` aggregate + value objects
-- **Infrastructure** — EF Core repository + configuration
-- **Unit of Work** — atomic persistence
+- **Infrastructure** — EF Core writer + configuration (`CreateUserWriter`, `UserConfiguration`, `FrankIdentityDbContext`)
+- **Unit of Work** — atomic persistence (`FrankIdentityUnitOfWork`)
 
 ---
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    %% Lanes
-    subgraph APP["Application Layer"]
-        A1["1. CreateUserCommand received"]
-        A2["2. Validator checks ExternalId semantics"]
-        A3["3. Handler converts primitives → Value Objects"]
-        A4["4. Handler constructs User aggregate"]
-        A5["5. Handler calls IUserRepository.AddAsync"]
-        A6["6. Handler commits UnitOfWork"]
-        A7["7. Handler returns new UserId"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph DOMAIN["Domain Layer"]
-        D1["User.Create(...) enforces invariants"]
-        D2["Value Objects validate syntax"]
-    end
+    participant CLIENT as Caller (Pipeline / Endpoint)
+    participant HANDLER as CreateUserCommandHandler
+    participant VALIDATOR as CreateUserCommandValidator
+    participant WRITER as CreateUserWriter (Slice-Aligned)
+    participant DB as FrankIdentityDbContext
+    participant UOW as FrankIdentityUnitOfWork
+    participant DOMAIN as User Aggregate
 
-    subgraph INFRA["Infrastructure (EF Core)"]
-        I1["Repository adds User to DbContext"]
-        I2["EF Core tracks new entity"]
-        I3["UnitOfWork.SaveChanges persists User"]
-    end
+    CLIENT->>HANDLER: 1. CreateUserCommand received
 
-    %% Flow
-    A1 --> A2 --> A3 --> A4 --> D1 --> A5 --> I1 --> I2 --> A6 --> I3 --> A7
+    HANDLER->>VALIDATOR: 2. Validate ExternalId semantics
+    VALIDATOR-->>HANDLER: 3. Validation result
+
+    HANDLER->>HANDLER: 4. Convert primitives → Value Objects
+    HANDLER->>DOMAIN: 5. User.Create(...) enforces invariants
+    DOMAIN-->>HANDLER: 6. Return constructed User aggregate
+
+    HANDLER->>WRITER: 7. WriteAsync(user)
+    WRITER->>DB: 8. Add User to DbContext
+    DB-->>WRITER: 9. Track new entity
+
+    HANDLER->>UOW: 10. CommitAsync()
+    UOW->>DB: 11. SaveChanges persists User
+
+    HANDLER-->>CLIENT: 12. Return new UserId
 ```
 
 ---
@@ -57,9 +60,9 @@ Frank.Identity.Application.Users.CreateUser.CreateUserCommandHandler.cs
 - Validate cancellation
 - Convert primitives → value objects
 - Construct the `User` aggregate
-- Persist via repository
-- Commit via unit of work
-- Return `Guid` (the new `UserId`)
+- Persist via slice‑aligned writer
+- Commit via `FrankIdentityUnitOfWork`
+- Return `UserId`
 
 ### Key Method
 
@@ -76,7 +79,7 @@ public async Task<Guid> HandleAsync(CreateUserCommand request, CancellationToken
 
     var user = User.Create(firstName, lastName, email, externalId, phone);
 
-    await _repo.AddAsync(user, ct);
+    await _writer.WriteAsync(user, ct);
     await _unitOfWork.CommitAsync(ct);
 
     return user.Id.Value;
@@ -86,7 +89,7 @@ public async Task<Guid> HandleAsync(CreateUserCommand request, CancellationToken
 ### Developer Notes
 
 - Domain invariants are enforced inside `User.Create`.
-- Value objects guarantee syntactic correctness.
+- Value objects guarantee syntactic + semantic correctness.
 - Handler is intentionally thin — no business logic.
 
 ---
@@ -118,32 +121,33 @@ RuleFor(x => x.ExternalId)
 
 ### Developer Notes
 
-- **Does not** validate first/last name, email, or phone.
+- Does **not** validate first/last name, email, or phone.
 - Those are validated by:
   - Request validators (syntactic)
   - Domain value objects (semantic + invariant)
 
 ---
 
-# 4. UserRepository (Infrastructure Layer)
+# 4. CreateUserWriter (Infrastructure Layer)
 
 **Location:**
 
 ```
-Frank.Identity.EntityFrameworkCore.Users.UserRepository.cs
+Frank.Identity.Infrastructure.Users.CreateUserWriter.cs
 ```
 
 ### Responsibilities
 
 - Add the `User` aggregate to EF Core’s change tracker
-- Defer persistence to unit of work
+- Defer persistence to `FrankIdentityUnitOfWork`
 
 ### Method
 
 ```csharp
-public async Task AddAsync(User user, CancellationToken ct)
+public Task WriteAsync(User user, CancellationToken ct)
 {
-    await _db.Set<User>().AddAsync(user, ct);
+    _db.Users.Add(user);
+    return Task.CompletedTask;
 }
 ```
 
@@ -151,10 +155,11 @@ public async Task AddAsync(User user, CancellationToken ct)
 
 - No `SaveChangesAsync` here — unit of work handles persistence.
 - EF Core tracks the new entity automatically.
+- Writers are single‑responsibility: **write only**.
 
 ---
 
-# 5. UserConfiguration (Infrastructure Layer)
+# 5. UserConfiguration (EntityFrameworkCore Layer)
 
 **Location:**
 
@@ -272,13 +277,13 @@ User.Create(firstName, lastName, email, externalId, phone);
 
 ### Validation Errors
 
-- Missing or malformed `ExternalId` → validator failure
-- Invalid VO construction → domain exception
+- Missing or malformed `ExternalId` → validator failure  
+- Invalid VO construction → domain exception  
 
 ### Persistence Errors
 
-- Duplicate `external_id` → database constraint violation
-- Database unavailable → EF Core exception
+- Duplicate `external_id` → database constraint violation  
+- Database unavailable → EF Core exception  
 
 ---
 
@@ -289,19 +294,19 @@ User.Create(firstName, lastName, email, externalId, phone);
 - Handler:
   - Correct VO construction
   - Correct aggregate creation
-  - Repository + unit of work invoked
+  - Writer + unit of work invoked
 
 - Validator:
   - Rejects missing `ExternalId`
   - Rejects malformed `"provider|id"` formats
 
-- Repository:
+- Writer:
   - Adds user to DbContext
 
 ## Integration Tests
 
-- Creating a user persists it after unit of work commit
-- Duplicate external ID → unique constraint violation
+- Creating a user persists it after unit of work commit  
+- Duplicate external ID → unique constraint violation  
 - All fields stored correctly:
   - `first_name`
   - `last_name`
@@ -318,9 +323,8 @@ The **CreateUser** slice:
 - Validates external identity semantics  
 - Converts primitives → value objects  
 - Constructs the `User` aggregate  
-- Persists via repository  
-- Commits via unit of work  
+- Persists via slice‑aligned writer  
+- Commits via `FrankIdentityUnitOfWork`  
 - Returns the new `UserId`  
 
 It is the foundation of owner identity in Frank.Identity and is used by the login callback pipeline to ensure every external identity maps to a domain user.
-

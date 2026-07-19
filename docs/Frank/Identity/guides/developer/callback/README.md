@@ -19,8 +19,9 @@ This guide documents the slice end‑to‑end for developers implementing, maint
 
 # 1. End‑to‑End Execution Flow (Overview)
 
-The callback flow consists of three cooperating layers:
+The callback flow consists of four cooperating actors:
 
+- **Client** — receives redirect from IdP and calls the callback endpoint  
 - **API Layer** — orchestrates the flow  
 - **OIDC Pipeline** — handles protocol concerns  
 - **Save Callback Pipeline** — handles business concerns  
@@ -29,11 +30,13 @@ The callback flow consists of three cooperating layers:
 sequenceDiagram
     autonumber
 
-    participant API as API Layer
-    participant OIDC as OIDC Pipeline
-    participant SAVE as Save Callback Pipeline
+    participant CLIENT as Client
+    participant API as Endpoint
+    participant OIDC as Application / OIDC
+    participant SAVE as Application / Save
 
-    API->>API: 1. GET /api/identity/callback
+    CLIENT->>API: 1. GET /api/identity/callback?code=...&state=...
+
     API->>API: 2. Decode state / extract return_url
     API->>API: 3. Extract authorization code
 
@@ -52,8 +55,8 @@ sequenceDiagram
 
     SAVE-->>API: 14. Return SaveCallbackContextBuilderResult
 
-    API->>API: 15. Issue session cookie
-    API->>API: 16. Redirect user
+    API->>CLIENT: 15. Issue session cookie
+    API-->>CLIENT: 16. Redirect user to return_url
 ```
 
 ### Section Links

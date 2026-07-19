@@ -6,33 +6,39 @@ It is part of the internal authentication infrastructure and is used by logout f
 
 It spans:
 
-- **Application** — `RevokeSessionHandler`
-- **Domain** — `Session`, `SessionTokenHash`
-- **Infrastructure** — EF Core repository (`SessionRepository`)
+- **Application Layer** — `RevokeSessionHandler`
+- **Domain Layer** — `Session`, `SessionTokenHash`
+- **Infrastructure Layer** — EF Core slice‑aligned writer (`RevokeSessionWriter`)
 - **Unit of Work** — `IFrankIdentityUnitOfWork`
 
 ---
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    %% Lanes
-    subgraph APP["Application Layer"]
-        A1["1. Command: RevokeSessionCommand(tokenHash)"]
-        A2["2. Handler converts tokenHash → SessionTokenHash VO"]
-        A3["3. Handler invokes ISessionRepository.RevokeAsync"]
-        A4["4. Handler commits unit of work"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph INFRA["Infrastructure (EF Core)"]
-        I1["Reader queries DB by TokenHash"]
-        I2["If found → session.Revoke(now)"]
-        I3["EF tracks changes; SaveChanges via UnitOfWork"]
-    end
+    participant CALLER as Application Caller
+    participant HANDLER as RevokeSessionHandler
+    participant WRITER as RevokeSessionWriter (Slice-Aligned)
+    participant EF as EF Core / DbContext
+    participant UOW as Unit of Work
 
-    %% Flow
-    A1 --> A2 --> A3 --> I1 --> I2 --> I3 --> A4
+    CALLER->>HANDLER: 1. Execute RevokeSessionCommand(tokenHash)
+
+    HANDLER->>HANDLER: 2. Convert tokenHash → SessionTokenHash VO
+
+    HANDLER->>WRITER: 3. RevokeAsync(tokenHashVO)
+    WRITER->>EF: 4. Query Session by TokenHash
+    EF-->>WRITER: 5. Return Session or null
+
+    WRITER->>WRITER: 6. If found → session.Revoke(now)
+    WRITER-->>HANDLER: 7. Return (idempotent)
+
+    HANDLER->>UOW: 8. Commit UnitOfWork
+    UOW->>EF: 9. SaveChanges persists revocation
+    EF-->>CALLER: 10. Persistence complete
 ```
 
 ---
@@ -49,49 +55,49 @@ Frank.Identity.Application.Sessions.RevokeSession.RevokeSessionHandler.cs
 
 - Handle `RevokeSessionCommand`
 - Convert raw token hash → `SessionTokenHash` value object
-- Delegate revocation to `ISessionRepository`
+- Delegate revocation to slice‑aligned writer
 - Commit changes via `IFrankIdentityUnitOfWork`
 
 ### Key Method
 
 ```csharp
-public async Task HandleAsync(RevokeSessionCommand command, CancellationToken cancellationToken)
+public async Task HandleAsync(RevokeSessionCommand command, CancellationToken ct)
 {
     var tokenHash = SessionTokenHash.From(command.TokenHash);
 
-    await _repository.RevokeAsync(tokenHash, cancellationToken);
-    await _unitOfWork.CommitAsync(cancellationToken);
+    await _writer.RevokeAsync(tokenHash, ct);
+    await _unitOfWork.CommitAsync(ct);
 }
 ```
 
 ### Developer Notes
 
-- Handler does not check whether the session exists.
-- If the session does not exist, revocation is a no‑op.
-- This design keeps revocation idempotent and safe.
+- Handler does **not** check whether the session exists.
+- If the session does not exist, revocation is a **no‑op**.
+- Revocation is intentionally **idempotent**.
 
 ---
 
-# 3. ISessionRepository (Application Abstraction)
+# 3. IRevokeSessionWriter (Application Abstraction)
 
 **Purpose:**
 
-- Abstracts session persistence
+- Abstracts session revocation
 - Allows EF Core or other stores to implement revocation
 - Exposes:
 
 ```csharp
-Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken);
+Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken ct);
 ```
 
 ---
 
-# 4. SessionRepository (Infrastructure Layer)
+# 4. RevokeSessionWriter (Infrastructure Layer)
 
 **Location:**
 
 ```
-Frank.Identity.EntityFrameworkCore.Sessions.SessionRepository.cs
+Frank.Identity.EntityFrameworkCore.Sessions.RevokeSessionWriter.cs
 ```
 
 ### Responsibilities
@@ -103,18 +109,15 @@ Frank.Identity.EntityFrameworkCore.Sessions.SessionRepository.cs
 ### Key Method
 
 ```csharp
-public async Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken cancellationToken)
+public async Task RevokeAsync(SessionTokenHash tokenHash, CancellationToken ct)
 {
     var session = await _db.Set<Session>()
-        .SingleOrDefaultAsync(s => s.TokenHash == tokenHash, cancellationToken);
+        .SingleOrDefaultAsync(s => s.TokenHash == tokenHash, ct);
 
     if (session is null)
-        return;
+        return; // idempotent no-op
 
-    // Domain behavior
     session.Revoke(DateTimeOffset.UtcNow);
-
-    // EF will track the change; SaveChanges is handled by the unit of work
 }
 ```
 
@@ -151,8 +154,8 @@ session.Revoke(DateTimeOffset.UtcNow);
 ### Developer Notes
 
 - Revocation sets `RevokedAt` to a timestamp.
-- A revoked session is considered invalid for authentication.
-- Revocation is idempotent — calling it twice does not change behavior.
+- A revoked session is invalid for authentication.
+- Revocation is **idempotent** — calling it twice does not change behavior.
 
 ---
 
@@ -161,7 +164,7 @@ session.Revoke(DateTimeOffset.UtcNow);
 The handler commits changes using:
 
 ```csharp
-await _unitOfWork.CommitAsync(cancellationToken);
+await _unitOfWork.CommitAsync(ct);
 ```
 
 ### Developer Notes
@@ -176,13 +179,13 @@ await _unitOfWork.CommitAsync(cancellationToken);
 
 ### Session Not Found
 
-- Repository returns silently.
+- Writer returns silently.
 - Handler commits no changes.
 - No exception is thrown.
 
 ### Why no exception?
 
-- Revocation is intentionally idempotent.
+- Revocation is intentionally **idempotent**.
 - Attempting to revoke a non‑existent session is not considered an error.
 
 ---
@@ -193,10 +196,10 @@ await _unitOfWork.CommitAsync(cancellationToken);
 
 - Handler:
   - Correct conversion of token hash → VO
-  - Repository invoked with correct VO
+  - Writer invoked with correct VO
   - Unit of work commit invoked
 
-- Repository:
+- Writer:
   - Session found → `RevokedAt` updated
   - Session missing → no exception, no update
   - EF Core tracks changes correctly
@@ -215,10 +218,9 @@ await _unitOfWork.CommitAsync(cancellationToken);
 The **RevokeSession** slice:
 
 - Converts raw token hash → `SessionTokenHash`
-- Loads session via repository
+- Loads session via slice‑aligned writer
 - Applies domain revocation behavior
 - Persists changes via unit of work
 - Treats missing sessions as a no‑op
 
 It is a core building block of Frank.Identity’s session lifecycle and is used by logout flows, admin tools, and session‑validation middleware.
-

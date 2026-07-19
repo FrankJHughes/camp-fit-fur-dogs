@@ -16,9 +16,9 @@ The **GetLoginUrl** slice initiates the authentication flow by constructing an O
 sequenceDiagram
     autonumber
 
-    participant CLIENT as Frontend
-    participant API as API Layer
-    participant APP as Application Layer
+    participant CLIENT as Client
+    participant API as Endpoint
+    participant APP as Application
     participant IDP as External OIDC Provider
 
     CLIENT->>API: 1. GET /api/identity/login-url

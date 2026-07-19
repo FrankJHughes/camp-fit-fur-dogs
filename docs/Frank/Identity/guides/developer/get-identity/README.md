@@ -8,6 +8,7 @@ It simply reads the current authenticated user (`ICurrentUser`) and returns a DT
 It spans:
 
 - **API Layer** — `GetIdentityEndpoint`
+- **Middleware Layer** — session lookup + identity resolution
 - **Application Layer** — `ICurrentUser` abstraction
 - **Authorization Layer** — endpoint requires authentication
 
@@ -19,16 +20,22 @@ It spans:
 sequenceDiagram
     autonumber
 
-    participant CLIENT as Frontend
-    participant API as API Layer
-    participant APP as Application Layer
+    participant CLIENT as Client
+    participant MID as Middleware
+    participant API as Endpoint
+    participant APP as Application
 
-    CLIENT->>API: 1. GET /api/identity
-    API->>API: 2. RequireAuthorization()
-    API->>APP: 3. Resolve ICurrentUser from DI
-    APP-->>API: 4. Return authenticated user identity
-    API->>API: 5. Build GetIdentityEndpointResponse DTO
-    API-->>CLIENT: 6. Return Results.Ok(dto)
+    CLIENT->>MID: 1. GET /api/identity (with session cookie)
+    MID->>MID: 2. Validate session cookie
+    MID->>MID: 3. Lookup session + user
+    MID-->>API: 4. Populate HttpContext.User + ICurrentUser
+
+    API->>API: 5. RequireAuthorization()
+    API->>APP: 6. Resolve ICurrentUser from DI
+    APP-->>API: 7. Return authenticated user identity
+
+    API->>API: 8. Build GetIdentityEndpointResponse DTO
+    API-->>CLIENT: 9. Return Results.Ok(dto)
 ```
 
 ---

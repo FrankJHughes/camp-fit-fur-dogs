@@ -8,28 +8,26 @@ This slice is intentionally **read‑only**, **projection‑based**, and **side�
 
 ---
 
-## 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    subgraph APP["Application Layer"]
-        A1["1. Query: GetUserById(userId)"]
-        A2["2. Reader invoked"]
-        A3["3. Reader returns DTO or null"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph INFRA["Infrastructure (EF Core)"]
-        I1["Query users table by UserId"]
-        I2["Project aggregate → GetUserByIdResponse"]
-        I3["Return result (AsNoTracking)"]
-    end
+    participant CALLER as Application Caller
+    participant READER as GetUserByIdReader (Slice-Aligned)
+    participant DB as FrankIdentityDbContext
 
-    A1 --> A2 --> I1 --> I2 --> I3 --> A3
+    CALLER->>READER: 1. GetUserById(userId)
+    READER->>DB: 2. Query users table by UserId (AsNoTracking)
+    DB-->>READER: 3. Return User or null
+    READER->>READER: 4. Project aggregate → GetUserByIdResponse
+    READER-->>CALLER: 5. Return DTO or null
 ```
 
 ---
 
-## 2. Reader: GetUserByIdReader
+# 2. Reader: GetUserByIdReader
 
 **Location:**
 
@@ -53,8 +51,7 @@ public Task<GetUserByIdResponse?> GetByIdAsync(
 {
     return _db.Set<User>()
         .AsNoTracking()
-        .Where(c =>
-            c.Id == UserId.From(userId))
+        .Where(c => c.Id == UserId.From(userId))
         .Select(c =>
             new GetUserByIdResponse(
                 Id: c.Id.Value,
@@ -73,7 +70,7 @@ public Task<GetUserByIdResponse?> GetByIdAsync(
 
 ---
 
-## 3. DTO: GetUserByIdResponse
+# 3. DTO: GetUserByIdResponse
 
 Minimal profile projection:
 
@@ -92,7 +89,7 @@ public sealed record GetUserByIdResponse(
 
 ---
 
-## 4. Domain Model (User Aggregate)
+# 4. Domain Model (User Aggregate)
 
 Relevant properties:
 
@@ -115,7 +112,7 @@ Only the first three are used in this slice.
 
 ---
 
-## 5. EF Core Configuration
+# 5. EF Core Configuration
 
 The reader relies on the EF Core mapping defined in:
 
@@ -155,7 +152,7 @@ builder.OwnsOne(c => c.LastName, ln =>
 
 ---
 
-## 6. Error Handling
+# 6. Error Handling
 
 ### Not Found
 
@@ -174,19 +171,19 @@ This keeps it predictable and composable.
 
 ---
 
-## 7. Testing Strategy
+# 7. Testing Strategy
 
 ### Unit Tests
 
-- Query returns correct DTO for existing user
-- Query returns `null` for missing user
-- VO comparison (`UserId.From(userId)`) works correctly
-- Projection into `GetUserByIdResponse` is correct
+- Query returns correct DTO for existing user  
+- Query returns `null` for missing user  
+- VO comparison (`UserId.From(userId)`) works correctly  
+- Projection into `GetUserByIdResponse` is correct  
 
 ### Integration Tests
 
-- Reader returns correct DTO from database
-- Reader returns `null` when no match exists
+- Reader returns correct DTO from database  
+- Reader returns `null` when no match exists  
 - EF Core mapping correctly stores and retrieves:
   - `first_name`
   - `last_name`
@@ -194,7 +191,7 @@ This keeps it predictable and composable.
 
 ---
 
-## 8. Summary
+# 8. Summary
 
 The **GetUserById** slice:
 

@@ -3,97 +3,133 @@
 
 The **CreateSession** slice is responsible for persisting a newly created `Session` aggregate.  
 It is intentionally minimal: there is **no handler**, **no pipeline**, and **no domain logic** beyond the aggregate itself.  
-Session creation is performed by the caller (e.g., Save Callback Pipeline), and this slice simply persists the aggregate.
+Session creation is performed by the caller (e.g., Save Callback Pipeline), and this slice simply persists the aggregate through a **slice‑aligned writer**, not a repository.
 
 It spans:
 
-- **Infrastructure** — `SessionRepository.CreateAsync`
-- **Domain** — `Session` aggregate + value objects
+- **Application Layer** — `ICreateSessionWriter`
+- **Domain Layer** — `Session` aggregate + value objects
+- **Infrastructure Layer** — EF Core writer implementation
 - **Unit of Work** — commit performed by caller
 
 ---
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    %% Lanes
-    subgraph APP["Application Layer"]
-        A1["1. Caller constructs Session aggregate"]
-        A2["2. Caller invokes ISessionRepository.CreateAsync(session)"]
-        A3["3. Caller commits UnitOfWork"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph INFRA["Infrastructure (EF Core)"]
-        I1["Repository adds Session to DbContext"]
-        I2["EF Core tracks new entity"]
-        I3["UnitOfWork.SaveChanges persists Session"]
-    end
+    participant CALLER as Application Caller
+    participant WRITER as CreateSessionWriter (Slice-Aligned)
+    participant EF as EF Core / DbContext
+    participant UOW as Unit of Work
 
-    %% Flow
-    A1 --> A2 --> I1 --> I2 --> A3 --> I3
+    CALLER->>CALLER: 1. Construct Session aggregate
+    CALLER->>WRITER: 2. WriteAsync(session)
+    WRITER->>EF: 3. Add Session to DbContext
+    EF-->>WRITER: 4. Track new entity
+
+    CALLER->>UOW: 5. Commit UnitOfWork
+    UOW->>EF: 6. SaveChanges persists Session
+    EF-->>CALLER: 7. Persistence complete
 ```
 
 ---
 
-# 2. SessionRepository.CreateAsync (Infrastructure Layer)
+# 2. ICreateSessionWriter (Application Layer)
 
 **Location:**
 
 ```
-Frank.Identity.EntityFrameworkCore.Sessions.SessionRepository.cs
+Frank.Identity.Application.Abstractions.Sessions.CreateSession.ICreateSessionWriter.cs
 ```
 
 ### Responsibilities
 
-- Accept a fully‑constructed `Session` aggregate
-- Add it to EF Core’s change tracker
-- Defer persistence to the unit of work
+- Accept a fully‑constructed `Session` aggregate  
+- Add it to EF Core’s change tracker  
+- Defer persistence to the unit of work  
 
-### Method
+### Interface
 
 ```csharp
-public Task CreateAsync(Session session, CancellationToken cancellationToken)
+public interface ICreateSessionWriter
 {
-    _db.Set<Session>().Add(session);
-    return Task.CompletedTask;
+    Task WriteAsync(Session session, CancellationToken ct);
+}
+```
+
+---
+
+# 3. CreateSessionWriter (Infrastructure Layer)
+
+**Location:**
+
+```
+Frank.Identity.Infrastructure.Sessions.CreateSessionWriter.cs
+```
+
+### Responsibilities
+
+- Implement `ICreateSessionWriter`
+- Add the session to the DbContext
+- Do **not** commit — caller controls the unit of work
+
+### Implementation
+
+```csharp
+public sealed class CreateSessionWriter : ICreateSessionWriter
+{
+    private readonly IdentityDbContext _db;
+
+    public CreateSessionWriter(IdentityDbContext db)
+    {
+        _db = db;
+    }
+
+    public Task WriteAsync(Session session, CancellationToken ct)
+    {
+        _db.Sessions.Add(session);
+        return Task.CompletedTask;
+    }
 }
 ```
 
 ### Developer Notes
 
-- `CreateAsync` does **not** call `SaveChangesAsync`.
-- The caller (e.g., Save Callback Pipeline) must commit via `IFrankIdentityUnitOfWork`.
-- EF Core tracks the new entity automatically.
-- No validation occurs here — validation belongs in the domain aggregate.
+- Writers replace repositories in the new slice‑aligned architecture.  
+- Writers perform **only one responsibility**: write the aggregate.  
+- Writers never call `SaveChangesAsync`.  
+- Writers never perform domain validation — that belongs to the aggregate.
 
 ---
 
-# 3. Domain Model (Session Aggregate)
+# 4. Domain Model (Session Aggregate)
 
 ### Value Objects
 
-- `SessionId`
-- `SessionTokenHash`
+- `SessionId`  
+- `SessionTokenHash`  
 - `UserId`
 
 ### Properties
 
-- `Id`
-- `TokenHash`
-- `OwnerId`
-- `CreatedAt`
+- `Id`  
+- `TokenHash`  
+- `OwnerId`  
+- `CreatedAt`  
 - `RevokedAt` (null for new sessions)
 
 ### Developer Notes
 
-- The aggregate is created by the caller (e.g., Save Callback Pipeline).
-- Domain invariants (e.g., non‑null owner, valid token hash) are enforced by constructors/VOs.
+- The aggregate is created by the caller (e.g., Save Callback Pipeline).  
+- Domain invariants are enforced by constructors and value objects.  
 - `RevokedAt` is null for new sessions.
 
 ---
 
-# 4. EF Core Configuration
+# 5. EF Core Configuration
 
 **Location:**
 
@@ -127,14 +163,14 @@ builder.Property(s => s.RevokedAt)
 
 ### Developer Notes
 
-- All value objects are stored as primitive values.
-- `TokenHash` is unique — only one active session per token.
-- `CreatedAt` is required.
+- All value objects are stored as primitives.  
+- `TokenHash` is unique — only one active session per token.  
+- `CreatedAt` is required.  
 - `RevokedAt` is optional.
 
 ---
 
-# 5. Unit of Work
+# 6. Unit of Work
 
 Session creation is finalized by the caller:
 
@@ -144,13 +180,13 @@ await _unitOfWork.CommitAsync(ct);
 
 ### Developer Notes
 
-- Ensures atomic persistence.
-- Allows batching multiple operations (e.g., user creation + session creation).
-- Keeps EF Core persistence concerns out of the repository.
+- Ensures atomic persistence.  
+- Allows batching multiple operations (e.g., user creation + session creation).  
+- Keeps EF Core persistence concerns out of writers.
 
 ---
 
-# 6. Error Handling
+# 7. Error Handling
 
 The CreateSession slice itself does **not** throw exceptions.
 
@@ -158,8 +194,8 @@ Errors arise only from:
 
 ### EF Core failures
 
-- Database unavailable
-- Constraint violations (e.g., duplicate token hash)
+- Database unavailable  
+- Constraint violations (e.g., duplicate token hash)  
 - Invalid VO conversions (rare)
 
 ### Caller failures
@@ -168,19 +204,19 @@ Errors arise only from:
 
 ---
 
-# 7. Testing Strategy
+# 8. Testing Strategy
 
 ## Unit Tests
 
-- Repository:
+- Writer:
   - Ensure `Session` is added to DbContext.
   - Ensure no SaveChanges is called.
   - Ensure value objects are stored correctly.
 
 ## Integration Tests
 
-- Creating a session persists it after unit of work commit.
-- Duplicate token hash → database constraint violation.
+- Creating a session persists it after unit of work commit.  
+- Duplicate token hash → database constraint violation.  
 - Session fields stored correctly:
   - `id`
   - `token_hash`
@@ -190,14 +226,13 @@ Errors arise only from:
 
 ---
 
-# 8. Summary
+# 9. Summary
 
 The **CreateSession** slice:
 
-- Accepts a fully‑constructed `Session` aggregate
-- Adds it to EF Core’s change tracker
-- Leaves persistence to the unit of work
-- Performs no validation and no domain logic
+- Accepts a fully‑constructed `Session` aggregate  
+- Adds it to EF Core’s change tracker via a slice‑aligned writer  
+- Leaves persistence to the unit of work  
+- Performs no validation and no domain logic  
 
 It is intentionally minimal and is used by the Save Callback Pipeline to create new sessions during login.
-

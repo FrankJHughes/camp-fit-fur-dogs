@@ -8,28 +8,26 @@ This slice is intentionally **read‑only**, **projection‑based**, and **side�
 
 ---
 
-## 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    subgraph APP["Application Layer"]
-        A1["1. Query: GetUserByExternalId(externalId)"]
-        A2["2. Reader invoked"]
-        A3["3. Reader returns DTO or null"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph INFRA["Infrastructure (EF Core)"]
-        I1["Query users table by ExternalId"]
-        I2["Project aggregate → GetUserByExternalIdResponse"]
-        I3["Return result (AsNoTracking)"]
-    end
+    participant CALLER as Application Caller
+    participant READER as GetUserByExternalIdReader (Slice-Aligned)
+    participant DB as FrankIdentityDbContext
 
-    A1 --> A2 --> I1 --> I2 --> I3 --> A3
+    CALLER->>READER: 1. GetUserByExternalId(externalId)
+    READER->>DB: 2. Query users table by ExternalId (AsNoTracking)
+    DB-->>READER: 3. Return User or null
+    READER->>READER: 4. Project aggregate → DTO
+    READER-->>CALLER: 5. Return GetUserByExternalIdResponse or null
 ```
 
 ---
 
-## 2. Reader: GetUserByExternalIdReader
+# 2. Reader: GetUserByExternalIdReader
 
 **Location:**
 
@@ -72,7 +70,7 @@ public Task<GetUserByExternalIdResponse?> GetByExternalIdAsync(
 
 ---
 
-## 3. DTO: GetUserByExternalIdResponse
+# 3. DTO: GetUserByExternalIdResponse
 
 Minimal response shape:
 
@@ -88,7 +86,7 @@ public sealed record GetUserByExternalIdResponse(Guid Id);
 
 ---
 
-## 4. Domain Model (User Aggregate)
+# 4. Domain Model (User Aggregate)
 
 Relevant properties:
 
@@ -105,7 +103,7 @@ Relevant properties:
 
 ---
 
-## 5. EF Core Configuration
+# 5. EF Core Configuration
 
 The reader relies on the EF Core mapping defined in:
 
@@ -136,7 +134,7 @@ builder.OwnsOne(c => c.ExternalId, ext =>
 
 ---
 
-## 6. Error Handling
+# 6. Error Handling
 
 ### Not Found
 
@@ -155,25 +153,25 @@ This keeps it predictable and composable.
 
 ---
 
-## 7. Testing Strategy
+# 7. Testing Strategy
 
 ### Unit Tests
 
-- Query returns correct `Id` for existing user
-- Query returns `null` for missing user
-- VO comparison (`ExternalId.Value == externalId`) works correctly
-- Projection into `GetUserByExternalIdResponse` is correct
+- Query returns correct `Id` for existing user  
+- Query returns `null` for missing user  
+- VO comparison (`ExternalId.Value == externalId`) works correctly  
+- Projection into `GetUserByExternalIdResponse` is correct  
 
 ### Integration Tests
 
-- Unique constraint on `external_id` enforced
-- Reader returns correct DTO from database
-- Reader returns `null` when no match exists
-- `AsNoTracking` ensures no EF Core tracking overhead
+- Unique constraint on `external_id` enforced  
+- Reader returns correct DTO from database  
+- Reader returns `null` when no match exists  
+- `AsNoTracking` ensures no EF Core tracking overhead  
 
 ---
 
-## 8. Summary
+# 8. Summary
 
 The **GetUserByExternalId** slice:
 

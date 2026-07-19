@@ -18,9 +18,9 @@ It spans:
 sequenceDiagram
     autonumber
 
-    participant CLIENT as Frontend
-    participant API as API Layer
-    participant APP as Application Layer
+    participant CLIENT as Client
+    participant API as Endpoint
+    participant APP as Application
 
     CLIENT->>API: 1. GET /api/identity/logout
     API->>API: 2. Delete domain session cookie ('session')

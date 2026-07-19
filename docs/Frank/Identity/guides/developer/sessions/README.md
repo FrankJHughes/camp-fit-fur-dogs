@@ -10,40 +10,48 @@ Sessions are intentionally simple:
 - Identified by a **hashed token** (`SessionTokenHash`)
 - Have a **TTL** (`SessionSettings.Ttl`)
 - May be **revoked** (`RevokedAt`)
-- Are used to hydrate `ICurrentUser` during request processing
+- Hydrate `ICurrentUser` during request processing
+- Persisted and mutated through **slice‑aligned writers**
+- Queried through **slice‑aligned readers**
+- Committed atomically via **FrankIdentityUnitOfWork**
+- Stored and tracked through **FrankIdentityDbContext**
 
-This folder contains documentation for each slice of the session lifecycle, plus the domain model and EF Core configuration.
+This document provides a complete architectural overview of the Sessions subsystem.
 
 ---
 
-## Contents
+# 1. Slice Documents
 
-### [create-session](./create-session/README.md)
+### **Create Session Slice**  
+[📄 create-session/README.md](./create-session/README.md)  
 Persists a newly created `Session` aggregate.  
-The caller constructs the aggregate; the repository simply adds it to EF Core’s change tracker.  
-Persistence is finalized by the unit of work.
+The caller constructs the aggregate; the writer adds it to EF Core’s change tracker.  
+Persistence is finalized by **FrankIdentityUnitOfWork**.
 
-### [get-session](./get-session/README.md)
+### **Get Session Slice**  
+[📄 get-session/README.md](./get-session/README.md)  
 Retrieves a session by its hashed token.  
 Used by authentication middleware and identity resolution.  
 Computes expiration (`ExpiresAt = CreatedAt + TTL`) and throws `SessionNotFoundException` when missing.
 
-### [revoke-session](./revoke-session/README.md)
+### **Revoke Session Slice**  
+[📄 revoke-session/README.md](./revoke-session/README.md)  
 Marks a session as revoked.  
 Revocation is idempotent — revoking a non‑existent session is a no‑op.  
-Changes are persisted via the unit of work.
+Changes are persisted via **FrankIdentityUnitOfWork**.
 
 ---
 
-# Domain Aggregate: `Session`
+# 2. Domain Layer  
+## 2.1 Session Aggregate
 
 The `Session` aggregate represents an authenticated identity.
 
 ### Value Objects
 
-- **SessionId** — unique identifier for the session  
-- **SessionTokenHash** — hashed session token  
-- **UserId** — owner of the session  
+- `SessionId`
+- `SessionTokenHash`
+- `UserId`
 
 ### Properties
 
@@ -67,32 +75,29 @@ session.Revoke(DateTimeOffset.UtcNow);
 
 ---
 
-# EF Core Configuration
+# 3. EntityFrameworkCore Layer  
+## 3.1 SessionConfiguration
 
-The EF Core configuration ensures correct persistence of the `Session` aggregate and its value objects.
-
-### Table: `sessions`
+Configures EF Core mapping for the `Session` aggregate.
 
 ### Mapping Summary
 
 | Column        | VO / Type             | Notes |
 |---------------|------------------------|-------|
-| `id`          | `SessionId`            | Stored as primitive, reconstructed as VO |
+| `id`          | `SessionId`            | Stored as primitive |
 | `token_hash`  | `SessionTokenHash`     | Unique index; required |
 | `owner_id`    | `UserId`               | Required |
 | `created_at`  | `DateTimeOffset`       | Required |
 | `revoked_at`  | `DateTimeOffset?`      | Optional |
 
-### Configuration Highlights
+### Highlights
 
 ```csharp
 builder.Property(s => s.Id)
-    .HasConversion(id => id.Value, value => SessionId.From(value))
-    .HasColumnName("id");
+    .HasConversion(id => id.Value, value => SessionId.From(value));
 
 builder.Property(s => s.TokenHash)
     .HasConversion(v => v.Value, v => SessionTokenHash.From(v))
-    .HasColumnName("token_hash")
     .IsRequired();
 
 builder.HasIndex(s => s.TokenHash)
@@ -100,40 +105,115 @@ builder.HasIndex(s => s.TokenHash)
 
 builder.Property(s => s.OwnerId)
     .HasConversion(v => v.Value, v => UserId.From(v))
-    .HasColumnName("owner_id")
     .IsRequired();
 
 builder.Property(s => s.CreatedAt)
-    .HasColumnName("created_at")
     .IsRequired();
 
 builder.Property(s => s.RevokedAt)
-    .HasColumnName("revoked_at")
     .IsRequired(false);
+```
+
+---
+
+## 3.2 FrankIdentityDbContext
+
+The EF Core DbContext for all Identity persistence.
+
+### Responsibilities
+
+- Expose `DbSet<Session>`
+- Apply `SessionConfiguration`
+- Provide change tracking for writers
+- Participate in unit of work boundaries
+
+### Notes
+
+- Writers add aggregates to the DbContext  
+- Readers query aggregates from the DbContext  
+- DbContext does **not** commit — the UnitOfWork does
+
+---
+
+## 3.3 FrankIdentityUnitOfWork
+
+The unit of work ensures atomic persistence across slices.
+
+### Responsibilities
+
+- Commit all EF Core changes
+- Provide transactional boundaries
+- Used by all writers (Create, Revoke)
+
+### API
+
+```csharp
+Task CommitAsync(CancellationToken ct);
 ```
 
 ### Notes
 
-- All value objects are stored as primitive values.
-- `token_hash` is unique — only one active session per token.
-- EF Core tracks changes; unit of work commits them.
+- Writers never call `SaveChangesAsync`  
+- UnitOfWork is the **only** component allowed to commit  
+- Supports batching (e.g., user creation + session creation)
 
 ---
 
-# Session Lifecycle Summary
+# 4. Slice Layer  
+The Sessions subsystem consists of three slices:
+
+- **CreateSession** — persist a new session  
+- **GetSession** — retrieve a session by token hash  
+- **RevokeSession** — mark a session as revoked  
+
+Each slice uses:
+
+- **Slice‑aligned writers** (Create, Revoke)  
+- **Slice‑aligned readers** (Get)  
+- **FrankIdentityDbContext**  
+- **FrankIdentityUnitOfWork**
+
+---
+
+# 5. Unified Session Lifecycle (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    A["Session Created"] --> B["Session Stored (create-session)"]
-    B --> C["Session Retrieved (get-session)"]
-    C --> D["Session Used for Authentication"]
-    D --> E["Session Revoked (revoke-session)"]
-    E --> F["Session Invalid"]
+sequenceDiagram
+    autonumber
+
+    participant CALLER as Application Caller
+    participant WRITER as Slice-Aligned Writers (Create/Revoke)
+    participant READER as Slice-Aligned Reader (Get)
+    participant DB as FrankIdentityDbContext
+    participant UOW as FrankIdentityUnitOfWork
+
+    %% Creation
+    CALLER->>CALLER: 1. Construct Session aggregate
+    CALLER->>WRITER: 2. WriteAsync(session)
+    WRITER->>DB: 3. Add Session to DbContext
+    DB-->>WRITER: 4. Track new entity
+    CALLER->>UOW: 5. CommitAsync()
+    UOW->>DB: 6. SaveChanges persists Session
+
+    %% Retrieval
+    CALLER->>READER: 7. GetSessionAsync(tokenHash)
+    READER->>DB: 8. Query Session by TokenHash
+    DB-->>READER: 9. Return Session or null
+    READER->>READER: 10. Compute ExpiresAt = CreatedAt + TTL
+    READER-->>CALLER: 11. Return GetSessionResponse
+
+    %% Revocation
+    CALLER->>WRITER: 12. RevokeAsync(tokenHash)
+    WRITER->>DB: 13. Query Session by TokenHash
+    DB-->>WRITER: 14. Return Session or null
+    WRITER->>WRITER: 15. If found → session.Revoke(now)
+    CALLER->>UOW: 16. CommitAsync()
+    UOW->>DB: 17. SaveChanges persists revocation
 ```
 
 ---
 
-# Related Settings
+# 6. Related Settings
 
 ### `SessionSettings`
 
@@ -143,7 +223,7 @@ flowchart LR
 
 ---
 
-# Usage in Identity
+# 7. Usage in Identity
 
 Sessions are used by:
 
@@ -155,7 +235,7 @@ Sessions are used by:
 
 ---
 
-# Philosophy
+# 8. Philosophy
 
 Frank.Identity sessions are:
 
@@ -163,5 +243,6 @@ Frank.Identity sessions are:
 - **Domain‑driven** — aggregates + value objects  
 - **Explicit** — revocation is a domain action  
 - **Composable** — used by multiple slices  
-- **Predictable** — expiration is deterministic (`CreatedAt + TTL`)  
-
+- **Predictable** — expiration is deterministic  
+- **Atomic** — persistence always flows through `FrankIdentityUnitOfWork`  
+- **Consistent** — all persistence flows through `FrankIdentityDbContext`

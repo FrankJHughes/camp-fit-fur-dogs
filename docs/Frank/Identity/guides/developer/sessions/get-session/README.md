@@ -6,33 +6,36 @@ It is part of the internal authentication infrastructure and is used by middlewa
 
 It spans:
 
-- **Application** — `GetSessionByIdHandler`, `IGetSessionReader`
-- **Domain** — `Session`, `SessionTokenHash`, `SessionNotFoundException`
-- **Infrastructure** — EF Core reader + configuration (`GetSessionReader`, `SessionConfiguration`)
+- **Application Layer** — `GetSessionByIdHandler`, `IGetSessionReader`
+- **Domain Layer** — `Session`, `SessionTokenHash`, `SessionNotFoundException`
+- **Infrastructure Layer** — EF Core slice‑aligned reader (`GetSessionReader`)
 - **Settings** — `SessionSettings.Ttl`
 
 ---
 
-# 1. End‑to‑End Execution Flow (Swimlane Diagram)
+# 1. End‑to‑End Execution Flow (Sequence Diagram)
 
 ```mermaid
-flowchart LR
-    %% Lanes
-    subgraph APP["Application Layer"]
-        A1["1. Query: GetSessionQuery(tokenHash)"]
-        A2["2. Handler invokes IGetSessionReader.GetSessionAsync"]
-        A3["3. If null → throw SessionNotFoundException"]
-        A4["4. Return GetSessionResponse"]
-    end
+sequenceDiagram
+    autonumber
 
-    subgraph INFRA["Infrastructure (EF Core)"]
-        I1["Reader queries DB by TokenHash"]
-        I2["Map Session aggregate → GetSessionResponse"]
-        I3["Compute ExpiresAt = CreatedAt + TTL"]
-    end
+    participant CALLER as Application Caller
+    participant HANDLER as GetSessionByIdHandler
+    participant READER as GetSessionReader (Slice-Aligned)
+    participant EF as EF Core / DbContext
 
-    %% Flow
-    A1 --> A2 --> I1 --> I2 --> I3 --> A4
+    CALLER->>HANDLER: 1. Execute GetSessionQuery(tokenHash)
+
+    HANDLER->>READER: 2. GetSessionAsync(tokenHash)
+    READER->>EF: 3. Query Session by TokenHash
+    EF-->>READER: 4. Return Session or null
+
+    READER->>READER: 5. Map aggregate → GetSessionResponse
+    READER->>READER: 6. Compute ExpiresAt = CreatedAt + TTL
+    READER-->>HANDLER: 7. Return GetSessionResponse or null
+
+    HANDLER->>HANDLER: 8. If null → throw SessionNotFoundException
+    HANDLER-->>CALLER: 9. Return GetSessionResponse
 ```
 
 ---
@@ -201,12 +204,12 @@ builder.HasIndex(s => s.TokenHash)
 
 Thrown when:
 
-- No session exists for the given token hash
+- No session exists for the given token hash  
 - Reader returns `null`
 
 ### Null vs Exception
 
-- Reader returns `null` → handler throws
+- Reader returns `null` → handler throws  
 - This keeps persistence concerns separate from application concerns
 
 ---
@@ -226,9 +229,9 @@ Thrown when:
 
 ## Integration Tests
 
-- Session exists → `GetSessionResponse` returned
-- Session missing → `SessionNotFoundException`
-- TTL applied correctly based on configuration
+- Session exists → `GetSessionResponse` returned  
+- Session missing → `SessionNotFoundException`  
+- TTL applied correctly based on configuration  
 - EF Core mapping correctly stores and retrieves value objects
 
 ---
@@ -237,11 +240,10 @@ Thrown when:
 
 The **GetSession** slice:
 
-- Retrieves a session by hashed token
-- Uses EF Core to load the `Session` aggregate
-- Computes expiration using TTL
-- Returns a DTO (`GetSessionResponse`)
-- Throws `SessionNotFoundException` when missing
+- Retrieves a session by hashed token  
+- Uses EF Core to load the `Session` aggregate  
+- Computes expiration using TTL  
+- Returns a DTO (`GetSessionResponse`)  
+- Throws `SessionNotFoundException` when missing  
 
 It is a core building block of Frank.Identity’s session model and is used by middleware, resolvers, and authentication flows.
-
