@@ -22,74 +22,39 @@ This is the complete execution sequence for the Callback slice.
 Each step links to the section where it is implemented.
 
 ```mermaid
-flowchart TD
-    %% Enable grid layout
-    classDef lane fill:#f9f9f9,stroke:#ccc,stroke-width:1px;
+sequenceDiagram
+    autonumber
 
-    %% ─────────────────────────────
-    %% COLUMN 1 — API LAYER
-    %% ─────────────────────────────
-    subgraph COL_API["API Layer"]
-        direction TB
-        A1["1. GET /api/identity/callback"]:::lane
-        A2["2. Decode state / extract return_url"]:::lane
-        A3["3. Extract authorization code"]:::lane
-        A4["4. Invoke OIDC Callback pipeline"]:::lane
-        A8["8. Receive OIDC result"]:::lane
-        A9["9. Invoke Save Callback pipeline"]:::lane
-        A14["14. Issue session cookie"]:::lane
-        A15["15. Redirect user"]:::lane
-    end
+    participant API as API Layer
+    participant OIDC as OIDC Pipeline
+    participant SAVE as Save Callback Pipeline
 
-    %% ─────────────────────────────
-    %% COLUMN 2 — OIDC PIPELINE
-    %% ─────────────────────────────
-    subgraph COL_OIDC["OIDC Protocol Pipeline"]
-        direction TB
-        O5["5. Exchange Authorization Code"]:::lane
-        O6["6. Validate ID Token"]:::lane
-        O7["7. Fetch UserInfo"]:::lane
-        O8R["→ OidcCallbackContextBuilderResult"]:::lane
-    end
+    API->>API: 1. GET /api/identity/callback
+    API->>API: 2. Decode state / extract return_url
+    API->>API: 3. Extract authorization code
 
-    %% ─────────────────────────────
-    %% COLUMN 3 — SAVE CALLBACK PIPELINE
-    %% ─────────────────────────────
-    subgraph COL_SAVE["Save Callback Pipeline"]
-        direction TB
+    API->>OIDC: 4. Invoke OIDC Callback pipeline
+    OIDC->>OIDC: 5. Exchange Authorization Code
+    OIDC->>OIDC: 6. Validate ID Token
+    OIDC->>OIDC: 7. Fetch UserInfo
+    OIDC-->>API: 8. Return OIDC result
 
-        %% Group 10 — User Resolution
-        subgraph S10["10. User Resolution / Creation"]
-            direction TB
-            S10a["Lookup User by external identity"]
-            S10b["Create User if first login"]
-        end
+    API->>SAVE: 9. Invoke Save Callback pipeline
 
-        %% Group 11 — Session Creation
-        subgraph S11["11. Session Creation"]
-            direction TB
-            S11a["Generate token"]
-            S11b["Hash token"]
-            S11c["Persist Session"]
-        end
+    SAVE->>SAVE: 10a. Lookup User by external identity
+    SAVE->>SAVE: 10b. Create User if first login
 
-        %% Group 12 — Cookie + Redirect Computation
-        subgraph S12["12. Cookie + Redirect Computation"]
-            direction TB
-            S12a["Compute opaque cookie value"]
-            S12b["Compute final redirect URL"]
-        end
+    SAVE->>SAVE: 11a. Generate token
+    SAVE->>SAVE: 11b. Hash token
+    SAVE->>SAVE: 11c. Persist Session
 
-        S13["13. → SaveCallbackContextBuilderResult"]
-    end
+    SAVE->>SAVE: 12a. Compute opaque cookie value
+    SAVE->>SAVE: 12b. Compute final redirect URL
 
-    %% ─────────────────────────────
-    %% FLOW CONNECTIONS
-    %% ─────────────────────────────
-    A1 --> A2 --> A3 --> A4
-    A4 --> O5 --> O6 --> O7 --> O8R --> A8
-    A8 --> A9
-    A9 --> S10 --> S11 --> S12 --> S13 --> A14 --> A15
+    SAVE-->>API: 13. Return SaveCallbackContextBuilderResult
+
+    API->>API: 14. Issue session cookie
+    API->>API: 15. Redirect user
 ```
 
 ### Section Links
