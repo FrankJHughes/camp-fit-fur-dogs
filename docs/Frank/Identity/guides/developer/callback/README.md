@@ -33,27 +33,27 @@ sequenceDiagram
     participant OIDC as OIDC Pipeline
     participant SAVE as Save Callback Pipeline
 
-    API->>API: 1. [GET /api/identity/callback](#2-callbackendpoint-api-layer)
-    API->>API: 2. [Decode state / extract return_url](#2-callbackendpoint-api-layer)
-    API->>API: 3. [Extract authorization code](#2-callbackendpoint-api-layer)
+    API->>API: 1. GET /api/identity/callback
+    API->>API: 2. Decode state / extract return_url
+    API->>API: 3. Extract authorization code
 
-    API->>OIDC: 4. [Invoke OIDC Callback pipeline](#3-oidc-callback-pipeline-protocol-layer)
-    OIDC->>OIDC: 5. [Exchange Authorization Code](#3-oidc-callback-pipeline-protocol-layer)
-    OIDC->>OIDC: 6. [Validate ID Token](#3-oidc-callback-pipeline-protocol-layer)
-    OIDC->>OIDC: 7. [Fetch UserInfo](#3-oidc-callback-pipeline-protocol-layer)
-    OIDC-->>API: 8. [Return OIDC result](#3-oidc-callback-pipeline-protocol-layer)
+    API->>OIDC: 4. Invoke OIDC Callback pipeline
+    OIDC->>OIDC: 5. Exchange Authorization Code
+    OIDC->>OIDC: 6. Validate ID Token
+    OIDC->>OIDC: 7. Fetch UserInfo
+    OIDC-->>API: 8. Return OIDC result
 
-    API->>SAVE: 9. [Invoke Save Callback pipeline](#4-save-callback-pipeline-business-layer)
+    API->>SAVE: 9. Invoke Save Callback pipeline
 
-    SAVE->>SAVE: 10. [Resolve User](#4-save-callback-pipeline-business-layer)
-    SAVE->>SAVE: 11. [Build Cookie](#4-save-callback-pipeline-business-layer)
-    SAVE->>SAVE: 12. [Audit Login](#4-save-callback-pipeline-business-layer)
-    SAVE->>SAVE: 13. [Create Session](#4-save-callback-pipeline-business-layer)
+    SAVE->>SAVE: 10. Resolve User
+    SAVE->>SAVE: 11. Build Cookie (generate token + hash)
+    SAVE->>SAVE: 12. Audit Login
+    SAVE->>SAVE: 13. Create Session
 
-    SAVE-->>API: 14. [Return SaveCallbackContextBuilderResult](#4-save-callback-pipeline-business-layer)
+    SAVE-->>API: 14. Return SaveCallbackContextBuilderResult
 
-    API->>API: 15. [Issue session cookie](#2-callbackendpoint-api-layer)
-    API->>API: 16. [Redirect user](#2-callbackendpoint-api-layer)
+    API->>API: 15. Issue session cookie
+    API->>API: 16. Redirect user
 ```
 
 ### Section Links
