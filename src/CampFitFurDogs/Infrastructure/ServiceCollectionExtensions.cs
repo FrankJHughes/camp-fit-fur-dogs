@@ -1,3 +1,4 @@
+using CampFitFurDogs.Infrastructure.DbContexts;
 using CampFitFurDogs.Infrastructure.Dogs;
 using CampFitFurDogs.Infrastructure.Persistence;
 using Frank.Core.Application.Abstractions.Audit;
@@ -22,21 +23,19 @@ public static class ServiceCollectionExtensions
         return services
             .AddHttpContextAccessor()
 
-            .AddFrankIdentityEntityFrmeworkCoreInfrastructure(configuration)
+            .AddFrankIdentityEntityFrmeworkCore(configuration)
 
-            .AddFrankEnvironment() // IEnvironment
-            .AddFrankTime() // IClock
+            .AddFrankEnvironment()
+            .AddFrankTime()
 
 
             .AddSingleton<IAuditLogger, AuditLogger>()
 
-            .AddDbContext<AppDbContext>(options =>
-                {
-                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-                })
-            .AddAppUnitOfWork() // IAppUnitOfWork
+            .AddInfrastructureDbContexts(configuration)
 
-            .AddDogInfrastructure();
+            .AddInfrastructureUnitOfWork()
+
+            .AddInfrastructureDogs();
 
 
     }

@@ -1,5 +1,4 @@
-using Frank.Identity.Application.Callback.Oidc;
-using Frank.Identity.Application.Callback.Save;
+using Frank.Identity.Application.Callback;
 using Frank.Identity.Application.Sessions;
 using Frank.Identity.Application.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +12,10 @@ public static class ServiceCollectionExtensions
         return services
 
             .AddFrankIdentityApplicationSessions()
+
             .AddFrankIdentityApplicationUsers()
 
-            .AddFrankIdentityApplicationCallbackOidc()
-            .AddFrankIdentityApplicationCallbackSave();
+            .AddFrankIdentityApplicationCallback();
 
     }
 }

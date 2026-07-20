@@ -6,7 +6,7 @@ namespace Frank.Identity.EntityFrameworkCore.UnitOfWork;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddAppUnitOfWork(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructureUnitOfWork(this IServiceCollection services)
     {
         return services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
     }

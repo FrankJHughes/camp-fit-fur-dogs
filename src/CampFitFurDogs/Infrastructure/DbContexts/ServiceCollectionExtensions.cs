@@ -1,19 +1,24 @@
+using CampFitFurDogs.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Frank.Identity.EntityFrameworkCore.DbContexts;
+namespace CampFitFurDogs.Infrastructure.DbContexts;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankIdentityEntityFrameworkCoreDbContext(
+    public static IServiceCollection AddInfrastructureDbContexts(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+        )
     {
         return services
-            .AddDbContext<FrankIdentityDbContext>(options =>
+            .AddDbContext<AppDbContext>(options =>
                 {
                     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-                });
+                })
+            ;
+
+
     }
 }

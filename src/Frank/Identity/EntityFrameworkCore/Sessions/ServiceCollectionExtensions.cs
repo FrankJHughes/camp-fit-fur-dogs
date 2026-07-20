@@ -8,7 +8,7 @@ namespace Frank.Identity.EntityFrameworkCore.Sessions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankIdentitySessionsInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddFrankIdentityEntityFrameworkCoreSessions(this IServiceCollection services)
     {
         services
             .AddOptions<SessionSettings>()

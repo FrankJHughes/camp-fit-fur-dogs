@@ -7,11 +7,12 @@ namespace Frank.Identity.EntityFrameworkCore.Users;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankIdentityUsersInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddFrankIdentityEntityFrameworkCoreUsers(this IServiceCollection services)
     {
         return services
             .AddScoped<ICreateUserWriter, CreateUserWriter>()
             .AddScoped<IGetUserByExternalIdReader, GetUserByExternalIdReader>()
-            .AddScoped<IGetUserByIdReader, GetUserByIdReader>();
+            .AddScoped<IGetUserByIdReader, GetUserByIdReader>()
+            ;
     }
 }

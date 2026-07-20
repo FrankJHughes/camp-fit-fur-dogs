@@ -14,7 +14,7 @@ public sealed class AddFrankEntityFrameworkCoreTests
         var services = new ServiceCollection();
 
         services.AddDbContext<FrankIdentityDbContext>(o => o.UseInMemoryDatabase("test"));
-        services.AddFrankIdentityUnitOfWorkInfrastructure();
+        services.AddFrankIdentityEntityFrameworkCoreUnitOfWork();
 
         var provider = services.BuildServiceProvider();
 
