@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using Frank.Identity.Application.Abstractions.Sessions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Frank.Identity.Api.Endpoints;
 
@@ -22,8 +23,8 @@ public class LogoutEndpoint : IEndpoint
 
     private async Task<IResult> HandleAsync(
         HttpContext httpContext,
-        ISessionTokenService tokenService,
-        ICommandDispatcher commandDispatcher,
+        [FromServices] ISessionTokenGenerator tokenService,
+        [FromServices] ICommandDispatcher commandDispatcher,
         IOptionsMonitor<FrontendSettings> frontendOptionsMonitor)
     {
 

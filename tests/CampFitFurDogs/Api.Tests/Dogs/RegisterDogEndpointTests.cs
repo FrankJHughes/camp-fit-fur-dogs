@@ -35,7 +35,7 @@ public class RegisterDogEndpointTests : IAsyncLifetime
 
         // 4. Create authenticated client
         var clientCtx = new ApiClientContext()
-            .WithAuthenticatedUser($"Test0|{Guid.NewGuid()}");
+            .WithCurrentUser($"Test0|{Guid.NewGuid()}");
 
         _client = _api.CreateClient(clientCtx);
 

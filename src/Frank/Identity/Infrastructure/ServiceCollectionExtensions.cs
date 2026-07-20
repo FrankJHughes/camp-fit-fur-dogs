@@ -1,5 +1,5 @@
-using Frank.Identity.Application;
-using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Users;
+using Frank.Identity.Infrastructure.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Identity.Infrastructure;
@@ -9,7 +9,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFrankIdentityInfrastructure(this IServiceCollection services)
     {
         return services
-            .AddScoped<IIdentityResolver, IdentityResolver>()
-            .AddScoped<ICurrentUser, AuthenticatedUser>();
+            .AddScoped<ICurrentUser, CurrentUser>();
     }
 }

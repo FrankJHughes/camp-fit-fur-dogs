@@ -1,6 +1,6 @@
-using Frank.Identity.Application.Abstractions;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Abstractions.Users;
 using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 
@@ -8,7 +8,7 @@ namespace Frank.Identity.Application.Tests.Callback.Save.Steps;
 
 public sealed class ResolveUserStepTests
 {
-    private sealed class FakeIdentityResolver : IIdentityResolver
+    private sealed class FakeIdentityResolver : IUserResolver
     {
         public Guid ReturnedId { get; set; } = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         public CallbackOidcContextBuilderResult? ReceivedExternal { get; private set; }

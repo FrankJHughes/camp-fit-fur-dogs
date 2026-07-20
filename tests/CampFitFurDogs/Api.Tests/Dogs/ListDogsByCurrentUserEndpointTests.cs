@@ -44,7 +44,7 @@ public class ListDogsByCurrentUserEndpointTests : IAsyncLifetime
     private async Task<HttpClient> CreateAuthenticatedClient(string sub)
     {
         var clientCtx = new ApiClientContext()
-            .WithAuthenticatedUser(sub);
+            .WithCurrentUser(sub);
 
         var client = _api.CreateClient(clientCtx);
 

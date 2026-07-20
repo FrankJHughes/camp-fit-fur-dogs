@@ -8,9 +8,9 @@ namespace Frank.Identity.Application.Callback.Save.Steps;
 public sealed class BuildCookieStep
     : IImmutableContextBuildStep<CallbackSaveContext>
 {
-    private readonly ISessionTokenService _tokens;
+    private readonly ISessionTokenGenerator _tokens;
 
-    public BuildCookieStep(ISessionTokenService tokens)
+    public BuildCookieStep(ISessionTokenGenerator tokens)
     {
         _tokens = tokens;
     }

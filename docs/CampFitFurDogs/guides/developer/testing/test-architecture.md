@@ -159,7 +159,7 @@ It now uses:
 
 - `DefaultHttpContext`  
 - `HttpContextAccessor`  
-- `AuthenticatedUser`  
+- `CurrentUser`  
 
 This aligns with the new identity model and guardrail boundaries.
 

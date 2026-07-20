@@ -11,7 +11,7 @@ public sealed class BuildCookieStepTests
     private const string ValidHash =
         "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
-    private sealed class FakeTokenService : ISessionTokenService
+    private sealed class FakeTokenService : ISessionTokenGenerator
     {
         public GeneratedSessionToken Returned { get; }
 

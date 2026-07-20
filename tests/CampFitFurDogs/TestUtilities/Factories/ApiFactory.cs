@@ -22,7 +22,7 @@ public sealed class ApiFactory
 
     protected override async Task ApplyAuthenticationAsync(HttpClient client, ApiClientContext clientCtx)
     {
-        if (clientCtx.AuthenticatedUserSub is string sub)
+        if (clientCtx.CurrentUserSub is string sub)
         {
             var request = new SignInRequest(sub);
 

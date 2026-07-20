@@ -19,7 +19,7 @@ public sealed class SessionValidationMiddleware
     public async Task InvokeAsync(HttpContext context,
         IGetUserByIdReader getUserReader,
         IGetSessionReader getSessionReader,
-        ISessionTokenService tokens)
+        ISessionTokenGenerator tokens)
     {
         var excludes = new string[]
         {

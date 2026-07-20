@@ -1,4 +1,4 @@
-using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Users;
 
 namespace CampFitFurDogs.Architecture.Tests.Identity;
 

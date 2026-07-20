@@ -97,7 +97,7 @@ var client = app.CreateClient();
 ## 3.2 Faking authentication
 
 ```csharp
-client = client.WithAuthenticatedUser(ownerId);
+client = client.WithCurrentUser(ownerId);
 ```
 
 This injects:
@@ -309,7 +309,7 @@ The test harness provides helpers for:
 ## 8.1 Fake authenticated user
 
 ```csharp
-client.WithAuthenticatedUser(ownerId);
+client.WithCurrentUser(ownerId);
 ```
 
 ## 8.2 Fake session cookie
@@ -395,7 +395,7 @@ This applies to:
 # 13. Troubleshooting
 
 ## 13.1 API tests failing with 401  
-→ Missing `WithAuthenticatedUser`.
+→ Missing `WithCurrentUser`.
 
 ## 13.2 Repository tests failing  
 → Migrations not applied.

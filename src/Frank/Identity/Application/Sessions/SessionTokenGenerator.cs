@@ -3,9 +3,9 @@ using System.Text;
 using Frank.Identity.Application.Abstractions.Sessions;
 using Frank.Identity.Domain.Sessions;
 
-namespace Frank.Identity.Application;
+namespace Frank.Identity.Application.Sessions;
 
-public sealed class SessionTokenService : ISessionTokenService
+public sealed class SessionTokenGenerator : ISessionTokenGenerator
 {
     /// <summary>
     /// Generates a new secure session token:

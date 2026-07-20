@@ -164,7 +164,7 @@
 │   │   │   ├── Middleware
 │   │   │   │   ├── Authorization
 │   │   │   │   │   ├── ApplicationBuilderExtensions.cs
-│   │   │   │   │   └── RequireAuthenticatedUserMiddleware.cs
+│   │   │   │   │   └── RequireCurrentUserMiddleware.cs
 │   │   │   │   ├── Cors
 │   │   │   │   │   ├── ApplicationBuilderExtensions.cs
 │   │   │   │   │   └── CorsLoggingMiddleware.cs
@@ -464,7 +464,7 @@
 │   │   │       └── UserRepository.cs
 │   │   └── Infrastructure
 │   │       ├── AssemblyMarker.cs
-│   │       ├── AuthenticatedUser.cs
+│   │       ├── CurrentUser.cs
 │   │       ├── Frank.Identity.Infrastructure.csproj
 │   │       ├── IdentityResolver.cs
 │   │       └── ServiceCollectionExtensions.cs

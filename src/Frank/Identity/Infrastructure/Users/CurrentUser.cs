@@ -1,14 +1,14 @@
 using System.Security.Claims;
-using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Users;
 using Microsoft.AspNetCore.Http;
 
-namespace Frank.Identity.Infrastructure;
+namespace Frank.Identity.Infrastructure.Users;
 
-public sealed class AuthenticatedUser : ICurrentUser
+public sealed class CurrentUser : ICurrentUser
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthenticatedUser(IHttpContextAccessor httpContextAccessor)
+    public CurrentUser(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }

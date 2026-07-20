@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using Frank.Identity.Application.Abstractions;
-using Frank.Identity.Infrastructure;
+using Frank.Identity.Application.Abstractions.Users;
+using Frank.Identity.Infrastructure.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,15 +12,15 @@ public class CurrentUserGuardrailTests
     {
         var services = new ServiceCollection();
         services.AddHttpContextAccessor();
-        services.AddScoped<ICurrentUser, AuthenticatedUser>();
+        services.AddScoped<ICurrentUser, CurrentUser>();
         return services.BuildServiceProvider();
     }
 
     // ------------------------------------------------------------
-    // GUARDRAIL 1 — Should resolve AuthenticatedUser
+    // GUARDRAIL 1 — Should resolve CurrentUser
     // ------------------------------------------------------------
     [Fact]
-    public void ShouldResolveAuthenticatedUser()
+    public void ShouldResolveCurrentUser()
     {
         using var provider = BuildProvider();
         using var scope = provider.CreateScope();
@@ -28,7 +28,7 @@ public class CurrentUserGuardrailTests
         scope.ServiceProvider
             .GetRequiredService<ICurrentUser>()
             .Should()
-            .BeOfType<AuthenticatedUser>();
+            .BeOfType<CurrentUser>();
     }
 
     // ------------------------------------------------------------
@@ -80,7 +80,7 @@ public class CurrentUserGuardrailTests
         };
 
         var accessor = new HttpContextAccessor { HttpContext = httpContext };
-        var service = new AuthenticatedUser(accessor);
+        var service = new CurrentUser(accessor);
 
         service.Id.Should().Be(userId);
     }

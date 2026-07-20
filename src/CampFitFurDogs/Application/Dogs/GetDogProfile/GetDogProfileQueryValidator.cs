@@ -1,6 +1,6 @@
 using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
 using FluentValidation;
-using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Users;
 
 namespace CampFitFurDogs.Application.Dogs.GetDogProfile;
 

@@ -1,8 +1,8 @@
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
-namespace Frank.Identity.Application.Abstractions;
+namespace Frank.Identity.Application.Abstractions.Users;
 
-public interface IIdentityResolver
+public interface IUserResolver
 {
     Task<Guid> ResolveAsync(
         CallbackOidcContextBuilderResult authCallbackResult,

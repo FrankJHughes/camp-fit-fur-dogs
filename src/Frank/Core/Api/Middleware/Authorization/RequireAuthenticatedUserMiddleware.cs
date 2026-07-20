@@ -1,16 +1,16 @@
 #nullable enable
 using System.Net;
-using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace Frank.Core.Api.Middleware.Authorization;
 
-public sealed class RequireAuthenticatedUserMiddleware
+public sealed class RequireCurrentUserMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public RequireAuthenticatedUserMiddleware(RequestDelegate next)
+    public RequireCurrentUserMiddleware(RequestDelegate next)
     {
         _next = next;
     }

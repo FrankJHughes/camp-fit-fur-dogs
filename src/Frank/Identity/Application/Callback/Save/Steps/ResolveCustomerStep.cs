@@ -1,15 +1,15 @@
-using Frank.Identity.Application.Abstractions;
 using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Abstractions.Users;
 
 namespace Frank.Identity.Application.Callback.Save.Steps;
 
 public sealed class ResolveUserStep
     : IImmutableContextBuildStep<CallbackSaveContext>
 {
-    private readonly IIdentityResolver _identityResolver;
+    private readonly IUserResolver _identityResolver;
 
-    public ResolveUserStep(IIdentityResolver identityResolver)
+    public ResolveUserStep(IUserResolver identityResolver)
     {
         _identityResolver = identityResolver;
     }

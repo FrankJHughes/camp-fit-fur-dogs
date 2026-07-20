@@ -1,17 +1,17 @@
-using Frank.Identity.Application.Abstractions;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Users;
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
 using Frank.Identity.Application.Abstractions.Users.GetUserByExternalId;
 using Frank.Identity.Domain.Users;
 
-namespace Frank.Identity.Application;
+namespace Frank.Identity.Application.Users;
 
-public sealed class IdentityResolver : IIdentityResolver
+public sealed class UserResolver : IUserResolver
 {
     private readonly IGetUserByExternalIdReader _reader;
     private readonly ICreateUserWriter _writer;
 
-    public IdentityResolver(
+    public UserResolver(
         IGetUserByExternalIdReader reader,
         ICreateUserWriter writer)
     {

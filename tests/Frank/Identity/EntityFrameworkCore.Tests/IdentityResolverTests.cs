@@ -1,7 +1,7 @@
-using Frank.Identity.Application;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
 using Frank.Identity.Application.Abstractions.Users.GetUserByExternalId;
+using Frank.Identity.Application.Users;
 using Frank.Identity.Domain.Users;
 
 namespace Frank.Core.EntityFrameworkCore.Tests.Identity;
@@ -66,7 +66,7 @@ public sealed class IdentityResolverTests
         };
 
         var writer = new FakeWriter();
-        var resolver = new IdentityResolver(reader, writer);
+        var resolver = new UserResolver(reader, writer);
 
         var result = await resolver.ResolveAsync(External(), CancellationToken.None);
 
@@ -83,7 +83,7 @@ public sealed class IdentityResolverTests
         var reader = new FakeReader { Returned = null };
         var writer = new FakeWriter();
 
-        var resolver = new IdentityResolver(reader, writer);
+        var resolver = new UserResolver(reader, writer);
 
         var result = await resolver.ResolveAsync(External(), CancellationToken.None);
 
@@ -103,7 +103,7 @@ public sealed class IdentityResolverTests
     {
         var reader = new FakeReader();
         var writer = new FakeWriter();
-        var resolver = new IdentityResolver(reader, writer);
+        var resolver = new UserResolver(reader, writer);
 
         using var cts = new CancellationTokenSource();
         cts.Cancel();

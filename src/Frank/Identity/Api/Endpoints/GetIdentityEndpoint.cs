@@ -1,6 +1,6 @@
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Api.Abstractions.Endpoints;
-using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

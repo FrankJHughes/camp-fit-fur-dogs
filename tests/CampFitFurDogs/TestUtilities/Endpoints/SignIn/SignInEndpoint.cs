@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Frank.Identity.Application.Abstractions;
 using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Domain.Sessions;
@@ -11,6 +10,7 @@ using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Microsoft.AspNetCore.Mvc;
 using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 using Frank.Identity.Application.Abstractions.Sessions;
+using Frank.Identity.Application.Abstractions.Users;
 
 namespace CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 
@@ -21,8 +21,8 @@ public sealed partial class SignInEndpoint : IEndpoint
         endpoints.MapPost("/__test__/sign-in", async (
             SignInRequest req,
             HttpContext http,
-            [FromServices] IIdentityResolver identityResolver,
-            [FromServices] ISessionTokenService sessionTokenService,
+            [FromServices] IUserResolver identityResolver,
+            [FromServices] ISessionTokenGenerator sessionTokenService,
             [FromServices] ICreateSessionWriter sessionWriter,
             [FromServices] IFrankIdentityUnitOfWork unitOfWork) =>
         {

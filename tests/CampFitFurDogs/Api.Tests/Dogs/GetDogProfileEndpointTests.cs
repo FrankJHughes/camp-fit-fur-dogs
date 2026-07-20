@@ -40,7 +40,7 @@ public class GetDogProfileEndpointTests : IAsyncLifetime
     private HttpClient CreateAuthenticatedClient(string sub)
     {
         var clientCtx = new ApiClientContext()
-            .WithAuthenticatedUser(sub);
+            .WithCurrentUser(sub);
 
         return _api.CreateClient(clientCtx);
     }

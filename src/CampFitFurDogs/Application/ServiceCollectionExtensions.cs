@@ -4,6 +4,7 @@ using Frank.Identity.Application.Callback.Oidc;
 using Frank.Identity.Application.Callback.Save;
 using Frank.Core.Application.Cqrs.Queries;
 using Microsoft.Extensions.DependencyInjection;
+using Frank.Identity.Application;
 
 namespace CampFitFurDogs.Application;
 
@@ -12,15 +13,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationLayer(
         this IServiceCollection services)
     {
-        // Frank.Identity
-        services.AddFrankCqrsCommands([
-            typeof(Frank.Identity.Application.AssemblyMarker).Assembly
-        ]);
-        services.AddFrankCqrsQueries([
-            typeof(Frank.Identity.Application.AssemblyMarker).Assembly
-        ]);
-        services.AddFrankIdentityCallbackOidc(); // authenticate
-        services.AddFrankIdentityCallbackSave(); // resolve user and session
+        services.AddFrankIdentityApplication(); //
+        services.AddFrankIdentityCallbackOidc();
+        services.AddFrankIdentityCallbackSave();
 
         // CampFitFurDogs CQRS
         services.AddFrankCqrsCommands([

@@ -2,11 +2,11 @@ namespace Frank.Testing.Contexts;
 
 public static class MutatedWebApplicationClientContextExtensions
 {
-    public static TSelf WithAuthenticatedUser<TSelf>(
+    public static TSelf WithCurrentUser<TSelf>(
         this TSelf ctx,
         string? sub)
         where TSelf : MutatedWebApplicationClientContext<TSelf>
-        => ctx with { AuthenticatedUserSub = sub };
+        => ctx with { CurrentUserSub = sub };
 
     public static TSelf WithHeader<TSelf>(
         this TSelf ctx,

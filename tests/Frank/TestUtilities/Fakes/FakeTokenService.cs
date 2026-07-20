@@ -3,7 +3,7 @@ using Frank.Identity.Domain.Sessions;
 
 namespace Frank.TestUtilities.Fakes;
 
-public sealed class FakeTokenService : ISessionTokenService
+public sealed class FakeTokenService : ISessionTokenGenerator
 {
     public GeneratedSessionToken Generate()
     {
