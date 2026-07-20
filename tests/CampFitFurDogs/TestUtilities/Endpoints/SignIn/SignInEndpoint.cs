@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Routing;
 using Frank.Identity.Application.Abstractions;
 using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Core.Application.Abstractions.Endpoints;
-using Frank.Core.Application.Abstractions.Authentication;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.Domain.Users;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Microsoft.AspNetCore.Mvc;
 using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
+using Frank.Identity.Application.Abstractions.Sessions;
 
 namespace CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 

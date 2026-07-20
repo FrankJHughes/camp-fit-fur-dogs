@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Frank.Core.Application.Abstractions.Authentication;
+using Frank.Identity.Application.Abstractions.Sessions;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
 using Frank.Identity.Application.Abstractions.Users.GetUserById;
 using Frank.Identity.Domain.Sessions.Errors;

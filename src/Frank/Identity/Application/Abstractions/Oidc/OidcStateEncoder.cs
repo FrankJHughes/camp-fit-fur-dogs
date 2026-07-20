@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Frank.Core.Application.Abstractions.Authentication.Oidc;
+namespace Frank.Core.Application.Abstractions.Sessions.Oidc;
 
 public class OidcStateEncoder
 {

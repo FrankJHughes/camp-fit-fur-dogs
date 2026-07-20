@@ -1,22 +1,22 @@
-using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Identity.Application.Abstractions;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Identity.Application.Abstractions.Users.CreateUser;
 using Frank.Identity.Application.Abstractions.Users.GetUserByExternalId;
+using Frank.Identity.Domain.Users;
 
-namespace Frank.Identity.Infrastructure;
+namespace Frank.Identity.Application;
 
 public sealed class IdentityResolver : IIdentityResolver
 {
     private readonly IGetUserByExternalIdReader _reader;
-    private readonly ICommandDispatcher _dispatcher;
+    private readonly ICreateUserWriter _writer;
 
     public IdentityResolver(
         IGetUserByExternalIdReader reader,
-        ICommandDispatcher dispatcher)
+        ICreateUserWriter writer)
     {
         _reader = reader;
-        _dispatcher = dispatcher;
+        _writer = writer;
     }
 
     public async Task<Guid> ResolveAsync(
@@ -33,14 +33,13 @@ public sealed class IdentityResolver : IIdentityResolver
         if (existing is not null)
             return existing.Id;
 
-        // Create a new user via application command
-        var command = new CreateUserCommand(
-            ExternalId: oidcCallbackResult.SubjectId,
-            FirstName: oidcCallbackResult.GivenName!,
-            LastName: oidcCallbackResult.FamilyName!,
-            Email: oidcCallbackResult.Email!);
+        var user = User.Create(
+            FirstName.From(oidcCallbackResult.GivenName!),
+            LastName.From(oidcCallbackResult.FamilyName!),
+            Email.From(oidcCallbackResult.Email!),
+            ExternalId.From(oidcCallbackResult.SubjectId));
 
-        var newId = await _dispatcher.DispatchAsync(command, cancellationToken);
-        return newId;
+        await _writer.WriteAsync(user, cancellationToken);
+        return user.Id.Value;
     }
 }

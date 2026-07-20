@@ -3,7 +3,6 @@ using CampFitFurDogs.Infrastructure.Persistence;
 using Frank.Core.Application.Abstractions.Audit;
 using Frank.Core.Infrastructure.Audit;
 using Frank.Core.Infrastructure.EnvironmentVariables;
-using Frank.Identity.Infrastructure;
 using Frank.Core.Infrastructure.Time;
 using Frank.Identity.EntityFrameworkCore.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +22,7 @@ public static class ServiceCollectionExtensions
         return services
             .AddHttpContextAccessor()
 
-            .AddFrankIdentityInfrastructure(configuration)
-            .AddFrankIdentity()
+            .AddFrankIdentityEntityFrmeworkCoreInfrastructure(configuration)
 
             .AddFrankEnvironment() // IEnvironment
             .AddFrankTime() // IClock

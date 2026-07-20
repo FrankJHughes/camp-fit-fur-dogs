@@ -1,43 +1,24 @@
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Oidc;
 using Frank.Identity.Application.Callback.Oidc;
-using Frank.Identity.Application.Callback.Oidc.Steps;
-using Frank.Identity.Application.Settings;
 using Frank.Identity.Application.Tests.Fakes.Callback.Oidc;
-using Frank.TestUtilities.Fakes;
 
 namespace Frank.Identity.Application.Tests.Callback.Oidc.Steps;
 
 public sealed class ExchangeCodeStepTests
 {
-    private static OidcCallbackSettings Settings => new()
-    {
-        Authority = "https://example.auth0.com",
-        ClientId = "client-id",
-        ClientSecret = "client-secret",
-        CallbackUrl = "https://app/callback"
-    };
-
     [Fact]
     public async Task ExecuteAsync_WithValidResponse_SetsAccessTokenAndIdToken()
     {
         // Arrange
-        var fake = new FakeOidcHttpClient
+        var fake = new FakeOidcTokenClient
         {
-            TokenResponseJson = """
-            {
-                "access_token": "access-123",
-                "id_token": "id-456"
-            }
-            """
+            Result = new OidcTokenResponse(
+                AccessToken: "access-123",
+                IdToken: "id-456")
         };
 
-        var http = fake.CreateClient();
-
-        // FIX: wrap settings in OptionsMonitorFake
-        var step = new ExchangeCodeStep(
-            http,
-            new FakeOptionsMonitor<OidcCallbackSettings>(Settings)
-        );
+        var step = new ExchangeCodeStep(fake);
 
         var ctx = new CallbackOidcContext
         {
@@ -54,21 +35,15 @@ public sealed class ExchangeCodeStepTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenTokenEndpointFails_ThrowsOidcProtocolException()
+    public async Task ExecuteAsync_WhenClientThrows_ThrowsOidcProtocolException()
     {
         // Arrange
-        var fake = new FakeOidcHttpClient
+        var fake = new FakeOidcTokenClient
         {
-            FailTokenEndpoint = true
+            ThrowOnExchange = true
         };
 
-        var http = fake.CreateClient();
-
-        // FIX: wrap settings in OptionsMonitorFake
-        var step = new ExchangeCodeStep(
-            http,
-            new FakeOptionsMonitor<OidcCallbackSettings>(Settings)
-        );
+        var step = new ExchangeCodeStep(fake);
 
         var ctx = new CallbackOidcContext
         {

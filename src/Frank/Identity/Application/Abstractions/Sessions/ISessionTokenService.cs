@@ -1,7 +1,6 @@
-using Frank.Identity.Application.Abstractions;
 using Frank.Identity.Domain.Sessions;
 
-namespace Frank.Core.Application.Abstractions.Authentication;
+namespace Frank.Identity.Application.Abstractions.Sessions;
 
 public interface ISessionTokenService
 {

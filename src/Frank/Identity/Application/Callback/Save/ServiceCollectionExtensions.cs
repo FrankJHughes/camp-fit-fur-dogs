@@ -1,9 +1,9 @@
 using Frank.Core.Application.Abstractions.ImmutableContexts;
-using Frank.Core.Application.Abstractions.Authentication;
 using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.Identity.Application.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Abstractions.Sessions;
 
 namespace Frank.Identity.Application.Callback.Save;
 

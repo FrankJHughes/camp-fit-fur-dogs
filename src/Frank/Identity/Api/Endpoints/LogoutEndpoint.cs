@@ -1,4 +1,3 @@
-using Frank.Core.Application.Abstractions.Authentication;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Domain.Exceptions;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using Frank.Identity.Application.Abstractions.Sessions;
 
 namespace Frank.Identity.Api.Endpoints;
 

@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.Authentication.Oidc;
+using Frank.Core.Application.Abstractions.Sessions.Oidc;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;

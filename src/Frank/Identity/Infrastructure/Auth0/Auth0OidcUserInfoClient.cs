@@ -5,7 +5,7 @@ using Frank.Identity.Application.Callback.Oidc;
 using Frank.Identity.Application.Settings;
 using Microsoft.Extensions.Options;
 
-namespace Frank.Identity.Application.Callback.Auth0;
+namespace Frank.Identity.Infrastructure.Auth0;
 
 public sealed class Auth0OidcUserInfoClient : IOidcUserInfoClient
 {

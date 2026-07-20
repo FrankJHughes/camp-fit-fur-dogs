@@ -1,8 +1,9 @@
 using System.Text.Json;
 using Frank.Identity.Application.Abstractions.Oidc;
+using Frank.Identity.Application.Callback.Oidc;
 using Frank.Identity.Application.Settings;
 
-namespace Frank.Identity.Application.Auth0;
+namespace Frank.Identity.Infrastructure.Auth0;
 
 public sealed class Auth0OidcTokenClient : IOidcTokenClient
 {
@@ -15,7 +16,7 @@ public sealed class Auth0OidcTokenClient : IOidcTokenClient
         _options = options;
     }
 
-    public async Task<string> ExchangeCodeAsync(string authorizationCode, CancellationToken ct)
+    public async Task<OidcTokenResponse> ExchangeCodeAsync(string authorizationCode, CancellationToken ct)
     {
         var tokenEndpoint = $"https://{_options.Authority}/oauth/token";
 
@@ -34,15 +35,22 @@ public sealed class Auth0OidcTokenClient : IOidcTokenClient
             ct);
 
         if (!response.IsSuccessStatusCode)
-            throw new InvalidOperationException("Failed to exchange authorization code.");
+            throw new OidcProtocolException("Failed to exchange authorization code.");
 
         var json = await response.Content.ReadAsStringAsync(ct);
         var root = JsonSerializer.Deserialize<JsonElement>(json);
 
-        var token = root.GetProperty("access_token").GetString();
-        if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException("Missing access token.");
+        var accessToken = root.TryGetProperty("access_token", out var at)
+            ? at.GetString()
+            : null;
 
-        return token;
+        var idToken = root.TryGetProperty("id_token", out var id)
+            ? id.GetString()
+            : null;
+
+        if (string.IsNullOrWhiteSpace(accessToken))
+            throw new OidcProtocolException("Missing access token.");
+
+        return new OidcTokenResponse(accessToken, idToken);
     }
 }

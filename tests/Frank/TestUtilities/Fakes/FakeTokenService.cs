@@ -1,5 +1,4 @@
-using Frank.Core.Application.Abstractions.Authentication;
-using Frank.Identity.Application.Abstractions;
+using Frank.Identity.Application.Abstractions.Sessions;
 using Frank.Identity.Domain.Sessions;
 
 namespace Frank.TestUtilities.Fakes;

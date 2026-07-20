@@ -1,6 +1,5 @@
-using Frank.Core.Application.Abstractions.Authentication;
-using Frank.Identity.Application.Abstractions;
 using Frank.Identity.Application.Abstractions.Callback.Save;
+using Frank.Identity.Application.Abstractions.Sessions;
 using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.Identity.Domain.Sessions;
 using Frank.TestUtilities.Fakes.Authentication.Callback;

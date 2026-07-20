@@ -9,7 +9,7 @@ namespace Frank.Identity.EntityFrameworkCore;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankIdentityInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddFrankIdentityEntityFrmeworkCoreInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         return services
             .AddFrankIdentityDbContext(configuration)

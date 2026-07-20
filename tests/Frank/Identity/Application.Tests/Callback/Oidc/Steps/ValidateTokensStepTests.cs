@@ -1,39 +1,29 @@
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Oidc;
 using Frank.Identity.Application.Callback.Oidc;
 using Frank.Identity.Application.Callback.Oidc.Steps;
-using Frank.Identity.Application.Settings;
 using Frank.Identity.Application.Tests.Fakes.Callback.Oidc;
-using Frank.TestUtilities.Fakes;
 
 namespace Frank.Identity.Application.Tests.Callback.Oidc.Steps;
 
 public sealed class ValidateTokensStepTests
 {
-    private static OidcCallbackSettings Settings => new()
-    {
-        Authority = "https://example.auth0.com",
-        ClientId = "client-id",
-        ClientSecret = "client-secret",
-        CallbackUrl = "https://app/callback"
-    };
-
     [Fact]
-    public async Task ExecuteAsync_WhenJwksEndpointFails_ThrowsOidcProtocolException()
+    public async Task ExecuteAsync_WhenValidatorThrows_ThrowsOidcProtocolException()
     {
         // Arrange
-        var fake = new FakeOidcHttpClient
+        var validator = new FakeOidcTokenValidator
         {
-            FailJwksEndpoint = true
+            ThrowOnValidate = true
         };
 
-        var http = fake.CreateClient();
-        var step = new ValidateTokensStep(new FakeOptionsMonitor<OidcCallbackSettings>(Settings), http);
+        var step = new ValidateTokensStep(validator);
 
         var ctx = new CallbackOidcContext
         {
-            Code = "abc123",
-            Now = DateTimeOffset.UtcNow,
-            IdToken = "fake-id-token"
+            Code = "abc123",                 // REQUIRED
+            IdToken = "fake-id-token",
+            Now = DateTimeOffset.UtcNow
         };
 
         // Act
@@ -44,28 +34,35 @@ public sealed class ValidateTokensStepTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WithInvalidIdToken_ThrowsOidcProtocolException()
+    public async Task ExecuteAsync_WithValidToken_PopulatesSubjectAndClaims()
     {
-        // Arrange: JWKS succeeds, but token is not a valid JWT
-        var fake = new FakeOidcHttpClient
+        // Arrange
+        var validator = new FakeOidcTokenValidator
         {
-            JwksResponseJson = FakeJwks.Empty
+            Result = new OidcTokenValidationResult(
+                SubjectId: "sub-123",
+                Claims: new Dictionary<string, string>
+                {
+                    ["email"] = "frank@example.com",
+                    ["name"] = "Frank Dog"
+                })
         };
 
-        var http = fake.CreateClient();
-        var step = new ValidateTokensStep(new FakeOptionsMonitor<OidcCallbackSettings>(Settings), http);
+        var step = new ValidateTokensStep(validator);
 
         var ctx = new CallbackOidcContext
         {
-            Code = "abc123",
-            Now = DateTimeOffset.UtcNow,
-            IdToken = "not-a-jwt"
+            Code = "abc123",                 // REQUIRED
+            IdToken = "valid-id-token",
+            Now = DateTimeOffset.UtcNow
         };
 
         // Act
-        var act = async () => await step.ExecuteAsync(ctx, CancellationToken.None);
+        var result = await step.ExecuteAsync(ctx, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<OidcProtocolException>();
+        result.SubjectId.Should().Be("sub-123");
+        result.Claims.Should().ContainKey("email");
+        result.Claims.Should().ContainKey("name");
     }
 }
