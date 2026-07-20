@@ -11,6 +11,7 @@ public sealed class GetDogByIdReader(AppDbContext db) : IGetDogByIdReader
         Guid dogId, CancellationToken ct)
     {
         var dog = await db.Set<Dog>()
+            .AsNoTracking()
             .Where(d => d.Id == DogId.From(dogId))
             .SingleOrDefaultAsync(ct);
 

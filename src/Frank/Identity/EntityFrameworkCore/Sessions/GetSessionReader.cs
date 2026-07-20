@@ -24,6 +24,7 @@ public sealed class GetSessionReader : IGetSessionReader
         string tokenHash, CancellationToken ct)
     {
         var session = await _db.Set<Session>()
+            .AsNoTracking()
             .Where(s => s.TokenHash == SessionTokenHash.From(tokenHash))
             .SingleOrDefaultAsync(ct);
 

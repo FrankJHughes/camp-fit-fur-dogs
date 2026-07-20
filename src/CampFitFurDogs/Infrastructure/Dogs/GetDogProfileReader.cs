@@ -12,6 +12,7 @@ public sealed class GetDogProfileReader(AppDbContext db) : IGetDogProfileReader
         Guid dogId, Guid ownerId, CancellationToken ct)
     {
         var dog = await db.Set<Dog>()
+            .AsNoTracking()
             .Where(d =>
                 d.OwnerId == UserId.From(ownerId) &&
                 d.Id == DogId.From(dogId))
