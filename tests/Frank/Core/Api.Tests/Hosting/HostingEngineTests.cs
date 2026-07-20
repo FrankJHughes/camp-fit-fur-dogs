@@ -1,5 +1,5 @@
-using Frank.Core.Application.Abstractions.Hosting;
 using Frank.Core.Api.Hosting;
+using Frank.Core.Application.Abstractions.Hosting;
 using Microsoft.AspNetCore.Builder;
 
 namespace Frank.Core.Api.Tests.Hosting;

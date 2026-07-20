@@ -1,11 +1,11 @@
-using Frank.Identity.EntityFrameworkCore.Sessions;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.Domain.Users;
 using Frank.Identity.EntityFrameworkCore.DbContexts;
+using Frank.Identity.EntityFrameworkCore.Sessions;
+using Frank.Identity.EntityFrameworkCore.Users;
 using Frank.TestUtilities.Builders;
 using Frank.TestUtilities.Fixtures;
 using Microsoft.EntityFrameworkCore;
-using Frank.Identity.EntityFrameworkCore.Users;
 
 namespace Frank.Core.EntityFrameworkCore.Tests.Sessions;
 

@@ -1,6 +1,6 @@
+using Frank.Core.EntityFrameworkCore.Configurations;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.Domain.Users;
-using Frank.Core.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

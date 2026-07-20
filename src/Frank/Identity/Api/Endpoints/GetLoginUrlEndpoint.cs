@@ -1,5 +1,5 @@
-using Frank.Core.Application.Abstractions.Sessions.Oidc;
 using Frank.Core.Application.Abstractions.Endpoints;
+using Frank.Core.Application.Abstractions.Sessions.Oidc;
 using Frank.Core.Domain.Exceptions;
 using Frank.Identity.Api.Abstractions.Endpoints;
 using Frank.Identity.Application.Settings;

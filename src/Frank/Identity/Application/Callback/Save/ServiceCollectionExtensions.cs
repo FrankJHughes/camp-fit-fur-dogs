@@ -1,14 +1,14 @@
 using Frank.Core.Application.Abstractions.ImmutableContexts;
+using Frank.Identity.Application.Abstractions.Callback.Save;
 using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.Identity.Application.Settings;
 using Microsoft.Extensions.DependencyInjection;
-using Frank.Identity.Application.Abstractions.Callback.Save;
 
 namespace Frank.Identity.Application.Callback.Save;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankIdentityCallbackSave(this IServiceCollection services)
+    public static IServiceCollection AddFrankIdentityApplicationCallbackSave(this IServiceCollection services)
     {
 
         services

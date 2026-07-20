@@ -1,6 +1,6 @@
 using Frank.Core.Application.Abstractions.UnitOfWork;
-using Frank.Identity.EntityFrameworkCore.DbContexts;
 using Frank.Core.EntityFrameworkCore;
+using Frank.Identity.EntityFrameworkCore.DbContexts;
 
 namespace Frank.Identity.EntityFrameworkCore.UnitOfWork;
 

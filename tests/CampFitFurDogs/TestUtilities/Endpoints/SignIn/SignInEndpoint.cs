@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Core.Application.Abstractions.Endpoints;
+using Frank.Core.Application.Abstractions.UnitOfWork;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Sessions;
+using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
+using Frank.Identity.Application.Abstractions.Users;
 using Frank.Identity.Domain.Sessions;
 using Frank.Identity.Domain.Users;
-using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
-using Frank.Identity.Application.Abstractions.Sessions;
-using Frank.Identity.Application.Abstractions.Users;
+using Microsoft.AspNetCore.Routing;
 
 namespace CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 

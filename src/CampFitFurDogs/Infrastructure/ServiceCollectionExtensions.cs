@@ -4,11 +4,11 @@ using Frank.Core.Application.Abstractions.Audit;
 using Frank.Core.Infrastructure.Audit;
 using Frank.Core.Infrastructure.EnvironmentVariables;
 using Frank.Core.Infrastructure.Time;
+using Frank.Identity.EntityFrameworkCore;
 using Frank.Identity.EntityFrameworkCore.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Frank.Identity.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure;
 

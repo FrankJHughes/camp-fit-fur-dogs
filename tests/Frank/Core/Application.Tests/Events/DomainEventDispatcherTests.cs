@@ -1,7 +1,7 @@
 using Frank.Core.Application.Abstractions.DomainEvents;
 using Frank.Core.Application.DomainEvents;
-using Frank.Core.Domain;
 using Frank.Core.Application.Tests.Fakes;
+using Frank.Core.Domain;
 
 namespace Frank.Tests.Events;
 

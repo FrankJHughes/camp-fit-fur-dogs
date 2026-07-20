@@ -1,9 +1,9 @@
 using System.Reflection;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
-using Frank.Core.Application.Abstractions.Endpoints;
-using Frank.Core.Application.Abstractions.DomainEvents;
-using Frank.Core.Application.Abstractions.Exceptions;
 using Frank.Core.Application.Abstractions.Cqrs.Queries;
+using Frank.Core.Application.Abstractions.DomainEvents;
+using Frank.Core.Application.Abstractions.Endpoints;
+using Frank.Core.Application.Abstractions.Exceptions;
 using Frank.Core.Application.Registration;
 
 namespace Frank.Core.Application.Tests.Registration;

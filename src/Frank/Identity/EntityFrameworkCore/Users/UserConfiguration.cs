@@ -1,5 +1,5 @@
-using Frank.Identity.Domain.Users;
 using Frank.Core.EntityFrameworkCore.Configurations;
+using Frank.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

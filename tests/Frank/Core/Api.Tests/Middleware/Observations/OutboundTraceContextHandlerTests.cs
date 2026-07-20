@@ -1,7 +1,7 @@
 #nullable enable
 using System.Net;
-using Frank.Core.Application.Abstractions.Observations;
 using Frank.Core.Api.Middleware.Observations;
+using Frank.Core.Application.Abstractions.Observations;
 
 namespace Frank.Core.Api.Tests.Middleware.Observations;
 

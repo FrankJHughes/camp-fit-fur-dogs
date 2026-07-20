@@ -1,15 +1,14 @@
-using Frank.Core.Application.Abstractions.Sessions.Oidc;
 using Frank.Core.Application.Abstractions.Endpoints;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
+using Frank.Core.Application.Abstractions.Sessions.Oidc;
 using Frank.Core.Domain.Exceptions;
-
-using Microsoft.AspNetCore.Builder;
-using Frank.Identity.Application.Abstractions.Callback.Save;
-using CallbackSaveContextBuilderRequest = Frank.Identity.Application.Abstractions.Callback.Save.CallbackSaveContextBuilderRequest;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
+using Frank.Identity.Application.Abstractions.Callback.Save;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Hosting;
+using CallbackSaveContextBuilderRequest = Frank.Identity.Application.Abstractions.Callback.Save.CallbackSaveContextBuilderRequest;
 
 namespace Frank.Identity.Api.Endpoints;
 

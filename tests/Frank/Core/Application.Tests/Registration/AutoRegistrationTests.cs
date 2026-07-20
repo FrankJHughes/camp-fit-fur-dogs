@@ -1,10 +1,9 @@
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
-using Frank.Core.Application.Abstractions.DomainEvents;
 using Frank.Core.Application.Abstractions.Cqrs.Queries;
+using Frank.Core.Application.Abstractions.DomainEvents;
 using Frank.Core.Application.Cqrs.Commands;
-using Frank.Core.Application.DomainEvents;
 using Frank.Core.Application.Cqrs.Queries;
-
+using Frank.Core.Application.DomainEvents;
 using Frank.TestUtilities.ValidServices;
 using Microsoft.Extensions.DependencyInjection;
 

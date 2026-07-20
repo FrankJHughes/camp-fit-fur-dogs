@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Frank.Core.Application.Abstractions.ImmutableContexts;
+using Frank.Core.Application.Tests.Fakes.Application.Authentication.Callback.Steps;
 using Frank.Identity.Application.Abstractions.Callback.Save;
 using Frank.Identity.Application.Callback.Save;
-using Frank.Core.Application.Tests.Fakes.Application.Authentication.Callback.Steps;
 using Frank.TestUtilities.Fakes.Authentication.Callback;
 using Frank.TestUtilities.Fakes.Observability;
 

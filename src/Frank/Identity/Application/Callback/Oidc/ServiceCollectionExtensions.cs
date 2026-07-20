@@ -8,7 +8,7 @@ namespace Frank.Identity.Application.Callback.Oidc;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankIdentityCallbackOidc(this IServiceCollection services)
+    public static IServiceCollection AddFrankIdentityApplicationCallbackOidc(this IServiceCollection services)
     {
         services
             .AddOptions<OidcCallbackSettings>()

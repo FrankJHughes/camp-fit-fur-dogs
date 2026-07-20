@@ -1,6 +1,6 @@
-using Frank.Core.Application.Abstractions.Startup;
-using Frank.Core.Api.Startup;
 using CampFitFurDogs.Api.StartupModules;
+using Frank.Core.Api.Startup;
+using Frank.Core.Application.Abstractions.Startup;
 
 namespace CampFitFurDogs.Api.Helpers;
 

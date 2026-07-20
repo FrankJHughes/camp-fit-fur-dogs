@@ -1,5 +1,5 @@
-using Frank.Core.Api.Middleware.Cors;
 using CampFitFurDogs.TestUtilities.Fakes;
+using Frank.Core.Api.Middleware.Cors;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

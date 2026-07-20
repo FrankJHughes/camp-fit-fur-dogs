@@ -2,14 +2,14 @@ using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Domain.Exceptions;
 using Frank.Identity.Api.Abstractions.Endpoints;
+using Frank.Identity.Application.Abstractions.Sessions;
 using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
 using Frank.Identity.Application.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
-using Frank.Identity.Application.Abstractions.Sessions;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Frank.Identity.Api.Endpoints;
 

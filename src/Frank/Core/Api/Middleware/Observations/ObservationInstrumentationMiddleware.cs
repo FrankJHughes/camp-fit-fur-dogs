@@ -1,11 +1,11 @@
 #nullable enable
 using System.Diagnostics;
 using Frank.Core.Application.Abstractions.Observations;
+using Frank.Core.Infrastructure.Observations;
+using Frank.Identity.Application.Abstractions.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Frank.Core.Infrastructure.Observations;
-using Frank.Identity.Application.Abstractions.Users;
 
 namespace Frank.Core.Api.Middleware.Observations;
 

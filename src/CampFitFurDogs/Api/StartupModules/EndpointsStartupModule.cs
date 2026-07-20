@@ -1,6 +1,6 @@
 using FluentValidation;
-using Frank.Core.Application.Abstractions.Startup;
 using Frank.Core.Api.Endpoints;
+using Frank.Core.Application.Abstractions.Startup;
 using Frank.Identity.Api.Endpoints;
 
 

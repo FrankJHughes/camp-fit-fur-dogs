@@ -1,7 +1,7 @@
 using Frank.Core.Application.Abstractions.ImmutableContexts;
 using Frank.Core.Application.Abstractions.Observations;
-using Frank.Identity.Application.Abstractions.Callback.Oidc;
 using Frank.Core.Application.ImmutableContexts;
+using Frank.Identity.Application.Abstractions.Callback.Oidc;
 
 namespace Frank.Identity.Application.Callback.Oidc;
 
