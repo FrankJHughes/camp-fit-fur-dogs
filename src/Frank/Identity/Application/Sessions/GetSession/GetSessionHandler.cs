@@ -11,7 +11,7 @@ public sealed class GetSessionByIdHandler(IGetSessionReader reader)
         GetSessionQuery query, CancellationToken ct)
     {
 
-        var result = await reader.GetSessionAsync(query.TokenHash, ct);
+        var result = await reader.ReadAsync(query.TokenHash, ct);
 
         if (result is null)
         {

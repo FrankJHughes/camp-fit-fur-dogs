@@ -29,7 +29,7 @@ public sealed class IdentityResolver : IIdentityResolver
         // Command validator will validate identity-source semantics
         // Request validator will validate syntactic rules
 
-        var existing = await _reader.GetByExternalIdAsync(oidcCallbackResult.SubjectId, cancellationToken);
+        var existing = await _reader.ReadAsync(oidcCallbackResult.SubjectId, cancellationToken);
         if (existing is not null)
             return existing.Id;
 

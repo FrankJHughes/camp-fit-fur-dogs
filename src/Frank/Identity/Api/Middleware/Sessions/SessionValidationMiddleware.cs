@@ -57,7 +57,7 @@ public sealed class SessionValidationMiddleware
         }
 
         // 3. Load session by token hash
-        var session = await getSessionReader.GetSessionAsync(tokenHash, context.RequestAborted);
+        var session = await getSessionReader.ReadAsync(tokenHash, context.RequestAborted);
 
         if (session is null)
         {
@@ -75,7 +75,7 @@ public sealed class SessionValidationMiddleware
         }
 
 
-        var user = await getUserReader.GetByIdAsync(session.OwnerId, context.RequestAborted);
+        var user = await getUserReader.ReadAsync(session.OwnerId, context.RequestAborted);
         if (user is null)
         {
             context.Response.Cookies.Delete("session");

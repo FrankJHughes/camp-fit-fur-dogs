@@ -14,7 +14,7 @@ public sealed class GetUserByIdReader : IGetUserByIdReader
         _db = db;
     }
 
-    public Task<GetUserByIdResponse?> GetByIdAsync(
+    public Task<GetUserByIdResponse?> ReadAsync(
         Guid userId,
         CancellationToken ct)
     {

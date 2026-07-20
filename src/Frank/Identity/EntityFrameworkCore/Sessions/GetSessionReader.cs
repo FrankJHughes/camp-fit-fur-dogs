@@ -20,7 +20,7 @@ public sealed class GetSessionReader : IGetSessionReader
         _ttl = sessionOptions.CurrentValue.Ttl;
     }
 
-    public async Task<GetSessionResponse?> GetSessionAsync(
+    public async Task<GetSessionResponse?> ReadAsync(
         string tokenHash, CancellationToken ct)
     {
         var session = await _db.Set<Session>()

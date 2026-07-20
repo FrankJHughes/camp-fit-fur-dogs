@@ -17,7 +17,7 @@ public sealed class IdentityResolverTests
         public string? ReceivedExternalId { get; private set; }
         public GetUserByExternalIdResponse? Returned { get; set; }
 
-        public Task<GetUserByExternalIdResponse?> GetByExternalIdAsync(
+        public Task<GetUserByExternalIdResponse?> ReadAsync(
             string externalId,
             CancellationToken ct)
         {

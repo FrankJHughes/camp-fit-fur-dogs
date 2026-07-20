@@ -14,7 +14,7 @@ public sealed class GetUserByExternalIdReader : IGetUserByExternalIdReader
         _db = db;
     }
 
-    public Task<GetUserByExternalIdResponse?> GetByExternalIdAsync(
+    public Task<GetUserByExternalIdResponse?> ReadAsync(
         string externalId,
         CancellationToken ct)
     {
