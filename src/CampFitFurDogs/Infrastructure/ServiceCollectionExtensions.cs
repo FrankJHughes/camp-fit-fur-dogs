@@ -7,6 +7,7 @@ using Frank.Core.Infrastructure.EnvironmentVariables;
 using Frank.Core.Infrastructure.Time;
 using Frank.Identity.EntityFrameworkCore;
 using Frank.Identity.EntityFrameworkCore.UnitOfWork;
+using Frank.Identity.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +26,10 @@ public static class ServiceCollectionExtensions
 
             .AddFrankIdentityEntityFrmeworkCore(configuration)
 
-            .AddFrankEnvironment()
-            .AddFrankTime()
+            .AddFrankIdentityInfrastructure()
+
+            .AddFrankInfrastructureEnvironment()
+            .AddFrankInfrastructureTime()
 
 
             .AddSingleton<IAuditLogger, AuditLogger>()

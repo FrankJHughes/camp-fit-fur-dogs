@@ -5,7 +5,7 @@ namespace Frank.Core.Infrastructure.Time;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankTime(this IServiceCollection services)
+    public static IServiceCollection AddFrankInfrastructureTime(this IServiceCollection services)
     {
         services.AddScoped<IClock, SystemClock>();
         return services;

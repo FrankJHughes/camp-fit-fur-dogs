@@ -16,7 +16,6 @@ public static class Startup
             new AuthorizationStartupModule(),
             new CorsStartupModule(),
             new ExceptionsStartupModule(),
-            new IdentityStartupModule(),
             new InfrastructureStartupModule(),
             new LoggingStartupModule(),
             new ObservationsStartupModule(),

@@ -5,7 +5,7 @@ namespace Frank.Identity.Infrastructure.Auth0;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankIdentityAuth0Infrastructure(this IServiceCollection services)
+    public static IServiceCollection AddFrankIdentityInfrastructureAuth0(this IServiceCollection services)
     {
         return services
             .AddTransient<IOidcUserInfoClient, Auth0OidcUserInfoClient>()

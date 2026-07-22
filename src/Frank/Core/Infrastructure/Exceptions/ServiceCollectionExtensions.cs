@@ -10,12 +10,12 @@ public static class ServiceCollectionExtensions
     private static bool HasRegistrationAttribute(TypeInfo iface) =>
     iface.GetCustomAttributes(typeof(RegistrationAttribute), inherit: true).Length != 0;
 
-    public static IServiceCollection AddFrankException(this IServiceCollection services)
+    public static IServiceCollection AddFrankInfrastructureExceptions(this IServiceCollection services)
     {
-        return AddFrankException(services, Array.Empty<Assembly>());
+        return AddFrankInfrastructureExceptions(services, Array.Empty<Assembly>());
     }
 
-    public static IServiceCollection AddFrankException(
+    public static IServiceCollection AddFrankInfrastructureExceptions(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
         Action<DiscoveryOptions>? configure = null)

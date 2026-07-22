@@ -19,7 +19,7 @@ public sealed class ExceptionsStartupModule : IStartupModule
             typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly
         };
 
-        services.AddFrankException(assemblies);
+        services.AddFrankInfrastructureExceptions(assemblies);
     }
 
     public void Use(WebApplication app)

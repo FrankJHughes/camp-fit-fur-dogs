@@ -57,35 +57,6 @@ public class AuthenticationStartupModule : IStartupModule
 
             string callbackUrl = CalculateCallbackUrl(config)
                 ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl or incorrect ASPNETCORE_URLS");
-
-            // auth.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-            // {
-            //     options.Authority = authority;
-            //     options.ClientId = clientId;
-            //     options.ClientSecret = clientSecret;
-
-            //     options.CallbackPath = new PathString(new Uri(callbackUrl).AbsolutePath);
-            //     options.ResponseType = "code";
-            //     options.SaveTokens = true;
-
-            //     options.Scope.Clear();
-            //     options.Scope.Add("openid");
-            //     options.Scope.Add("profile");
-            //     options.Scope.Add("email");
-
-            //     //
-            //     // FIX: Only redirect to OIDC when explicitly invoked.
-            //     //
-            //     options.Events.OnRedirectToIdentityProvider = context =>
-            //     {
-            //         var req = context.Request;
-
-            //         context.ProtocolMessage.RedirectUri =
-            //             $"{req.Scheme}://{req.Host}/api/identity/callback";
-
-            //         return Task.CompletedTask;
-            //     };
-            // });
         }
     }
 
