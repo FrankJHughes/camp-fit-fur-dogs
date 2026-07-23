@@ -8,7 +8,7 @@ namespace CampFitFurDogs.Api.Tests.Startup;
 public class CorsStartupModuleTests
 {
     private const string FrontendConfigKey = "Frontend:BaseUrl";
-    private const string OidcConfigKey = "Authentication:Callback:Oidc:Authority";
+    private const string OidcConfigKey = "Identity:Oidc:Authority";
 
     // ------------------------------------------------------------
     // ORIGIN CONFIGURATION

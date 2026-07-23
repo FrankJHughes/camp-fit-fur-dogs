@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.Time;
+using Frank.Core.Application.Abstractions.Clock;
 
 namespace Frank.TestUtilities.Fakes;
 

@@ -12,7 +12,7 @@ public sealed class AutoRegistration_NegativeTests
 
         var services = new ServiceCollection();
 
-        Action act = () => services.AddFrankCqrsCommands([
+        Action act = () => services.AddFrankCoreApplicationCqrsCommands([
             typeof(Frank.TestUtilities.InvalidServices.AssemblyMarker).Assembly
         ]);
 

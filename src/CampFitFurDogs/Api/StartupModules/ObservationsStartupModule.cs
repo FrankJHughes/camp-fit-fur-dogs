@@ -1,5 +1,6 @@
 using Frank.Core.Api.Middleware.Observations;
 using Frank.Core.Application.Abstractions.Startup;
+using Frank.Identity.Api.Middleware.Observations;
 
 namespace CampFitFurDogs.Api.StartupModules;
 
@@ -9,11 +10,13 @@ public sealed class ObservationsStartupModule : IStartupModule
     public void Add(WebApplicationBuilder builder)
     {
         var services = builder.Services;
-        services.AddFrankObservations();
+        services.AddFrankCoreApiObservations();
     }
 
     public void Use(WebApplication app)
     {
-        app.UseFrankObservations();
+        app
+            .UseFrankCoreApiObservations()
+            .UseFrankIdentityApiMiddlewareObservations();
     }
 }

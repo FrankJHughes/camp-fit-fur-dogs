@@ -1,7 +1,7 @@
 
-using Frank.Core.Application.Abstractions.Time;
+using Frank.Core.Application.Abstractions.Clock;
 
-namespace Frank.Core.Infrastructure.Time;
+namespace Frank.Core.Infrastructure.Clock;
 
 public sealed class SystemClock : IClock
 {

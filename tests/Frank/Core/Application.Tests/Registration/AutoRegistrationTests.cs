@@ -16,7 +16,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankCqrsCommands(
+        services.AddFrankCoreApplicationCqrsCommands(
             [typeof(FakeCommand).Assembly]
         );
 
@@ -31,7 +31,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankCqrsQueries(
+        services.AddFrankCoreApplicationCqrsQueries(
             [typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly]
         );
 
@@ -47,8 +47,8 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankValidators(
-            new[] { typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly }
+        services.AddValidatorsFromAssemblies(
+            [typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly]
         );
 
         using var provider = services.BuildServiceProvider();
@@ -63,7 +63,7 @@ public sealed class AutoRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankDomainEvents([
+        services.AddFrankCoreApplicationDomainEvents([
             typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly
         ]);
 

@@ -28,7 +28,7 @@ public class AuthenticationStartupModule : IStartupModule
         var env = builder.Environment;
         var config = builder.Configuration;
 
-        var oidcDisabled = config.GetValue<bool>("Authentication:Callback:Oidc:Disabled");
+        var oidcDisabled = config.GetValue<bool>("Identity:Oidc:Disabled");
 
         var auth = services.AddAuthentication(options =>
         {
@@ -43,26 +43,26 @@ public class AuthenticationStartupModule : IStartupModule
         //
         if (!oidcDisabled)
         {
-            var authority = config["Authentication:Callback:Oidc:Authority"]
-                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:Authority");
+            var authority = config["Identity:Oidc:Authority"]
+                ?? throw new InvalidOperationException("Missing Identity:Oidc:Authority");
 
-            var clientId = config["Authentication:Callback:Oidc:ClientId"]
-                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientId");
+            var clientId = config["Identity:Oidc:ClientId"]
+                ?? throw new InvalidOperationException("Missing Identity:Oidc:ClientId");
 
-            var clientSecret = config["Authentication:Callback:Oidc:ClientSecret"]
-                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:ClientSecret");
+            var clientSecret = config["Identity:Oidc:ClientSecret"]
+                ?? throw new InvalidOperationException("Missing Identity:Oidc:ClientSecret");
 
-            var postLoginRedirectUrl = config["Authentication:Callback:PostLoginRedirectUrl"]
-                ?? throw new InvalidOperationException("Missing Authentication:Callback:PostLoginRedirectUrl");
+            var postLoginRedirectUrl = config["Identity:Callback:PostLoginRedirectUrl"]
+                ?? throw new InvalidOperationException("Missing Identity:Callback:PostLoginRedirectUrl");
 
             string callbackUrl = CalculateCallbackUrl(config)
-                ?? throw new InvalidOperationException("Missing Authentication:Callback:Oidc:CallbackUrl or incorrect ASPNETCORE_URLS");
+                ?? throw new InvalidOperationException("Missing Identity:Oidc:CallbackUrl or incorrect ASPNETCORE_URLS");
         }
     }
 
     private static string CalculateCallbackUrl(ConfigurationManager config)
     {
-        var callbackUrl = config["Authentication:Callback:Oidc:CallbackUrl"];
+        var callbackUrl = config["Identity:Oidc:CallbackUrl"];
 
         if (string.IsNullOrWhiteSpace(callbackUrl))
         {

@@ -17,8 +17,8 @@ public class AutoRegister_RegistrationTests
     public void All_AutoRegistered_Interfaces_Must_Have_Closed_Registrations()
     {
         var services = new ServiceCollection();
-        services.AddFrankCqrsCommands(Assemblies);
-        services.AddFrankCqrsQueries(Assemblies);
+        services.AddFrankCoreApplicationCqrsCommands(Assemblies);
+        services.AddFrankCoreApplicationCqrsQueries(Assemblies);
 
         var provider = services.BuildServiceProvider();
 

@@ -15,7 +15,8 @@ public class AutoRegister_MinMaxTests
     public void AutoRegister_MinMax_Rules_Must_Be_Enforced()
     {
         var services = new ServiceCollection();
-        services.AddFrankValidators(Assemblies);
+        services.AddValidatorsFromAssemblies(
+            Assemblies);
 
         var provider = services.BuildServiceProvider();
 

@@ -13,7 +13,7 @@ public class ListDogsByCurrentUserEndpoint : IEndpoint
     {
         _ = app.MapGet("/api/dogs", async (
             [FromServices] ICurrentUser currentUser,
-            IQueryDispatcher dispatcher) =>
+            [FromServices] IQueryDispatcher dispatcher) =>
         {
             var query = new ListDogsByOwnerQuery(currentUser.Id!.Value);
             var queryResponse = await dispatcher.DispatchAsync(query, CancellationToken.None);

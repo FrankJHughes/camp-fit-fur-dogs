@@ -17,11 +17,11 @@ public static class ServiceCollectionExtensions
         return services
             .AddScoped<IUserResolver, UserResolver>()
 
-            .AddFrankCqrsCommands([
+            .AddFrankCoreApplicationCqrsCommands([
                 typeof(AssemblyMarker).Assembly],
                 discoveryOptions => updateOptions(discoveryOptions))
 
-            .AddFrankCqrsQueries([
+            .AddFrankCoreApplicationCqrsQueries([
                 typeof(AssemblyMarker).Assembly],
                 discoveryOptions => updateOptions(discoveryOptions));
     }

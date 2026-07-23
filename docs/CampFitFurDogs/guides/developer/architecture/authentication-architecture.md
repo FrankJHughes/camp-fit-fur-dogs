@@ -2,8 +2,8 @@
 
 This guide documents the current authentication architecture implemented across:
 
-- US‑110 — Authentication: Owner Login (OIDC)  
-- US‑111 — Authentication: Session Management  
+- US‑110 — Identity: Owner Login (OIDC)  
+- US‑111 — Identity: Session Management  
 - US‑184 — De‑feature Local Identity  
 
 It describes how the system performs OIDC login, executes the authentication callback, resolves identity, creates sessions, and issues cookies — using the exclusive OIDC authentication model and the three‑layer authentication callback architecture:

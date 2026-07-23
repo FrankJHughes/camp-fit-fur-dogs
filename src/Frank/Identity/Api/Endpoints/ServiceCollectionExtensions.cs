@@ -1,5 +1,5 @@
 using Frank.Core.Api.Endpoints;
-using Frank.Identity.Application.Settings;
+using Frank.Identity.Api.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Identity.Api.Endpoints;
@@ -15,6 +15,8 @@ public static class ServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart(); // Dependents: GetLoginUrlEndpoint,LogoutEndpoint
 
-        return services.AddFrankEndpoints([typeof(Frank.Identity.Api.AssemblyMarker).Assembly]);
+        return services.AddFrankCoreApiEndpoints([
+            typeof(AssemblyMarker).Assembly
+        ]);
     }
 }

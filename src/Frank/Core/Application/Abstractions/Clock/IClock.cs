@@ -1,4 +1,4 @@
-namespace Frank.Core.Application.Abstractions.Time;
+namespace Frank.Core.Application.Abstractions.Clock;
 
 public interface IClock
 {

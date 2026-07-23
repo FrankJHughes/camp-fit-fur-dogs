@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Frank.Identity.Application.Abstractions.Oidc;
 using Frank.Identity.Application.Callback.Oidc;
-using Frank.Identity.Application.Settings;
+using Frank.Identity.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
 namespace Frank.Identity.Infrastructure.Auth0;
@@ -9,9 +9,9 @@ namespace Frank.Identity.Infrastructure.Auth0;
 public sealed class Auth0OidcTokenClient : IOidcTokenClient
 {
     private readonly HttpClient _http;
-    private readonly OidcCallbackSettings _options;
+    private readonly OidcSettings _options;
 
-    public Auth0OidcTokenClient(HttpClient http, IOptionsMonitor<OidcCallbackSettings> optionsMonitor)
+    public Auth0OidcTokenClient(HttpClient http, IOptionsMonitor<OidcSettings> optionsMonitor)
     {
         _http = http;
         _options = optionsMonitor.CurrentValue;

@@ -1,61 +1,40 @@
+using Frank.Core.Application.Abstractions.Clock;
 using Microsoft.Extensions.Hosting;
 
 namespace Frank.Core.Infrastructure.Observations;
 
-/// <summary>
-/// Observability context for system-scope operations (startup, discovery,
-/// background jobs, domain pipelines, context builders, etc.).
-/// </summary>
 public sealed class SystemObservationContext : ObservationContextBase
 {
-    /// <summary>
-    /// Canonical constructor.
-    /// </summary>
-    public SystemObservationContext(
-        string correlationId,
-        string channel,
-        string agent,
-        string environmentName,
-        DateTimeOffset timestamp,
-        IReadOnlyDictionary<string, object?> metadata)
-        : base(correlationId, channel, agent, environmentName, timestamp, metadata)
-    {
-    }
-
-    /// <summary>
-    /// Convenience constructor using IHostEnvironment. Timestamp defaults to UtcNow.
-    /// </summary>
     public SystemObservationContext(
         string correlationId,
         string channel,
         string agent,
         IHostEnvironment environment,
+        IClock clock,
         IReadOnlyDictionary<string, object?> metadata)
         : base(
             correlationId,
             channel,
             agent,
             environment.EnvironmentName,
-            DateTimeOffset.UtcNow,
+            clock.UtcNow,
             metadata)
     {
     }
 
-    /// <summary>
-    /// Factory helper for typical system-scope usage.
-    /// </summary>
     public static SystemObservationContext Create(
         string channel,
         string agent,
         IHostEnvironment environment,
+        IClock clock,
         IReadOnlyDictionary<string, object?>? metadata = null)
     {
         return new SystemObservationContext(
             correlationId: Guid.NewGuid().ToString("N"),
             channel: channel,
             agent: agent,
-            environmentName: environment.EnvironmentName,
-            timestamp: DateTimeOffset.UtcNow,
+            environment: environment,
+            clock: clock,
             metadata: metadata ?? new Dictionary<string, object?>());
     }
 }

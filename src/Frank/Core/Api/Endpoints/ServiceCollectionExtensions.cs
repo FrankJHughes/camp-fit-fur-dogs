@@ -7,11 +7,16 @@ namespace Frank.Core.Api.Endpoints;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static IServiceCollection AddFrankEndpoints(
+    public static IServiceCollection AddFrankCoreApiEndpoints(
         this IServiceCollection services,
-        IEnumerable<Assembly> assemblies,
+        IEnumerable<Assembly>? assembliesToSearch = null,
         Action<DiscoveryOptions>? configure = null)
     {
+        if (assembliesToSearch is null || !assembliesToSearch.Any())
+        {
+            return services;
+        }
+
         var options = new DiscoveryOptions();
 
         //
@@ -31,12 +36,14 @@ public static class EndpointServiceCollectionExtensions
 
         configure?.Invoke(options);
 
+        IEnumerable<Assembly> assemblies = [
+                typeof(Frank.Core.Application.AssemblyMarker).Assembly,
+                .. assembliesToSearch
+        ];
+
         Orchestrator.Orchestrate(
             services,
-            [
-                typeof(Frank.Core.Application.AssemblyMarker).Assembly,
-                .. assemblies
-            ],
+            assemblies,
             options);
 
         return services;

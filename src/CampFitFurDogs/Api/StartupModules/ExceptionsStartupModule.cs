@@ -24,6 +24,6 @@ public sealed class ExceptionsStartupModule : IStartupModule
 
     public void Use(WebApplication app)
     {
-        app.UseFrankExceptions();
+        app.UseFrankCoreApiExceptions();
     }
 }

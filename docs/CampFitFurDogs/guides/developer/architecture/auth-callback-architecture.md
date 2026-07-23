@@ -252,7 +252,7 @@ When modifying the callback flow:
 - The Domain layer enforces invariants  
 - The endpoint issues the session cookie and redirects the user  
 
-This architecture keeps authentication:
+This architecture keeps identity:
 
 - deterministic  
 - testable  

@@ -1,7 +1,7 @@
 using Frank.Core.Application.Abstractions.Audit;
 using Microsoft.Extensions.Logging;
 
-namespace Frank.Core.Infrastructure.Audit;
+namespace Frank.Core.Infrastructure.AuditLogging;
 
 public class AuditLogger : IAuditLogger
 {

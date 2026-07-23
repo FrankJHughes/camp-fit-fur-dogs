@@ -18,8 +18,8 @@ public class AutoRegister_ConcreteTypeTests
     public void Concrete_Types_Must_Be_Registered_When_Requested()
     {
         var services = new ServiceCollection();
-        services.AddFrankCqrsCommands(Assemblies);
-        services.AddFrankCqrsQueries(Assemblies);
+        services.AddFrankCoreApplicationCqrsCommands(Assemblies);
+        services.AddFrankCoreApplicationCqrsQueries(Assemblies);
 
         var descriptors = services.ToList();
         var offenders = new List<string>();

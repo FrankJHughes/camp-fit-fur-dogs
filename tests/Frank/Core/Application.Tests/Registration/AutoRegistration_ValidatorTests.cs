@@ -9,8 +9,8 @@ public sealed class AutoRegistration_ValidatorTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankValidators(
-            new[] { typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly }
+        services.AddValidatorsFromAssemblies(
+            [typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly]
         );
 
         using var provider = services.BuildServiceProvider();
@@ -25,8 +25,8 @@ public sealed class AutoRegistration_ValidatorTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankValidators(
-            new[] { typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly }
+        services.AddValidatorsFromAssemblies(
+            [typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly]
         );
 
         using var provider = services.BuildServiceProvider();

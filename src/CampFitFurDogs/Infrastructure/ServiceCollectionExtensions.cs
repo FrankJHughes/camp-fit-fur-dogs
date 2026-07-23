@@ -1,14 +1,11 @@
 using CampFitFurDogs.Infrastructure.DbContexts;
 using CampFitFurDogs.Infrastructure.Dogs;
-using CampFitFurDogs.Infrastructure.Persistence;
-using Frank.Core.Application.Abstractions.Audit;
-using Frank.Core.Infrastructure.Audit;
+using Frank.Core.Infrastructure.AuditLogging;
 using Frank.Core.Infrastructure.EnvironmentVariables;
-using Frank.Core.Infrastructure.Time;
+using Frank.Core.Infrastructure.Clock;
 using Frank.Identity.EntityFrameworkCore;
 using Frank.Identity.EntityFrameworkCore.UnitOfWork;
 using Frank.Identity.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,11 +25,11 @@ public static class ServiceCollectionExtensions
 
             .AddFrankIdentityInfrastructure()
 
-            .AddFrankInfrastructureEnvironment()
-            .AddFrankInfrastructureTime()
+            .AddFrankCoreInfrastructureEnvironmentVariables()
 
+            .AddFrankCoreInfrastructureClock()
 
-            .AddSingleton<IAuditLogger, AuditLogger>()
+            .AddFrankCoreInfrastructureAuditLogging()
 
             .AddInfrastructureDbContexts(configuration)
 

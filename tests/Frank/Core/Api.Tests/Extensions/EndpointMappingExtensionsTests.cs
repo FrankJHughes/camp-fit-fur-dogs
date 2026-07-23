@@ -14,7 +14,7 @@ public sealed class EndpointMappingExtensionsTests
 
         var services = new ServiceCollection();
 
-        services.AddFrankEndpoints([
+        services.AddFrankCoreApiEndpoints([
             typeof(FakeEndpoint).Assembly
         ]);
 
@@ -23,7 +23,7 @@ public sealed class EndpointMappingExtensionsTests
         var routeBuilder = new FakeRouteBuilder(provider);
 
         // Act
-        routeBuilder.MapFrankEndpoints();
+        routeBuilder.MapFrankCoreApiEndpoints();
 
         // Assert
         FakeEndpoint.WasMapped.Should().BeTrue();

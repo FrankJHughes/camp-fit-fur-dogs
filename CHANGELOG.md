@@ -27,8 +27,8 @@ All notable changes to this project will be documented in this file.
 | Story ID | Title | Notes |
 |----------|--------|--------|
 | US‑126 | Create Account Page | Full Create Account flow, validation, UX, and success path |
-| US‑110 | Authentication: Owner Login | External Auth0 login initiation and identity mapping |
-| US‑111 | Authentication: Session Management | Secure session cookies, persistence, and validation |
+| US‑110 | Identity: Owner Login | External Auth0 login initiation and identity mapping |
+| US‑111 | Identity: Session Management | Secure session cookies, persistence, and validation |
 | US‑135 | CORS Policy | Hardened CORS rules, explicit allow‑lists, environment‑aware origins |
 | US‑134 | Security Headers | Security‑header protections applied across all API responses |
 

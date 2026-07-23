@@ -3,7 +3,6 @@ using CampFitFurDogs.Application.Abstractions.Dogs;
 using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Dogs.RegisterDog;
 using CampFitFurDogs.Application.Tests.Fakes;
-using Frank.Core.Application;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Cqrs.Commands;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +17,7 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddFrankCqrsCommands([
+        services.AddFrankCoreApplicationCqrsCommands([
             typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly
         ]);
 
@@ -43,7 +42,7 @@ public partial class AutoRegistrationTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddFrankValidators(
+        services.AddValidatorsFromAssemblies(
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
         // Provide required fakes so handlers/validators can be constructed

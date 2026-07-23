@@ -430,7 +430,6 @@
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Identity.Application": "[1.0.0, )",
           "Microsoft.Extensions.Configuration": "[10.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.0.0, )",
           "Microsoft.Extensions.Options.DataAnnotations": "[10.0.0, )",
           "Scrutor": "[7.0.0, )"
@@ -459,7 +458,6 @@
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "[10.0.0, )",
           "Microsoft.Extensions.Configuration.FileExtensions": "[10.0.0, )",
           "Microsoft.Extensions.Configuration.Json": "[10.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )",
           "Microsoft.Extensions.Http": "[10.0.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
         }
@@ -515,7 +513,9 @@
           "Frank.Core.Api": "[1.0.0, )",
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Core.Domain": "[1.0.0, )",
-          "Frank.Identity.Application": "[1.0.0, )"
+          "Frank.Identity.Application": "[1.0.0, )",
+          "Frank.Identity.EntityFrameworkCore": "[1.0.0, )",
+          "Frank.Identity.Infrastructure": "[1.0.0, )"
         }
       },
       "frank.identity.application": {
@@ -548,8 +548,7 @@
         "type": "Project",
         "dependencies": {
           "Frank.Core.Application": "[1.0.0, )",
-          "Frank.Identity.Application": "[1.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )"
+          "Frank.Identity.Application": "[1.0.0, )"
         }
       },
       "BCrypt.Net-Next": {

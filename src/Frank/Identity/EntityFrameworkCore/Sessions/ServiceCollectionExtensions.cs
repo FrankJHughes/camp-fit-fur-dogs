@@ -1,7 +1,7 @@
 using Frank.Identity.Application.Abstractions.Sessions.CreateSession;
 using Frank.Identity.Application.Abstractions.Sessions.GetSession;
 using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
-using Frank.Identity.Application.Settings;
+using Frank.Identity.EntityFrameworkCore.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Identity.EntityFrameworkCore.Sessions;
@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddOptions<SessionSettings>()
-            .BindConfiguration("Authentication:Session")
+            .BindConfiguration("Identity:Session")
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

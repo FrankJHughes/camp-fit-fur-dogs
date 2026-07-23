@@ -1,4 +1,4 @@
-namespace Frank.Identity.Application.Settings;
+namespace Frank.Identity.Api.Settings;
 
 public class FrontendSettings
 {

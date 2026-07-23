@@ -11,7 +11,7 @@ public sealed class AutoRegistration_DomainEventHandlerTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankDomainEvents([
+        services.AddFrankCoreApplicationDomainEvents([
             typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly
         ]);
 
@@ -27,8 +27,8 @@ public sealed class AutoRegistration_DomainEventHandlerTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankValidators(
-            new[] { typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly }
+        services.AddValidatorsFromAssemblies(
+            [typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly]
         );
 
         using var provider = services.BuildServiceProvider();

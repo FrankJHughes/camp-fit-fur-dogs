@@ -1,4 +1,4 @@
-using Frank.Core.Api.Middleware.Authorization;
+using Frank.Identity.Api.Middleware.Authorization;
 using Frank.Core.Application.Abstractions.Startup;
 
 namespace CampFitFurDogs.Api.StartupModules;
@@ -9,6 +9,7 @@ public class AuthorizationStartupModule : IStartupModule
     public void Add(WebApplicationBuilder builder)
     {
         var services = builder.Services;
+
         var authorizationBuilder = services.AddAuthorizationBuilder();
 
         // Fallback policy: require authenticated user for all endpoints
@@ -24,6 +25,6 @@ public class AuthorizationStartupModule : IStartupModule
     public void Use(WebApplication app)
     {
         app.UseAuthorization();
-        app.UseOidcorization();
+        app.UseFrankCoreApiMiddlewareAuthorization();
     }
 }

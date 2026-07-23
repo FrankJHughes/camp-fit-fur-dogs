@@ -257,7 +257,7 @@ Provider selection rules:
 
 # 6. Authentication Architecture Governance
 
-Authentication:
+Identity:
 
 - Must be implemented in the API layer  
 - Must use Application layer abstractions  

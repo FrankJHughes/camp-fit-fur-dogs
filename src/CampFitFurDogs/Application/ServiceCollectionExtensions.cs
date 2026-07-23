@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
 
             .AddFrankIdentityApplication()
 
-            .AddFrankDomainEvents()
+            .AddFrankCoreApplicationDomainEvents()
 
             .AddApplicationDogs();
 

@@ -8,7 +8,7 @@ namespace CampFitFurDogs.Api.StartupModules;
 public sealed class CorsStartupModule : IStartupModule
 {
     private const string FrontendKey = "Frontend:BaseUrl";
-    private const string OidcAuthorityKey = "Authentication:Callback:Oidc:Authority";
+    private const string OidcAuthorityKey = "Identity:Oidc:Authority";
     private const string PreflightKey = "Cors:PreflightMaxAgeSeconds";
 
     private string? _frontendOrigin;
@@ -43,7 +43,7 @@ public sealed class CorsStartupModule : IStartupModule
     {
         app.UseRouting();
         app.UseCors();
-        app.UseOriginLogging();
+        app.UseFrankCoreApiOriginLogging();
     }
 
     private void ApplyDefaultPolicy(CorsPolicyBuilder policy)

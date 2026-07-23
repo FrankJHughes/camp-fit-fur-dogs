@@ -53,12 +53,12 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         {
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
-                ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:ClientSecret"] = "secret123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback",
-                ["Authentication:Callback:PostLoginRedirectUrl"] = "http://localhost:5173/",
-                ["Authentication:Callback:Oidc:Disabled"] = "false"
+                ["Identity:Oidc:Authority"] = "https://dev-fake.auth0.com",
+                ["Identity:Oidc:ClientId"] = "client123",
+                ["Identity:Oidc:ClientSecret"] = "secret123",
+                ["Identity:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback",
+                ["Identity:Callback:PostLoginRedirectUrl"] = "http://localhost:5173/",
+                ["Identity:Oidc:Disabled"] = "false"
             });
         });
 
@@ -88,9 +88,9 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         {
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Authentication:Callback:Oidc:Authority"] = "",
-                ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = ""
+                ["Identity:Oidc:Authority"] = "",
+                ["Identity:Oidc:ClientId"] = "",
+                ["Identity:Oidc:CallbackUrl"] = ""
             });
         });
 
@@ -109,9 +109,9 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         {
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Authentication:Callback:Oidc:Authority"] = "",
-                ["Authentication:Callback:Oidc:ClientId"] = "client123",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
+                ["Identity:Oidc:Authority"] = "",
+                ["Identity:Oidc:ClientId"] = "client123",
+                ["Identity:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
             });
         });
 
@@ -130,9 +130,9 @@ public class AuthLoginEndpointTests : IAsyncLifetime
         {
             cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Authentication:Callback:Oidc:Authority"] = "https://dev-fake.auth0.com",
-                ["Authentication:Callback:Oidc:ClientId"] = "",
-                ["Authentication:Callback:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
+                ["Identity:Oidc:Authority"] = "https://dev-fake.auth0.com",
+                ["Identity:Oidc:ClientId"] = "",
+                ["Identity:Oidc:CallbackUrl"] = "http://localhost/api/identity/callback"
             });
         });
 

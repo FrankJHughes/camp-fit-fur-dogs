@@ -10,17 +10,22 @@ public static class ServiceCollectionExtensions
     private static bool HasRegistrationAttribute(TypeInfo iface) =>
     iface.GetCustomAttributes(typeof(RegistrationAttribute), inherit: true).Length != 0;
 
-    public static IServiceCollection AddFrankInfrastructureExceptions(this IServiceCollection services)
+    public static IServiceCollection AddFrankCoreInfrastructureExceptions(this IServiceCollection services)
     {
         return AddFrankInfrastructureExceptions(services, Array.Empty<Assembly>());
     }
 
     public static IServiceCollection AddFrankInfrastructureExceptions(
         this IServiceCollection services,
-        IEnumerable<Assembly> assemblies,
+        IEnumerable<Assembly>? assembliesToSearch = null,
         Action<DiscoveryOptions>? configure = null)
     {
         services.AddSingleton<ExceptionHandlerRegistry>();
+
+        if (assembliesToSearch is null || !assembliesToSearch.Any())
+        {
+            return services;
+        }
 
         var options = new DiscoveryOptions();
 
@@ -48,9 +53,15 @@ public static class ServiceCollectionExtensions
         //
         // Unified discovery + registration
         //
+
+        IEnumerable<Assembly> assemblies = [
+            typeof(Frank.Core.Application.AssemblyMarker).Assembly,
+            .. assembliesToSearch
+        ];
+
         Orchestrator.Orchestrate(
             services,
-            [typeof(Frank.Core.Application.AssemblyMarker).Assembly, .. assemblies],
+            assemblies,
             options);
 
         return services;

@@ -569,8 +569,8 @@
       },
       "System.Security.Cryptography.Pkcs": {
         "type": "Transitive",
-        "resolved": "9.0.15",
-        "contentHash": "ZqPer8QiXxMHnXbgaJkWlD6kit8biD09lWmYP2NM+pfoaGwLneVCa4WnOVUJnAoZQrNKO/zryC68H2+G8xQbNA=="
+        "resolved": "9.0.18",
+        "contentHash": "NKMKhUdLGNZryY9GXXTF5dXyP6S37EYXhiA2JYvwshJbd4DRq07IOS9it8Opi9atadvv5rlNkD76Mio+5Oo2aQ=="
       },
       "xunit.abstractions": {
         "type": "Transitive",
@@ -629,7 +629,6 @@
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Identity.Application": "[1.0.0, )",
           "Microsoft.Extensions.Configuration": "[10.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.0.0, )",
           "Microsoft.Extensions.Options.DataAnnotations": "[10.0.0, )",
           "Scrutor": "[7.0.0, )"
@@ -658,7 +657,6 @@
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "[10.0.0, )",
           "Microsoft.Extensions.Configuration.FileExtensions": "[10.0.0, )",
           "Microsoft.Extensions.Configuration.Json": "[10.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )",
           "Microsoft.Extensions.Http": "[10.0.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
         }
@@ -732,7 +730,9 @@
           "Frank.Core.Api": "[1.0.0, )",
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Core.Domain": "[1.0.0, )",
-          "Frank.Identity.Application": "[1.0.0, )"
+          "Frank.Identity.Application": "[1.0.0, )",
+          "Frank.Identity.EntityFrameworkCore": "[1.0.0, )",
+          "Frank.Identity.Infrastructure": "[1.0.0, )"
         }
       },
       "frank.identity.application": {
@@ -765,8 +765,7 @@
         "type": "Project",
         "dependencies": {
           "Frank.Core.Application": "[1.0.0, )",
-          "Frank.Identity.Application": "[1.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )"
+          "Frank.Identity.Application": "[1.0.0, )"
         }
       },
       "frank.testing": {
@@ -778,7 +777,6 @@
           "Microsoft.AspNetCore.Authentication.Cookies": "[2.3.11, )",
           "Microsoft.AspNetCore.Mvc.Testing": "[10.0.0, )",
           "Microsoft.Extensions.Configuration.Abstractions": "[10.0.0, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.0.0, )",
           "Microsoft.Extensions.Hosting": "[10.0.0, )",
           "Testcontainers": "[4.11.0, )",
           "Testcontainers.PostgreSql": "[4.11.0, )"
@@ -1087,11 +1085,11 @@
       },
       "System.Security.Cryptography.Xml": {
         "type": "CentralTransitive",
-        "requested": "[9.0.15, )",
-        "resolved": "9.0.15",
-        "contentHash": "/DqMTgJ0lcxaLGNc5pHls1dCqQVbPRQwweTp79bwqw8T8+2V1NodLfAr8RlS8Q4W0qs5HzA6dcW2jHIQf1n95g==",
+        "requested": "[9.0.18, )",
+        "resolved": "9.0.18",
+        "contentHash": "UoE37brJoIJPMds6wqDaweVrORmdM3XDPGLRU01Mg6Koh3SjgogSfz4+zDsriaEluHMRCx/Qc7yeEw7F9QMcJA==",
         "dependencies": {
-          "System.Security.Cryptography.Pkcs": "9.0.15"
+          "System.Security.Cryptography.Pkcs": "9.0.18"
         }
       },
       "Testcontainers": {

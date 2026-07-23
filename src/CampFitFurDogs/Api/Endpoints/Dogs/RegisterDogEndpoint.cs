@@ -4,6 +4,7 @@ using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions.Users;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 
@@ -13,8 +14,8 @@ public class RegisterDogEndpoint : IEndpoint
     {
         app.MapPost("/api/dogs", async (
             RegisterDogEndpointRequest request,
-            ICurrentUser currentUser,
-            ICommandDispatcher dispatcher,
+            [FromServices] ICurrentUser currentUser,
+            [FromServices] ICommandDispatcher dispatcher,
             HttpContext httpContext) =>
         {
             Debug.WriteLine("IsAuthenticated = {Auth}", httpContext.User.Identity?.IsAuthenticated.ToString());

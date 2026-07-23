@@ -1,79 +1,49 @@
+using Frank.Core.Application.Abstractions.Clock;
 using Frank.Core.Application.Abstractions.Observations;
 using Microsoft.Extensions.Hosting;
 
 namespace Frank.Core.Infrastructure.Observations;
 
-/// <summary>
-/// Observability context for request-scope operations.
-/// Includes authenticated user identity when available.
-/// </summary>
 public sealed class RequestObservationContext : ObservationContextBase, IRequestObservationContext
 {
     public string? UserId { get; }
 
-    /// <summary>
-    /// Canonical constructor.
-    /// Mirrors UserId into Metadata["user.id"] when provided.
-    /// </summary>
-    public RequestObservationContext(
-        string? userId,
-        string correlationId,
-        string channel,
-        string agent,
-        string environmentName,
-        DateTimeOffset timestamp,
-        IReadOnlyDictionary<string, object?> metadata)
-        : base(
-            correlationId,
-            channel,
-            agent,
-            environmentName,
-            timestamp,
-            EnrichMetadata(userId, metadata))
-    {
-        UserId = userId;
-    }
-
-    /// <summary>
-    /// Convenience constructor using IHostEnvironment. Timestamp defaults to UtcNow.
-    /// </summary>
     public RequestObservationContext(
         string? userId,
         string correlationId,
         string channel,
         string agent,
         IHostEnvironment environment,
+        IClock clock,
         IReadOnlyDictionary<string, object?> metadata)
-        : this(
-            userId,
+        : base(
             correlationId,
             channel,
             agent,
             environment.EnvironmentName,
-            DateTimeOffset.UtcNow,
-            metadata)
+            clock.UtcNow,
+            EnrichMetadata(userId, metadata))
     {
+        UserId = userId;
     }
 
-    /// <summary>
-    /// Factory helper for typical request-scope usage.
-    /// </summary>
     public static RequestObservationContext Create(
         string? userId,
         string correlationId,
         string channel,
         string agent,
         IHostEnvironment environment,
+        IClock clock,
         IReadOnlyDictionary<string, object?>? metadata = null)
     {
         return new RequestObservationContext(
-            userId: userId,
-            correlationId: correlationId,
-            channel: channel,
-            agent: agent,
-            environmentName: environment.EnvironmentName,
-            timestamp: DateTimeOffset.UtcNow,
-            metadata: metadata ?? new Dictionary<string, object?>());
+            userId,
+            correlationId,
+            channel,
+            agent,
+            environment,
+            clock,
+            metadata ?? new Dictionary<string, object?>());
     }
 
     private static IReadOnlyDictionary<string, object?> EnrichMetadata(
@@ -83,7 +53,6 @@ public sealed class RequestObservationContext : ObservationContextBase, IRequest
         if (string.IsNullOrWhiteSpace(userId))
             return metadata;
 
-        // Copy to a mutable dictionary to avoid assuming the input is mutable.
         var dict = new Dictionary<string, object?>(metadata)
         {
             ["user.id"] = userId

@@ -1,5 +1,4 @@
 using Frank.Core.Application.Abstractions.Observations;
-using Microsoft.Extensions.Hosting;
 
 namespace Frank.Core.Infrastructure.Observations;
 
@@ -16,9 +15,6 @@ public abstract class ObservationContextBase : IObservationContext
     public DateTimeOffset Timestamp { get; }
     public IReadOnlyDictionary<string, object?> Metadata { get; }
 
-    /// <summary>
-    /// Canonical constructor.
-    /// </summary>
     protected ObservationContextBase(
         string correlationId,
         string channel,
@@ -33,24 +29,5 @@ public abstract class ObservationContextBase : IObservationContext
         Environment = environmentName;
         Timestamp = timestamp;
         Metadata = metadata;
-    }
-
-    /// <summary>
-    /// Convenience constructor using IHostEnvironment. Timestamp defaults to UtcNow.
-    /// </summary>
-    protected ObservationContextBase(
-        string correlationId,
-        string channel,
-        string agent,
-        IHostEnvironment environment,
-        IReadOnlyDictionary<string, object?> metadata)
-        : this(
-            correlationId,
-            channel,
-            agent,
-            environment.EnvironmentName,
-            DateTimeOffset.UtcNow,
-            metadata)
-    {
     }
 }

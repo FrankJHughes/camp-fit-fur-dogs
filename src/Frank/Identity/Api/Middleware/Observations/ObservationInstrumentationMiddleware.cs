@@ -1,5 +1,6 @@
 #nullable enable
 using System.Diagnostics;
+using Frank.Core.Application.Abstractions.Clock;
 using Frank.Core.Application.Abstractions.Observations;
 using Frank.Core.Infrastructure.Observations;
 using Frank.Identity.Application.Abstractions.Users;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Frank.Core.Api.Middleware.Observations;
+namespace Frank.Identity.Api.Middleware.Observations;
 
 public sealed class ObservationInstrumentationMiddleware
 {
@@ -24,9 +25,9 @@ public sealed class ObservationInstrumentationMiddleware
         IMetrics metrics,
         ICorrelationContext correlation,
         IErrorBoundaryObserver errors,
-        IHostEnvironment environment)
+        IHostEnvironment environment,
+        IClock clock)
     {
-        // Resolve scoped service INSIDE the request scope
         var currentUser = httpContext.RequestServices.GetRequiredService<ICurrentUser>();
 
         var incomingCorrelation =
@@ -52,6 +53,7 @@ public sealed class ObservationInstrumentationMiddleware
             channel: "http",
             agent: "pipeline",
             environment: environment,
+            clock: clock,
             metadata: new Dictionary<string, object?>
             {
                 ["path"] = httpContext.Request.Path.Value,

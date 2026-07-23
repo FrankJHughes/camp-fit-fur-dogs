@@ -21,14 +21,14 @@ public class EndpointsStartupModule : IStartupModule
             typeof(CampFitFurDogs.Infrastructure.AssemblyMarker).Assembly,
             typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly]);
 
-        services.AddFrankEndpoints([
+        services.AddFrankCoreApiEndpoints([
             typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly]);
 
     }
 
     public void Use(WebApplication app)
     {
-        app.MapFrankEndpoints();
+        app.MapFrankCoreApiEndpoints();
     }
 
 }

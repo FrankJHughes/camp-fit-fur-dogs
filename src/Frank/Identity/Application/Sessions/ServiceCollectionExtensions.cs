@@ -18,11 +18,11 @@ public static class ServiceCollectionExtensions
 
             .AddScoped<ISessionTokenGenerator, SessionTokenGenerator>()
 
-            .AddFrankCqrsCommands([
+            .AddFrankCoreApplicationCqrsCommands([
                 typeof(AssemblyMarker).Assembly],
                 discoveryOptions => updateOptions(discoveryOptions))
 
-            .AddFrankCqrsQueries([
+            .AddFrankCoreApplicationCqrsQueries([
                 typeof(AssemblyMarker).Assembly],
                 discoveryOptions => updateOptions(discoveryOptions));
     }

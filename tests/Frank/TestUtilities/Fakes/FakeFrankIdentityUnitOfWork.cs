@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.UnitOfWork;
+using Frank.Identity.Application.Abstractions.UnitOfWork;
 
 namespace Frank.TestUtilities.Fakes;
 

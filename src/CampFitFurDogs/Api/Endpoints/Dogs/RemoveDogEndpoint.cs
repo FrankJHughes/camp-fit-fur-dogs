@@ -15,8 +15,8 @@ public class RemoveDogEndpoint : IEndpoint
         app.MapDelete("/api/dogs/{id:guid}", async (
             Guid id,
             [FromServices] ICurrentUser currentUser,
-            ICommandDispatcher commandDispatcher,
-            IQueryDispatcher queryDispatcher) =>
+            [FromServices] ICommandDispatcher commandDispatcher,
+            [FromServices] IQueryDispatcher queryDispatcher) =>
         {
             var userId = currentUser.Id!.Value;
 

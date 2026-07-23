@@ -75,7 +75,7 @@ Products must not manually register these components.
 The callback handler binds:
 
 ```
-Authentication:Callback:Oidc
+Identity:Oidc
 ```
 
 into:

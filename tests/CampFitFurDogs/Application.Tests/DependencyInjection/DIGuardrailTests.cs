@@ -1,5 +1,4 @@
 using System.Reflection;
-using Frank.Core.Application;
 using Frank.Core.Application.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +19,7 @@ public class DiGuardrailTests
         // Arrange
         var services = new ServiceCollection();
 
-        services.AddFrankValidators(
+        services.AddValidatorsFromAssemblies(
             [typeof(CampFitFurDogs.Application.AssemblyMarker).Assembly]);
 
         var descriptors = services.ToList();

@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.UnitOfWork;
+using Frank.Identity.Application.Abstractions.UnitOfWork;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Identity.EntityFrameworkCore.UnitOfWork;

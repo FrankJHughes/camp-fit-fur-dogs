@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Frank.Identity.Application.Abstractions.Oidc;
 using Frank.Identity.Application.Callback.Oidc;
-using Frank.Identity.Application.Settings;
+using Frank.Identity.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,9 +11,9 @@ namespace Frank.Identity.Infrastructure.Auth0;
 public sealed class Auth0OidcTokenValidator : IOidcTokenValidator
 {
     private readonly HttpClient _http;
-    private readonly OidcCallbackSettings _options;
+    private readonly OidcSettings _options;
 
-    public Auth0OidcTokenValidator(HttpClient http, IOptionsMonitor<OidcCallbackSettings> options)
+    public Auth0OidcTokenValidator(HttpClient http, IOptionsMonitor<OidcSettings> options)
     {
         _http = http;
         _options = options.CurrentValue;

@@ -4,7 +4,7 @@ namespace Frank.Core.Api.Middleware.SecurityHeaders;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddSecurityHeaders(this IServiceCollection services)
+    public static IServiceCollection AddFrankCoreApiSecurityHeaders(this IServiceCollection services)
     {
         services.AddTransient<SecurityHeadersMiddleware>();
         return services;

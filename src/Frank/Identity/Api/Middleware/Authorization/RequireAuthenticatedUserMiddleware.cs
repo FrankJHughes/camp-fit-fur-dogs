@@ -4,13 +4,13 @@ using Frank.Identity.Application.Abstractions.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace Frank.Core.Api.Middleware.Authorization;
+namespace Frank.Identity.Api.Middleware.Authorization;
 
-public sealed class RequireCurrentUserMiddleware
+public sealed class RequireAuthenticatedUserMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public RequireCurrentUserMiddleware(RequestDelegate next)
+    public RequireAuthenticatedUserMiddleware(RequestDelegate next)
     {
         _next = next;
     }

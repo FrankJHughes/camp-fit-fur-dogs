@@ -3,7 +3,7 @@
 
 This guide explains how to operate and configure the authentication system implemented in:
 
-- **US‑110 — Authentication: Owner Login (OIDC)**
+- **US‑110 — Identity: Owner Login (OIDC)**
 - **US‑111 — Session Management**
 - **US‑184 — De‑feature Local Identity**
 
@@ -19,7 +19,7 @@ This guide focuses solely on **how to operate the authentication system that exi
 Authentication operations involve:
 
 - Auth0 tenant configuration  
-- Application configuration (`Authentication:Callback:*`)  
+- Application configuration (`Identity:Callback:*`)  
 - Callback URL configuration  
 - Logout URL configuration  
 - Web origin + CORS configuration  
@@ -96,8 +96,8 @@ The system no longer uses `AUTH0_*` environment variables directly.
 All configuration is now provided under:
 
 ```
-Authentication:Callback:Oidc:*
-Authentication:Callback:PostLoginRedirectUrl
+Identity:Oidc:*
+Identity:Callback:PostLoginRedirectUrl
 ```
 
 ### Canonical configuration shape:
@@ -141,7 +141,7 @@ The Application pipeline consumes only:
 # The `Oidc:Disabled` Flag
 
 ```
-Authentication:Callback:Oidc:Disabled = true
+Identity:Oidc:Disabled = true
 ```
 
 This flag:

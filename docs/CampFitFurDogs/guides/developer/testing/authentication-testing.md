@@ -3,7 +3,7 @@ Aligned With Exclusive OIDC Authentication & Auth Callback Refactor
 
 This guide explains how to test the authentication system implemented in:
 
-- US‑110 — Authentication: Owner Login (OIDC)
+- US‑110 — Identity: Owner Login (OIDC)
 - US‑111 — Session Management
 - US‑184 — De‑feature Local Identity
 

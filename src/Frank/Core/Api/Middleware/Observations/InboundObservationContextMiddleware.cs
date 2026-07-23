@@ -1,5 +1,6 @@
 #nullable enable
 using System.Text.RegularExpressions;
+using Frank.Core.Application.Abstractions.Clock;
 using Frank.Core.Application.Abstractions.Observations;
 using Frank.Core.Infrastructure.Observations;
 using Frank.Identity.Application.Abstractions.Users;
@@ -21,9 +22,9 @@ public sealed class InboundObservationContextMiddleware
     public async Task InvokeAsync(
         HttpContext httpContext,
         IHostEnvironment env,
-        ICorrelationContext correlation)
+        ICorrelationContext correlation,
+        IClock clock)
     {
-        // Resolve scoped service INSIDE the request scope
         var currentUser = httpContext.RequestServices.GetRequiredService<ICurrentUser>();
 
         var incomingCorrelationId = ExtractCorrelationId(httpContext);
@@ -45,6 +46,7 @@ public sealed class InboundObservationContextMiddleware
             channel: "http",
             agent: "pipeline",
             environment: env,
+            clock: clock,
             metadata: new Dictionary<string, object?>
             {
                 ["path"] = httpContext.Request.Path.Value,

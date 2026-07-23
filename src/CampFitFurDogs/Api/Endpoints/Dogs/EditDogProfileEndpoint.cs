@@ -17,9 +17,9 @@ public class EditDogProfileEndpoint : IEndpoint
         app.MapPut("/api/dogs/{id}", async (
             [FromRoute] Guid id,
             EditDogProfileEndpointRequest request,
-            ICurrentUser currentUser,
-            IQueryDispatcher queryDispatcher,
-            ICommandDispatcher commandDispatcher,
+            [FromServices] ICurrentUser currentUser,
+            [FromServices] IQueryDispatcher queryDispatcher,
+            [FromServices] ICommandDispatcher commandDispatcher,
             HttpContext httpContext) =>
         {
             var ownerId = currentUser.Id!.Value;

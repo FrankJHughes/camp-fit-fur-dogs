@@ -2,7 +2,8 @@ using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Application.Abstractions.Sessions.Oidc;
 using Frank.Core.Domain.Exceptions;
 using Frank.Identity.Api.Abstractions.Endpoints;
-using Frank.Identity.Application.Settings;
+using Frank.Identity.Api.Settings;
+using Frank.Identity.Infrastructure.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ public class GetLoginUrlEndpoint : IEndpoint
 
     private async Task<IResult> HandleAsync(
         HttpContext http,
-        [FromServices] IOptionsMonitor<OidcCallbackSettings> oidcOptionsMonitor,
+        [FromServices] IOptionsMonitor<OidcSettings> oidcOptionsMonitor,
         [FromServices] IOptionsMonitor<FrontendSettings> frontendOptionsMonitor,
         IConfiguration config)
     {

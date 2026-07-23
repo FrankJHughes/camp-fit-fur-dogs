@@ -1,6 +1,6 @@
-namespace Frank.Identity.Application.Settings;
+namespace Frank.Identity.Infrastructure.Settings;
 
-public sealed class OidcCallbackSettings
+public sealed class OidcSettings
 {
     public required string Authority { get; init; }
     public required string ClientId { get; init; }

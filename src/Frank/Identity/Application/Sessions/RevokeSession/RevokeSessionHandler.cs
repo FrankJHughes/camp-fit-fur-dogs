@@ -1,6 +1,6 @@
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
-using Frank.Core.Application.Abstractions.UnitOfWork;
 using Frank.Identity.Application.Abstractions.Sessions.RevokeSession;
+using Frank.Identity.Application.Abstractions.UnitOfWork;
 using Frank.Identity.Domain.Sessions;
 
 namespace Frank.Identity.Application.Sessions.RevokeSession;

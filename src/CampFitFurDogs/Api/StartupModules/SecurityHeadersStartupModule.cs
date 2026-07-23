@@ -9,7 +9,7 @@ public sealed class SecurityHeadersStartupModule : IStartupModule
     public void Add(WebApplicationBuilder builder)
     {
         var services = builder.Services;
-        services.AddSecurityHeaders();
+        services.AddFrankCoreApiSecurityHeaders();
     }
 
     public void Use(WebApplication app) { }

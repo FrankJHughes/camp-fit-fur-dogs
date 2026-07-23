@@ -87,7 +87,7 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
                 ConfigureDatabaseDisabled(context, services);
             }
 
-            services.AddFrankEndpoints(_ctx.EndpointAssemblies);
+            services.AddFrankCoreApiEndpoints(_ctx.EndpointAssemblies);
 
             ConfigureMutations(context, services);
 

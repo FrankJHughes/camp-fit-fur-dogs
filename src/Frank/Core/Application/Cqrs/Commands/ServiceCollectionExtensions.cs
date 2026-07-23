@@ -11,17 +11,23 @@ public static class ServiceCollectionExtensions
     private static bool HasRegistrationAttribute(TypeInfo iface) =>
     iface.GetCustomAttributes(typeof(RegistrationAttribute), inherit: true).Length != 0;
 
-    public static IServiceCollection AddFrankCommands(this IServiceCollection services)
-    {
-        return AddFrankCqrsCommands(services, []);
-    }
-
-    public static IServiceCollection AddFrankCqrsCommands(
-        this IServiceCollection services,
-        IEnumerable<Assembly> assemblies,
-        Action<DiscoveryOptions>? configure = null)
+    public static IServiceCollection AddFrankCoreApplicationCqrsCommandDispatcher(this IServiceCollection services)
     {
         services.TryAddScoped<ICommandDispatcher, CommandDispatcher>();
+        return services;
+    }
+
+    public static IServiceCollection AddFrankCoreApplicationCqrsCommands(
+        this IServiceCollection services,
+        IEnumerable<Assembly>? assembliesToSearch = null,
+        Action<DiscoveryOptions>? configure = null)
+    {
+        services.AddFrankCoreApplicationCqrsCommandDispatcher();
+
+        if (assembliesToSearch is null || !assembliesToSearch.Any())
+        {
+            return services;
+        }
 
         var options = new DiscoveryOptions();
 
@@ -51,9 +57,14 @@ public static class ServiceCollectionExtensions
 
         configure?.Invoke(options);
 
+        IEnumerable<Assembly> assemblies = [
+            typeof(Frank.Core.Application.AssemblyMarker).Assembly,
+            .. assembliesToSearch
+        ];
+
         Orchestrator.Orchestrate(
             services,
-            [typeof(Frank.Core.Application.AssemblyMarker).Assembly, .. assemblies],
+            assemblies,
             options);
 
         return services;

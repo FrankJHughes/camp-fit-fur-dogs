@@ -2,7 +2,7 @@
 
 This guide explains how identity mapping works today based on the implementation completed for:
 
-- US‑110 — Authentication: Owner Login  
+- US‑110 — Identity: Owner Login  
 - US‑111 — Session Management  
 
 It documents the runtime behavior and developer workflow for mapping an external OIDC identity (Auth0) to an internal domain identity (Owner).

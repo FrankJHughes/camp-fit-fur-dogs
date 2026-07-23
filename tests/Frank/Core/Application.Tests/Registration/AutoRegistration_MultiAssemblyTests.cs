@@ -13,11 +13,11 @@ public sealed class AutoRegistration_MultiAssemblyTests
     {
         var services = new ServiceCollection();
 
-        services.AddFrankCqrsCommands([
+        services.AddFrankCoreApplicationCqrsCommands([
             typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly
         ]);
 
-        services.AddFrankCqrsQueries([
+        services.AddFrankCoreApplicationCqrsQueries([
             typeof(Frank.TestUtilities.ValidServices.AssemblyMarker).Assembly
         ]);
 

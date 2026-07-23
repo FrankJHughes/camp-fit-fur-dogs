@@ -34,7 +34,7 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.1.0" />
-    <PackageVersion Include="System.Security.Cryptography.Xml" Version="9.0.15" />
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="9.0.18" />
   </ItemGroup>
   <!-- ========================================================= -->
   <!-- TESTING PACKAGES                                          -->
