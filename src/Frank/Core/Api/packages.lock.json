@@ -11,12 +11,6 @@
           "Microsoft.OpenApi": "2.0.0"
         }
       },
-      "Microsoft.Extensions.DependencyInjection": {
-        "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "f0RBabswJq+gRu5a+hWIobrLWiUYPKMhCD9WO3sYBAdSy3FFH14LMvLVFZc2kPSCimBLxSuitUhsd6tb0TAY6A=="
-      },
       "Microsoft.Bcl.TimeProvider": {
         "type": "Transitive",
         "resolved": "8.0.1",

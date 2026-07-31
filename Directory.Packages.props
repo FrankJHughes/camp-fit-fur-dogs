@@ -57,12 +57,4 @@
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.50.3" />
     </ItemGroup>
 
-    <ItemGroup>
-      <GlobalPackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <GlobalUsing Include="Microsoft.Extensions.DependencyInjection" />
-    </ItemGroup>
-
 </Project>

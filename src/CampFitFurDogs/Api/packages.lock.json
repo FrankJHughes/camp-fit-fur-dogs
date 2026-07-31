@@ -39,12 +39,6 @@
           "Newtonsoft.Json": "13.0.3"
         }
       },
-      "Microsoft.Extensions.DependencyInjection": {
-        "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "f0RBabswJq+gRu5a+hWIobrLWiUYPKMhCD9WO3sYBAdSy3FFH14LMvLVFZc2kPSCimBLxSuitUhsd6tb0TAY6A=="
-      },
       "Humanizer.Core": {
         "type": "Transitive",
         "resolved": "2.14.1",

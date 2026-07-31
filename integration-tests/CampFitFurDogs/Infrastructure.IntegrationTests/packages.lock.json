@@ -25,15 +25,6 @@
           "Microsoft.Extensions.Hosting": "10.0.0"
         }
       },
-      "Microsoft.Extensions.DependencyInjection": {
-        "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "f0RBabswJq+gRu5a+hWIobrLWiUYPKMhCD9WO3sYBAdSy3FFH14LMvLVFZc2kPSCimBLxSuitUhsd6tb0TAY6A==",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0"
-        }
-      },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[17.14.1, )",
@@ -150,6 +141,14 @@
           "Microsoft.Extensions.Configuration.Json": "10.0.0",
           "Microsoft.Extensions.FileProviders.Abstractions": "10.0.0",
           "Microsoft.Extensions.FileProviders.Physical": "10.0.0"
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "f0RBabswJq+gRu5a+hWIobrLWiUYPKMhCD9WO3sYBAdSy3FFH14LMvLVFZc2kPSCimBLxSuitUhsd6tb0TAY6A==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0"
         }
       },
       "Microsoft.Extensions.DependencyModel": {
@@ -436,7 +435,6 @@
           "Frank.Core.Application": "[1.0.0, )",
           "Frank.Identity.Application": "[1.0.0, )",
           "Microsoft.Extensions.Configuration": "[10.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.0.0, )",
           "Microsoft.Extensions.Options.DataAnnotations": "[10.0.0, )",
           "Scrutor": "[7.0.0, )"
@@ -465,7 +463,6 @@
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "[10.0.0, )",
           "Microsoft.Extensions.Configuration.FileExtensions": "[10.0.0, )",
           "Microsoft.Extensions.Configuration.Json": "[10.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )",
           "Microsoft.Extensions.Http": "[10.0.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )"
         }
@@ -538,8 +535,7 @@
         "type": "Project",
         "dependencies": {
           "Frank.Core.Application": "[1.0.0, )",
-          "Frank.Identity.Application": "[1.0.0, )",
-          "Microsoft.Extensions.DependencyInjection": "[10.0.0, )"
+          "Frank.Identity.Application": "[1.0.0, )"
         }
       },
       "BCrypt.Net-Next": {
