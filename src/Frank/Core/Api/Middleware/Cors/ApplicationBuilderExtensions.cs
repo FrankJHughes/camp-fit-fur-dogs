@@ -5,7 +5,7 @@ namespace Frank.Core.Api.Middleware.Cors;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseFrankCoreApiOriginLogging(this IApplicationBuilder app)
+    public static IApplicationBuilder UseFrankCoreApiMiddlewareOriginLogging(this IApplicationBuilder app)
     {
         return app.UseMiddleware<OriginLoggingMiddleware>();
     }

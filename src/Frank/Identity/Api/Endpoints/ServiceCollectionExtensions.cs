@@ -1,4 +1,5 @@
 using Frank.Core.Api.Endpoints;
+using Frank.Core.Application.Registration;
 using Frank.Identity.Api.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,8 +16,14 @@ public static class ServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart(); // Dependents: GetLoginUrlEndpoint,LogoutEndpoint
 
-        return services.AddFrankCoreApiEndpoints([
-            typeof(AssemblyMarker).Assembly
-        ]);
+        static DiscoveryOptions updateOptions(DiscoveryOptions options) => options.IncludeImplementations(t =>
+            !string.IsNullOrWhiteSpace(t.Namespace) &&
+            t.Namespace.StartsWith(typeof(ServiceCollectionExtensions).Namespace!));
+
+        return services
+            .AddFrankCoreApiEndpoints([
+                typeof(AssemblyMarker).Assembly],
+                options => updateOptions(options)
+            );
     }
 }

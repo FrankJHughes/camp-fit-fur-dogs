@@ -1,3 +1,4 @@
+using FluentValidation;
 using Frank.Identity.Application.Callback;
 using Frank.Identity.Application.Sessions;
 using Frank.Identity.Application.Users;
@@ -15,7 +16,10 @@ public static class ServiceCollectionExtensions
 
             .AddFrankIdentityApplicationUsers()
 
-            .AddFrankIdentityApplicationCallback();
+            .AddFrankIdentityApplicationCallback()
 
+            .AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly)
+
+            ;
     }
 }

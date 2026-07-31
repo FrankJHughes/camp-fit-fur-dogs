@@ -4,14 +4,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Core.Api.Endpoints;
 
-public static class EndpointMappingExtensions
+public static class EndpointRouteBuilderExtensions
 {
-    public static IEndpointRouteBuilder MapFrankCoreApiEndpoints(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapRegisteredApiEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.ServiceProvider.GetServices<IEndpoint>();
+        var endpoints = app.ServiceProvider
+            .GetServices<IEndpoint>()
+            .DistinctBy(endpoint =>
+                endpoint.GetType().FullName)
+            .ToList();
 
         foreach (var endpoint in endpoints)
+        {
             endpoint.Map(app);
+        }
 
         return app;
     }

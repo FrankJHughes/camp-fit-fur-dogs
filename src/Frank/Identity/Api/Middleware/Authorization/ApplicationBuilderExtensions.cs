@@ -4,7 +4,7 @@ namespace Frank.Identity.Api.Middleware.Authorization;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseFrankCoreApiMiddlewareAuthorization(this IApplicationBuilder app)
+    public static IApplicationBuilder UseFrankIdentityApiMiddlewareAuthorization(this IApplicationBuilder app)
     {
         return app
             .UseMiddleware<RequireAuthenticatedUserMiddleware>();

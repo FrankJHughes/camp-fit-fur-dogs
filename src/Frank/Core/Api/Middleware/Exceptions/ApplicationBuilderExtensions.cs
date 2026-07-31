@@ -5,7 +5,7 @@ namespace Frank.Core.Api.Middleware.Exceptions;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseFrankCoreApiExceptions(this IApplicationBuilder app)
+    public static IApplicationBuilder UseFrankCoreApiMiddlewareExceptions(this IApplicationBuilder app)
     {
         return app.UseMiddleware<ExceptionHandlingMiddleware>();
     }

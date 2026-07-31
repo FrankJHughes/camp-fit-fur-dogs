@@ -1,6 +1,6 @@
 using System.IO.Compression;
 using System.Net;
-using CampFitFurDogs.Api.HostingModules;
+using CampFitFurDogs.Api.PlatformModules;
 using CampFitFurDogs.TestUtilities.Fakes;
 using Microsoft.AspNetCore.Builder;
 

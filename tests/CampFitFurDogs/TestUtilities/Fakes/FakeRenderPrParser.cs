@@ -1,4 +1,4 @@
-using CampFitFurDogs.Api.HostingModules;
+using CampFitFurDogs.Api.PlatformModules;
 
 namespace CampFitFurDogs.TestUtilities.Fakes;
 

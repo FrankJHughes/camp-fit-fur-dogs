@@ -87,7 +87,10 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
                 ConfigureDatabaseDisabled(context, services);
             }
 
-            services.AddFrankCoreApiEndpoints(_ctx.EndpointAssemblies);
+            if (_ctx.EndpointAssemblies.Count > 0)
+            {
+                services.AddFrankCoreApiEndpoints(_ctx.EndpointAssemblies);
+            }
 
             ConfigureMutations(context, services);
 
@@ -98,6 +101,7 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
             {
                 services.AddSingleton<IStartupFilter>(new CookieRewriteStartupFilter());
             }
+
         });
     }
 
@@ -196,3 +200,4 @@ public sealed class CookieRewriteStartupFilter : IStartupFilter
         };
     }
 }
+

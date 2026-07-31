@@ -1,4 +1,4 @@
-using Frank.Core.Api.Hosting;
+using Frank.Core.Api.PlatformModules;
 using Frank.Core.Application.Abstractions.Hosting;
 using Microsoft.AspNetCore.Builder;
 

@@ -2,7 +2,7 @@ using Frank.Core.Application.Abstractions.EnvironmentVariables;
 using Frank.Core.Application.Abstractions.Hosting;
 using Frank.Core.Infrastructure.EnvironmentVariables;
 
-namespace CampFitFurDogs.Api.HostingModules;
+namespace CampFitFurDogs.Api.PlatformModules;
 
 [HostingModule(0)]
 public sealed class RenderPrPreviewHostingModule : IHostingModule

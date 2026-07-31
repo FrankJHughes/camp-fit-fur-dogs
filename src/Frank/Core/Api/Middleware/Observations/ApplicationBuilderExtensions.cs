@@ -5,7 +5,7 @@ namespace Frank.Core.Api.Middleware.Observations;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseFrankCoreApiObservations(this IApplicationBuilder app)
+    public static IApplicationBuilder UseFrankCoreApiMiddlewareObservations(this IApplicationBuilder app)
     {
         return app
             .UseMiddleware<InboundObservationContextMiddleware>()

@@ -689,7 +689,8 @@
         "type": "Project",
         "dependencies": {
           "Frank.Core.Domain": "[1.0.0, )",
-          "Frank.Core.Infrastructure": "[1.0.0, )"
+          "Frank.Core.Infrastructure": "[1.0.0, )",
+          "Microsoft.AspNetCore.OpenApi": "[10.0.0, )"
         }
       },
       "frank.core.application": {

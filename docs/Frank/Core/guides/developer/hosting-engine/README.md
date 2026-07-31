@@ -67,7 +67,7 @@ They only *produce* overrides.
 
 ---
 
-# 2. Hosting Engine Runtime (Frank.Core.Api.Hosting)
+# 2. Hosting Engine Runtime (Frank.Core.Api.PlatformModules)
 
 ## 2.1 HostingConfigurationProvider
 

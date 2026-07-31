@@ -1,4 +1,4 @@
-namespace CampFitFurDogs.Api.HostingModules;
+namespace CampFitFurDogs.Api.PlatformModules;
 
 public sealed class RenderPrParser : IRenderPrParser
 {

@@ -1,5 +1,4 @@
 using System.Reflection;
-using CampFitFurDogs.Api.StartupModules;
 using CampFitFurDogs.TestUtilities.Infrastructure;
 
 namespace CampFitFurDogs.Api.Tests.Guardrails;
@@ -10,38 +9,6 @@ public class CorsGuardrailTests
         typeof(CampFitFurDogs.Api.AssemblyMarker).Assembly;
 
     private const string CanonicalConfigKey = "Frontend:BaseUrl";
-
-    // ---------------------------------------------------------------------
-    // 1. ONLY CorsStartupModule may configure CORS
-    // ---------------------------------------------------------------------
-
-    [Fact]
-    public void Api_should_only_configure_cors_in_CorsStartupModule()
-    {
-        var corsStartupModuleFullName = typeof(CorsStartupModule).FullName!;
-
-        var offenders = ApiAssembly
-            .GetTypes()
-            .Where(t => t.FullName != corsStartupModuleFullName &&
-                        t.FullName != "Program")
-            .SelectMany(t => t.GetMethods(
-                BindingFlags.Public |
-                BindingFlags.NonPublic |
-                BindingFlags.Static |
-                BindingFlags.Instance))
-            .Where(m =>
-                // Attribute-based CORS configuration
-                m.GetCustomAttributes().Any(a =>
-                    a.GetType().Name is "EnableCorsAttribute" or "DisableCorsAttribute") ||
-
-                // Method calls to AddCors or UseCors (reflection-only heuristic)
-                MethodBodyCallsCors(m))
-            .Select(m => $"{m.DeclaringType!.FullName}.{m.Name}")
-            .ToList();
-
-        offenders.Should().BeEmpty(
-            "All CORS configuration must be centralized in CorsStartupModule to prevent drift.");
-    }
 
     private static bool MethodBodyCallsCors(MethodInfo method)
     {

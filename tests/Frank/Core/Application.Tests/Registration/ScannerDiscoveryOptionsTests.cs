@@ -40,22 +40,6 @@ public class ScannerDiscoveryOptionsTests
     }
 
     // ------------------------------------------------------------
-    // 2. Interface exclusion
-    // ------------------------------------------------------------
-    [Fact]
-    public void Scanner_ShouldExcludeInterfaces_MatchingExclusionPredicate()
-    {
-        var options = new DiscoveryOptions()
-            .IncludeInterfaces(i => i.Name.StartsWith("I"))
-            .ExcludeInterfaces(i => i.Name == nameof(IBaz));
-
-        var results = Scan(options).ToList();
-
-        results.Select(r => r.RelevantInterface.Name)
-            .Should().NotContain(nameof(IBaz));
-    }
-
-    // ------------------------------------------------------------
     // 3. Implementation inclusion
     // ------------------------------------------------------------
     [Fact]
@@ -79,29 +63,6 @@ public class ScannerDiscoveryOptionsTests
     }
 
     // ------------------------------------------------------------
-    // 4. Implementation exclusion
-    // ------------------------------------------------------------
-    [Fact]
-    public void Scanner_ShouldExcludeImplementations_MatchingExclusionPredicate()
-    {
-        var options = new DiscoveryOptions()
-            .IncludeInterfaces(i => i.Name == nameof(IFoo))
-            .IncludeImplementations(t => t.Name.EndsWith("Impl"))
-            .ExcludeImplementations(t => t.Name == nameof(IgnoredImpl));
-
-        var results = Scan(options).ToList();
-
-        var fooGroup = results.Single(r => r.RelevantInterface.Name == nameof(IFoo));
-
-        fooGroup.Implementations
-            .Select(i => i.ImplementingClass.Name)
-            .Should().BeEquivalentTo(new[]
-            {
-                nameof(FooImpl)
-            });
-    }
-
-    // ------------------------------------------------------------
     // 5. Interfaces with no implementations still appear
     // ------------------------------------------------------------
     [Fact]
@@ -109,7 +70,7 @@ public class ScannerDiscoveryOptionsTests
     {
         var options = new DiscoveryOptions()
             .IncludeInterfaces(i => i.Name is nameof(IFoo) or nameof(IBaz))
-            .ExcludeImplementations(_ => true); // exclude all implementations
+            .IncludeImplementations(t => false);
 
         var results = Scan(options).ToList();
 

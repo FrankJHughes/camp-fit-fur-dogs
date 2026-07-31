@@ -23,7 +23,7 @@ public sealed class EndpointMappingExtensionsTests
         var routeBuilder = new FakeRouteBuilder(provider);
 
         // Act
-        routeBuilder.MapFrankCoreApiEndpoints();
+        routeBuilder.MapRegisteredApiEndpoints();
 
         // Assert
         FakeEndpoint.WasMapped.Should().BeTrue();

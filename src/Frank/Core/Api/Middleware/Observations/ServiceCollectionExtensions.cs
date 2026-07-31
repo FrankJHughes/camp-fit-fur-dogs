@@ -1,4 +1,3 @@
-using Frank.Core.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Frank.Core.Api.Middleware.Observations;
@@ -13,7 +12,6 @@ public static class ServiceCollectionExtensions
 
         return services
             .AddHttpContextAccessor()
-            .AddFrankCoreInfrastructure()
             .AddTransient<OutboundObservationContextHandler>();
     }
 

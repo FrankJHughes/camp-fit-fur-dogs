@@ -2,7 +2,7 @@ using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace CampFitFurDogs.Api.HostingModules;
+namespace CampFitFurDogs.Api.PlatformModules;
 
 public sealed class GitHubArtifactClient : IGitHubArtifactClient
 {
