@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructureDogs(this IServiceCollection services)
     {
         return services
+            .AddScoped<IEditDogProfileWriter, EditDogProfileWriter>()
             .AddScoped<IRegisterDogWriter, RegisterDogWriter>()
             .AddScoped<IRemoveDogWriter, RemoveDogWriter>()
             .AddScoped<IGetDogByIdReader, GetDogByIdReader>()
