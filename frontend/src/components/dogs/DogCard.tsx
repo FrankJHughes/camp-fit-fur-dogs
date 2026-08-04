@@ -1,10 +1,10 @@
-import type { DogProfile } from '@/lib/dogs/dogModel';
+import type { Dog } from '@/lib/dogs/dogModel';
 
-interface DogProfileCardProps {
-  profile: DogProfile;
+interface DogCardProps {
+  profile: Dog;
 }
 
-export function DogProfileCard({ profile }: DogProfileCardProps) {
+export function DogCard({ profile }: DogCardProps) {
   const formattedDob = new Date(profile.dateOfBirth + 'T00:00:00').toLocaleDateString(
     'en-US',
     { year: 'numeric', month: 'long', day: 'numeric' }

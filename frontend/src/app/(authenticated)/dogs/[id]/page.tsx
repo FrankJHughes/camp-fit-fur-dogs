@@ -2,17 +2,17 @@
 
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getDogProfile } from '@/api/dogs/getDogProfile';
+import { getDog } from '@/api/dogs/getDog';
 import { toQueryState } from '@/lib/api/queryResult';
 import { DogNotFound } from '@/components/dogs/DogNotFound';
-import { DogProfileCard } from '@/components/dogs/DogProfileCard';
+import { DogCard } from '@/components/dogs/DogCard';
 import { ActionsCard } from '@/lib/components/ActionsCard';
 import { ConfirmDialog } from '@/lib/components/ConfirmDialog';
 import { useRemoveDog } from '@/lib/dogs/useRemoveDog';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import type { Action } from '@/lib/action';
 
-export default function GetDogProfilePage() {
+export default function GetDogPage() {
   const params = useParams<{ id?: string }>();
   const dogId = params?.id;
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function GetDogProfilePage() {
     return <p className="error-message">Invalid dog id</p>;
   }
 
-  const state = useApiQuery(() => getDogProfile(dogId).then(toQueryState), [dogId]);
+  const state = useApiQuery(() => getDog(dogId).then(toQueryState), [dogId]);
 
   const removeDog = useRemoveDog(
     dogId,
@@ -63,7 +63,7 @@ export default function GetDogProfilePage() {
       <h1 className="page-title">{state.data.name}</h1>
 
       <div className="card-section">
-        <DogProfileCard profile={state.data} />
+        <DogCard profile={state.data} />
       </div>
 
       <div className="page-actions">

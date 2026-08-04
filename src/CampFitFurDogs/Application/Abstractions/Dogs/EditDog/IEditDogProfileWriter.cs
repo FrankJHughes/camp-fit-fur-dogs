@@ -3,7 +3,7 @@ using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.Application.Abstractions.Dogs;
 
-public interface IEditDogProfileWriter
+public interface IEditDogWriter
 {
     Task WriteAsync(
         UserId ownerId,

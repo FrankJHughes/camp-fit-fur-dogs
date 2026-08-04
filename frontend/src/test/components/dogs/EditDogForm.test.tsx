@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
-import EditDogProfileForm from '@/components/dogs/EditDogProfileForm';
+import EditDogForm from '@/components/dogs/EditDogForm';
 
 const initialData = {
   name: 'Buddy',
@@ -10,7 +10,7 @@ const initialData = {
   sex: 'Male',
 };
 
-describe('EditDogProfileForm', () => {
+describe('EditDogForm', () => {
   it('renders the form with all fields and a save button', () => {
     const command = {
       run: vi.fn(),
@@ -18,7 +18,7 @@ describe('EditDogProfileForm', () => {
       isSubmitting: false,
     };
 
-    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+    render(<EditDogForm initialValues={initialData} command={command} />);
 
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/breed/i)).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('EditDogProfileForm', () => {
       isSubmitting: false,
     };
 
-    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+    render(<EditDogForm initialValues={initialData} command={command} />);
 
     expect(screen.getByLabelText(/name/i)).toHaveValue('Buddy');
     expect(screen.getByLabelText(/breed/i)).toHaveValue('Golden Retriever');
@@ -51,7 +51,7 @@ describe('EditDogProfileForm', () => {
     };
     const user = userEvent.setup();
 
-    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+    render(<EditDogForm initialValues={initialData} command={command} />);
 
     // Update the name field
     await user.clear(screen.getByLabelText(/name/i));
@@ -75,7 +75,7 @@ describe('EditDogProfileForm', () => {
       isSubmitting: false,
     };
 
-    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+    render(<EditDogForm initialValues={initialData} command={command} />);
 
     expect(screen.getByText('Name is already taken')).toBeInTheDocument();
   });
@@ -87,7 +87,7 @@ describe('EditDogProfileForm', () => {
       isSubmitting: true,
     };
 
-    render(<EditDogProfileForm initialValues={initialData} command={command} />);
+    render(<EditDogForm initialValues={initialData} command={command} />);
 
     expect(screen.getByRole('button', { name: /save/i })).toBeDisabled();
   });

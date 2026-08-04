@@ -8,7 +8,7 @@ using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class EditDogProfileEndpointTests : IAsyncLifetime
+public class EditDogEndpointTests : IAsyncLifetime
 {
     private PostgreSqlContainer _postgres = default!;
     private ApiFactory _api = default!;
@@ -43,7 +43,7 @@ public class EditDogProfileEndpointTests : IAsyncLifetime
         return _api.CreateClient(clientCtx);
     }
 
-    private sealed record DogProfileDto(Guid Id, string Name, string Breed);
+    private sealed record DogDto(Guid Id, string Name, string Breed);
 
     // ------------------------------------------------------------
     // SUCCESS — OWNER UPDATES DOG

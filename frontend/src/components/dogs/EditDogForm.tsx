@@ -5,12 +5,12 @@ import { DogForm } from '@/components/dogs/DogForm';
 import type { DogFormValues } from '@/lib/dogs/dogModel';
 import type { FormCommand } from '@/lib/forms/formCommand';
 
-interface EditDogProfileFormProps {
+interface EditDogFormProps {
   command: FormCommand<DogFormValues>;
   initialValues: DogFormValues;
 }
 
-function EditDogProfileForm({ command, initialValues }: EditDogProfileFormProps) {
+function EditDogForm({ command, initialValues }: EditDogFormProps) {
   return (
     <DogForm
       title="Edit Dog Profile"
@@ -21,4 +21,4 @@ function EditDogProfileForm({ command, initialValues }: EditDogProfileFormProps)
   );
 }
 
-export default React.memo(EditDogProfileForm);
+export default React.memo(EditDogForm);

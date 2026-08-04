@@ -19,7 +19,7 @@ Query handlers depend on slice-scoped reader interfaces instead of repositories.
 Each reader interface:
 
 - Lives in `Application.Abstractions` alongside its query/response types.
-- Is named after its slice: `IGetDogProfileReader` (verb + noun + Reader).
+- Is named after its slice: `IGetDogReader` (verb + noun + Reader).
 - Returns the query's response DTO directly — no domain aggregates cross the boundary.
 - Has its Infrastructure implementation registered via Scrutor's `Reader` suffix scan.
 
@@ -44,7 +44,7 @@ domain concepts it shouldn't touch. The reader returns the response DTO directly
 | Side    | Abstraction                  | Returns          | Why                                              |
 |---------|------------------------------|------------------|--------------------------------------------------|
 | Command | Repository (`IDogRepository`)| Domain aggregate | Handler enforces invariants via domain methods    |
-| Query   | Reader (`IGetDogProfileReader`)| Response DTO   | Handler has no domain logic — just data retrieval |
+| Query   | Reader (`IGetDogReader`)| Response DTO   | Handler has no domain logic — just data retrieval |
 
 This is textbook CQRS: writes go through the domain model, reads bypass it.
 

@@ -2,10 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-describe('EditDogProfileForm (UI)', () => {
+describe('EditDogForm (UI)', () => {
   async function loadForm() {
-    const mod = await import('@/components/dogs/EditDogProfileForm');
-    return mod.EditDogProfileForm || mod.default;
+    const mod = await import('@/components/dogs/EditDogForm');
+    return mod.EditDogForm || mod.default;
   }
 
   const initialData = {
@@ -22,10 +22,10 @@ describe('EditDogProfileForm (UI)', () => {
       isSubmitting: false,
     };
 
-    const EditDogProfileForm = await loadForm();
+    const EditDogForm = await loadForm();
 
     render(
-      <EditDogProfileForm
+      <EditDogForm
         initialValues={initialData}
         command={command}
       />
@@ -46,10 +46,10 @@ describe('EditDogProfileForm (UI)', () => {
       isSubmitting: false,
     };
 
-    const EditDogProfileForm = await loadForm();
+    const EditDogForm = await loadForm();
 
     render(
-      <EditDogProfileForm
+      <EditDogForm
         initialValues={initialData}
         command={command}
       />
@@ -86,10 +86,10 @@ describe('EditDogProfileForm (UI)', () => {
       isSubmitting: false,
     };
 
-    const EditDogProfileForm = await loadForm();
+    const EditDogForm = await loadForm();
 
     render(
-      <EditDogProfileForm
+      <EditDogForm
         initialValues={initialData}
         command={command}
       />
@@ -106,10 +106,10 @@ describe('EditDogProfileForm (UI)', () => {
       isSubmitting: true,
     };
 
-    const EditDogProfileForm = await loadForm();
+    const EditDogForm = await loadForm();
 
     render(
-      <EditDogProfileForm
+      <EditDogForm
         initialValues={initialData}
         command={command}
       />

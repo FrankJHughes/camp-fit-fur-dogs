@@ -21,7 +21,7 @@ vi.mock('@/lib/dogs/useRemoveDog', () => ({
   }),
 }));
 
-describe('GetDogProfilePage (UI)', () => {
+describe('GetDogPage (UI)', () => {
   beforeEach(() => {
     resetUseApiQueryMock();
     pushMock.mockClear();
@@ -82,7 +82,7 @@ describe('GetDogProfilePage (UI)', () => {
     const Page = await loadPage();
     render(<Page />);
 
-    // FIX: target the DogProfileCard heading (<h2>Rex</h2>)
+    // FIX: target the DogCard heading (<h2>Rex</h2>)
     expect(
       await screen.findByRole('heading', { level: 2, name: /rex/i })
     ).toBeInTheDocument();

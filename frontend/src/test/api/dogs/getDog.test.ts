@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getDogProfile } from '@/api/dogs/getDogProfile';
+import { getDog } from '@/api/dogs/getDog';
 
 const { mockGet } = vi.hoisted(() => ({
   mockGet: vi.fn(),
@@ -9,7 +9,7 @@ vi.mock('@/lib/api/client', () => ({
   createApiClient: () => ({ get: mockGet }),
 }));
 
-describe('getDogProfile', () => {
+describe('getDog', () => {
   const dogId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
   const profileData = {
     id: dogId,
@@ -27,7 +27,7 @@ describe('getDogProfile', () => {
   it('sends GET to /dogs/{id} and returns the profile on success', async () => {
     mockGet.mockResolvedValue({ ok: true, data: profileData });
 
-    const result = await getDogProfile(dogId);
+    const result = await getDog(dogId);
 
     expect(mockGet).toHaveBeenCalledWith(`/dogs/${dogId}`);
     expect(result).toEqual({ success: true, data: profileData });
@@ -39,7 +39,7 @@ describe('getDogProfile', () => {
       error: { type: 'http', message: 'Not Found', status: 404 },
     });
 
-    const result = await getDogProfile(dogId);
+    const result = await getDog(dogId);
 
     expect(result).toEqual({ success: false, notFound: true });
   });
@@ -50,7 +50,7 @@ describe('getDogProfile', () => {
       error: { type: 'http', message: 'Internal Server Error', status: 500 },
     });
 
-    const result = await getDogProfile(dogId);
+    const result = await getDog(dogId);
 
     expect(result).toEqual({
       success: false,
@@ -64,7 +64,7 @@ describe('getDogProfile', () => {
       error: { type: 'network', message: 'A network error occurred' },
     });
 
-    const result = await getDogProfile(dogId);
+    const result = await getDog(dogId);
 
     expect(result).toEqual({
       success: false,

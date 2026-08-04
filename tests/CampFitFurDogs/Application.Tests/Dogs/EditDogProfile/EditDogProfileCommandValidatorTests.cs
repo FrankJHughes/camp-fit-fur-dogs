@@ -1,17 +1,17 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
-using CampFitFurDogs.Application.Dogs.EditDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.EditDog;
+using CampFitFurDogs.Application.Dogs.EditDog;
 using CampFitFurDogs.TestUtilities.Fixtures;
 
-namespace CampFitFurDogs.Application.Tests.Dogs.EditDogProfile;
+namespace CampFitFurDogs.Application.Tests.Dogs.EditDog;
 
-public class EditDogProfileCommandValidatorTests
+public class EditDogCommandValidatorTests
 {
-    private readonly EditDogProfileCommandValidator _validator = new();
+    private readonly EditDogCommandValidator _validator = new();
 
     [Fact]
     public void Should_fail_when_name_is_empty()
     {
-        var command = new EditDogProfileCommand(
+        var command = new EditDogCommand(
             DogId: Guid.NewGuid(),
             OwnerId: Guid.NewGuid(),
             Name: "",
@@ -27,7 +27,7 @@ public class EditDogProfileCommandValidatorTests
     [Fact]
     public void Should_fail_when_breed_is_empty()
     {
-        var command = new EditDogProfileCommand(
+        var command = new EditDogCommand(
             DogId: Guid.NewGuid(),
             OwnerId: Guid.NewGuid(),
             Name: DogFixtures.DefaultName,
@@ -43,7 +43,7 @@ public class EditDogProfileCommandValidatorTests
     [Fact]
     public void Should_fail_when_dogId_is_empty()
     {
-        var command = new EditDogProfileCommand(
+        var command = new EditDogCommand(
             DogId: Guid.Empty,
             OwnerId: Guid.NewGuid(),
             Name: DogFixtures.DefaultName,

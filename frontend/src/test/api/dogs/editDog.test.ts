@@ -1,4 +1,4 @@
-import { editDogProfile } from '@/api/dogs/editDogProfile';
+import { editDog } from '@/api/dogs/editDog';
 
 const { mockPut } = vi.hoisted(() => ({ mockPut: vi.fn() }));
 
@@ -20,7 +20,7 @@ const validData = {
   sex: 'Male',
 };
 
-describe('editDogProfile', () => {
+describe('editDog', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -28,7 +28,7 @@ describe('editDogProfile', () => {
   it('returns success when the API call succeeds', async () => {
     mockPut.mockResolvedValue({ ok: true, data: undefined });
 
-    const result = await editDogProfile(dogId, validData);
+    const result = await editDog(dogId, validData);
 
     expect(mockPut).toHaveBeenCalledWith(`/dogs/${dogId}`, validData);
     expect(result).toEqual({ success: true });
@@ -44,7 +44,7 @@ describe('editDogProfile', () => {
       },
     });
 
-    const result = await editDogProfile(dogId, validData);
+    const result = await editDog(dogId, validData);
 
     expect(result).toEqual({
       success: false,
@@ -62,7 +62,7 @@ describe('editDogProfile', () => {
       },
     });
 
-    const result = await editDogProfile(dogId, validData);
+    const result = await editDog(dogId, validData);
 
     expect(result).toEqual({
       success: false,
@@ -79,7 +79,7 @@ describe('editDogProfile', () => {
       },
     });
 
-    const result = await editDogProfile(dogId, validData);
+    const result = await editDog(dogId, validData);
 
     expect(result).toEqual({
       success: false,

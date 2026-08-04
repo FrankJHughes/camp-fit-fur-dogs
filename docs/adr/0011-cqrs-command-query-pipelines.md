@@ -11,7 +11,7 @@
 Camp Fit Fur Dogs uses a DDD layered architecture (ADR-0002) where the
 Application layer mediates between the API and Domain layers. As the
 product grew from a single CreateUser command to multiple slices
-(CreateUser, RegisterDog, GetDogProfile), the team needed a
+(CreateUser, RegisterDog, GetDog), the team needed a
 consistent pattern for dispatching operations to their handlers.
 
 The requirements for the dispatch pattern are:
@@ -125,10 +125,10 @@ Application/
     RegisterDog/
       RegisterDogCommand.cs
       RegisterDogHandler.cs
-    GetDogProfile/
-      GetDogProfileQuery.cs
-      GetDogProfileHandler.cs
-      DogProfileResponse.cs
+    GetDog/
+      GetDogQuery.cs
+      GetDogHandler.cs
+      DogResponse.cs
 ```
 
 One folder = one slice = one command or one query.

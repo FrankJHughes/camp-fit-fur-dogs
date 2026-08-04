@@ -7,7 +7,7 @@ Covers aggregate setup, command (write) slices, and query (read) slices using TD
 > One command or one query, vertical through all layers, that produces a visible result.  
 > One verb, one noun. Not a user journey.  
 >
-> ✅ `RegisterDog` (command) · ✅ `GetDogProfile` (query) · ❌ “Dog Management” (feature area)
+> ✅ `RegisterDog` (command) · ✅ `GetDog` (query) · ❌ “Dog Management” (feature area)
 
 Vertical slices are **domain use cases**.  
 Cross‑cutting concerns (authentication, session, security headers, CORS, etc.) are **horizontals**, not slices.

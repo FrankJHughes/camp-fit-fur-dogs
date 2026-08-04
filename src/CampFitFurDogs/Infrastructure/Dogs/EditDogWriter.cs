@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;
 
-public sealed class EditDogProfileWriter : IEditDogProfileWriter
+public sealed class EditDogWriter : IEditDogWriter
 {
     private readonly AppDbContext _db;
 
-    public EditDogProfileWriter(AppDbContext db)
+    public EditDogWriter(AppDbContext db)
     {
         _db = db;
     }

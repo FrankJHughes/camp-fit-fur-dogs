@@ -17,7 +17,7 @@ It contains the types that external layers are allowed to reference:
 - **Commands**  
 - **Queries**  
 - **Result/Response DTOs**  
-- **Reader interfaces** (e.g., `IGetDogProfileReader`)  
+- **Reader interfaces** (e.g., `IGetDogReader`)  
 - **Service interfaces** (e.g., `ICurrentUser`)  
 - **Dispatcher interfaces** (`ICommandDispatcher`, `IQueryDispatcher`)  
 - **Domain event abstractions** (`IDomainEventDispatcher`, `IDomainEventHandler<T>`)  
@@ -47,9 +47,9 @@ src/CampFitFurDogs/Application/Abstractions/
   Dogs/
     RegisterDogCommand.cs
     RegisterDogResult.cs
-    GetDogProfileQuery.cs
-    GetDogProfileResult.cs
-    IGetDogProfileReader.cs
+    GetDogQuery.cs
+    GetDogResult.cs
+    IGetDogReader.cs
 
   ICommandDispatcher.cs
   IQueryDispatcher.cs

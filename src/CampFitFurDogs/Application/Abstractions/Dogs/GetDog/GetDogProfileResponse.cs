@@ -1,6 +1,6 @@
-namespace CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+namespace CampFitFurDogs.Application.Abstractions.Dogs.GetDog;
 
-public record GetDogProfileResponse(
+public record GetDogResponse(
     Guid Id,
     Guid OwnerId,
     string Name,

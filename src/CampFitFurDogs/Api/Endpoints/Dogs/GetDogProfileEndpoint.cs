@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDog;
 using Frank.Core.Application.Abstractions.Cqrs.Queries;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions.Users;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 
-public class GetDogProfileEndpoint : IEndpoint
+public class GetDogEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
@@ -15,7 +15,7 @@ public class GetDogProfileEndpoint : IEndpoint
             [FromServices] ICurrentUser currentUser,
             [FromServices] IQueryDispatcher dispatcher) =>
         {
-            var query = new GetDogProfileQuery(id, currentUser.Id!.Value);
+            var query = new GetDogQuery(id, currentUser.Id!.Value);
             var queryResponse = await dispatcher.DispatchAsync(query, CancellationToken.None);
             if (queryResponse is null)
             {

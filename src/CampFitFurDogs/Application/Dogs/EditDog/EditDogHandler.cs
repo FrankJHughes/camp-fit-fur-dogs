@@ -1,24 +1,24 @@
 using CampFitFurDogs.Application.Abstractions;
 using CampFitFurDogs.Application.Abstractions.Dogs;
-using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.EditDog;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Identity.Domain.Users;
 
-namespace CampFitFurDogs.Application.Dogs.EditDogProfile;
+namespace CampFitFurDogs.Application.Dogs.EditDog;
 
-public class EditDogProfileHandler : ICommandHandler<EditDogProfileCommand>
+public class EditDogHandler : ICommandHandler<EditDogCommand>
 {
-    private readonly IEditDogProfileWriter _writer;
+    private readonly IEditDogWriter _writer;
     private readonly IAppUnitOfWork _unitOfWork;
 
-    public EditDogProfileHandler(IEditDogProfileWriter writer, IAppUnitOfWork unitOfWork)
+    public EditDogHandler(IEditDogWriter writer, IAppUnitOfWork unitOfWork)
     {
         _writer = writer;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task HandleAsync(EditDogProfileCommand command, CancellationToken ct)
+    public async Task HandleAsync(EditDogCommand command, CancellationToken ct)
     {
         await _writer.WriteAsync(
             UserId.From(command.OwnerId),

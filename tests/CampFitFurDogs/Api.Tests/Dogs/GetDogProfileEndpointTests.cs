@@ -8,12 +8,12 @@ using static CampFitFurDogs.Api.Tests.Helpers.Dogs.DogHelper;
 
 namespace CampFitFurDogs.Api.Tests.Dogs;
 
-public class GetDogProfileEndpointTests : IAsyncLifetime
+public class GetDogEndpointTests : IAsyncLifetime
 {
     private PostgreSqlContainer _postgres = default!;
     private ApiFactory _api = default!;
 
-    private sealed record DogProfileDto(Guid Id, string Name, string Breed);
+    private sealed record DogDto(Guid Id, string Name, string Breed);
 
     // ------------------------------------------------------------
     // TEST INITIALIZATION
@@ -59,7 +59,7 @@ public class GetDogProfileEndpointTests : IAsyncLifetime
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await response.Content.ReadFromJsonAsync<DogProfileDto>();
+        var body = await response.Content.ReadFromJsonAsync<DogDto>();
         body.Should().NotBeNull();
         body!.Id.Should().Be(dogId);
         body.Name.Should().Be("Biscuit");

@@ -53,7 +53,7 @@ public class DogTests : ApiTestBase
         var profileResponse = await Client.GetAsync($"/api/dogs/{createdDog!.DogId}");
         profileResponse.EnsureSuccessStatusCode();
 
-        var profile = await profileResponse.Content.ReadFromJsonAsync<DogProfileDto>();
+        var profile = await profileResponse.Content.ReadFromJsonAsync<DogDto>();
 
         // STEP 4 — Assertions
         Assert.NotNull(profile);
@@ -65,5 +65,5 @@ public class DogTests : ApiTestBase
     }
 
     public record RegisterDogResponse(Guid DogId);
-    public record DogProfileDto(Guid Id, string Name, string Breed, string Sex, string DateOfBirth, Guid OwnerId);
+    public record DogDto(Guid Id, string Name, string Breed, string Sex, string DateOfBirth, Guid OwnerId);
 }

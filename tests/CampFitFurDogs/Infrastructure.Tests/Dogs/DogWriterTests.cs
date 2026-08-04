@@ -133,7 +133,7 @@ public class DogWriterTests :
         await writeCtx.SaveChangesAsync();
 
         await using var readCtx = _dogs.CreateContext();
-        var reader = new GetDogProfileReader(readCtx);
+        var reader = new GetDogReader(readCtx);
 
         var result = await reader.ReadAsync(
             dog.Id.Value,
@@ -153,7 +153,7 @@ public class DogWriterTests :
     public async Task GetByIdAsync_nonexistent_id_returns_null()
     {
         await using var readCtx = _dogs.CreateContext();
-        var reader = new GetDogProfileReader(readCtx);
+        var reader = new GetDogReader(readCtx);
 
         var result = await reader.ReadAsync(
             Guid.NewGuid(),

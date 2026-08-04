@@ -1,6 +1,6 @@
 namespace CampFitFurDogs.Api.Abstractions.Endpoints.Dogs;
 
-public sealed record EditDogProfileEndpointRequest(
+public sealed record EditDogEndpointRequest(
     string Name,
     string Breed,
     string DateOfBirth,

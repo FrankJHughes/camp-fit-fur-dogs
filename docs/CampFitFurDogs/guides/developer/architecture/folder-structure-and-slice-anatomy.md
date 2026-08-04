@@ -258,8 +258,8 @@ Abstractions/
     CreateUser/
     FindUserByExternalId/
   Dog/
-    EditDogProfile/
-    GetDogProfile/
+    EditDog/
+    GetDog/
     ListDogsByOwner/
     RegisterDog/
     RemoveDog/
@@ -283,8 +283,8 @@ Users/
   CreateUser/
 
 Dogs/
-  EditDogProfile/
-  GetDogProfile/
+  EditDog/
+  GetDog/
   ListDogsByOwner/
   RegisterDog/
   RemoveDog/

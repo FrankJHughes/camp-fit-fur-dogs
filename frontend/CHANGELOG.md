@@ -7,7 +7,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
-- View Dog Profile page (`/dogs/[id]`) — API client, `DogProfileCard` component, dynamic route with loading/404/error states (US-029)
+- View Dog Profile page (`/dogs/[id]`) — API client, `DogCard` component, dynamic route with loading/404/error states (US-029)
 - Remove Dog from View Dog Profile page with confirmation dialog and error feedback (US-032)
 - Vitest 3 configured as the frontend test runner with jsdom environment
 - React Testing Library and jest-dom matchers installed and configured

@@ -1,12 +1,12 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.EditDog;
 using CampFitFurDogs.Domain.Dogs;
 using FluentValidation;
 
-namespace CampFitFurDogs.Application.Dogs.EditDogProfile;
+namespace CampFitFurDogs.Application.Dogs.EditDog;
 
-public class EditDogProfileCommandValidator : AbstractValidator<EditDogProfileCommand>
+public class EditDogCommandValidator : AbstractValidator<EditDogCommand>
 {
-    public EditDogProfileCommandValidator()
+    public EditDogCommandValidator()
     {
         RuleFor(x => x.DogId).NotEmpty();
         RuleFor(x => x.OwnerId).NotEmpty();

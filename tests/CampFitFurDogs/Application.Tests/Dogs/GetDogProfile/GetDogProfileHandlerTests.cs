@@ -1,19 +1,19 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
-using CampFitFurDogs.Application.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDog;
+using CampFitFurDogs.Application.Dogs.GetDog;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Dogs;
 using Frank.Identity.Domain.Users;
 
-namespace CampFitFurDogs.Application.Tests.Dogs.GetDogProfile;
+namespace CampFitFurDogs.Application.Tests.Dogs.GetDog;
 
-public class GetDogProfileHandlerTests
+public class GetDogHandlerTests
 {
-    private readonly FakeGetDogProfileReader _reader = new();
-    private readonly GetDogProfileHandler _handler;
+    private readonly FakeGetDogReader _reader = new();
+    private readonly GetDogHandler _handler;
 
-    public GetDogProfileHandlerTests()
+    public GetDogHandlerTests()
     {
-        _handler = new GetDogProfileHandler(_reader);
+        _handler = new GetDogHandler(_reader);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class GetDogProfileHandlerTests
 
         _reader.Add(dog);
 
-        var query = new GetDogProfileQuery(dog.Id.Value, ownerId.Value);
+        var query = new GetDogQuery(dog.Id.Value, ownerId.Value);
 
         var result = await _handler.HandleAsync(query, CancellationToken.None);
 
@@ -44,7 +44,7 @@ public class GetDogProfileHandlerTests
     [Fact]
     public async Task Handle_DogNotFound_ResultShouldBeNull()
     {
-        var query = new GetDogProfileQuery(Guid.NewGuid(), Guid.NewGuid());
+        var query = new GetDogQuery(Guid.NewGuid(), Guid.NewGuid());
         var result = await _handler.HandleAsync(query, CancellationToken.None);
         result.Should().BeNull();
     }
@@ -64,8 +64,8 @@ public class GetDogProfileHandlerTests
 
         _reader.Add(dog);
 
-        var handler = new GetDogProfileHandler(_reader);
-        var query = new GetDogProfileQuery(dog.Id.Value, ownerB);
+        var handler = new GetDogHandler(_reader);
+        var query = new GetDogQuery(dog.Id.Value, ownerB);
 
         var result = await handler.HandleAsync(query, CancellationToken.None);
 

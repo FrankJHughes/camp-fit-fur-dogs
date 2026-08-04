@@ -1,14 +1,14 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
-using CampFitFurDogs.Application.Dogs.EditDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.EditDog;
+using CampFitFurDogs.Application.Dogs.EditDog;
 using CampFitFurDogs.Application.Tests.Fakes;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.TestUtilities.Builders;
 using CampFitFurDogs.TestUtilities.Fixtures;
 using Frank.Identity.Domain.Users;
 
-namespace CampFitFurDogs.Application.Tests.Dogs.EditDogProfile;
+namespace CampFitFurDogs.Application.Tests.Dogs.EditDog;
 
-public class EditDogProfileHandlerTests
+public class EditDogHandlerTests
 {
     [Fact]
     public async Task Handle_WhenDogExistsAndOwnerMatches_UpdatesDogAndCommits()
@@ -29,11 +29,11 @@ public class EditDogProfileHandlerTests
         var registerWriter = new FakeRegisterDogWriter(dogs);
         // await registerWriter.WriteAsync(dog);
         var reader = new FakeGetDogByIdReader(dogs);
-        var editWriter = new FakeEditDogProfileWriter(dogs);
+        var editWriter = new FakeEditDogWriter(dogs);
         var uow = new FakeAppUnitOfWork();
-        var handler = new EditDogProfileHandler(editWriter, uow);
+        var handler = new EditDogHandler(editWriter, uow);
 
-        var command = new EditDogProfileCommand(
+        var command = new EditDogCommand(
             DogId: dog.Id.Value,
             OwnerId: ownerId.Value,
             Name: "Waffles",

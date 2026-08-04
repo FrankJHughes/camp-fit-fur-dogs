@@ -76,7 +76,7 @@ Scrutor auto-registers `UserProfileReader` → `IUserProfileReader` by naming co
 
 ### Part C: Retrofit Existing Query Slices
 
-Move the read path from `IDogRepository.GetByIdAsync` into a `IDogProfileReader` inside the ViewDogProfile slice. This validates the pattern and removes the precedent of queries using aggregate repositories.
+Move the read path from `IDogRepository.GetByIdAsync` into a `IDogReader` inside the ViewDog slice. This validates the pattern and removes the precedent of queries using aggregate repositories.
 
 ## File Inventory — Before vs After
 
@@ -105,7 +105,7 @@ Move the read path from `IDogRepository.GetByIdAsync` into a `IDogProfileReader`
 - [ ] Program.cs wired with `app.DiscoverEndpoints()`
 - [ ] Existing endpoints retrofitted to implement `IEndpoint`
 - [ ] `IUserProfileReader` / `UserProfileReader` example (if GetUserProfile slice exists)
-- [ ] `IDogProfileReader` / `DogProfileReader` retrofit for ViewDogProfile
+- [ ] `IDogReader` / `DogReader` retrofit for ViewDog
 - [ ] `IDogRepository.GetByIdAsync` removed (read path moved to reader)
 - [ ] `FakeDogRepository.GetByIdAsync` removed
 - [ ] Guardrail test: every `IEndpoint` implementation is discovered
@@ -121,7 +121,7 @@ Move the read path from `IDogRepository.GetByIdAsync` into a `IDogProfileReader`
 - [ ] Adding a new command slice requires 0 modifications to existing files (once the aggregate's write surface is stable)
 - [ ] Adding a new endpoint requires 0 modifications to existing files
 - [ ] All existing endpoints implement `IEndpoint` and self-register
-- [ ] ViewDogProfile uses `IDogProfileReader`, not `IDogRepository`
+- [ ] ViewDog uses `IDogReader`, not `IDogRepository`
 - [ ] Scrutor auto-registers all readers by naming convention (no manual DI)
 - [ ] `DiscoverEndpoints()` discovers and maps all `IEndpoint` implementations
 - [ ] Guardrail test fails if a query handler depends on a repository interface

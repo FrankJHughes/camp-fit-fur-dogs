@@ -4,15 +4,15 @@ using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Fakes;
 
-public sealed class FakeEditDogProfileWriter : IEditDogProfileWriter
+public sealed class FakeEditDogWriter : IEditDogWriter
 {
     public List<Dog> Dogs { get; init; } = default!;
 
-    public FakeEditDogProfileWriter()
+    public FakeEditDogWriter()
     {
         Dogs = [];
     }
-    public FakeEditDogProfileWriter(List<Dog> dogs)
+    public FakeEditDogWriter(List<Dog> dogs)
     {
         Dogs = dogs;
     }

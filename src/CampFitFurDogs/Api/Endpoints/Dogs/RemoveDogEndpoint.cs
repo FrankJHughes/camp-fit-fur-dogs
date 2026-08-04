@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDog;
 using CampFitFurDogs.Application.Abstractions.Dogs.RemoveDog;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Cqrs.Queries;
@@ -20,7 +20,7 @@ public class RemoveDogEndpoint : IEndpoint
         {
             var userId = currentUser.Id!.Value;
 
-            var query = new GetDogProfileQuery(DogId: id, OwnerId: userId);
+            var query = new GetDogQuery(DogId: id, OwnerId: userId);
             var response = await queryDispatcher.DispatchAsync(query, CancellationToken.None);
             if (response is null)
             {

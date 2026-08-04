@@ -1,14 +1,14 @@
 import { createApiClient } from '@/lib/api/client';
 import type { QueryResult } from '@/lib/api/queryResult';
-import type { DogProfile } from '@/lib/dogs/dogModel';
+import type { Dog } from '@/lib/dogs/dogModel';
 
 const client = createApiClient();
 
-export async function getDogProfile(
+export async function getDog(
   dogId: string
-): Promise<QueryResult<DogProfile>> {
+): Promise<QueryResult<Dog>> {
   try {
-    const result = await client.get<DogProfile>(`/dogs/${dogId}`);
+    const result = await client.get<Dog>(`/dogs/${dogId}`);
 
     if (result.ok) {
       return { success: true, data: result.data };
@@ -25,7 +25,7 @@ export async function getDogProfile(
     };
   } catch (err: any) {
     // eslint-disable-next-line no-console
-    console.error('getDogProfile error', err);
+    console.error('getDog error', err);
     return {
       success: false,
       error: err?.message ?? 'Network error',

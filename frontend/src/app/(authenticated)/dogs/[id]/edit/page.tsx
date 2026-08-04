@@ -1,29 +1,29 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { getDogProfile } from '@/api/dogs/getDogProfile';
+import { getDog } from '@/api/dogs/getDog';
 import { toQueryState } from '@/lib/api/queryResult';
 import { DogNotFound } from '@/components/dogs/DogNotFound';
-import { editDogProfile } from '@/api/dogs/editDogProfile';
-import EditDogProfileForm from '@/components/dogs/EditDogProfileForm';
+import { editDog } from '@/api/dogs/editDog';
+import EditDogForm from '@/components/dogs/EditDogForm';
 import { useApiQuery } from '@/lib/hooks/useApiQuery';
 import { useFormCommand } from '@/lib/forms/useFormCommand';
-import type { DogFormValues, EditDogProfileCommand } from '@/lib/dogs/dogModel';
+import type { DogFormValues, EditDogCommand } from '@/lib/dogs/dogModel';
 import { mapDogFormValuesToEditCommand } from '@/lib/dogs/dogModel';
 
-export default function EditDogProfilePage() {
+export default function EditDogPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
   const state = useApiQuery(
-    () => getDogProfile(id).then(toQueryState),
+    () => getDog(id).then(toQueryState),
     [id]
   );
 
   const command = useFormCommand<DogFormValues>({
     run: (values: DogFormValues) => {
-      const cmd: EditDogProfileCommand = mapDogFormValuesToEditCommand(values);
-      return editDogProfile(id, cmd);
+      const cmd: EditDogCommand = mapDogFormValuesToEditCommand(values);
+      return editDog(id, cmd);
     },
     onSuccess: () => router.push(`/dogs/${id}`),
   });
@@ -68,7 +68,7 @@ export default function EditDogProfilePage() {
     <main className="page-container">
       <h1 className="page-title">Edit Dog Profile</h1>
 
-      <EditDogProfileForm
+      <EditDogForm
         command={command}
         initialValues={initialValues}
       />

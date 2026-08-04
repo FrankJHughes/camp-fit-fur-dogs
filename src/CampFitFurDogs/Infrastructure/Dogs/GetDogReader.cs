@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDog;
 using CampFitFurDogs.Domain.Dogs;
 using CampFitFurDogs.Infrastructure.Persistence;
 using Frank.Identity.Domain.Users;
@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CampFitFurDogs.Infrastructure.Dogs;
 
-public sealed class GetDogProfileReader(AppDbContext db) : IGetDogProfileReader
+public sealed class GetDogReader(AppDbContext db) : IGetDogReader
 {
-    public async Task<GetDogProfileResponse?> ReadAsync(
+    public async Task<GetDogResponse?> ReadAsync(
         Guid dogId, Guid ownerId, CancellationToken ct)
     {
         var dog = await db.Set<Dog>()
@@ -23,7 +23,7 @@ public sealed class GetDogProfileReader(AppDbContext db) : IGetDogProfileReader
             return null;
         }
 
-        return new GetDogProfileResponse(
+        return new GetDogResponse(
             dog.Id.Value,
             dog.OwnerId.Value,
             dog.Name.Value,

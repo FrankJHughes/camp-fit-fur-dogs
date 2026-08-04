@@ -202,7 +202,7 @@ await _db.SaveChangesAsync();
 ## 5.3 Testing readers
 
 ```csharp
-var result = await reader.GetDogProfile(id, ct);
+var result = await reader.GetDog(id, ct);
 ```
 
 ## 5.4 Testing EF Core configurations

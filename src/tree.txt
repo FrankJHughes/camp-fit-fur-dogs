@@ -3,8 +3,8 @@
 │   │   ├── Abstractions
 │   │   │   └── Endpoints
 │   │   │       └── Dogs
-│   │   │           ├── EditDogProfileEndpointRequest.cs
-│   │   │           ├── GetDogProfileEndpointResponse.cs
+│   │   │           ├── EditDogEndpointRequest.cs
+│   │   │           ├── GetDogEndpointResponse.cs
 │   │   │           ├── GetDogSummaryEndpointResponse.cs
 │   │   │           ├── ListDogsByCurrentUserEndpointResponse.cs
 │   │   │           ├── RegisterDogEndpointRequest.cs
@@ -17,8 +17,8 @@
 │   │   ├── CampFitFurDogs.Api.http
 │   │   ├── Endpoints
 │   │   │   ├── Dogs
-│   │   │   │   ├── EditDogProfileEndpoint.cs
-│   │   │   │   ├── GetDogProfileEndpoint.cs
+│   │   │   │   ├── EditDogEndpoint.cs
+│   │   │   │   ├── GetDogEndpoint.cs
 │   │   │   │   ├── ListDogsByCurrentUserEndpoint.cs
 │   │   │   │   ├── RegisterDogEndpoint.cs
 │   │   │   │   └── RemoveDogEndpoint.cs
@@ -69,12 +69,12 @@
 │   │   │   ├── Customer
 │   │   │   │   └── GetCustomerById
 │   │   │   ├── Dog
-│   │   │   │   ├── EditDogProfile
-│   │   │   │   │   └── EditDogProfileCommand.cs
-│   │   │   │   ├── GetDogProfile
-│   │   │   │   │   ├── GetDogProfileQuery.cs
-│   │   │   │   │   ├── GetDogProfileResponse.cs
-│   │   │   │   │   └── IGetDogProfileReader.cs
+│   │   │   │   ├── EditDog
+│   │   │   │   │   └── EditDogCommand.cs
+│   │   │   │   ├── GetDog
+│   │   │   │   │   ├── GetDogQuery.cs
+│   │   │   │   │   ├── GetDogResponse.cs
+│   │   │   │   │   └── IGetDogReader.cs
 │   │   │   │   ├── ListDogsByOwner
 │   │   │   │   │   ├── IListDogsByOwnerReader.cs
 │   │   │   │   │   ├── ListDogsByOwnerQuery.cs
@@ -90,12 +90,12 @@
 │   │   ├── AssemblyMarker.cs
 │   │   ├── CampFitFurDogs.Application.csproj
 │   │   ├── Dogs
-│   │   │   ├── EditDogProfile
-│   │   │   │   ├── EditDogProfileCommandValidator.cs
-│   │   │   │   └── EditDogProfileHandler.cs
-│   │   │   ├── GetDogProfile
-│   │   │   │   ├── GetDogProfileHandler.cs
-│   │   │   │   └── GetDogProfileQueryValidator.cs
+│   │   │   ├── EditDog
+│   │   │   │   ├── EditDogCommandValidator.cs
+│   │   │   │   └── EditDogHandler.cs
+│   │   │   ├── GetDog
+│   │   │   │   ├── GetDogHandler.cs
+│   │   │   │   └── GetDogQueryValidator.cs
 │   │   │   ├── ListDogsByOwner
 │   │   │   │   ├── ListDogsByOwnerHandler.cs
 │   │   │   │   └── ListDogsByOwnerQueryValidator.cs
@@ -134,7 +134,7 @@
 │       ├── Dogs
 │       │   ├── DogConfiguration.cs
 │       │   ├── DogRepository.cs
-│       │   ├── GetDogProfileReader.cs
+│       │   ├── GetDogReader.cs
 │       │   ├── ListDogsByOwnerReader.cs
 │       │   └── ServiceCollectionExtensions.cs
 │       ├── Migrations

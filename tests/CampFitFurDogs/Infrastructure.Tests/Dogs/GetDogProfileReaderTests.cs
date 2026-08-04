@@ -11,14 +11,14 @@ using Frank.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Infrastructure.Tests.Dogs;
 
-public class GetDogProfileReaderTests :
+public class GetDogReaderTests :
     IClassFixture<PostgresFixture<FrankIdentityDbContext>>,
     IClassFixture<PostgresFixture<AppDbContext>>
 {
     private readonly PostgresFixture<FrankIdentityDbContext> _identity;
     private readonly PostgresFixture<AppDbContext> _dogs;
 
-    public GetDogProfileReaderTests(
+    public GetDogReaderTests(
         PostgresFixture<FrankIdentityDbContext> identity,
         PostgresFixture<AppDbContext> dogs)
     {
@@ -57,12 +57,12 @@ public class GetDogProfileReaderTests :
     }
 
     [Fact]
-    public async Task GetDogProfileAsync_DogExistsAndOwnedByUser_ReturnsProfile()
+    public async Task GetDogAsync_DogExistsAndOwnedByUser_ReturnsProfile()
     {
         var (ownerId, dog) = await SeedDogAsync();
 
         await using var readCtx = _dogs.CreateContext();
-        var reader = new GetDogProfileReader(readCtx);
+        var reader = new GetDogReader(readCtx);
 
         var result = await reader.ReadAsync(
             dog.Id.Value,
@@ -79,10 +79,10 @@ public class GetDogProfileReaderTests :
     }
 
     [Fact]
-    public async Task GetDogProfileAsync_DogNotFound_ReturnsNull()
+    public async Task GetDogAsync_DogNotFound_ReturnsNull()
     {
         await using var ctx = _dogs.CreateContext();
-        var reader = new GetDogProfileReader(ctx);
+        var reader = new GetDogReader(ctx);
 
         var result = await reader.ReadAsync(
             Guid.NewGuid(),
@@ -93,13 +93,13 @@ public class GetDogProfileReaderTests :
     }
 
     [Fact]
-    public async Task GetDogProfileAsync_DogExistsButWrongOwner_ReturnsNull()
+    public async Task GetDogAsync_DogExistsButWrongOwner_ReturnsNull()
     {
         var (_, dog) = await SeedDogAsync();
         var wrongOwnerId = Guid.NewGuid();
 
         await using var readCtx = _dogs.CreateContext();
-        var reader = new GetDogProfileReader(readCtx);
+        var reader = new GetDogReader(readCtx);
 
         var result = await reader.ReadAsync(
             dog.Id.Value,

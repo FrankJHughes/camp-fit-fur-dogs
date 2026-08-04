@@ -1,6 +1,6 @@
 using CampFitFurDogs.Api.Abstractions.Endpoints.Dogs;
-using CampFitFurDogs.Application.Abstractions.Dogs.EditDogProfile;
-using CampFitFurDogs.Application.Abstractions.Dogs.GetDogProfile;
+using CampFitFurDogs.Application.Abstractions.Dogs.EditDog;
+using CampFitFurDogs.Application.Abstractions.Dogs.GetDog;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Cqrs.Queries;
 using Frank.Core.Application.Abstractions.Endpoints;
@@ -10,13 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 
-public class EditDogProfileEndpoint : IEndpoint
+public class EditDogEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
         app.MapPut("/api/dogs/{id}", async (
             [FromRoute] Guid id,
-            EditDogProfileEndpointRequest request,
+            EditDogEndpointRequest request,
             [FromServices] ICurrentUser currentUser,
             [FromServices] IQueryDispatcher queryDispatcher,
             [FromServices] ICommandDispatcher commandDispatcher,
@@ -24,14 +24,14 @@ public class EditDogProfileEndpoint : IEndpoint
         {
             var ownerId = currentUser.Id!.Value;
 
-            var query = new GetDogProfileQuery(id, ownerId);
+            var query = new GetDogQuery(id, ownerId);
             var response = await queryDispatcher.DispatchAsync(query, CancellationToken.None);
             if (response is null)
             {
                 return Results.NotFound();
             }
 
-            var command = new EditDogProfileCommand(
+            var command = new EditDogCommand(
                 id,
                 ownerId,
                 request.Name,
