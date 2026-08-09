@@ -20,7 +20,7 @@ public sealed class FetchUserInfoStepTests
         var ctx = new CallbackOidcContext
         {
             Code = "abc123",
-            Now = DateTimeOffset.UtcNow,
+            Timestamp = DateTimeOffset.UtcNow,
             AccessToken = "access-token-xyz"
         };
 
@@ -48,7 +48,7 @@ public sealed class FetchUserInfoStepTests
         var ctx = new CallbackOidcContext
         {
             Code = "abc123",
-            Now = DateTimeOffset.UtcNow,
+            Timestamp = DateTimeOffset.UtcNow,
             AccessToken = "access-token-xyz"
         };
 

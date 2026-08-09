@@ -1,39 +1,85 @@
-// src/Frank/Abstractions/Observability/IObservabilityContext.cs
 namespace Frank.Core.Application.Abstractions.Observations;
 
 /// <summary>
-/// Represents the structured context that flows through all observable operations.
-/// This context is immutable and must be provided by the infrastructure layer.
+/// Represents the structured, immutable context that flows through all
+/// observable operations in the application.
+///
+/// <para>
+/// Observation contexts provide the foundational metadata required for
+/// correlation, tracing, logging, and metric enrichment. They are created and
+/// supplied by the infrastructure layer and remain immutable throughout the
+/// lifetime of the operation, ensuring deterministic and consistent
+/// observability behavior.
+/// </para>
+///
+/// <para>
+/// This context is intended to be passed through pipelines, middleware,
+/// dispatch layers, and instrumentation components so that every observable
+/// event carries the same correlated metadata.
+/// </para>
 /// </summary>
 public interface IObservationContext
 {
     /// <summary>
-    /// A unique identifier used to correlate logs, traces, and metrics across boundaries.
+    /// Gets the unique identifier used to correlate logs, traces, and metrics
+    /// across boundaries and subsystems.
+    ///
+    /// <para>
+    /// Correlation identifiers allow distributed operations to be linked
+    /// together, enabling end‑to‑end tracing and unified diagnostic workflows.
+    /// </para>
     /// </summary>
     string CorrelationId { get; }
 
     /// <summary>
-    /// The vertical slice or capability emitting the event.
+    /// Gets the vertical slice, capability, or functional channel emitting the
+    /// event.
+    ///
+    /// <para>
+    /// Channels help categorize observability data by feature area, enabling
+    /// more granular filtering and analysis.
+    /// </para>
     /// </summary>
     string Channel { get; }
 
     /// <summary>
-    /// The module or subsystem within the slice.
+    /// Gets the module or subsystem within the slice that produced the event.
+    ///
+    /// <para>
+    /// Agents provide fine‑grained attribution for observability signals,
+    /// supporting diagnostics at the component level.
+    /// </para>
     /// </summary>
     string Agent { get; }
 
     /// <summary>
-    /// The environment (e.g., Development, Staging, Production).
+    /// Gets the environment in which the event occurred (e.g., Development,
+    /// Staging, Production).
+    ///
+    /// <para>
+    /// Environment metadata enables environment‑specific filtering,
+    /// troubleshooting, and operational analysis.
+    /// </para>
     /// </summary>
     string Environment { get; }
 
     /// <summary>
-    /// Timestamp of the event or operation.
+    /// Gets the timestamp associated with the event or operation.
+    ///
+    /// <para>
+    /// Timestamps ensure temporal accuracy for logs, traces, and metrics,
+    /// supporting chronological reconstruction and performance analysis.
+    /// </para>
     /// </summary>
     DateTimeOffset Timestamp { get; }
 
     /// <summary>
-    /// Additional metadata relevant to the operation.
+    /// Gets additional metadata relevant to the operation.
+    ///
+    /// <para>
+    /// Metadata may include request identifiers, feature flags, user context,
+    /// or any other structured information that enriches observability signals.
+    /// </para>
     /// </summary>
     IReadOnlyDictionary<string, object?> Metadata { get; }
 }

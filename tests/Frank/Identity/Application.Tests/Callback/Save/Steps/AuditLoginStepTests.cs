@@ -1,4 +1,4 @@
-using Frank.Core.Application.Abstractions.Audit;
+using Frank.Identity.Application.Abstractions.AuditLogging;
 using Frank.Identity.Application.Abstractions.Callback.Save;
 using Frank.Identity.Application.Callback.Save.Steps;
 using Frank.TestUtilities.Fakes.Authentication.Callback;

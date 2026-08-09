@@ -4,12 +4,32 @@ using Microsoft.Extensions.Logging;
 
 namespace Frank.Core.Api.Middleware.Cors;
 
+/// <summary>
+/// Middleware that logs detailed CORS activity for both simple requests and
+/// preflight (OPTIONS) requests.
+/// <para>
+/// This middleware inspects the incoming <c>Origin</c> header, evaluates the
+/// configured CORS policy via <see cref="ICorsPolicyProvider"/>, and logs whether
+/// the origin is allowed or blocked.
+/// It provides visibility into CORS behavior during development, diagnostics,
+/// and production monitoring.
+/// </para>
+/// </summary>
 public sealed class OriginLoggingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<OriginLoggingMiddleware> _logger;
     private readonly ICorsPolicyProvider _policyProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OriginLoggingMiddleware"/>
+    /// class.
+    /// </summary>
+    /// <param name="next">The next middleware in the pipeline.</param>
+    /// <param name="logger">The logger used to record CORS activity.</param>
+    /// <param name="policyProvider">
+    /// The CORS policy provider used to evaluate allowed origins.
+    /// </param>
     public OriginLoggingMiddleware(
         RequestDelegate next,
         ILogger<OriginLoggingMiddleware> logger,
@@ -20,6 +40,17 @@ public sealed class OriginLoggingMiddleware
         _policyProvider = policyProvider;
     }
 
+    /// <summary>
+    /// Processes the incoming HTTP request, evaluates its CORS origin, and logs
+    /// whether the request is allowed or blocked according to the active CORS
+    /// policy.
+    /// <para>
+    /// For preflight requests (OPTIONS + <c>Access-Control-Request-Method</c>),
+    /// the middleware logs the requested method and headers.
+    /// For simple requests, it logs only the origin, method, and path.
+    /// </para>
+    /// </summary>
+    /// <param name="context">The current HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         var origin = context.Request.Headers["Origin"].ToString();

@@ -1,4 +1,4 @@
-namespace CampFitFurDogs.Api.PlatformModules;
+namespace CampFitFurDogs.Api.HostingModules;
 
 public interface IGitHubArtifactClient
 {

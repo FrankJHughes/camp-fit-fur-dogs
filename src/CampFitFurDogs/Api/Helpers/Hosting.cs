@@ -1,5 +1,5 @@
-using CampFitFurDogs.Api.PlatformModules;
-using Frank.Core.Api.PlatformModules;
+using CampFitFurDogs.Api.HostingModules;
+using Frank.Core.Api.HostingModules;
 using Frank.Core.Application.Abstractions.Hosting;
 
 namespace CampFitFurDogs.Api.Helpers;

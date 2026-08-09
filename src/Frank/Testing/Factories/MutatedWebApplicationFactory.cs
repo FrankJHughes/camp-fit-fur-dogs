@@ -10,6 +10,31 @@ using Testcontainers.PostgreSql;
 
 namespace Frank.Testing.Factories;
 
+/// <summary>
+/// A highly configurable <see cref="WebApplicationFactory{TEntryPoint}"/> that
+/// integrates with the mutation‑based testing contexts used in the Frank testing
+/// harness.
+/// <para>
+/// This factory allows test suites to dynamically shape the test host using:
+/// </para>
+/// <list type="bullet">
+/// <item><description>Environment overrides</description></item>
+/// <item><description>Configuration overrides</description></item>
+/// <item><description>Service overrides</description></item>
+/// <item><description>Cookie authentication downgrades</description></item>
+/// <item><description>Endpoint assembly discovery</description></item>
+/// <item><description>Fake service injection</description></item>
+/// <item><description>Optional PostgreSQL test containers</description></item>
+/// </list>
+/// <para>
+/// The generic <typeparamref name="TContext"/> and <typeparamref name="TClientContext"/>
+/// parameters ensure that both application‑level and client‑level contexts can be
+/// mutated independently while remaining strongly typed.
+/// </para>
+/// </summary>
+/// <typeparam name="TEntryPoint">The ASP.NET Core entry point type.</typeparam>
+/// <typeparam name="TContext">The application context type.</typeparam>
+/// <typeparam name="TClientContext">The client context type.</typeparam>
 public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClientContext>
     : WebApplicationFactory<TEntryPoint>
     where TEntryPoint : class
@@ -18,8 +43,18 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
 {
     private TContext _ctx;
     private PostgreSqlContainer? _db;
+
+    /// <summary>
+    /// The underlying service collection used during test host construction.
+    /// Useful for introspection or advanced mutation scenarios.
+    /// </summary>
     public IServiceCollection? ServiceCollection { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of the factory using the provided mutated
+    /// application context.
+    /// </summary>
+    /// <param name="ctx">The initial application context.</param>
     protected MutatedWebApplicationFactory(TContext ctx)
     {
         _ctx = ctx;
@@ -28,6 +63,14 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     // ------------------------------------------------------------
     // CLIENT CREATION
     // ------------------------------------------------------------
+
+    /// <summary>
+    /// Creates an <see cref="HttpClient"/> configured according to the provided
+    /// client context, including default headers and optional authentication
+    /// simulation.
+    /// </summary>
+    /// <param name="clientCtx">The client context used to mutate the client.</param>
+    /// <returns>A configured <see cref="HttpClient"/> instance.</returns>
     public HttpClient CreateClient(TClientContext clientCtx)
     {
         var client = base.CreateClient(new WebApplicationFactoryClientOptions
@@ -47,6 +90,14 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     // ------------------------------------------------------------
     // AUTHENTICATION EXTENSION POINT
     // ------------------------------------------------------------
+
+    /// <summary>
+    /// Allows derived factories to simulate authentication for the test client.
+    /// <para>
+    /// The default implementation does nothing, but subclasses may inject cookies,
+    /// bearer tokens, or custom authentication flows.
+    /// </para>
+    /// </summary>
     protected virtual Task ApplyAuthenticationAsync(HttpClient client, TClientContext clientCtx)
     {
         return Task.CompletedTask;
@@ -55,6 +106,22 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     // ------------------------------------------------------------
     // CONFIGURATION + SERVICES
     // ------------------------------------------------------------
+
+    /// <summary>
+    /// Configures the test web host using the mutated application context.
+    /// <para>
+    /// This includes:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>Environment selection</description></item>
+    /// <item><description>Configuration overrides</description></item>
+    /// <item><description>Service overrides</description></item>
+    /// <item><description>Fake service injection</description></item>
+    /// <item><description>Database configuration</description></item>
+    /// <item><description>Endpoint assembly registration</description></item>
+    /// <item><description>Cookie rewrite startup filter</description></item>
+    /// </list>
+    /// </summary>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment(_ctx.Environment);
@@ -94,26 +161,31 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
 
             ConfigureMutations(context, services);
 
-            // ------------------------------------------------------------
-            // COOKIE DOWNGRADE VIA STARTUP FILTER
-            // ------------------------------------------------------------
             if (_ctx.OverrideCookiesForHttp)
             {
                 services.AddSingleton<IStartupFilter>(new CookieRewriteStartupFilter());
             }
-
         });
     }
 
     // ------------------------------------------------------------
     // EXTENSION POINTS
     // ------------------------------------------------------------
+
+    /// <summary>
+    /// Allows derived factories to apply additional service mutations beyond
+    /// configuration and DI overrides.
+    /// </summary>
     protected virtual void ConfigureMutations(
         WebHostBuilderContext context,
         IServiceCollection services)
     {
     }
 
+    /// <summary>
+    /// Allows derived factories to configure database services when a PostgreSQL
+    /// container is enabled.
+    /// </summary>
     protected virtual void ConfigureDatabase(
         WebHostBuilderContext context,
         IServiceCollection services,
@@ -121,6 +193,9 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     {
     }
 
+    /// <summary>
+    /// Allows derived factories to configure services when database usage is disabled.
+    /// </summary>
     protected virtual void ConfigureDatabaseDisabled(
         WebHostBuilderContext context,
         IServiceCollection services)
@@ -130,6 +205,15 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
     // ------------------------------------------------------------
     // DATABASE LIFECYCLE
     // ------------------------------------------------------------
+
+    /// <summary>
+    /// Starts a PostgreSQL test container and mutates the application context to
+    /// enable database usage.
+    /// </summary>
+    /// <param name="configureBuilder">
+    /// Optional builder mutation for customizing the PostgreSQL container.
+    /// </param>
+    /// <returns>The same factory instance.</returns>
     public async Task<MutatedWebApplicationFactory<TEntryPoint, TContext, TClientContext>> WithDatabaseAsync(
         Func<PostgreSqlBuilder, PostgreSqlBuilder>? configureBuilder = null)
     {
@@ -149,6 +233,9 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
         return this;
     }
 
+    /// <summary>
+    /// Disposes the factory and any associated PostgreSQL container.
+    /// </summary>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
@@ -159,8 +246,21 @@ public abstract class MutatedWebApplicationFactory<TEntryPoint, TContext, TClien
 // ------------------------------------------------------------
 // STARTUP FILTER FOR COOKIE REWRITE
 // ------------------------------------------------------------
+
+/// <summary>
+/// A startup filter that rewrites <c>Set-Cookie</c> headers to remove the
+/// <c>Secure</c> attribute, enabling cookie usage over HTTP in test environments.
+/// <para>
+/// This is necessary because many authentication flows require cookies but
+/// ASP.NET Core enforces <c>Secure</c> cookies by default.
+/// </para>
+/// </summary>
 public sealed class CookieRewriteStartupFilter : IStartupFilter
 {
+    /// <summary>
+    /// Configures the middleware pipeline to rewrite cookie headers before the
+    /// response is sent.
+    /// </summary>
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
         return app =>
@@ -176,9 +276,7 @@ public sealed class CookieRewriteStartupFilter : IStartupFilter
                         foreach (var header in setCookieHeaders)
                         {
                             if (header is null)
-                            {
                                 continue;
-                            }
 
                             var modified = header
                                 .Replace("Secure;", "", StringComparison.OrdinalIgnoreCase)
@@ -200,4 +298,3 @@ public sealed class CookieRewriteStartupFilter : IStartupFilter
         };
     }
 }
-

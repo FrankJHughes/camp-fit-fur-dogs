@@ -23,7 +23,7 @@ public sealed class ValidateTokensStepTests
         {
             Code = "abc123",                 // REQUIRED
             IdToken = "fake-id-token",
-            Now = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow
         };
 
         // Act
@@ -54,7 +54,7 @@ public sealed class ValidateTokensStepTests
         {
             Code = "abc123",                 // REQUIRED
             IdToken = "valid-id-token",
-            Now = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow
         };
 
         // Act

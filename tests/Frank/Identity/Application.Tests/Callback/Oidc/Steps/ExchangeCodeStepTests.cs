@@ -23,7 +23,7 @@ public sealed class ExchangeCodeStepTests
         var ctx = new CallbackOidcContext
         {
             Code = "abc123",
-            Now = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow
         };
 
         // Act
@@ -48,7 +48,7 @@ public sealed class ExchangeCodeStepTests
         var ctx = new CallbackOidcContext
         {
             Code = "abc123",
-            Now = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow
         };
 
         // Act

@@ -4,8 +4,41 @@ using Microsoft.Extensions.Configuration;
 
 namespace Frank.Identity.EntityFrameworkCore.DbContexts;
 
-public sealed class FrankIdentityDesignTimeDbContextFactory : IDesignTimeDbContextFactory<FrankIdentityDbContext>
+/// <summary>
+/// Provides a design‑time factory for creating <see cref="FrankIdentityDbContext"/>
+/// instances when invoked by Entity Framework Core tooling.
+/// <para>
+/// EF Core requires a design‑time factory when the application's normal startup
+/// path does not provide a fully configured <see cref="DbContext"/>—for example,
+/// during migrations, scaffolding, or CLI operations.
+/// </para>
+/// <para>
+/// This factory loads configuration from:
+/// </para>
+/// <list type="bullet">
+/// <item><description><c>appsettings.json</c></description></item>
+/// <item><description><c>appsettings.Development.json</c></description></item>
+/// <item><description>Environment variables (required for CI/CD pipelines)</description></item>
+/// </list>
+/// <para>
+/// It then constructs a <see cref="DbContextOptions{TContext}"/> using the
+/// configured PostgreSQL connection string.
+/// </para>
+/// </summary>
+public sealed class FrankIdentityDesignTimeDbContextFactory
+    : IDesignTimeDbContextFactory<FrankIdentityDbContext>
 {
+    /// <summary>
+    /// Creates a new <see cref="FrankIdentityDbContext"/> instance for use by
+    /// EF Core design‑time tooling such as <c>dotnet ef migrations</c>.
+    /// </summary>
+    /// <param name="args">
+    /// Optional command‑line arguments supplied by EF Core tooling.
+    /// </param>
+    /// <returns>
+    /// A fully configured <see cref="FrankIdentityDbContext"/> instance using
+    /// the resolved connection string.
+    /// </returns>
     public FrankIdentityDbContext CreateDbContext(string[] args)
     {
         var config = new ConfigurationBuilder()
