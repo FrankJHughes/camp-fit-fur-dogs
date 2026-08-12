@@ -8,7 +8,7 @@ using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.RemoveDog;
 
-public class RemoveDogHandlerTests
+public class RemoveDogCommandHandlerTests
 {
     [Fact]
     public async Task Handle_WhenDogExistsAndOwnerMatches_RemovesDogAndCommits()
@@ -32,7 +32,7 @@ public class RemoveDogHandlerTests
         var writer = new FakeRemoveDogWriter(dogs);
 
         var uow = new FakeAppUnitOfWork();
-        var handler = new RemoveDogHandler(reader, writer, uow);
+        var handler = new RemoveDogCommandHandler(reader, writer, uow);
 
         var command = new RemoveDogCommand(
             DogId: dog.Id.Value,
@@ -54,7 +54,7 @@ public class RemoveDogHandlerTests
         var writer = new FakeRemoveDogWriter(dogs);
         var uow = new FakeAppUnitOfWork();
 
-        var handler = new RemoveDogHandler(reader, writer, uow);
+        var handler = new RemoveDogCommandHandler(reader, writer, uow);
 
         var command = new RemoveDogCommand(
             DogId: Guid.NewGuid(),
@@ -84,7 +84,7 @@ public class RemoveDogHandlerTests
         var writer = new FakeRemoveDogWriter(dogs);
 
         var uow = new FakeAppUnitOfWork();
-        var handler = new RemoveDogHandler(reader, writer, uow);
+        var handler = new RemoveDogCommandHandler(reader, writer, uow);
 
         var command = new RemoveDogCommand(
             DogId: dog.Id.Value,

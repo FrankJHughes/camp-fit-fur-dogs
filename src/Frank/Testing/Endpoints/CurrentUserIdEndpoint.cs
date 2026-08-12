@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Security.Claims;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Builder;
@@ -25,10 +27,10 @@ public sealed class CurrentUserIdEndpoint : IEndpoint
     /// <c>userId</c> value will be <c>null</c>.
     /// </para>
     /// </summary>
-    /// <param name="endpoints">The endpoint route builder used to register the route.</param>
-    public void Map(IEndpointRouteBuilder endpoints)
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        endpoints.MapGet("/__test__/current-user-id", (HttpContext http) =>
+        api.MapGet("/__test__/current-user-id", (HttpContext http) =>
         {
             var userId = http.User.FindFirstValue(ClaimTypes.NameIdentifier);
             return Results.Json(new { userId });

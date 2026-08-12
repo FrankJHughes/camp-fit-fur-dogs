@@ -267,7 +267,7 @@ All notable changes to this project will be documented in this file.
 - `copilot-instructions.md` — added EF Core Conventions section (US-107)
 - `di-conventions.md` — added Section 6: EF Entity Configuration Conventions (US-107)
 - `folder-structure.md` — added `Configuration.cs` to slice anatomy, Infrastructure template, and contributor steps (US-107)
-- `GetDogHandler` depends on `IGetDogReader` instead of `IDogRepository` (US-106)
+- `GetDogQueryHandler` depends on `IGetDogReader` instead of `IDogRepository` (US-106)
 - Endpoint classes implement `IEndpoint`; group files (`UserEndpoints.cs`, `DogEndpoints.cs`) eliminated (US-106)
 - `Endpoints.MapEndpoints()` uses assembly scanning instead of manual wiring (US-106)
 

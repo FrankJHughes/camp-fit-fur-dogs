@@ -1,3 +1,5 @@
+#nullable enable
+
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Application.Abstractions.Observations;
 using Microsoft.AspNetCore.Builder;
@@ -8,9 +10,9 @@ namespace Frank.TestUtilities.Endpoints;
 
 public sealed class CorrelationEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder endpoints)
+    public void Map(RouteGroupBuilder api)
     {
-        endpoints.MapGet("/__test__/correlation", (IRequestObservationContext observabilityContext) =>
+        api.MapGet("/__test__/correlation", (IRequestObservationContext observabilityContext) =>
         {
             var correlationId = observabilityContext.CorrelationId;
 

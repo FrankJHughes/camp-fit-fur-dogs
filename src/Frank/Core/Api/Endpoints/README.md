@@ -10,6 +10,15 @@ implements `IEndpoint`, and exposes a `Map` method.
 This folder contains the infrastructure that discovers those endpoints and
 maps them exactly once.
 
+All routes are mapped **relative to the `/api` group**, which is created in
+Program.cs:
+
+```csharp
+app.MapRegisteredApiEndpoints("/api")
+    .WithTags("API")
+    .WithDescription("Camp Fit Fur Dogs API");
+```
+
 ---
 
 ## Files
@@ -30,8 +39,9 @@ Endpoints/
 
 - Retrieves all registered `IEndpoint` implementations from DI.
 - Deduplicates endpoints by concrete type name.
-- Invokes each endpoint’s `Map` method to attach routes to the ASP.NET Core pipeline.
+- Invokes each endpoint’s `Map(RouteGroupBuilder api)` method.
 - Ensures every slice-defined endpoint is mapped exactly once.
+- Applies core routing behaviors (filtering, validation) before mapping.
 
 ### Why this matters
 
@@ -42,7 +52,7 @@ This extension ensures they are all mapped without requiring manual wiring in
 Usage example:
 
 ```csharp
-app.MapRegisteredApiEndpoints();
+app.MapRegisteredApiEndpoints("/api");
 ```
 
 ---
@@ -54,8 +64,8 @@ endpoint implementations using the Frank.Core orchestrator.
 
 ### Responsibilities
 
-- Scans assemblies for interfaces that:
-  - are `IEndpoint`
+- Scans assemblies for types that:
+  - implement `IEndpoint`
   - AND are decorated with `[Registration]`
 - Registers all implementations of `IEndpoint` found in the scanned assemblies.
 - Allows customization of discovery rules via `DiscoveryOptions`.
@@ -104,31 +114,25 @@ This keeps slice code clean and avoids boilerplate in the host application.
 
 ```csharp
 [Registration]
-public interface ICreateDogEndpoint : IEndpoint { }
-```
-
-2. **Slice implements the endpoint**
-
-```csharp
-public sealed class CreateDogEndpoint : ICreateDogEndpoint
+public sealed class CreateDogEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder app)
+    public void Map(RouteGroupBuilder api)
     {
-        app.MapPost("/dogs", HandleAsync);
+        api.MapPost("/dogs", HandleAsync);
     }
 }
 ```
 
-3. **Host registers endpoints**
+2. **Host registers endpoints**
 
 ```csharp
 services.AddFrankCoreApiEndpoints(assembliesToSearch);
 ```
 
-4. **Host maps endpoints**
+3. **Host maps endpoints**
 
 ```csharp
-app.MapRegisteredApiEndpoints();
+app.MapRegisteredApiEndpoints("/api");
 ```
 
 Everything else is automatic.
@@ -149,12 +153,14 @@ Everything else is automatic.
 - **Deterministic mapping**  
   Deduplication ensures each endpoint maps exactly once.
 
+- **Group-relative routing**  
+  Endpoints never hard‑code `/api`.
+
 ---
 
 ## Notes
 
-- Endpoint discovery is opt-in: if no assemblies are provided, nothing is registered.
+- Endpoint discovery is opt‑in: if no assemblies are provided, nothing is registered.
 - Mapping is runtime-only: endpoints must be registered before mapping.
 - The orchestrator ensures consistent discovery rules across all subsystems.
 
----

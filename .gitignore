@@ -34,3 +34,4 @@ scripts/scratch/scratch.json
 scripts/scratch/scratch.yaml
 *.lscache
 
+*/tree.txt

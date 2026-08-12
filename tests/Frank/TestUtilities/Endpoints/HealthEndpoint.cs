@@ -1,3 +1,5 @@
+#nullable enable
+
 using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,9 +9,9 @@ namespace Frank.TestUtilities.Endpoints;
 
 public sealed class HealthEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder endpoints)
+    public void Map(RouteGroupBuilder api)
     {
-        endpoints.MapGet("/__test__/health", () =>
+        api.MapGet("/__test__/health", () =>
         {
             return Results.Ok(new { status = "ok" });
         })

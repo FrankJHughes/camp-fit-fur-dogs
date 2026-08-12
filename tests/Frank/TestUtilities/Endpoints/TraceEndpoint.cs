@@ -1,3 +1,5 @@
+#nullable enable
+
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Core.Application.Abstractions.Observations;
 using Microsoft.AspNetCore.Builder;
@@ -8,9 +10,9 @@ namespace Frank.TestUtilities.Endpoints;
 
 public sealed class TraceEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder endpoints)
+    public void Map(RouteGroupBuilder api)
     {
-        endpoints.MapGet("/__test__/trace", (IObservationSink trace, IRequestObservationContext ctx) =>
+        api.MapGet("/__test__/trace", (IObservationSink trace, IRequestObservationContext ctx) =>
         {
             trace.Emit(
                 "test_trace_event",   // name

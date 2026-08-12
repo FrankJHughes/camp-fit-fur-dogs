@@ -7,11 +7,27 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 
+/// <summary>
+/// Handles HTTP GET requests for retrieving all dogs owned by the currently
+/// authenticated user.
+/// <para>
+/// This endpoint queries the dog list for the current user and returns a
+/// collection of lightweight dog summaries suitable for dashboards and list views.
+/// </para>
+/// </summary>
 public class ListDogsByCurrentUserEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder app)
+    /// <summary>
+    /// Maps the <c>/dogs</c> route to the list‑dogs operation.
+    /// <para>
+    /// The <c>/api</c> prefix is applied automatically by the API group created
+    /// in <c>MapRegisteredApiEndpoints("/api")</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        _ = app.MapGet("/api/dogs", async (
+        api.MapGet("/dogs", async (
             [FromServices] ICurrentUser currentUser,
             [FromServices] IQueryDispatcher dispatcher) =>
         {

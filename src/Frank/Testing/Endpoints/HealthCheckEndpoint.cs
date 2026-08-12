@@ -1,3 +1,5 @@
+#nullable enable
+
 using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -24,10 +26,10 @@ public sealed class HealthCheckEndpoint : IEndpoint
     /// host availability without requiring authentication.
     /// </para>
     /// </summary>
-    /// <param name="endpoints">The endpoint route builder used to register the route.</param>
-    public void Map(IEndpointRouteBuilder endpoints)
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        endpoints.MapGet("/__test__/health", () =>
+        api.MapGet("/__test__/health", () =>
         {
             return Results.Ok(new { status = "ok" });
         })

@@ -8,7 +8,7 @@ public class ObservabilitySinkTests : ObservabilityTestBase
     [Fact]
     public async Task Emits_TraceEvents_On_Successful_Request()
     {
-        var response = await Client.GetAsync("/__test__/trace");
+        var response = await Client.GetAsync("/api/__test__/trace");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotEmpty(Trace.Events);
@@ -17,7 +17,7 @@ public class ObservabilitySinkTests : ObservabilityTestBase
     [Fact]
     public async Task Emits_TraceEvents_On_Error_Request()
     {
-        var response = await Client.GetAsync("/__test__/throw");
+        var response = await Client.GetAsync("/api/__test__/throw");
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         Assert.NotEmpty(Trace.Events);

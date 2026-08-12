@@ -23,62 +23,37 @@ namespace Frank.Identity.Api.Endpoints;
 /// </para>
 /// </summary>
 /// <remarks>
-/// This endpoint follows the Identity purity rules described in US‑110, US‑111, and US‑133:
-/// <list type="bullet">
-/// <item><description>No identity provider tokens are exposed.</description></item>
-/// <item><description>No domain logic is embedded in the endpoint.</description></item>
-/// <item><description>Session revocation is delegated to the application pipeline.</description></item>
-/// <item><description>The endpoint returns only safe, client‑consumable redirect information.</description></item>
-/// </list>
+/// This endpoint follows the Identity purity rules described in US‑110, US‑111, and US‑133.
 /// </remarks>
-public class LogoutEndpoint : IEndpoint
+public sealed class LogoutEndpoint : IEndpoint
 {
     /// <summary>
-    /// Maps the logout endpoint to <c>/api/identity/logout</c>.
+    /// Maps the logout endpoint to <c>/identity/logout</c>.
     /// <para>
-    /// This endpoint is anonymous because clients must be able to log out even when
-    /// their session has expired or is otherwise invalid.
+    /// The <c>/api</c> prefix is applied automatically by the API route group
+    /// created in <c>MapRegisteredApiEndpoints("/api")</c>.
     /// </para>
     /// </summary>
-    /// <param name="app">The route builder used to register the endpoint.</param>
-    public void Map(IEndpointRouteBuilder app)
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        app.MapGet("/api/identity/logout", HandleAsync)
-            .AllowAnonymous();
+        api.MapGet("/identity/logout", HandleAsync)
+           .AllowAnonymous();
     }
 
     /// <summary>
     /// Handles the logout request.
-    /// <para>
-    /// The logout flow consists of:
-    /// <list type="number">
-    /// <item><description>Read the plaintext session token from the cookie.</description></item>
-    /// <item><description>Hash the token and dispatch a <see cref="RevokeSessionCommand"/>.</description></item>
-    /// <item><description>Delete the session cookie.</description></item>
-    /// <item><description>Determine the post‑logout redirect URL.</description></item>
-    /// <item><description>Return a <see cref="LogoutEndpointResponse"/> containing the redirect URL.</description></item>
-    /// </list>
-    /// </para>
     /// </summary>
-    /// <param name="httpContext">The current HTTP context.</param>
-    /// <param name="tokenService">Generates and hashes session tokens.</param>
-    /// <param name="commandDispatcher">Dispatches commands to revoke sessions.</param>
-    /// <param name="frontendOptionsMonitor">Provides the current frontend configuration.</param>
-    /// <returns>A result containing the URL the client should navigate to after logout.</returns>
-    /// <exception cref="BadConfigurationException">
-    /// Thrown when frontend configuration is missing or malformed.
-    /// </exception>
     private async Task<IResult> HandleAsync(
         HttpContext httpContext,
         [FromServices] ISessionTokenGenerator tokenService,
         [FromServices] ICommandDispatcher commandDispatcher,
         IOptionsMonitor<FrontendSettings> frontendOptionsMonitor)
     {
-
         // 1. Read plaintext token from cookie
         var plaintextToken = httpContext.Request.Cookies["session"];
 
-        // 2. Hash the plaintext token
+        // 2. Hash the plaintext token and revoke the session
         if (!string.IsNullOrEmpty(plaintextToken))
         {
             try
@@ -93,12 +68,10 @@ public class LogoutEndpoint : IEndpoint
             }
         }
 
-        // Delete the session cookie regardless of revocation outcome
+        // 3. Delete the session cookie regardless of revocation outcome
         httpContext.Response.Cookies.Delete("session");
 
-        //
-        // Determine where to redirect after logout.
-        //
+        // 4. Determine post‑logout redirect URL
         var returnUrl = httpContext.Request.Query["return_url"].ToString();
 
         if (string.IsNullOrWhiteSpace(returnUrl))
@@ -112,7 +85,7 @@ public class LogoutEndpoint : IEndpoint
             returnUrl = frontendBaseUrl;
         }
 
-        return Results.Ok(
-            new LogoutEndpointResponse(returnUrl));
+        // 5. Return safe redirect information
+        return Results.Ok(new LogoutEndpointResponse(returnUrl));
     }
 }

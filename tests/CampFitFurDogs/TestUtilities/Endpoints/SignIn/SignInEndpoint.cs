@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.ObjectModel;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions.Callback.Oidc;
@@ -16,9 +18,9 @@ namespace CampFitFurDogs.TestUtilities.Endpoints.SignIn;
 
 public sealed partial class SignInEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder endpoints)
+    public void Map(RouteGroupBuilder api)
     {
-        endpoints.MapPost("/__test__/sign-in", async (
+        api.MapPost("/__test__/sign-in", async (
             SignInRequest req,
             HttpContext http,
             [FromServices] IUserResolver identityResolver,
@@ -40,8 +42,7 @@ public sealed partial class SignInEndpoint : IEndpoint
             // 2. Resolve identity → UserId
             var ownerId = await identityResolver.ResolveAsync(callback, http.RequestAborted);
 
-            // 3. Generate secure random plaintext token (256-bit)
-            // 4. Hash for DB storage (SHA-256 hex)
+            // 3–4. Generate secure random plaintext token + hash
             var sessionToken = sessionTokenService.Generate();
 
             // 5. Create a real session aggregate
@@ -76,5 +77,4 @@ public sealed partial class SignInEndpoint : IEndpoint
         })
         .AllowAnonymous();
     }
-
 }

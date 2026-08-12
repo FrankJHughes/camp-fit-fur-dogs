@@ -7,14 +7,14 @@ using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.ListDogsByOwner;
 
-public class ListDogsByOwnerHandlerTests
+public class ListDogsByOwnerQueryHandlerTests
 {
     private readonly FakeListDogsByOwnerReader _reader = new();
-    private readonly ListDogsByOwnerHandler _handler;
+    private readonly ListDogsByOwnerQueryHandler _handler;
 
-    public ListDogsByOwnerHandlerTests()
+    public ListDogsByOwnerQueryHandlerTests()
     {
-        _handler = new ListDogsByOwnerHandler(_reader);
+        _handler = new ListDogsByOwnerQueryHandler(_reader);
     }
 
     [Fact]

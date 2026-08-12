@@ -1,56 +1,72 @@
 using Frank.Core.Application.Abstractions.Endpoints;
+using Frank.Core.Api.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using Frank.Core.Api.Routing.Validation;
 
 namespace Frank.Core.Api.Endpoints;
 
 /// <summary>
-/// Provides extension methods for mapping API endpoints that have been
-/// registered in the dependency injection container.
+/// Provides extension methods for discovering and mapping all registered
+/// <see cref="IEndpoint"/> implementations into a unified API route group.
 /// <para>
-/// This enables vertical‑slice endpoint discovery: any implementation of
-/// <see cref="IEndpoint"/> registered in DI will be automatically mapped
-/// when the application starts.
+/// The application supplies the API root path (e.g., <c>"/api"</c>) and owns
+/// all API metadata such as tags, descriptions, and versioning.
 /// </para>
 /// <para>
-/// Endpoint classes are expected to implement <see cref="IEndpoint"/> and
-/// define their own routing via the <c>Map</c> method.
-/// This extension ensures all such endpoints are invoked exactly once,
-/// avoiding duplicate registrations through <c>DistinctBy</c>.
+/// Frank.Core applies cross‑cutting routing behaviors such as endpoint
+/// filtering and request validation, discovers endpoints from the DI container,
+/// and maps them into the created route group.
 /// </para>
 /// </summary>
 public static class EndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Discovers all registered <see cref="IEndpoint"/> implementations from
-    /// the service provider and maps them into the application's routing
-    /// pipeline.
+    /// Creates a top‑level API route group at the specified path, applies
+    /// core‑owned routing behaviors, discovers all registered
+    /// <see cref="IEndpoint"/> implementations, and maps them into the group.
     /// <para>
-    /// Endpoints are deduplicated by their concrete type name to prevent
-    /// accidental double‑registration when multiple slices reference the same
-    /// endpoint type.
+    /// The returned <see cref="RouteGroupBuilder"/> allows the application to
+    /// apply API metadata such as tags and descriptions.
     /// </para>
     /// </summary>
     /// <param name="app">
-    /// The <see cref="IEndpointRouteBuilder"/> used to configure API routing.
+    /// The application's root <see cref="IEndpointRouteBuilder"/>, used for
+    /// endpoint discovery and group creation.
+    /// </param>
+    /// <param name="root">
+    /// The API root path (e.g., <c>"/api"</c>) under which all endpoints will be
+    /// grouped.
     /// </param>
     /// <returns>
-    /// The same <see cref="IEndpointRouteBuilder"/> instance, enabling fluent
-    /// configuration.
+    /// A <see cref="RouteGroupBuilder"/> representing the created API group,
+    /// allowing the application to apply metadata.
     /// </returns>
-    public static IEndpointRouteBuilder MapRegisteredApiEndpoints(this IEndpointRouteBuilder app)
+    public static RouteGroupBuilder MapRegisteredApiEndpoints(
+        this IEndpointRouteBuilder app,
+        string root)
     {
+        // Create the top-level API group
+        var api = app.MapGroup(root);
+
+        // Apply core-owned routing behaviors (Frank.Core.Routing)
+        api.AddEndpointFiltering();
+        api.AddRequestValidation();
+
+        // Discover endpoints from DI
         var endpoints = app.ServiceProvider
             .GetServices<IEndpoint>()
-            .DistinctBy(endpoint =>
-                endpoint.GetType().FullName)
+            .DistinctBy(e => e.GetType().FullName)
             .ToList();
 
+        // Map endpoints into the group
         foreach (var endpoint in endpoints)
         {
-            endpoint.Map(app);
+            endpoint.Map(api);
         }
 
-        return app;
+        // App will apply metadata (tags, description, versioning)
+        return api;
     }
 }

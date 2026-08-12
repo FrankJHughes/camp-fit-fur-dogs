@@ -1,4 +1,4 @@
-using CampFitFurDogs.Application.Abstractions.Dogs;
+using CampFitFurDogs.Application.Abstractions.Dogs.RemoveDog;
 using CampFitFurDogs.Domain.Dogs;
 
 namespace CampFitFurDogs.Application.Tests.Fakes;

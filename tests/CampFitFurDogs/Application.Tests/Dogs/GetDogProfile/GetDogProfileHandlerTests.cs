@@ -6,14 +6,14 @@ using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.GetDog;
 
-public class GetDogHandlerTests
+public class GetDogQueryHandlerTests
 {
     private readonly FakeGetDogReader _reader = new();
-    private readonly GetDogHandler _handler;
+    private readonly GetDogQueryHandler _handler;
 
-    public GetDogHandlerTests()
+    public GetDogQueryHandlerTests()
     {
-        _handler = new GetDogHandler(_reader);
+        _handler = new GetDogQueryHandler(_reader);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class GetDogHandlerTests
 
         _reader.Add(dog);
 
-        var handler = new GetDogHandler(_reader);
+        var handler = new GetDogQueryHandler(_reader);
         var query = new GetDogQuery(dog.Id.Value, ownerB);
 
         var result = await handler.HandleAsync(query, CancellationToken.None);

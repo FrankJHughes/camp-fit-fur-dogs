@@ -17,7 +17,7 @@ public class CorrelationPropagationEndToEndTests : ObservabilityTestBase
 
         Client.DefaultRequestHeaders.Add("traceparent", traceparent);
 
-        var response = await Client.GetAsync("/__test__/correlation");
+        var response = await Client.GetAsync("/api/__test__/correlation");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -31,7 +31,7 @@ public class CorrelationPropagationEndToEndTests : ObservabilityTestBase
     {
         Client.DefaultRequestHeaders.Add("X-Correlation-ID", "end-to-end-corr");
 
-        var response = await Client.GetAsync("/__test__/correlation");
+        var response = await Client.GetAsync("/api/__test__/correlation");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -43,7 +43,7 @@ public class CorrelationPropagationEndToEndTests : ObservabilityTestBase
     [Fact]
     public async Task End_to_end_generates_correlation_when_no_headers()
     {
-        var response = await Client.GetAsync("/__test__/correlation");
+        var response = await Client.GetAsync("/api/__test__/correlation");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

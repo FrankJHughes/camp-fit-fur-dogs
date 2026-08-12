@@ -40,7 +40,7 @@ public class RegisterDogEndpointTests : IAsyncLifetime
         _client = _api.CreateClient(clientCtx);
 
         // 5. Verify identity is working (optional)
-        var who = await _client.GetFromJsonAsync<WhoAmIResponse>("/__test__/current-user-id");
+        var who = await _client.GetFromJsonAsync<WhoAmIResponse>("/api/__test__/current-user-id");
         who.Should().NotBeNull();
     }
 

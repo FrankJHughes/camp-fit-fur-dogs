@@ -124,10 +124,10 @@ Application/
   Dogs/
     RegisterDog/
       RegisterDogCommand.cs
-      RegisterDogHandler.cs
+      RegisterDogCommandHandler.cs
     GetDog/
       GetDogQuery.cs
-      GetDogHandler.cs
+      GetDogQueryHandler.cs
       DogResponse.cs
 ```
 

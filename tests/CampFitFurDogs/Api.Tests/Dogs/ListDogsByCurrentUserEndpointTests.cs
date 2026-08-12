@@ -48,7 +48,7 @@ public class ListDogsByCurrentUserEndpointTests : IAsyncLifetime
 
         var client = _api.CreateClient(clientCtx);
 
-        var who = await client.GetFromJsonAsync<WhoAmIResponse>("/__test__/current-user-id");
+        var who = await client.GetFromJsonAsync<WhoAmIResponse>("/api/__test__/current-user-id");
         who.Should().NotBeNull();
 
         return client;

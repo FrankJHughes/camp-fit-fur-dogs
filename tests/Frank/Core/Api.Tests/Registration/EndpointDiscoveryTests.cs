@@ -24,7 +24,7 @@ public sealed class EndpointDiscoveryTests
         var routeBuilder = new FakeRouteBuilder(provider);
 
         // Act
-        routeBuilder.MapRegisteredApiEndpoints();
+        routeBuilder.MapRegisteredApiEndpoints("/api");
 
         // Assert
         FakeEndpoint.WasMapped.Should().BeTrue();
@@ -49,7 +49,7 @@ public sealed class EndpointDiscoveryTests
         var routeBuilder = new FakeRouteBuilder(provider);
 
         // Act
-        routeBuilder.MapRegisteredApiEndpoints();
+        routeBuilder.MapRegisteredApiEndpoints("/api");
 
         // Assert
         FakeEndpoint.WasMapped.Should().BeTrue();

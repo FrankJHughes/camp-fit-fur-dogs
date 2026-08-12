@@ -11,8 +11,7 @@ namespace Frank.Core.Application.Abstractions.Endpoints;
 /// <para>
 /// Implementations of <see cref="IEndpoint"/> encapsulate the routing and
 /// configuration required to expose HTTP endpoints. Each endpoint is responsible
-/// for registering its own route(s) using the provided
-/// <see cref="IEndpointRouteBuilder"/>.
+/// for registering its own route(s) using the provided <see cref="RouteGroupBuilder"/>.
 /// </para>
 ///
 /// <para>
@@ -21,22 +20,33 @@ namespace Frank.Core.Application.Abstractions.Endpoints;
 /// singleton lifetime, allowing the application to discover and map them during
 /// startup.
 /// </para>
+///
+/// <para>
+/// Endpoints are mapped into a unified API group created by
+/// <c>MapRegisteredApiEndpoints("/api")</c>. Implementations must define routes
+/// relative to that group (e.g., <c>"/dogs/{id}"</c> instead of <c>"/api/dogs/{id}"</c>).
+/// </para>
 /// </summary>
 [Registration(ServiceLifetime.Singleton)]
 public interface IEndpoint
 {
     /// <summary>
-    /// Maps the endpoint into the application's routing pipeline.
+    /// Maps the endpoint into the application's API route group.
     ///
     /// <para>
-    /// Implementations use the supplied <see cref="IEndpointRouteBuilder"/> to
+    /// Implementations use the supplied <see cref="RouteGroupBuilder"/> to
     /// define routes, configure metadata, and attach handlers. This method is
-    /// typically invoked during application startup when all endpoints are
-    /// registered and ready to be mapped.
+    /// invoked during application startup after all endpoints have been
+    /// discovered and the API group has been created.
+    /// </para>
+    ///
+    /// <para>
+    /// Routes must be defined relative to the provided group. The API prefix
+    /// (e.g., <c>"/api"</c>) is applied automatically by the application.
     /// </para>
     /// </summary>
-    /// <param name="app">
-    /// The route builder used to configure and register endpoint routes.
+    /// <param name="api">
+    /// The API route group created by <c>MapRegisteredApiEndpoints</c>.
     /// </param>
-    void Map(IEndpointRouteBuilder app);
+    void Map(RouteGroupBuilder api);
 }

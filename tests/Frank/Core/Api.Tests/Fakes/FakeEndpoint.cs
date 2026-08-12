@@ -1,3 +1,5 @@
+#nullable enable
+
 using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Routing;
 
@@ -9,7 +11,7 @@ public sealed class FakeEndpoint : IEndpoint
 
     public static void Reset() => WasMapped = false;
 
-    public void Map(IEndpointRouteBuilder app)
+    public void Map(RouteGroupBuilder api)
     {
         WasMapped = true;
     }

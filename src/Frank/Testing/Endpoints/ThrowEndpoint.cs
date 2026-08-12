@@ -1,3 +1,5 @@
+#nullable enable
+
 using Frank.Core.Application.Abstractions.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -22,10 +24,10 @@ public sealed class ThrowEndpoint : IEndpoint
     /// exception paths without requiring authentication.
     /// </para>
     /// </summary>
-    /// <param name="endpoints">The endpoint route builder used to register the route.</param>
-    public void Map(IEndpointRouteBuilder endpoints)
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        endpoints.MapGet("/__test__/throw", () =>
+        api.MapGet("/__test__/throw", () =>
         {
             throw new InvalidOperationException("Test exception");
         })

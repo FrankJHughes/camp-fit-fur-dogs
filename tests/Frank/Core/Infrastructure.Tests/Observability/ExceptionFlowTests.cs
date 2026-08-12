@@ -8,7 +8,7 @@ public class ExceptionFlowTests : ObservabilityTestBase
     [Fact]
     public async Task Exception_Flows_Through_Observability_Pipeline()
     {
-        var response = await Client.GetAsync("/__test__/throw");
+        var response = await Client.GetAsync("/api/__test__/throw");
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 

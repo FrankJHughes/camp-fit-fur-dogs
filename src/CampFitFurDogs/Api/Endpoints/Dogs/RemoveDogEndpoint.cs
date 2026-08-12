@@ -8,11 +8,27 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 
+/// <summary>
+/// Handles HTTP DELETE requests for removing a dog owned by the currently
+/// authenticated user.
+/// <para>
+/// This endpoint ensures ownership, verifies the dog exists, and dispatches a
+/// removal command through the application command pipeline.
+/// </para>
+/// </summary>
 public class RemoveDogEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder app)
+    /// <summary>
+    /// Maps the <c>/dogs/{id}</c> route to the remove‑dog operation.
+    /// <para>
+    /// The <c>/api</c> prefix is applied automatically by the API group created
+    /// in <c>MapRegisteredApiEndpoints("/api")</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        app.MapDelete("/api/dogs/{id:guid}", async (
+        api.MapDelete("/dogs/{id:guid}", async (
             Guid id,
             [FromServices] ICurrentUser currentUser,
             [FromServices] ICommandDispatcher commandDispatcher,
@@ -20,6 +36,7 @@ public class RemoveDogEndpoint : IEndpoint
         {
             var userId = currentUser.Id!.Value;
 
+            // Ensure the dog exists and belongs to the current user
             var query = new GetDogQuery(DogId: id, OwnerId: userId);
             var response = await queryDispatcher.DispatchAsync(query, CancellationToken.None);
             if (response is null)
@@ -27,8 +44,8 @@ public class RemoveDogEndpoint : IEndpoint
                 return Results.NotFound();
             }
 
+            // Remove the dog
             var command = new RemoveDogCommand(DogId: id, OwnerId: userId);
-
             await commandDispatcher.DispatchAsync(command, CancellationToken.None);
 
             return Results.NoContent();

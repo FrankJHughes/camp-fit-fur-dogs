@@ -8,7 +8,7 @@ using Frank.Identity.Domain.Users;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.EditDog;
 
-public class EditDogHandlerTests
+public class EditDogCommandHandlerTests
 {
     [Fact]
     public async Task Handle_WhenDogExistsAndOwnerMatches_UpdatesDogAndCommits()
@@ -31,7 +31,7 @@ public class EditDogHandlerTests
         var reader = new FakeGetDogByIdReader(dogs);
         var editWriter = new FakeEditDogWriter(dogs);
         var uow = new FakeAppUnitOfWork();
-        var handler = new EditDogHandler(editWriter, uow);
+        var handler = new EditDogCommandHandler(editWriter, uow);
 
         var command = new EditDogCommand(
             DogId: dog.Id.Value,

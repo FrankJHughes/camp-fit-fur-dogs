@@ -8,7 +8,7 @@ public class CorrelationTests : ObservabilityTestBase
     [Fact]
     public async Task Adds_CorrelationId_When_Missing()
     {
-        var response = await Client.GetAsync("/__test__/correlation");
+        var response = await Client.GetAsync("/api/__test__/correlation");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(response.Headers.Contains("X-Correlation-ID"));
@@ -20,7 +20,7 @@ public class CorrelationTests : ObservabilityTestBase
     [Fact]
     public async Task Propagates_CorrelationId_When_Provided()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/__test__/correlation");
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/__test__/correlation");
         request.Headers.Add("X-Correlation-ID", "abc-123");
 
         var response = await Client.SendAsync(request);

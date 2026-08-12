@@ -5,15 +5,15 @@ using CampFitFurDogs.TestUtilities.Fixtures;
 
 namespace CampFitFurDogs.Application.Tests.Dogs.RegisterDog;
 
-public class RegisterDogHandlerTests
+public class RegisterDogCommandHandlerTests
 {
     private readonly FakeRegisterDogWriter _writer = new([]);
     private readonly FakeAppUnitOfWork _unitOfWork = new();
-    private readonly RegisterDogHandler _handler;
+    private readonly RegisterDogCommandHandler _handler;
 
-    public RegisterDogHandlerTests()
+    public RegisterDogCommandHandlerTests()
     {
-        _handler = new RegisterDogHandler(_writer, _unitOfWork);
+        _handler = new RegisterDogCommandHandler(_writer, _unitOfWork);
     }
 
     [Fact]

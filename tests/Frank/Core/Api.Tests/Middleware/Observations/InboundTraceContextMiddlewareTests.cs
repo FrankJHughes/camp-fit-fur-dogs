@@ -19,7 +19,7 @@ public class InboundObservabilityContextMiddlewareTests : ObservabilityTestBase
         Client.DefaultRequestHeaders.Add("traceparent", traceparent);
 
         // Act
-        var response = await Client.GetAsync("/__test__/correlation");
+        var response = await Client.GetAsync("/api/__test__/correlation");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -36,7 +36,7 @@ public class InboundObservabilityContextMiddlewareTests : ObservabilityTestBase
         Client.DefaultRequestHeaders.Add("X-Correlation-ID", "abc-123");
 
         // Act
-        var response = await Client.GetAsync("/__test__/correlation");
+        var response = await Client.GetAsync("/api/__test__/correlation");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -50,7 +50,7 @@ public class InboundObservabilityContextMiddlewareTests : ObservabilityTestBase
     public async Task Falls_back_to_generated_correlation_when_no_headers()
     {
         // Act
-        var response = await Client.GetAsync("/__test__/correlation");
+        var response = await Client.GetAsync("/api/__test__/correlation");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

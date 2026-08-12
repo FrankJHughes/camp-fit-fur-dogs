@@ -30,19 +30,19 @@ namespace Frank.Identity.Api.Endpoints;
 /// <item><description>Contains no domain logic or provider‑specific behavior.</description></item>
 /// </list>
 /// </remarks>
-public class GetIdentityEndpoint : IEndpoint
+public sealed class GetIdentityEndpoint : IEndpoint
 {
     /// <summary>
-    /// Maps the identity endpoint to <c>/api/identity</c>.
+    /// Maps the identity endpoint to <c>/identity</c>.
     /// <para>
-    /// This endpoint requires authorization and returns the authenticated user's
-    /// resolved identity information using <see cref="ICurrentUser"/>.
+    /// The <c>/api</c> prefix is applied automatically by the API route group
+    /// created in <c>MapRegisteredApiEndpoints("/api")</c>.
     /// </para>
     /// </summary>
-    /// <param name="app">The route builder used to register the endpoint.</param>
-    public void Map(IEndpointRouteBuilder app)
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        app.MapGet("/api/identity", ([FromServices] ICurrentUser currentUser) =>
+        api.MapGet("/identity", ([FromServices] ICurrentUser currentUser) =>
         {
             var dto = new GetIdentityEndpointResponse
             {
@@ -51,6 +51,6 @@ public class GetIdentityEndpoint : IEndpoint
 
             return Results.Ok(dto);
         })
-        .RequireAuthorization(); // Require authenticated user for this endpoint
+        .RequireAuthorization();
     }
 }

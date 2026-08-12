@@ -8,11 +8,28 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 
+/// <summary>
+/// Handles HTTP POST requests for registering a new dog under the currently
+/// authenticated user.
+/// <para>
+/// This endpoint validates the authenticated user, constructs a registration
+/// command, dispatches it through the application command pipeline, and returns
+/// a <c>201 Created</c> response containing the newly assigned dog identifier.
+/// </para>
+/// </summary>
 public class RegisterDogEndpoint : IEndpoint
 {
-    public void Map(IEndpointRouteBuilder app)
+    /// <summary>
+    /// Maps the <c>/dogs</c> route to the register‑dog operation.
+    /// <para>
+    /// The <c>/api</c> prefix is applied automatically by the API group created
+    /// in <c>MapRegisteredApiEndpoints("/api")</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        app.MapPost("/api/dogs", async (
+        api.MapPost("/dogs", async (
             RegisterDogEndpointRequest request,
             [FromServices] ICurrentUser currentUser,
             [FromServices] ICommandDispatcher dispatcher,
@@ -22,6 +39,7 @@ public class RegisterDogEndpoint : IEndpoint
             Debug.WriteLine("Name = {Name}", httpContext.User.Identity?.Name);
 
             Console.WriteLine($"Received RegisterDogRequest from user {currentUser.Id}");
+
             var command = new RegisterDogCommand(
                 currentUser.Id!.Value,
                 request.Name,
@@ -32,7 +50,11 @@ public class RegisterDogEndpoint : IEndpoint
             var commandResponse = await dispatcher.DispatchAsync(command, CancellationToken.None);
 
             var endpointResponse = new RegisterDogEndpointResponse(commandResponse);
-            return Results.Created($"/api/dogs/{commandResponse}", endpointResponse);
+
+            // IMPORTANT:
+            // The location must be relative to the group.
+            // The group will prefix it with /api automatically.
+            return Results.Created($"/dogs/{commandResponse}", endpointResponse);
         })
         .DisableCookieRedirect();
     }

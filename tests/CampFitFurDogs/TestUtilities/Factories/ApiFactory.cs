@@ -27,7 +27,7 @@ public sealed class ApiFactory
             var request = new SignInRequest(sub);
 
             var response = await client.PostAsJsonAsync(
-                "/__test__/sign-in",
+                "/api/__test__/sign-in",
                 request);
 
             response.EnsureSuccessStatusCode();

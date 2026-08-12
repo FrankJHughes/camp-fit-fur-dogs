@@ -35,43 +35,25 @@ namespace Frank.Identity.Api.Endpoints;
 /// <item><description>The final session cookie is issued only after successful pipeline execution.</description></item>
 /// </list>
 /// </remarks>
-public class CallbackEndpoint : IEndpoint
+public sealed class CallbackEndpoint : IEndpoint
 {
     /// <summary>
-    /// Maps the OIDC callback endpoint to <c>/api/identity/callback</c>.
+    /// Maps the OIDC callback endpoint to <c>/identity/callback</c>.
     /// <para>
-    /// This endpoint is marked <c>AllowAnonymous</c> because the identity provider
-    /// redirects unauthenticated users back to this URL during the login flow.
+    /// The <c>/api</c> prefix is applied automatically by the API route group
+    /// created in <c>MapRegisteredApiEndpoints("/api")</c>.
     /// </para>
     /// </summary>
-    /// <param name="app">The route builder used to register the endpoint.</param>
-    public void Map(IEndpointRouteBuilder app)
+    /// <param name="api">The API route group created by Frank.Core.</param>
+    public void Map(RouteGroupBuilder api)
     {
-        app.MapGet("/api/identity/callback", HandleAsync)
-            .AllowAnonymous();
+        api.MapGet("/identity/callback", HandleAsync)
+           .AllowAnonymous();
     }
 
     /// <summary>
     /// Handles the OIDC callback request.
-    /// <para>
-    /// The callback flow consists of:
-    /// <list type="number">
-    /// <item><description>Extract and decode the OIDC <c>state</c> parameter.</description></item>
-    /// <item><description>Extract the authorization <c>code</c> if present.</description></item>
-    /// <item><description>Run the OIDC pipeline to exchange the code for external identity data.</description></item>
-    /// <item><description>Run the application pipeline to convert external identity into a session cookie.</description></item>
-    /// <item><description>Issue the session cookie and redirect the user to the original <c>return_url</c>.</description></item>
-    /// </list>
-    /// </para>
     /// </summary>
-    /// <param name="http">The current HTTP context.</param>
-    /// <param name="env">The hosting environment.</param>
-    /// <param name="oidcContextBuilder">Builds the OIDC callback context.</param>
-    /// <param name="saveContextBuilder">Builds the application callback context and session cookie.</param>
-    /// <returns>A redirect result pointing to the original <c>return_url</c>.</returns>
-    /// <exception cref="BadRequestException">
-    /// Thrown when required OIDC callback parameters are missing or malformed.
-    /// </exception>
     private static async Task<IResult> HandleAsync(
         HttpContext http,
         IHostEnvironment env,
@@ -107,12 +89,11 @@ public class CallbackEndpoint : IEndpoint
             return Results.Redirect(returnUrl);
         }
 
-        // 2. Run Frank pipeline
-        var oidcCallbackRequest =
-            new CallbackOidcContextBuilderRequest
-            {
-                Code = code!
-            };
+        // 2. Run OIDC pipeline
+        var oidcCallbackRequest = new CallbackOidcContextBuilderRequest
+        {
+            Code = code!
+        };
 
         var oidcCallbackResult =
             await oidcContextBuilder.BuildAsync(oidcCallbackRequest, CancellationToken.None);
@@ -123,7 +104,9 @@ public class CallbackEndpoint : IEndpoint
             External = oidcCallbackResult,
             Now = DateTimeOffset.UtcNow
         };
-        var appAuthCallbackResult = await saveContextBuilder.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
+
+        var appAuthCallbackResult =
+            await saveContextBuilder.BuildAsync(appAuthCallbackRequest, CancellationToken.None);
 
         if (string.IsNullOrWhiteSpace(appAuthCallbackResult.CookieValue))
         {

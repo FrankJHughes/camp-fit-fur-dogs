@@ -15,6 +15,16 @@ and US‑148 (Email Verification):
 - Endpoints return only safe, client‑consumable DTOs  
 - Redirect behavior is explicit and predictable  
 
+All routes are mapped **relative to the `/api` group**, which is created in
+`Program.cs`:
+
+```csharp
+app.MapRegisteredApiEndpoints("/api");
+```
+
+This means endpoints define only their **slice‑local route**, such as
+`/identity/login-url`, and the `/api` prefix is applied automatically.
+
 ---
 
 ## Folder Structure
@@ -34,6 +44,10 @@ Endpoints/
 
 Handles the OIDC callback from the external identity provider.
 
+### Route
+`GET /identity/callback`  
+(Automatically becomes `GET /api/identity/callback`)
+
 ### Responsibilities
 
 - Validates `state` and `code` query parameters  
@@ -43,7 +57,6 @@ Handles the OIDC callback from the external identity provider.
 - Redirects the user to the `return_url` encoded in state  
 
 ### Returns
-
 Redirect only — no tokens, no claims, no provider metadata.
 
 ---
@@ -51,6 +64,10 @@ Redirect only — no tokens, no claims, no provider metadata.
 ## GetIdentityEndpoint
 
 Returns the authenticated user’s resolved identity information.
+
+### Route
+`GET /identity`  
+(Automatically becomes `GET /api/identity`)
 
 ### Responsibilities
 
@@ -69,6 +86,10 @@ GetIdentityEndpointResponse { Name }
 ## GetLoginUrlEndpoint
 
 Generates the next URL required to begin the OIDC login flow.
+
+### Route
+`GET /identity/login-url`  
+(Automatically becomes `GET /api/identity/login-url`)
 
 ### Responsibilities
 
@@ -89,6 +110,10 @@ GetLoginUrlEndpointResponse { NextUrl }
 ## LogoutEndpoint
 
 Logs out the user by revoking their session and deleting the session cookie.
+
+### Route
+`GET /identity/logout`  
+(Automatically becomes `GET /api/identity/logout`)
 
 ### Responsibilities
 
@@ -155,5 +180,3 @@ Registers all Identity API endpoints and validates required configuration.
 Endpoints act as the thin HTTP boundary of the Identity subsystem, delegating all
 real work to the application layer while enforcing purity, safety, and
 predictability.
-
----
