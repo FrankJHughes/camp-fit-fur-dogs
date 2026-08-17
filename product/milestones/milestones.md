@@ -70,7 +70,7 @@ their preferred channel, and can log in with their existing identity provider.
 
 **Key stories:**
 - **Communication:** Welcome Email (US-145), Notification Preferences (US-147),
-  Customer Contact Profile (US-149), SMS Infrastructure (US-150)
+  User Contact Profile (US-149), SMS Infrastructure (US-150)
 - **Social login:** Login with Microsoft (US-128), Google (US-129), Apple
   (US-130), Amazon (US-131)
 - **Security trust:** Login Activity & Security Notifications (US-152),

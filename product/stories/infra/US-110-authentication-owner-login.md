@@ -14,7 +14,7 @@ legal_guarantees:
 dependencies:
 ---
 
-# US‑110 — Authentication: Owner Login (OIDC)
+# US‑110 — Identity: Owner Login (OIDC)
 
 ## Intent
 As an **owner**, I must be able to **log in securely using an external identity provider**, so that I can access my dog’s information without managing a password.

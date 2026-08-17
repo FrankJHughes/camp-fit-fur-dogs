@@ -14,7 +14,7 @@ legal_guarantees:
 dependencies:
 ---
 
-# US‑111 — Authentication: Session Management
+# US‑111 — Identity: Session Management
 
 ## Intent
 As an **owner**, I must be able to **stay logged in securely**, so that I can use the app without interruptions or repeated authentication.

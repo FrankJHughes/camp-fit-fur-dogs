@@ -1,10 +1,10 @@
 ---
 id: US-155
 title: "Web Accessibility (WCAG 2.1 AA)"
-epic: Customer
+epic: User
 milestone: M2
 status: backlog
-domain: customer
+domain: user
 vertical_slice: false
 dependencies:
   - US-103

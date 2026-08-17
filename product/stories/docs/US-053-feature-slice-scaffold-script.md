@@ -26,11 +26,11 @@ Every vertical slice shipped so far follows an identical structure across Domain
 ## Acceptance Criteria
 
 - `scripts/New-FeatureSlice.ps1` exists and is executable from the repo root
-- Script accepts `-Name` (e.g., "UpdateCustomer") and `-Type` ("Command" or "Query") parameters
+- Script accepts `-Name` (e.g., "UpdateUser") and `-Type` ("Command" or "Query") parameters
 - For a Command slice, the script generates:
-  - `src/CampFitFurDogs.Application/Commands/{Name}/` — command and handler stubs
-  - `src/CampFitFurDogs.Infrastructure/` — repository method stub (if new aggregate)
-  - `src/CampFitFurDogs.Api/Endpoints/` — endpoint stub
+  - `src/CampFitFurDogs/Application/Commands/{Name}/` — command and handler stubs
+  - `src/CampFitFurDogs/Infrastructure/` — repository method stub (if new aggregate)
+  - `src/CampFitFurDogs/Api/Endpoints/` — endpoint stub
   - `tests/CampFitFurDogs.Domain.Tests/` — failing test
   - `tests/CampFitFurDogs.Application.Tests/Commands/{Name}/` — failing test
   - `tests/CampFitFurDogs.Infrastructure.Tests/` — failing test

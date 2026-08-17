@@ -33,11 +33,11 @@ As a **developer**, I want compile-time enforcement of clean architecture bounda
 - **Portfolio signal** — demonstrates Roslyn analyzer authoring, diagnostic violations. A developer cannot accidentally merge a boundary violation even if they skip tests.
 - **Portfolio signal** — demonstrates Roslyn analyzer authoring, diagnostic reporting, code fix providers, and NuGet analyzer packaging.
 - **Defense in depth** — complements the test-time reporting, code fix providers, and NuGet analyzer packaging.
-- **Defense in depth** — complements the test-time guardrails (US-108 Frank.Testing) and runtime validation (US-108 `AddFrank()`). Three layers of enforcement: compile, test, runtime.
+- **Defense in depth** — complements the test-time guardrails (US-108 Frank.Testing) and runtime validation (US-108 `AddFrankValidators()`). Three layers of enforcement: compile, test, runtime.
 
 ## Problem
 
-After US-108, boundary enforcement exists guardrails (US-108 Frank.Testing) and runtime validation (US-108 `AddFrank()`). Three layers of enforcement: compile, test, runtime at two points:
+After US-108, boundary enforcement exists guardrails (US-108 Frank.Testing) and runtime validation (US-108 `AddFrankValidators()`). Three layers of enforcement: compile, test, runtime at two points:
 
 | Enforcement point | When violations surface | Feedback latency |
 |---|---|---|
@@ -50,8 +50,8 @@ After US-108, boundary enforcement exists at two points:
 | Enforcement point | When violations surface | Feedback latency |
 |---|---|---|
 | Frank.Testing (test time) | `dotnet test` or CI | Seconds to minutes |
-| `AddFrank()` (runtime) | Application startup | Seconds (dev) to minutes (CItest time) | `dotnet test` or CI | Seconds to minutes |
-| `AddFrank()` (runtime) | Application startup | Seconds (dev) to minutes (CI) |
+| `AddFrankValidators()` (runtime) | Application startup | Seconds (dev) to minutes (CItest time) | `dotnet test` or CI | Seconds to minutes |
+| `AddFrankValidators()` (runtime) | Application startup | Seconds (dev) to minutes (CI) |
 
 Neither catches violations **while the developer is writing code**. A developer can type `using CampFitFurDogs.Infrastructure;` inside) |
 
@@ -353,7 +353,7 @@ Product projects add an analyzer reference:
 <!-- In Directory.Build.props or each .csproj -->
 <ItemGroup>
   <ProjectReference
-    Include="..\Frank.Analyzers\CampFitFurDogs. integration
+    Include="..\..\Frank.Analyzers\CampFitFurDogs\ integration
 
 Product projects add an analyzer reference:
 
@@ -431,9 +431,9 @@ That is it. No test code, no configuration
 - [ produces diagnostic `CFFD002` as a build error
 - [ ] The same violation shows as a red squiggle in VS Code and Visual Studio before building
 - [ ] A `using CampFitFurDogs.Api;` statement in an Application file produces diagnostic `CFFD009` as a build error
-- [ ] A query handler constructor accepting `ICustomerRepository` produces diagnostic `CFFD011` as a warning
+- [ ] A query handler constructor accepting `IUserRepository` produces diagnostic `CFFD011` as a warning
 - [ ] Clean code (no violations) produces zero diagnostics
-- [ ] EF Core migrations ] A query handler constructor accepting `ICustomerRepository` produces diagnostic `CFFD011` as a warning
+- [ ] EF Core migrations ] A query handler constructor accepting `IUserRepository` produces diagnostic `CFFD011` as a warning
 - [ ] Clean code (no violations) produces zero diagnostics
 - [ ] EF Core migrations and generated code are excluded from analysis
 - [ ] Frank projects (no `ArchitectureLayer` property) are excluded from analysis

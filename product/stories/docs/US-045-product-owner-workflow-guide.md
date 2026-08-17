@@ -51,7 +51,7 @@ linked from the CONTRIBUTING.md role-routing hub (created by US-009).
 - [x] Story naming convention explained with examples
       (ADR-0009: `US-NNN-kebab-title.md`).
 - [x] Domain directory structure explained
-      (`product/stories/customer/`, `docs/`, `infra/`).
+      (`product/stories/user/`, `docs/`, `infra/`).
 - [x] Acceptance criteria writing guidelines: observable, testable,
       no implementation details.
 

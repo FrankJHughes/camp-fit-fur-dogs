@@ -1,0 +1,6 @@
+@CampFitFurDogs.Api_HostAddress = http://localhost:5209
+
+GET {{CampFitFurDogs.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

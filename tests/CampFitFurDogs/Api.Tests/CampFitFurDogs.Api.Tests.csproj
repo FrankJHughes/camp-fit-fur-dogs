@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Project.props" />
+
+  <PropertyGroup>
+    <ShadowCopyReferences>false</ShadowCopyReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Api\CampFitFurDogs.Api.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Application\CampFitFurDogs.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Frank\Core\Application\Frank.Core.Application.csproj" />
+    <ProjectReference Include="..\TestUtilities\CampFitFurDogs.TestUtilities.csproj" />
+  </ItemGroup>
+
+</Project>

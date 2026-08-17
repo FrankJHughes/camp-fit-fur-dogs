@@ -1,0 +1,21 @@
+using Frank.Core.Application.Abstractions.Cqrs.Commands;
+
+namespace Frank.Core.Application.Tests.Fakes;
+
+public sealed class TrackingFakeStringResponseCommandHandler
+    : ICommandHandler<FakeStringResponseCommand, string>
+{
+    public int CallCount { get; private set; }
+    public FakeStringResponseCommand? LastCommand { get; private set; }
+    public CancellationToken? LastToken { get; private set; }
+
+    public Task<string> HandleAsync(FakeStringResponseCommand command, CancellationToken ct)
+    {
+        CallCount++;
+        LastCommand = command;
+        LastToken = ct;
+
+        object result = $"handled: {command}";
+        return Task.FromResult((string)result);
+    }
+}

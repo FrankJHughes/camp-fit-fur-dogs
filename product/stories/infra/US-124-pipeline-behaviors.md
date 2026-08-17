@@ -55,6 +55,6 @@ Pipeline behaviors provide a single, reusable mechanism for enforcing cross‑cu
 - Behaviors must be framework‑agnostic and live in Frank.
 - Behaviors must not depend on ASP.NET Core, EF Core, or product code.
 - Dispatchers must remain reflection‑free and maintain current performance characteristics.
-- Behavior registration must integrate with existing `AddFrank()` DI conventions.
+- Behavior registration must integrate with existing `AddFrankValidators()` DI conventions.
 - Domain events are not part of this story; they may receive a similar pipeline in a future story.
 

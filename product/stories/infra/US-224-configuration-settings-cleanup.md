@@ -72,7 +72,7 @@ This cleanup provides:
 - No string literals may appear in configuration binding  
 
 ### **AC‑3 — All configuration lookups use capability constants**
-- No direct string‑literal lookups (e.g., `config["Authentication:Callback:Oidc:Authority"]`)  
+- No direct string‑literal lookups (e.g., `config["Identity:Oidc:Authority"]`)  
 - All lookups must reference capability key constants  
 
 ### **AC‑4 — All tests use capability constants**

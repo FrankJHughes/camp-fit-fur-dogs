@@ -29,7 +29,7 @@ jobs:
         with:
           filters: |
             backend:
-              - 'src/CampFitFurDogs.*/**'
+              - 'src/CampFitFurDogs/*/**'
               - 'tests/CampFitFurDogs.*/**'
             frontend:
               - 'frontend/**'
@@ -78,9 +78,16 @@ jobs:
         uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
-            tests/Frank.Tests
-            tests/Frank.Api.Tests
-            tests/Frank.Infrastructure.EntityFrameworkCore.Tests
+            tests/Frank/Core/Domain.Tests
+            tests/Frank/Core/Application.Tests
+            tests/Frank/Core/Infrastructure.Tests
+            tests/Frank/Core/EntityFrameworkCore.Tests
+            tests/Frank/Core/Api.Tests
+            tests/Frank/Identity/Domain.Tests
+            tests/Frank/Identity/Application.Tests
+            tests/Frank/Identity/Infrastructure.Tests
+            tests/Frank/Identity/EntityFrameworkCore.Tests
+            tests/Frank/Identity/Api.Tests
 
   backend:
     name: Backend Tests
@@ -100,11 +107,11 @@ jobs:
         uses: ./.github/actions/run-dotnet-tests
         with:
           projects: |
-            tests/CampFitFurDogs.Api.Tests
-            tests/CampFitFurDogs.Application.Tests
-            tests/CampFitFurDogs.Domain.Tests
-            tests/CampFitFurDogs.Infrastructure.Tests
-            tests/CampFitFurDogs.Integration.Tests
+            tests/CampFitFurDogs/Api.Tests
+            tests/CampFitFurDogs/Application.Tests
+            tests/CampFitFurDogs/Domain.Tests
+            tests/CampFitFurDogs/Infrastructure.Tests
+            tests/CampFitFurDogs/Integration.Tests
 
   frontend:
     name: Frontend Tests

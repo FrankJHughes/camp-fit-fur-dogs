@@ -4,7 +4,7 @@ title: "Register Dog"
 epic: 
 milestone: M0
 status: shipped
-domain: customer
+domain: user
 urgency: 
 importance: 
 covey_quadrant: 
@@ -16,14 +16,14 @@ dependencies:
 # US-028 — Register a Dog
 
 ## Intent
-As a customer, I want to register my dog so that I can book services for them.
+As a user, I want to register my dog so that I can book services for them.
 
 ## Value
-Introduces the dog as a first-class entity owned by the customer.
+Introduces the dog as a first-class entity owned by the user.
 
 ## Acceptance Criteria
-- Customer can enter basic dog information
-- Dog is implicitly associated with the customer
+- User can enter basic dog information
+- Dog is implicitly associated with the user
 - Validation feedback is clear and non-judgmental
 - Successful registration confirms readiness for services
 

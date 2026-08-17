@@ -242,15 +242,20 @@ jobs:
       - run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       - run: dotnet restore
 
-      - name: Apply Migrations
+      - name: Apply Identity Migrations
         run: |
           ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
-          dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
+          dotnet ef database update -s src/CampFitFurDogs/Api -p src/Frank/Identity/EntityFrameworkCore --context FrankIdentityDbContext
+
+      - name: Apply Application Migrations
+        run: |
+          ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
+          dotnet ef database update -s src/CampFitFurDogs/Api -p src/CampFitFurDogs/Infrastructure --context AppDbContext
 
       - name: Run DB Tests
         run: |
           ConnectionStrings__DefaultConnection="${{ steps.conn.outputs.npgsql_connection_string }}" \
-          dotnet test integration-tests/CampFitFurDogs.Infrastructure.IntegrationTests --logger "trx"
+          dotnet test integration-tests/CampFitFurDogs/Infrastructure.IntegrationTests --logger "trx"
 
       - name: Write DB Artifact
         run: echo "${{ steps.conn.outputs.npgsql_connection_string }}" > ${{ needs.preview_context.outputs.db_artifact_file_path }}
@@ -274,7 +279,7 @@ jobs:
           AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
           AUTH0_APP_ID: ${{ secrets.AUTH0_APP_ID }}
-          CALLBACK_URL: "${{ needs.preview_context.outputs.api_base_url }}/api/identity/callback"
+          CALLBACK_URL: "${{ needs.preview_context.outputs.api_base_url }}/api/auth/callback"
         run: |
           set -euo pipefail
 
@@ -325,7 +330,7 @@ jobs:
           AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
           AUTH0_APP_ID: ${{ secrets.AUTH0_APP_ID }}
-          CALLBACK_URL: "${{ needs.preview_context.outputs.api_base_url }}/api/identity/callback"
+          CALLBACK_URL: "${{ needs.preview_context.outputs.api_base_url }}/api/auth/callback"
         run: |
           set -euo pipefail
 
@@ -394,4 +399,4 @@ jobs:
       - name: Test API
         run: |
           API_BASE_URL=${{ needs.preview_context.outputs.api_base_url }} \
-          dotnet test integration-tests/CampFitFurDogs.Api.IntegrationTests --logger "trx"
+          dotnet test integration-tests/CampFitFurDogs/Api.IntegrationTests --logger "trx"

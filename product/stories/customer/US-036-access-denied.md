@@ -4,7 +4,7 @@ title: "Access Denied"
 epic: 
 milestone: 
 status: backlog
-domain: customer
+domain: user
 urgency: 
 importance: 
 covey_quadrant: 
@@ -17,18 +17,18 @@ dependencies:
 
 ## Intent
 
-As a customer, I want to understand why I can't access something, so that I don't feel locked out without explanation.
+As a user, I want to understand why I can't access something, so that I don't feel locked out without explanation.
 
 ## Value
 
-When the system restricts access, the customer deserves a calm, clear explanation — not a cryptic wall. Trust is preserved when boundaries are communicated with respect, not hostility.
+When the system restricts access, the user deserves a calm, clear explanation — not a cryptic wall. Trust is preserved when boundaries are communicated with respect, not hostility.
 
 ## Acceptance Criteria
 
-- Customer receives a clear message when access is denied
+- User receives a clear message when access is denied
 - The message explains the reason in plain, human language
 - No internal error codes, stack traces, or system jargon are exposed
-- The customer is offered a path forward (e.g., contact support, try another action)
+- The user is offered a path forward (e.g., contact support, try another action)
 - The tone is protective and calm, not alarming
 
 ## Emotional Guarantees

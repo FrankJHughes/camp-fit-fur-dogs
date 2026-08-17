@@ -8,7 +8,7 @@ export interface IdentifyResponse {
 }
 
 export async function identify(): Promise<QueryResult<IdentifyResponse>> {
-  const result = await client.get<IdentifyResponse>(`/api/identity`);
+  const result = await client.get<IdentifyResponse>(`/identity`);
 
   if (result.ok) {
     return { success: true, data: result.data };

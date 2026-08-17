@@ -39,7 +39,7 @@ backend-clean: ## Remove .NET build artifacts
 	find . -type d \( -name bin -o -name obj \) -exec rm -rf {} + 2>/dev/null || true
 
 backend-up: infra-up ## Start infrastructure + API
-	dotnet run --project src/CampFitFurDogs.Api --configuration $(CONFIGURATION)
+	dotnet run --project src/CampFitFurDogs/Api --configuration $(CONFIGURATION)
 
 # -- Frontend --------------------------------------------------
 
@@ -77,7 +77,7 @@ clean: backend-clean frontend-clean ## Clean everything
 
 up: infra-up ## Start full stack (infra + API + frontend)
 	trap 'kill 0' EXIT; \
-	dotnet run --project src/CampFitFurDogs.Api --configuration $(CONFIGURATION) & \
+	dotnet run --project src/CampFitFurDogs/Api --configuration $(CONFIGURATION) & \
 	npm run dev --prefix frontend
 
 down: infra-down ## Stop all containers

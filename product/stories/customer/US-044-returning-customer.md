@@ -1,10 +1,10 @@
 ---
 id: US-044
-title: "Returning Customer"
+title: "Returning User"
 epic: 
 milestone: 
 status: backlog
-domain: customer
+domain: user
 urgency: 
 importance: 
 covey_quadrant: 
@@ -13,11 +13,11 @@ emotional_guarantees:
 legal_guarantees:
 dependencies:
 ---
-# US-044 — Returning Customer Confidence
+# US-044 — Returning User Confidence
 
 ## Intent
 
-As a returning customer, I want to pick up where I left off without re-establishing who I am or what I was doing, so that the system feels like it remembers me.
+As a returning user, I want to pick up where I left off without re-establishing who I am or what I was doing, so that the system feels like it remembers me.
 
 ## Value
 
@@ -25,10 +25,10 @@ Returning to a system that has forgotten you is disorienting. A system that ackn
 
 ## Acceptance Criteria
 
-- Returning customers see their existing information and dogs without re-entering data
+- Returning users see their existing information and dogs without re-entering data
 - The system does not re-ask questions it already knows the answer to
 - Session or context interruptions are handled gracefully — no silent resets
-- The customer feels continuity between visits
+- The user feels continuity between visits
 - Previously completed actions remain visible and confirmed
 
 ## Emotional Guarantees

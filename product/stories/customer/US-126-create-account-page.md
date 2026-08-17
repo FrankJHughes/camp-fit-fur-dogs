@@ -1,10 +1,10 @@
 ---
 id: US-126
 title: "Create Account Page"
-epic: Customer
+epic: User
 milestone: M1+
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-027
@@ -30,7 +30,7 @@ book services.
 ## Value
 
 This is the front door to Camp Fit Fur Dogs. Without a registration page, the
-Create Customer Account capability (US-027) exists only as an API endpoint with
+Create User Account capability (US-027) exists only as an API endpoint with
 no user-facing entry point. This story also unblocks downstream stories that
 assume a registration flow exists (US-033 Duplicate Account, US-034 Incomplete
 Registration) and is a natural predecessor to the authentication chain
@@ -39,11 +39,11 @@ Registration) and is a natural predecessor to the authentication chain
 ## Acceptance Criteria
 
 - [ ] Registration page accessible at a public route
-- [ ] Form collects required personal information (fields match the CreateCustomer API contract)
+- [ ] Form collects required personal information (fields match the CreateUser API contract)
 - [ ] Form includes email and password fields for traditional account creation
 - [ ] Password field enforces minimum strength requirements with real-time feedback
 - [ ] Client-side validation with clear, accessible inline error messages (reuses US-035 validation patterns)
-- [ ] Form submits to the existing CreateCustomer API endpoint via the typed API client (US-102)
+- [ ] Form submits to the existing CreateUser API endpoint via the typed API client (US-102)
 - [ ] Password is hashed server-side using BCrypt (US-049)
 - [ ] Success feedback confirms account creation and guides the owner to the next step
 - [ ] Duplicate account attempt displays a helpful, blame-free message (seeds US-033)
@@ -69,7 +69,7 @@ Registration) and is a natural predecessor to the authentication chain
 ## Notes
 
 - Follows the same vertical-slice pattern established by US-084 (Register Dog Page)
-- Form fields must match the `CreateCustomerCommand` backend contract (US-027)
+- Form fields must match the `CreateUserCommand` backend contract (US-027)
 - Reuse the `FormField`, `FieldError`, and validation patterns from US-035
 - US-049 (BCrypt) is a dependency — password hashing must be in place
 - This story ships the happy path; edge-case stories (US-033, US-034) remain separate

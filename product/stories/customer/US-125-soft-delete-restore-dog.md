@@ -1,10 +1,10 @@
 ---
 id: US-125
 title: "Soft-Delete & Restore Dog"
-epic: Customer
+epic: User
 milestone: M1+
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-032

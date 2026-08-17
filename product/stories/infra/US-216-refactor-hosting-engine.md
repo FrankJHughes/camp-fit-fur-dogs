@@ -27,5 +27,5 @@ This makes hosting pipelines easier to reason about, safer to extend, and more t
 - [ ] Documentation is updated to describe HostingEngine’s use of `ImmutabilityContext`
 
 ## Notes
-- Current `ImmutabilityContext` usage in `ApplicationAuthCallbackContext` and `OidcAuthCallbackCallbackContext` should be treated as the reference pattern
+- Current `ImmutabilityContext` usage in `SaveCallbackContext` and `OidcAuthCallbackCallbackContext` should be treated as the reference pattern
 - This story does not introduce new hosting features; it is a structural refactor

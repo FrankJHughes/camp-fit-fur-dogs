@@ -1,10 +1,10 @@
 ---
 id: US-167
 title: "Dog Health Profile"
-epic: Customer
+epic: User
 milestone: M3
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-018

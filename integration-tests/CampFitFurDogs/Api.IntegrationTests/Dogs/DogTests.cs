@@ -1,0 +1,69 @@
+using System.Net.Http.Json;
+
+namespace CampFitFurDogs.Api.IntegrationTests.Dogs;
+
+public class DogTests : ApiTestBase
+{
+    private static readonly Guid PlaceholderUserId =
+        Guid.Parse("d37a2a6b-c581-490d-89ce-f60d73800732");
+
+    [Fact(Skip = "Must redesign to authenticate first")]
+    public async Task Can_Register_And_Retrieve_Dog_Profile()
+    {
+        // STEP 1 — Ensure the placeholder user exists as a user
+        // var email = $"preview-{Guid.NewGuid()}@example.com";
+
+        // var createUserResponse = await Client.PostAsJsonAsync("/api/users", new
+        // {
+        //     // id = PlaceholderUserId,   // <-- IMPORTANT
+        //     firstName = "Preview",
+        //     lastName = "User",
+        //     email,
+        //     phone = "555-0000",
+        //     password = "P@ssw0rd!"
+        // });
+
+        // Ignore 409/400 — user may already exist
+        // if (!createUserResponse.IsSuccessStatusCode &&
+        //     createUserResponse.StatusCode != System.Net.HttpStatusCode.BadRequest)
+        // {
+        //     createUserResponse.EnsureSuccessStatusCode();
+        // }
+
+        // STEP 2 — Register a dog
+        var dogName = $"TestDog-{Guid.NewGuid()}";
+        var breed = "Golden Retriever";
+        var dob = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)).ToString("yyyy-MM-dd");
+        var sex = "Male";
+
+        var registerResponse = await Client.PostAsJsonAsync("/api/dogs", new
+        {
+            name = dogName,
+            breed,
+            dateOfBirth = dob,
+            sex
+        });
+
+        registerResponse.EnsureSuccessStatusCode();
+
+        var createdDog = await registerResponse.Content.ReadFromJsonAsync<RegisterDogResponse>();
+        Assert.NotNull(createdDog);
+
+        // STEP 3 — Retrieve dog profile
+        var profileResponse = await Client.GetAsync($"/api/dogs/{createdDog!.DogId}");
+        profileResponse.EnsureSuccessStatusCode();
+
+        var profile = await profileResponse.Content.ReadFromJsonAsync<DogDto>();
+
+        // STEP 4 — Assertions
+        Assert.NotNull(profile);
+        Assert.Equal(createdDog.DogId, profile!.Id);
+        Assert.Equal(dogName, profile.Name);
+        Assert.Equal(breed, profile.Breed);
+        Assert.Equal(sex, profile.Sex);
+        Assert.Equal(PlaceholderUserId, profile.OwnerId);
+    }
+
+    public record RegisterDogResponse(Guid DogId);
+    public record DogDto(Guid Id, string Name, string Breed, string Sex, string DateOfBirth, Guid OwnerId);
+}

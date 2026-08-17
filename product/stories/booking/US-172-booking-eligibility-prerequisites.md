@@ -72,7 +72,7 @@ This story creates two capabilities:
 - [ ] Assessment is checked atomically during the booking flow (US-162) — a dog cannot be booked if overall status is Not Yet Ready
 - [ ] Concurrency: prerequisite changes between eligibility check and booking confirmation are caught by a re-check at commit time
 
-### Owner-facing eligibility experience (customer side)
+### Owner-facing eligibility experience (user side)
 
 - [ ] Dog profile includes a "Ready to Book" section showing eligibility status per service type
 - [ ] Each service shows a checklist with clear, friendly status indicators:

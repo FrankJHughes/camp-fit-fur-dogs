@@ -22,7 +22,7 @@ describe('listDogsByCurrentUser', () => {
 
     const result = await listDogsByCurrentUser();
 
-    expect(mockGet).toHaveBeenCalledWith('/api/dogs');
+    expect(mockGet).toHaveBeenCalledWith('/dogs');
     expect(result).toEqual({ success: true, data: { dogs } });
   });
 

@@ -1,11 +1,11 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
-import GetDogProfilePage from '@/app/(authenticated)/dogs/[id]/page';
-import { getDogProfile } from '@/api/dogs/getDogProfile';
+import GetDogPage from '@/app/(authenticated)/dogs/[id]/page';
+import { getDog } from '@/api/dogs/getDog';
 import { removeDog } from '@/api/dogs/removeDog';
 
-vi.mock('@/api/dogs/getDogProfile');
+vi.mock('@/api/dogs/getDog');
 vi.mock('@/api/dogs/removeDog');
 
 const mockPush = vi.fn();
@@ -32,28 +32,28 @@ const profile = {
   ownerId: 'owner-1',
 };
 
-describe('GetDogProfilePage', () => {
+describe('GetDogPage', () => {
   beforeEach(() => {
-    vi.mocked(getDogProfile).mockReset();
+    vi.mocked(getDog).mockReset();
     vi.mocked(removeDog).mockReset();
     mockPush.mockClear();
   });
 
   it('shows loading state initially', () => {
-    vi.mocked(getDogProfile).mockReturnValue(new Promise(() => { }));
+    vi.mocked(getDog).mockReturnValue(new Promise(() => { }));
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     expect(screen.getByText('Loading…')).toBeDefined();
   });
 
   it('renders the dog profile card with the fetched profile', async () => {
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
+    vi.mocked(getDog).mockResolvedValue({ success: true, data: profile });
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     await waitFor(() => {
-      // FIX: target the DogProfileCard heading (<h2>Buddy</h2>)
+      // FIX: target the DogCard heading (<h2>Buddy</h2>)
       expect(
         screen.getByRole('heading', { level: 2, name: 'Buddy' })
       ).toBeInTheDocument();
@@ -62,22 +62,22 @@ describe('GetDogProfilePage', () => {
 
   it('renders an Edit button that navigates to the edit route', async () => {
     const user = userEvent.setup();
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
+    vi.mocked(getDog).mockResolvedValue({ success: true, data: profile });
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /edit/i })).toBeDefined();
     });
 
     await user.click(screen.getByRole('button', { name: /edit/i }));
-    expect(mockPush).toHaveBeenCalledWith('/api/dogs/abc-123/edit');
+    expect(mockPush).toHaveBeenCalledWith('/dogs/abc-123/edit');
   });
 
   it('shows not-found message when the dog does not exist', async () => {
-    vi.mocked(getDogProfile).mockResolvedValue({ success: false, notFound: true });
+    vi.mocked(getDog).mockResolvedValue({ success: false, notFound: true });
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     await waitFor(() => {
       expect(
@@ -88,9 +88,9 @@ describe('GetDogProfilePage', () => {
 
   it('shows the confirm dialog when the Remove button is clicked', async () => {
     const user = userEvent.setup();
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
+    vi.mocked(getDog).mockResolvedValue({ success: true, data: profile });
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /remove/i })).toBeDefined();
@@ -106,10 +106,10 @@ describe('GetDogProfilePage', () => {
 
   it('calls removeDog and navigates to /dogs when confirm is clicked', async () => {
     const user = userEvent.setup();
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
+    vi.mocked(getDog).mockResolvedValue({ success: true, data: profile });
     vi.mocked(removeDog).mockResolvedValue({ success: true });
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /remove/i })).toBeDefined();
@@ -122,15 +122,15 @@ describe('GetDogProfilePage', () => {
 
     await waitFor(() => {
       expect(removeDog).toHaveBeenCalledWith('abc-123');
-      expect(mockPush).toHaveBeenCalledWith('/api/dogs');
+      expect(mockPush).toHaveBeenCalledWith('/dogs');
     });
   });
 
   it('closes the confirm dialog when cancel is clicked', async () => {
     const user = userEvent.setup();
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
+    vi.mocked(getDog).mockResolvedValue({ success: true, data: profile });
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /remove/i })).toBeDefined();
@@ -145,13 +145,13 @@ describe('GetDogProfilePage', () => {
 
   it('shows an error message when removeDog fails', async () => {
     const user = userEvent.setup();
-    vi.mocked(getDogProfile).mockResolvedValue({ success: true, data: profile });
+    vi.mocked(getDog).mockResolvedValue({ success: true, data: profile });
     vi.mocked(removeDog).mockResolvedValue({
       success: false,
       errors: { form: 'Could not remove dog' },
     });
 
-    render(<GetDogProfilePage />);
+    render(<GetDogPage />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /remove/i })).toBeDefined();

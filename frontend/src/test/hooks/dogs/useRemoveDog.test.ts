@@ -45,7 +45,7 @@ describe('useRemoveDog', () => {
         await act(async () => result.current.dialogProps.onConfirm());
 
         expect(removeDog).toHaveBeenCalledWith('abc-123');
-        expect(push).toHaveBeenCalledWith('/api/dogs');
+        expect(push).toHaveBeenCalledWith('/dogs');
         expect(result.current.dialogProps.isOpen).toBe(false);
     });
 

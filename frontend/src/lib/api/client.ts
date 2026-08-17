@@ -12,27 +12,35 @@ export type ApiResult<T> =
   | { ok: false; error: ApiError };
 
 export function createApiClient(baseUrl: string = resolveBaseUrl()) {
+  // Always prefix API routes with /api
+  function buildUrl(path: string) {
+    if (!path.startsWith("/"))
+      throw new Error("API path must start with '/'");
+
+    return `${baseUrl}/api${path}`;
+  }
+
   async function request<T>(
     method: string,
     path: string,
     body?: unknown,
   ): Promise<ApiResult<T>> {
     try {
+      const url = buildUrl(path);
+
       const options: RequestInit = {
         method,
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // important for session cookies
+        credentials: 'include',
       };
 
       if (body !== undefined) {
         options.body = JSON.stringify(body);
       }
 
-      const response = await fetch(`${baseUrl}${path}`, options);
+      const response = await fetch(url, options);
 
-      // ❗ Do NOT parse JSON yet — check status first
       if (!response.ok) {
-        // 422 → validation errors (JSON body expected)
         if (response.status === 422) {
           const data = await safeJson(response);
           return {
@@ -46,7 +54,6 @@ export function createApiClient(baseUrl: string = resolveBaseUrl()) {
           };
         }
 
-        // 401/404/500 → may have NO body
         return {
           ok: false,
           error: {
@@ -57,9 +64,7 @@ export function createApiClient(baseUrl: string = resolveBaseUrl()) {
         };
       }
 
-      // ✔ Safe to parse JSON now
       const data = await safeJson(response);
-
       return { ok: true, data: data as T };
 
     } catch (error) {
@@ -73,7 +78,6 @@ export function createApiClient(baseUrl: string = resolveBaseUrl()) {
     }
   }
 
-  // Helper: safely parse JSON or return null
   async function safeJson(res: Response): Promise<any | null> {
     try {
       return await res.json();

@@ -63,7 +63,7 @@ jobs:
       - name: Apply EF Core Migrations (Production)
         env:
           ConnectionStrings__DefaultConnection: ${{ env.ConnectionStrings__DefaultConnection }}
-        run: dotnet ef database update -s src/CampFitFurDogs.Api -p src/CampFitFurDogs.Infrastructure
+        run: dotnet ef database update -s src/CampFitFurDogs/Api -p src/CampFitFurDogs/Infrastructure
 
       # ============================
       # DONE — RENDER AUTO‑DEPLOYS

@@ -17,7 +17,7 @@ dependencies:
 
 ## Intent
 
-As a security-conscious team, we want to replace the placeholder base64 password encoding with a production-grade hashing algorithm so that customer credentials are protected at rest.
+As a security-conscious team, we want to replace the placeholder base64 password encoding with a production-grade hashing algorithm so that user credentials are protected at rest.
 
 ## Value
 

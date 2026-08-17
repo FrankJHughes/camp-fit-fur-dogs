@@ -1,10 +1,10 @@
 ---
 id: US-169
 title: "Emergency Contact & Vet Info"
-epic: Customer
+epic: User
 milestone: M3
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-018

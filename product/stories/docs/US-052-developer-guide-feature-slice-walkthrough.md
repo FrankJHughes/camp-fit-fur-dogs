@@ -21,7 +21,7 @@ As a developer, I want a step-by-step walkthrough in the developer guide for add
 
 ## Value
 
-Every vertical slice shipped so far (Create Customer, Register Dog, View Dog Profile) followed the same red-green-refactor sequence across Domain → Application → Infrastructure → API layers. That sequence lives in tribal knowledge and PR history — not in any guide. A concrete walkthrough (using a representative example) turns implicit convention into explicit onboarding material, reducing ramp-up time and preventing pattern drift as the codebase grows.
+Every vertical slice shipped so far (Create User, Register Dog, View Dog Profile) followed the same red-green-refactor sequence across Domain → Application → Infrastructure → API layers. That sequence lives in tribal knowledge and PR history — not in any guide. A concrete walkthrough (using a representative example) turns implicit convention into explicit onboarding material, reducing ramp-up time and preventing pattern drift as the codebase grows.
 
 ## Acceptance Criteria
 

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Project.props" />
+
+  <PropertyGroup>
+    <ShadowCopyReferences>false</ShadowCopyReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Api\CampFitFurDogs.Api.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Application\CampFitFurDogs.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Domain\CampFitFurDogs.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Infrastructure\CampFitFurDogs.Infrastructure.csproj" />
+    <ProjectReference Include="..\TestUtilities\CampFitFurDogs.TestUtilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Testcontainers.PostgreSql" />
+  </ItemGroup>
+
+</Project>

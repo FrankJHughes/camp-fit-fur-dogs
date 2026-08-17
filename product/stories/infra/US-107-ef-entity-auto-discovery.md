@@ -55,11 +55,11 @@ Every `IEntityTypeConfiguration<T>` in the Infrastructure assembly is discovered
 
 ### Step 2 — Remove `DbSet<T>` properties
 
-Delete the explicit `DbSet<Customer>` and `DbSet<Dog>` properties. Repositories use `_context.Set<T>()` directly instead of `_context.Customers` / `_context.Dogs`. EF Core resolves the entity through the model regardless of whether a `DbSet` property exists.
+Delete the explicit `DbSet<User>` and `DbSet<Dog>` properties. Repositories use `_context.Set<T>()` directly instead of `_context.Users` / `_context.Dogs`. EF Core resolves the entity through the model regardless of whether a `DbSet` property exists.
 
 ### Step 3 — Retrofit existing repositories
 
-Update `DogRepository` and `CustomerRepository` to use `_context.Set<T>()` for all data access. Verify all existing tests pass.
+Update `DogRepository` and `UserRepository` to use `_context.Set<T>()` for all data access. Verify all existing tests pass.
 
 ### Step 4 — Guardrail test
 
@@ -69,7 +69,7 @@ Add an architecture guardrail test that asserts `AppDbContext` declares zero `Db
 
 - [ ] `OnModelCreating` calls `ApplyConfigurationsFromAssembly` — no individual `ApplyConfiguration` calls remain
 - [ ] `AppDbContext` has zero `DbSet<T>` properties
-- [ ] `DogRepository` and `CustomerRepository` use `Set<T>()` for data access
+- [ ] `DogRepository` and `UserRepository` use `Set<T>()` for data access
 - [ ] Architecture guardrail test fails if a `DbSet<T>` property is added to `AppDbContext`
 - [ ] `.github/copilot-instructions.md` updated with `Set<T>()` and `ApplyConfigurationsFromAssembly` conventions
 - [ ] `docs/guides/developer/folder-structure.md` updated (if aggregate scaffold section exists)

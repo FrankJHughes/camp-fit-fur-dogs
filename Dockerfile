@@ -8,19 +8,19 @@ WORKDIR /app
 COPY CampFitFurDogs.slnx ./
 COPY Directory.Packages.props ./
 
-COPY src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj src/CampFitFurDogs.Api/
-COPY src/CampFitFurDogs.Application/CampFitFurDogs.Application.csproj src/CampFitFurDogs.Application/
-COPY src/CampFitFurDogs.Infrastructure/CampFitFurDogs.Infrastructure.csproj src/CampFitFurDogs.Infrastructure/
+COPY src/CampFitFurDogs/Api/CampFitFurDogs.Api.csproj src/CampFitFurDogs/Api/
+COPY src/CampFitFurDogs/Application/CampFitFurDogs.Application.csproj src/CampFitFurDogs/Application/
+COPY src/CampFitFurDogs/Infrastructure/CampFitFurDogs.Infrastructure.csproj src/CampFitFurDogs/Infrastructure/
 COPY src/Frank/Frank.csproj src/Frank/
-COPY src/Frank.Api/Frank.Api.csproj src/Frank.Api/
+COPY src/Frank.Core.Api/Frank.Core.Api.csproj src/Frank.Core.Api/
 
-RUN dotnet restore src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj
+RUN dotnet restore src/CampFitFurDogs/Api/CampFitFurDogs.Api.csproj
 
 # Copy the rest of the source
 COPY . .
 
 # Publish with ReadyToRun enabled
-RUN dotnet publish src/CampFitFurDogs.Api/CampFitFurDogs.Api.csproj \
+RUN dotnet publish src/CampFitFurDogs/Api/CampFitFurDogs.Api.csproj \
   -c Release \
   -o /app/publish \
   -p:PublishReadyToRun=true \

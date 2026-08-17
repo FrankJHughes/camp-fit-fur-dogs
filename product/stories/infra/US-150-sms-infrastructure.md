@@ -88,7 +88,7 @@ Mark OutboxMessage.ProcessedAt
 
 ## Design Seam: Channel Routing
 
-> The outbox produces messages typed by WHAT happened (CustomerCreated,
+> The outbox produces messages typed by WHAT happened (UserCreated,
 > BookingConfirmed, etc.). The channel routing layer determines HOW to deliver
 > based on the owner's preferences (US-149). A single domain event can produce
 > both an email AND an SMS if the owner opted into both channels. The
@@ -97,7 +97,7 @@ Mark OutboxMessage.ProcessedAt
 
 ## Notes
 
-- Depends on US-143 (Outbox Pattern) and US-149 (Customer Contact Profile — phone numbers)
+- Depends on US-143 (Outbox Pattern) and US-149 (User Contact Profile — phone numbers)
 - Twilio Verify handles phone verification out of the box — may simplify US-149 phone verification AC
 - US carriers require 10DLC registration for application-to-person messaging — research requirements before production
 - Consider: message templates with variable substitution (same pattern as email templates)

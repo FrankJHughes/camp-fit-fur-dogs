@@ -1,0 +1,36 @@
+using Frank.Core.Application.Abstractions.Cqrs.Queries;
+using Frank.Core.Application.Cqrs.Queries;
+using Frank.Core.Application.Tests.Fakes;
+using Frank.Core.Application.Tests.Slices;
+using Frank.Core.Application.Tests.TestInfrastructure;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Frank.Core.Application.Tests.Dispatching;
+
+public class QueryDispatcherValidationTests : DispatcherTestBase
+{
+    public QueryDispatcherValidationTests()
+    {
+        WithDispatcher<QueryDispatcher, IQueryDispatcher>();
+    }
+
+    [Fact]
+    public async Task Dispatch_InvalidQuery_Fails_Validation_And_Does_Not_Invoke_Handler()
+    {
+        var handler = new TrackingQueryHandler<GetMessageQuery, GetMessageResponse>();
+
+        WithInstance<IQueryHandler<GetMessageQuery, GetMessageResponse>>(handler);
+        WithValidator<GetMessageQuery, FailingValidator<GetMessageQuery>>();
+        BuildContainer();
+
+        var dispatcher = Provider.GetRequiredService<IQueryDispatcher>();
+
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            dispatcher.DispatchAsync<GetMessageResponse>(
+                new GetMessageQuery(0),
+                CancellationToken.None));
+
+        handler.CallCount.Should().Be(0);
+    }
+}
+

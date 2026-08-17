@@ -1,0 +1,516 @@
+PS C:\Users\Frank\source\repos\camp-fit-fur-dogs\src> ..\scripts\file-system\tree.ps1
+├── CampFitFurDogs
+│   ├── Api
+│   │   ├── Abstractions
+│   │   │   └── Endpoints
+│   │   │       └── Dogs
+│   │   │           ├── EditDogProfileEndpointRequest.cs
+│   │   │           ├── GetDogProfileEndpointResponse.cs
+│   │   │           ├── GetDogSummaryEndpointResponse.cs
+│   │   │           ├── ListDogsByCurrentUserEndpointResponse.cs
+│   │   │           ├── RegisterDogEndpointRequest.cs
+│   │   │           └── RegisterDogEndpointResponse.cs
+│   │   ├── appsettings.Development.json
+│   │   ├── appsettings.json
+│   │   ├── appsettings.Testing.json
+│   │   ├── AssemblyMarker.cs
+│   │   ├── CampFitFurDogs.Api.csproj
+│   │   ├── CampFitFurDogs.Api.http
+│   │   ├── Endpoints
+│   │   │   ├── Dogs
+│   │   │   │   ├── EditDogProfileEndpoint.cs
+│   │   │   │   ├── GetDogProfileEndpoint.cs
+│   │   │   │   ├── ListDogsByCurrentUserEndpoint.cs
+│   │   │   │   ├── RegisterDogEndpoint.cs
+│   │   │   │   ├── RemoveDogEndpoint.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Health
+│   │   │   │   ├── GetHealthEndpoint.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   └── ServiceCollectionExtensions.cs
+│   │   ├── ExceptionHandlers
+│   │   │   ├── BadConfigurationExceptionHandler.cs
+│   │   │   ├── BadRequestExceptionHandler.cs
+│   │   │   ├── DomainExceptionHandler.cs
+│   │   │   ├── DuplicateEmailExceptionHandler.cs
+│   │   │   ├── ExternalAuthProviderExceptionHandler.cs
+│   │   │   ├── ServiceCollectionExtensions.cs
+│   │   │   ├── UnexpectedExceptionHandler.cs
+│   │   │   ├── UserIdClaimNotFoundExceptionHandler.cs
+│   │   │   ├── UserNotAuthenticatedExceptionHandler.cs
+│   │   │   └── ValidationExceptionHandler.cs
+│   │   ├── Helpers
+│   │   │   └── Hosting.cs
+│   │   ├── HostingModules
+│   │   │   ├── GitHubArtifactClient.cs
+│   │   │   ├── IGitHubArtifactClient.cs
+│   │   │   ├── IRenderPrParser.cs
+│   │   │   ├── RenderPrParser.cs
+│   │   │   └── RenderPrPreviewHostingModule.cs
+│   │   ├── packages.lock.json
+│   │   ├── Platform
+│   │   │   └── ServiceCollectionExtensions.cs
+│   │   ├── Program.cs
+│   │   ├── Properties
+│   │   │   └── launchSettings.json
+│   │   └── Validation
+│   │       └── ValidationExtensions.cs
+│   ├── Application
+│   │   ├── Abstractions
+│   │   │   ├── Dogs
+│   │   │   │   ├── EditDog
+│   │   │   │   │   ├── EditDogProfileCommand.cs
+│   │   │   │   │   └── IEditDogProfileWriter.cs
+│   │   │   │   ├── GetDog
+│   │   │   │   │   ├── GetDogProfileResponse.cs
+│   │   │   │   │   ├── GetDogQuery.cs
+│   │   │   │   │   └── IGetDogReader.cs
+│   │   │   │   ├── GetDogById
+│   │   │   │   │   └── IGetDogByIdReader.cs
+│   │   │   │   ├── ListDogsByOwner
+│   │   │   │   │   ├── IListDogsByOwnerReader.cs
+│   │   │   │   │   ├── ListDogsByOwnerQuery.cs
+│   │   │   │   │   └── ListDogsByOwnerResponse.cs
+│   │   │   │   ├── RegisterDog
+│   │   │   │   │   ├── IRegisterDogWriter.cs
+│   │   │   │   │   └── RegisterDogCommand.cs
+│   │   │   │   └── RemoveDog
+│   │   │   │       ├── IRemoveDogWriter.cs
+│   │   │   │       └── RemoveDogCommand.cs
+│   │   │   └── IAppUnitOfWork.cs
+│   │   ├── AssemblyMarker.cs
+│   │   ├── CampFitFurDogs.Application.csproj
+│   │   ├── Dogs
+│   │   │   ├── EditDog
+│   │   │   │   ├── EditDogCommandValidator.cs
+│   │   │   │   └── EditDogHandler.cs
+│   │   │   ├── GetDog
+│   │   │   │   ├── GetDogHandler.cs
+│   │   │   │   └── GetDogQueryValidator.cs
+│   │   │   ├── ListDogsByOwner
+│   │   │   │   ├── ListDogsByOwnerHandler.cs
+│   │   │   │   └── ListDogsByOwnerQueryValidator.cs
+│   │   │   ├── RegisterDog
+│   │   │   │   ├── RegisterDogCommandValidator.cs
+│   │   │   │   └── RegisterDogHandler.cs
+│   │   │   ├── RemoveDog
+│   │   │   │   └── RemoveDogHandler.cs
+│   │   │   └── ServiceCollectionExtensions.cs
+│   │   ├── Exceptions
+│   │   │   ├── ErrorCode.cs
+│   │   │   ├── UserIdClaimNotFoundException.cs
+│   │   │   └── UserNotAuthenticatedException.cs
+│   │   ├── packages.lock.json
+│   │   └── ServiceCollectionExtensions.cs
+│   ├── Domain
+│   │   ├── AssemblyMarker.cs
+│   │   ├── CampFitFurDogs.Domain.csproj
+│   │   ├── Dogs
+│   │   │   ├── Breed.cs
+│   │   │   ├── Dog.cs
+│   │   │   ├── DogId.cs
+│   │   │   ├── DogName.cs
+│   │   │   └── Sex.cs
+│   │   ├── Errors
+│   │   │   └── ExternalAuthProviderException.cs
+│   │   └── packages.lock.json
+│   └── Infrastructure
+│       ├── AssemblyMarker.cs
+│       ├── CampFitFurDogs.Infrastructure.csproj
+│       ├── DbContexts
+│       │   ├── AppDbContext.cs
+│       │   ├── AppDbContextFactory.cs
+│       │   └── ServiceCollectionExtensions.cs
+│       ├── Dogs
+│       │   ├── DogConfiguration.cs
+│       │   ├── EditDogWriter.cs
+│       │   ├── GetDogByIdReader.cs
+│       │   ├── GetDogReader.cs
+│       │   ├── ListDogsByOwnerReader.cs
+│       │   ├── RegisterDogWriter.cs
+│       │   ├── RemoveDogWriter.cs
+│       │   └── ServiceCollectionExtensions.cs
+│       ├── Migrations
+│       │   ├── 20260710125046_CffdInitialCreate.cs
+│       │   ├── 20260710125046_CffdInitialCreate.Designer.cs
+│       │   └── AppDbContextModelSnapshot.cs
+│       ├── packages.lock.json
+│       ├── ServiceCollectionExtensions.cs
+│       └── UnitOfWork
+│           ├── AppUnitOfWork.cs
+│           └── ServiceCollectionExtensions.cs
+├── Frank
+│   ├── Core
+│   │   ├── Api
+│   │   │   ├── AssemblyMarker.cs
+│   │   │   ├── Endpoints
+│   │   │   │   ├── EndpointRouteBuilderExtensions.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Frank.Core.Api.csproj
+│   │   │   ├── HostingModules
+│   │   │   │   ├── HostingConfigurationProvider.cs
+│   │   │   │   ├── HostingConfigurationSource.cs
+│   │   │   │   └── HostingEngine.cs
+│   │   │   ├── Middleware
+│   │   │   │   ├── Cors
+│   │   │   │   │   ├── ApplicationBuilderExtensions.cs
+│   │   │   │   │   └── OriginLoggingMiddleware.cs
+│   │   │   │   ├── Exceptions
+│   │   │   │   │   ├── ApplicationBuilderExtensions.cs
+│   │   │   │   │   └── ExceptionHandlingMiddleware.cs
+│   │   │   │   ├── Observations
+│   │   │   │   │   ├── ApplicationBuilderExtensions.cs
+│   │   │   │   │   ├── InboundObservationContextMiddleware.cs
+│   │   │   │   │   ├── OutboundObservationContextHandler.cs
+│   │   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   │   ├── SecurityHeaders
+│   │   │   │   │   ├── SecurityHeadersMiddleware.cs
+│   │   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── packages.lock.json
+│   │   │   └── Platform
+│   │   │       ├── ApplicationBuilderExtensions.cs
+│   │   │       ├── Cors
+│   │   │       │   └── ServiceCollectionExtensions.cs
+│   │   │       ├── Logging
+│   │   │       │   ├── ApplicationBuilderExtensions.cs
+│   │   │       │   └── ServiceCollectionExtensions.cs
+│   │   │       ├── ServiceCollectionExtensions.cs
+│   │   │       └── Swagger
+│   │   │           ├── ApplicationBuilderExtensions.cs
+│   │   │           └── ServiceCollectionExtensions.cs
+│   │   ├── Application
+│   │   │   ├── Abstractions
+│   │   │   │   ├── Audit
+│   │   │   │   │   └── IAuditLogger.cs
+│   │   │   │   ├── Clock
+│   │   │   │   │   └── IClock.cs
+│   │   │   │   ├── Cqrs
+│   │   │   │   │   ├── Commands
+│   │   │   │   │   │   ├── ICommand.cs
+│   │   │   │   │   │   ├── ICommandDispatcher.cs
+│   │   │   │   │   │   └── ICommandHandler.cs
+│   │   │   │   │   └── Queries
+│   │   │   │   │       ├── IQuery.cs
+│   │   │   │   │       ├── IQueryDispatcher.cs
+│   │   │   │   │       └── IQueryHandler.cs
+│   │   │   │   ├── DomainEvents
+│   │   │   │   │   ├── IEventDispatcher.cs
+│   │   │   │   │   └── IEventHandler.cs
+│   │   │   │   ├── Endpoints
+│   │   │   │   │   └── IEndpoint.cs
+│   │   │   │   ├── EnvironmentVariables
+│   │   │   │   │   └── IEnvironmentVariables.cs
+│   │   │   │   ├── Exceptions
+│   │   │   │   │   ├── ExceptionHandlerAttribute.cs
+│   │   │   │   │   ├── IErrorCode.cs
+│   │   │   │   │   ├── IExceptionHandler.cs
+│   │   │   │   │   └── ProblemDetails.cs
+│   │   │   │   ├── Hosting
+│   │   │   │   │   ├── HostingModuleAttribute.cs
+│   │   │   │   │   └── IHostingModule.cs
+│   │   │   │   ├── ImmutableContexts
+│   │   │   │   │   ├── IImmutableContextBuilder.cs
+│   │   │   │   │   ├── IImmutableContextBuildStep.cs
+│   │   │   │   │   ├── IImmutableContextBuildStepMetadata.cs
+│   │   │   │   │   ├── ImmutableContextBase.cs
+│   │   │   │   │   ├── ImmutableContextBuilderDiagnosticEvent.cs
+│   │   │   │   │   ├── ImmutableContextBuilderRequestBase.cs.cs
+│   │   │   │   │   ├── ImmutableContextBuilderResultBase.cs
+│   │   │   │   │   └── ImmutableContextBuildStepMetadata.cs
+│   │   │   │   ├── Observations
+│   │   │   │   │   ├── ICorrelationContext.cs
+│   │   │   │   │   ├── IErrorBoundaryObserver.cs
+│   │   │   │   │   ├── IMetrics.cs
+│   │   │   │   │   ├── IObservationContext.cs
+│   │   │   │   │   ├── IObservationSink.cs
+│   │   │   │   │   └── IRequestObservationContext.cs
+│   │   │   │   └── UnitOfWork
+│   │   │   │       └── IUnitOfWork.cs
+│   │   │   ├── AssemblyMarker.cs
+│   │   │   ├── Cqrs
+│   │   │   │   ├── Commands
+│   │   │   │   │   ├── CommandDispatcher.cs
+│   │   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   │   └── Queries
+│   │   │   │       ├── QueryDispatcher.cs
+│   │   │   │       └── ServiceCollectionExtensions.cs
+│   │   │   ├── DomainEvents
+│   │   │   │   ├── DomainEventDispatcher.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Frank.Core.Application.csproj
+│   │   │   ├── ImmutableContexts
+│   │   │   │   └── ImmutableContextBuilderBase.cs
+│   │   │   ├── Registration
+│   │   │   │   ├── DiscoveryOptions.cs
+│   │   │   │   ├── Formatter.cs
+│   │   │   │   ├── Orchestrator.cs
+│   │   │   │   ├── Planner.cs
+│   │   │   │   ├── Registrar.cs
+│   │   │   │   ├── RegistrationAttribute.cs
+│   │   │   │   ├── Scanner.cs
+│   │   │   │   ├── Shapes
+│   │   │   │   │   ├── Implementation.cs
+│   │   │   │   │   ├── ImplementedInterfaceGroup.cs
+│   │   │   │   │   ├── Plan.cs
+│   │   │   │   │   ├── RelevantInterfaceGroup.cs
+│   │   │   │   │   └── Violation.cs
+│   │   │   │   └── Validator.cs
+│   │   │   └── ServiceCollectionExtensions.cs
+│   │   ├── Domain
+│   │   │   ├── AggregateId.cs
+│   │   │   ├── AggregateRoot.cs
+│   │   │   ├── AssemblyMarker.cs
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── DomainException.cs
+│   │   │   ├── Entity.cs
+│   │   │   ├── Exceptions
+│   │   │   │   ├── BadConfigurationException.cs
+│   │   │   │   └── BadRequestException.cs
+│   │   │   ├── Frank.Core.Domain.csproj
+│   │   │   ├── IDomainEvent.cs
+│   │   │   ├── packages.lock.json
+│   │   │   └── ValueObject.cs
+│   │   ├── EntityFrameworkCore
+│   │   │   ├── AssemblyMarker.cs
+│   │   │   ├── Configurations
+│   │   │   │   └── AggregateRootConfiguration.cs
+│   │   │   ├── Frank.Core.EntityFrameworkCore.csproj
+│   │   │   ├── packages.lock.json
+│   │   │   └── UnitOfWork
+│   │   │       └── EntityFrameworkCoreUnitOfWorkBase.cs
+│   │   └── Infrastructure
+│   │       ├── AssemblyMarker.cs
+│   │       ├── AuditLogging
+│   │       │   ├── AuditLogger.cs
+│   │       │   └── ServiceCollectionExtensions.cs
+│   │       ├── Clock
+│   │       │   ├── ServiceCollectionExtensions.cs
+│   │       │   └── SystemClock.cs
+│   │       ├── EnvironmentVariables
+│   │       │   ├── ServiceCollectionExtensions.cs
+│   │       │   └── SystemEnvironment.cs
+│   │       ├── ExceptionHandlers
+│   │       │   ├── ExceptionHandlerRegistry.cs
+│   │       │   ├── ExceptionOptions.cs
+│   │       │   └── ServiceCollectionExtensions.cs
+│   │       ├── Frank.Core.Infrastructure.csproj
+│   │       ├── Observations
+│   │       │   ├── CorrelationContext.cs
+│   │       │   ├── DefaultRequestObservationContext.cs
+│   │       │   ├── ErrorBoundaryObserver.cs
+│   │       │   ├── Metrics.cs
+│   │       │   ├── ObservationContextBase.cs
+│   │       │   ├── ObservationSink.cs
+│   │       │   ├── RequestObservationContext.cs
+│   │       │   ├── ServiceCollectionExtensions.cs
+│   │       │   └── SystemObservationContext.cs
+│   │       ├── packages.lock.json
+│   │       └── ServiceCollectionExtensions.cs
+│   ├── Identity
+│   │   ├── Api
+│   │   │   ├── Abstractions
+│   │   │   │   └── Endpoints
+│   │   │   │       ├── GetIdentityEndpointResponse.cs
+│   │   │   │       ├── GetLoginUrlEndpointResponse.cs
+│   │   │   │       └── LogoutEndpointResponse.cs
+│   │   │   ├── AssemblyMarker.cs
+│   │   │   ├── Authentication
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Authorization
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Endpoints
+│   │   │   │   ├── CallbackEndpoint.cs
+│   │   │   │   ├── GetIdentityEndpoint.cs
+│   │   │   │   ├── GetLoginUrlEndpoint.cs
+│   │   │   │   ├── LogoutEndpoint.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Frank.Identity.Api.csproj
+│   │   │   ├── Middleware
+│   │   │   │   ├── Authorization
+│   │   │   │   │   ├── ApplicationBuilderExtensions.cs
+│   │   │   │   │   └── RequireAuthenticatedUserMiddleware.cs
+│   │   │   │   ├── Observations
+│   │   │   │   │   ├── ApplicationBuilderExtensions.cs
+│   │   │   │   │   └── ObservationInstrumentationMiddleware.cs
+│   │   │   │   └── SessionValidation
+│   │   │   │       ├── ApplicationBuilderExtensions.cs
+│   │   │   │       ├── SessionAuthentictionHandler.cs
+│   │   │   │       └── SessionValidationMiddleware.cs
+│   │   │   ├── Platform
+│   │   │   │   ├── ApplicationBuilderExtensions.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   └── Settings
+│   │   │       └── FrontendSettings.cs
+│   │   ├── Application
+│   │   │   ├── Abstractions
+│   │   │   │   ├── AuthCallbackError.cs
+│   │   │   │   ├── AuthCallbackException.cs
+│   │   │   │   ├── AuthToken.cs
+│   │   │   │   ├── Callback
+│   │   │   │   │   ├── Oidc
+│   │   │   │   │   │   ├── CallbackOidcContext.cs
+│   │   │   │   │   │   ├── CallbackOidcContextBuilderRequest.cs
+│   │   │   │   │   │   ├── CallbackOidcContextBuilderResult.cs
+│   │   │   │   │   │   └── ICallbackOidcContextBuilder.cs
+│   │   │   │   │   └── Save
+│   │   │   │   │       ├── CallbackSaveContext.cs
+│   │   │   │   │       ├── CallbackSaveContextBuilderRequest.cs
+│   │   │   │   │       ├── CallbackSaveContextBuilderResult.cs
+│   │   │   │   │       └── ICallbackSaveContextBuilder.cs
+│   │   │   │   ├── Oidc
+│   │   │   │   │   ├── IOidcTokenClient.cs
+│   │   │   │   │   ├── IOidcTokenValidator.cs
+│   │   │   │   │   ├── IOidcUserInfoClient.cs
+│   │   │   │   │   ├── OidcStateEncoder.cs
+│   │   │   │   │   └── OidcUserInfo.cs
+│   │   │   │   ├── Sessions
+│   │   │   │   │   ├── CreateSession
+│   │   │   │   │   │   └── ICreateSessionWriter.cs
+│   │   │   │   │   ├── GeneratedSessionToken.cs
+│   │   │   │   │   ├── GetSession
+│   │   │   │   │   │   ├── GetSessionQuery.cs
+│   │   │   │   │   │   ├── GetSessionResponse.cs
+│   │   │   │   │   │   └── IGetSessionReader.cs
+│   │   │   │   │   ├── ISessionTokenService.cs
+│   │   │   │   │   └── RevokeSession
+│   │   │   │   │       ├── IRevokeSessionWriter.cs
+│   │   │   │   │       └── RevokeSessionCommand.cs
+│   │   │   │   ├── UnitOfWork
+│   │   │   │   │   └── IIdentityUnitOfWork.cs
+│   │   │   │   └── Users
+│   │   │   │       ├── CreateUser
+│   │   │   │       │   ├── CreateUserCommand.cs
+│   │   │   │       │   └── ICreateUserWriter.cs
+│   │   │   │       ├── GetUserByExternalId
+│   │   │   │       │   ├── GetUserByExternalIdResponse.cs
+│   │   │   │       │   └── IGetUserByExternalIdReader.cs
+│   │   │   │       ├── GetUserById
+│   │   │   │       │   ├── GetUserByIdResponse.cs
+│   │   │   │       │   └── IGetUserByIdReader.cs
+│   │   │   │       ├── ICurrentUser.cs
+│   │   │   │       └── IIdentityResolver.cs
+│   │   │   ├── AssemblyMarker.cs
+│   │   │   ├── Callback
+│   │   │   │   ├── Oidc
+│   │   │   │   │   ├── CallbackOidcContextBuilder.cs
+│   │   │   │   │   ├── OidcProtocolException.cs
+│   │   │   │   │   ├── ServiceCollectionExtensions.cs
+│   │   │   │   │   └── Steps
+│   │   │   │   │       ├── ExchangeCodeStep.cs
+│   │   │   │   │       ├── FetchUserInfoStep.cs
+│   │   │   │   │       └── ValidateTokensStep.cs
+│   │   │   │   ├── Save
+│   │   │   │   │   ├── CallbackSaveContextBuilder.cs
+│   │   │   │   │   ├── ServiceCollectionExtensions.cs
+│   │   │   │   │   └── Steps
+│   │   │   │   │       ├── AuditLoginStep.cs
+│   │   │   │   │       ├── BuildCookieStep.cs
+│   │   │   │   │       ├── CreateSessionStep.cs
+│   │   │   │   │       └── ResolveCustomerStep.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Frank.Identity.Application.csproj
+│   │   │   ├── ServiceCollectionExtensions.cs
+│   │   │   ├── Sessions
+│   │   │   │   ├── GetSession
+│   │   │   │   │   └── GetSessionHandler.cs
+│   │   │   │   ├── RevokeSession
+│   │   │   │   │   └── RevokeSessionHandler.cs
+│   │   │   │   ├── ServiceCollectionExtensions.cs
+│   │   │   │   └── SessionTokenGenerator.cs
+│   │   │   └── Users
+│   │   │       ├── CreateUser
+│   │   │       │   ├── CreateUserCommandHandler.cs
+│   │   │       │   └── CreateUserCommandValidator.cs
+│   │   │       ├── ServiceCollectionExtensions.cs
+│   │   │       └── UserResolver.cs
+│   │   ├── Domain
+│   │   │   ├── Frank.Identity.Domain.csproj
+│   │   │   ├── Sessions
+│   │   │   │   ├── Errors
+│   │   │   │   │   ├── InvalidSessionIdException.cs
+│   │   │   │   │   ├── InvalidSessionTokenHashException.cs
+│   │   │   │   │   └── SessionNotFoundException.cs
+│   │   │   │   ├── Session.cs
+│   │   │   │   ├── SessionCookie.cs
+│   │   │   │   ├── SessionId.cs
+│   │   │   │   └── SessionTokenHash.cs
+│   │   │   └── Users
+│   │   │       ├── Email.cs
+│   │   │       ├── Errors
+│   │   │       │   ├── ConflictingIdentitySourcesException.cs
+│   │   │       │   ├── EmailAlreadyExistsException.cs
+│   │   │       │   ├── InvalidEmailException.cs
+│   │   │       │   ├── InvalidExternalAuthProviderIdException.cs
+│   │   │       │   ├── InvalidFirstNameException.cs
+│   │   │       │   ├── InvalidLastNameException.cs
+│   │   │       │   ├── InvalidPasswordHashException.cs
+│   │   │       │   ├── InvalidPhoneNumberException.cs
+│   │   │       │   ├── InvalidUserIdException.cs
+│   │   │       │   └── MissingIdentitySourceException.cs
+│   │   │       ├── ExternalId.cs
+│   │   │       ├── FirstName.cs
+│   │   │       ├── LastName.cs
+│   │   │       ├── PasswordHash.cs
+│   │   │       ├── PhoneNumber.cs
+│   │   │       ├── User.cs
+│   │   │       └── UserId.cs
+│   │   ├── EntityFrameworkCore
+│   │   │   ├── AssemblyMarker.cs
+│   │   │   ├── DbContexts
+│   │   │   │   ├── FrankIdentityDbContext.cs
+│   │   │   │   ├── FrankIdentityDbContextFactory.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   ├── Frank.Identity.EntityFrameworkCore.csproj
+│   │   │   ├── Migrations
+│   │   │   │   ├── 20260709134106_FrankIdentityInitialCreate.cs
+│   │   │   │   ├── 20260709134106_FrankIdentityInitialCreate.Designer.cs
+│   │   │   │   └── FrankIdentityDbContextModelSnapshot.cs
+│   │   │   ├── ServiceCollectionExtensions.cs
+│   │   │   ├── Sessions
+│   │   │   │   ├── CreateSessionWriter.cs
+│   │   │   │   ├── GetSessionReader.cs
+│   │   │   │   ├── RevokeSessionWriter.cs
+│   │   │   │   ├── ServiceCollectionExtensions.cs
+│   │   │   │   └── SessionConfiguration.cs
+│   │   │   ├── Settings
+│   │   │   │   └── SessionSettings.cs
+│   │   │   ├── UnitOfWork
+│   │   │   │   ├── FrankIdentityUnitOfWork.cs
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   └── Users
+│   │   │       ├── CreateUserWriter.cs
+│   │   │       ├── GetUserByExternalIdReader.cs
+│   │   │       ├── GetUserByIdReader.cs
+│   │   │       ├── ServiceCollectionExtensions.cs
+│   │   │       └── UserConfiguration.cs
+│   │   └── Infrastructure
+│   │       ├── AssemblyMarker.cs
+│   │       ├── Auth0
+│   │       │   ├── Auth0OidcTokenClient.cs
+│   │       │   ├── Auth0OidcTokenValidator.cs
+│   │       │   ├── Auth0OidcUserInfoClient.cs
+│   │       │   └── ServiceCollectionExtensions.cs
+│   │       ├── Frank.Identity.Infrastructure.csproj
+│   │       ├── ServiceCollectionExtensions.cs
+│   │       ├── Settings
+│   │       │   └── OidcSettings.cs
+│   │       └── Users
+│   │           ├── CurrentUser.cs
+│   │           └── ServiceCollectionExtensions.cs
+│   └── Testing
+│       ├── AssemblyMarker.cs
+│       ├── Contexts
+│       │   ├── MutatedWebApplicationClientContext.cs
+│       │   ├── MutatedWebApplicationClientContextExtensions.cs
+│       │   ├── MutatedWebApplicationContext.cs
+│       │   └── MutatedWebApplicationContextExtensions.cs
+│       ├── Endpoints
+│       │   ├── CurrentUserIdEndpoint.cs
+│       │   ├── HealthCheckEndpoint.cs
+│       │   └── ThrowEndpoint.cs
+│       ├── Factories
+│       │   └── MutatedWebApplicationFactory.cs
+│       └── Frank.Testing.csproj
+└── tree.txt
+PS C:\Users\Frank\source\repos\camp-fit-fur-dogs\src>

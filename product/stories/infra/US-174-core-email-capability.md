@@ -14,7 +14,7 @@ dependencies:
 # US‑174: Core Email Capability
 
 ## Intent
-As a **system operator**, I need a unified, reliable, and testable email delivery capability so that all customer‑facing email flows (verification, welcome, password reset) can be implemented consistently and safely.
+As a **system operator**, I need a unified, reliable, and testable email delivery capability so that all user‑facing email flows (verification, welcome, password reset) can be implemented consistently and safely.
 
 ## Value
 Email is a cross‑cutting platform capability. Without a centralized system:

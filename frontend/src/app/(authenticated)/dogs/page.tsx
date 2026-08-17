@@ -14,7 +14,7 @@ export default function DogsPage() {
   const router = useRouter();
 
   const actions: Action[] = useMemo(
-    () => [{ label: 'Register Dog', onClick: () => router.push('/api/dogs') }],
+    () => [{ label: 'Register Dog', onClick: () => router.push('/dogs/register') }],
     [router]
   );
 

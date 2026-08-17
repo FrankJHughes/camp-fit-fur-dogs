@@ -75,4 +75,4 @@ and early production.
 - Azure SQL free offer: 100,000 vCore seconds + 32 GB per month, auto-pause when idle
 - If Azure SQL is selected, provision via Azure Portal or Azure CLI
 - Connection string must use managed identity or username/password stored as env var
-- **Demo:** Deploy the API with the hosted database connection, create a customer account via the API, query the database and show the row
+- **Demo:** Deploy the API with the hosted database connection, create a user account via the API, query the database and show the row

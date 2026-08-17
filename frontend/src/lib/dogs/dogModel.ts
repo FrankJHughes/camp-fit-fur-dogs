@@ -32,7 +32,7 @@ export interface RegisterDogCommand {
   sex: 'Male' | 'Female';
 }
 
-export interface EditDogProfileCommand {
+export interface EditDogCommand {
   name: string;
   breed: string;
   dateOfBirth: string;
@@ -47,14 +47,14 @@ export function mapDogFormValuesToRegisterCommand(
 
 export function mapDogFormValuesToEditCommand(
   values: DogFormValues
-): EditDogProfileCommand {
+): EditDogCommand {
   return { ...values };
 }
 
 //
 // QUERY TYPES
 //
-export interface DogProfile {
+export interface Dog {
   id: string;
   ownerId: string;
   name: string;

@@ -1,10 +1,10 @@
 ---
 id: US-145
 title: "Welcome Email"
-epic: Customer
+epic: User
 milestone: M2
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-027
@@ -29,7 +29,7 @@ This story is also the proving slice for the outbox‑to‑email pipeline.
 ## Acceptance Criteria
 
 ### Event & Outbox Flow
-- Creating a customer account (US‑027) raises a `CustomerCreated` domain event.
+- Creating a user account (US‑027) raises a `UserCreated` domain event.
 - The outbox interceptor (US‑143) writes the event as an outbox message.
 - The email handler (US‑144) processes the outbox message and dispatches a welcome email.
 
@@ -47,7 +47,7 @@ This story is also the proving slice for the outbox‑to‑email pipeline.
 - Email delivery failures are logged with correlation IDs (no sensitive data).
 
 ### Testing
-- Unit test verifies the `CustomerCreated` domain event is raised.
+- Unit test verifies the `UserCreated` domain event is raised.
 - Integration test verifies:
   - Outbox message is created  
   - Outbox message is processed  
@@ -63,6 +63,6 @@ This story is also the proving slice for the outbox‑to‑email pipeline.
 
 ## Notes
 - This is the proving slice for the outbox‑to‑email pipeline (US‑143 + US‑144).
-- The `CustomerCreated` event is the first domain event with a real consumer.
+- The `UserCreated` event is the first domain event with a real consumer.
 - Welcome email content should be reviewed by a human for tone and warmth.
 - **Demo:** Create an account via the registration page → check inbox within minutes → see welcome email with name + “Register Your Dog” button.

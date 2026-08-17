@@ -1,10 +1,10 @@
 ---
 id: US-153
 title: "Account Data Export & Deletion"
-epic: Customer
+epic: User
 milestone: M2+
 status: backlog
-domain: customer
+domain: user
 vertical_slice: true
 dependencies:
   - US-027
@@ -74,7 +74,7 @@ similar privacy laws.
 
 ## Notes
 
-- Depends on US-027 (Create Customer Account), US-125 (Soft-Delete & Restore)
+- Depends on US-027 (Create User Account), US-125 (Soft-Delete & Restore)
 - GDPR Article 17: Right to Erasure — deletion must be complete and timely
 - CCPA: Right to Delete — similar requirements for California residents
 - Consider: what happens to orphaned data (e.g., reviews, shared bookings) when an account is deleted?

@@ -29,7 +29,7 @@ Currently each repository calls `SaveChangesAsync` independently. This works for
 - [ ] `SaveChangesAsync` is removed from individual repository implementations
 - [ ] Command handlers call `IUnitOfWork.CommitAsync()` after all repository operations
 - [ ] Infrastructure implements `IUnitOfWork` backed by EF Core's `DbContext`
-- [ ] Existing `CreateCustomerHandler` is updated to use the new pattern
+- [ ] Existing `CreateUserHandler` is updated to use the new pattern
 - [ ] All existing tests pass without behavior change
 
 ## Emotional Guarantees

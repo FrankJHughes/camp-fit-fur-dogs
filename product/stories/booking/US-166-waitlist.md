@@ -33,7 +33,7 @@ the next interested owner, maximizing capacity utilization.
 ## Acceptance Criteria
 
 - [ ] When a slot is fully booked, the "Book Now" button is replaced with "Join Waitlist"
-- [ ] Joining the waitlist records: CustomerId, DogId, ServiceId, SlotDate, JoinedAt, Position
+- [ ] Joining the waitlist records: UserId, DogId, ServiceId, SlotDate, JoinedAt, Position
 - [ ] Waitlist is ordered by join time (FIFO)
 - [ ] Owner can view their waitlist entries from the bookings page
 - [ ] Owner can leave the waitlist at any time
@@ -54,6 +54,6 @@ the next interested owner, maximizing capacity utilization.
 ## Notes
 
 - Depends on US-162 (Booking), US-164 (Cancel Booking)
-- FIFO ordering is fairest but consider: priority for frequent customers (future enhancement)
+- FIFO ordering is fairest but consider: priority for frequent users (future enhancement)
 - Consider: auto-book vs. notify-and-wait (auto-book removes choice; notify-and-wait is more respectful)
 - **Demo:** Try to book a full slot — see "Join Waitlist," join — another owner cancels — receive notification with a booking link — click and book

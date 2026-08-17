@@ -84,7 +84,7 @@ camp-fit-fur-dogs/
 |   +-- definition-of-ready/
 |   +-- emotional-guarantees/
 |   +-- stories/                # Product backlog (story files)
-|       +-- customer/
+|       +-- user/
 |       +-- docs/
 |       +-- infra/
 |
@@ -170,13 +170,13 @@ This project is part of a personal portfolio and is not licensed for commercial 
 
 **Engineering foundation is complete.** DDD architecture, CI pipeline,
 developer environment, and governance shipped across Sprints 0-2.
-Customer features are unblocked.
+User features are unblocked.
 
 ### Milestone Progress
 
 | Milestone | Goal | Stories | Status |
 |-----------|------|---------|--------|
-| [M1: First Customer Vertical](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) | Create account, register dog, view profile | 3 | Not started |
+| [M1: First User Vertical](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) | Create account, register dog, view profile | 3 | Not started |
 | [M2: Complete Dog Management](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) | Full dog CRUD with graceful edge cases | 7 | Not started |
 | [M3: Portfolio Showcase](https://github.com/frankjhughes/camp-fit-fur-dogs/milestones) | Docs, tooling, onboarding ready for review | 4 | Not started |
 

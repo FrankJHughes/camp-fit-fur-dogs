@@ -57,7 +57,7 @@ layer with explicit verification, documentation, and audit trail.
 - [ ] Sending numbers are registered for 10DLC (Application-to-Person messaging) before production use
 
 ### Documentation & Audit
-- [ ] Consent records are immutable and retained for the duration of the customer relationship + 5 years
+- [ ] Consent records are immutable and retained for the duration of the user relationship + 5 years
 - [ ] Unsubscribe/opt-out events are logged with timestamp
 - [ ] A compliance checklist document exists in the repo covering CAN-SPAM and TCPA requirements
 - [ ] The outbox (US-143) checks consent status before dispatching any non-transactional message

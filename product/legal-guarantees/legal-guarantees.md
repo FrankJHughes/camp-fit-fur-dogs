@@ -29,7 +29,7 @@ with assistive technology so that I can participate independently.
 website in California. The Unruh Act allows statutory damages of $4,000+ per
 violation per visit — without proof of intent. WCAG 2.1 Level AA is the de
 facto standard referenced in virtually every ADA Title III lawsuit. Beyond
-compliance, accessible design improves usability for all customers.
+compliance, accessible design improves usability for all users.
 
 ### Acceptance Criteria
 
@@ -52,7 +52,7 @@ compliance, accessible design improves usability for all customers.
 
 **Governing Law:** CalOPPA (California Online Privacy Protection Act)
 
-**Intent:** As a customer, I need to understand what personal data the system
+**Intent:** As a user, I need to understand what personal data the system
 collects, why it is collected, and who it is shared with — before I provide
 any information — so that I can make an informed trust decision.
 
@@ -60,15 +60,15 @@ any information — so that I can make an informed trust decision.
 website or app that collects personally identifiable information from
 California residents. Unlike CCPA/CPRA, there is no revenue or consumer
 threshold — it applies to every business. Transparency is also the
-foundation of customer trust: owners who understand data practices feel
+foundation of user trust: owners who understand data practices feel
 safe; owners who don't feel suspicious.
 
 ### Acceptance Criteria
 
 - A privacy policy is conspicuously linked from every page (footer) and from the home page.
 - The privacy policy discloses: what data is collected, how it is collected, why it is collected, who it is shared with, how it is protected, and how long it is retained.
-- The privacy policy describes how customers can access, export, and delete their data.
-- The privacy policy describes the process for notifying customers of material changes.
+- The privacy policy describes how users can access, export, and delete their data.
+- The privacy policy describes the process for notifying users of material changes.
 - An effective date is displayed prominently on the privacy policy.
 - Registration and data-collection forms never collect data not disclosed in the privacy policy.
 - Any new data collection point triggers a privacy policy review before deployment.
@@ -80,7 +80,7 @@ safe; owners who don't feel suspicious.
 **Governing Law:** CAN-SPAM Act (email), TCPA (SMS/voice), FCC One-to-One
 Consent Rule (2025)
 
-**Intent:** As a customer, I need the system to contact me only through channels
+**Intent:** As a user, I need the system to contact me only through channels
 I explicitly authorized so that I am never subjected to unsolicited messages.
 
 **Value:** CAN-SPAM violations carry penalties up to $51,744 per email. TCPA
@@ -101,32 +101,32 @@ specific business. These are actively enforced — not theoretical.
 - Every SMS includes opt-out instructions ("Reply STOP to unsubscribe").
 - STOP requests are processed immediately; a confirmation message is sent.
 - SMS is only sent during acceptable hours (8 AM – 9 PM in the recipient's local time zone).
-- Consent records are immutable and retained for the customer relationship duration + 5 years.
+- Consent records are immutable and retained for the user relationship duration + 5 years.
 - The outbox checks consent status before dispatching any non-transactional message.
 - Transactional messages (password reset, security alerts) are clearly distinguished from commercial messages.
 
 ---
 
-## LG-04 — The Customer Controls Their Data
+## LG-04 — The User Controls Their Data
 
 **Governing Law:** CalOPPA, CA Civil Code §1798.100+ (CCPA/CPRA future-proofing)
 
-**Intent:** As a customer, I need to be able to access, export, and permanently
+**Intent:** As a user, I need to be able to access, export, and permanently
 delete all my personal data without contacting support so that I remain in
 full control of my information.
 
-**Value:** CalOPPA requires that customers be able to review and request changes
+**Value:** CalOPPA requires that users be able to review and request changes
 to their personal information. While CCPA/CPRA does not currently apply (Camp
 Fit Fur Dogs is below the $26.6M revenue / 100K consumer thresholds),
 building data control now is both a trust signal and future-proofing. When
-customers know they can leave — and take their data with them — they feel
+users know they can leave — and take their data with them — they feel
 safe staying.
 
 ### Acceptance Criteria
 
-- Customers can view all personal data the system holds about them from their profile.
-- Customers can request a full data export (structured, human-readable format).
-- Customers can request permanent account deletion with a documented grace period.
+- Users can view all personal data the system holds about them from their profile.
+- Users can request a full data export (structured, human-readable format).
+- Users can request permanent account deletion with a documented grace period.
 - Data export and deletion are self-service — no support ticket required.
 - Deletion uses soft-delete during the grace period, then permanently purges all associated data.
 - The privacy policy describes the self-service export and deletion options.
@@ -140,7 +140,7 @@ safe staying.
 **Governing Law:** CA Civil Code §1798.81.5 (Reasonable Security), CA Data
 Breach Notification Law (§1798.29 / §1798.82)
 
-**Intent:** As a customer, I need my personal data to be protected with
+**Intent:** As a user, I need my personal data to be protected with
 industry-standard security measures so that I can trust the system with
 sensitive information.
 
@@ -180,7 +180,7 @@ acceptance criteria satisfy the referenced guarantees.
 ## Emotional Guarantees
 
 - **EG-01 No Surprises** — The registration flow shows clear progress indicators
-- **EG-02 No Blame** — Validation errors never imply the customer did something wrong
+- **EG-02 No Blame** — Validation errors never imply the user did something wrong
 
 ## Legal Guarantees
 

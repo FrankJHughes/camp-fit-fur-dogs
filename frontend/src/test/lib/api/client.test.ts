@@ -25,7 +25,7 @@ describe('ApiClient', () => {
       json: async () => ({ dogs: [] }),
     });
 
-    const result = await client.get('/api/dogs');
+    const result = await client.get('/dogs');
 
     expect(fetchMock).toHaveBeenCalledWith('http://localhost/api/dogs', {
       method: 'GET',
@@ -44,7 +44,7 @@ describe('ApiClient', () => {
       json: async () => ({ message: 'Internal Server Error' }),
     });
 
-    const result = await client.get('/api/dogs');
+    const result = await client.get('/dogs');
 
     expect(result).toEqual({
       ok: false,
@@ -63,7 +63,7 @@ describe('ApiClient', () => {
     });
 
     const body = { name: 'Buddy', breed: 'Labrador' };
-    const result = await client.post('/api/dogs', body);
+    const result = await client.post('/dogs', body);
 
     expect(fetchMock).toHaveBeenCalledWith('http://localhost/api/dogs', {
       method: 'POST',
@@ -82,7 +82,7 @@ describe('ApiClient', () => {
     });
 
     const body = { name: 'Buddy Jr' };
-    const result = await client.put('/api/dogs/1', body);
+    const result = await client.put('/dogs/1', body);
 
     expect(fetchMock).toHaveBeenCalledWith('http://localhost/api/dogs/1', {
       method: 'PUT',
@@ -100,7 +100,7 @@ describe('ApiClient', () => {
       json: async () => ({ success: true }),
     });
 
-    const result = await client.delete('/api/dogs/1');
+    const result = await client.delete('/dogs/1');
 
     expect(fetchMock).toHaveBeenCalledWith('http://localhost/api/dogs/1', {
       method: 'DELETE',
@@ -121,7 +121,7 @@ describe('ApiClient', () => {
       }),
     });
 
-    const result = await client.post('/api/dogs', {});
+    const result = await client.post('/dogs', {});
 
     expect(result).toEqual({
       ok: false,
@@ -137,7 +137,7 @@ describe('ApiClient', () => {
   it('returns network error on thrown fetch', async () => {
     fetchMock.mockRejectedValue(new Error('boom'));
 
-    const result = await client.get('/api/dogs');
+    const result = await client.get('/dogs');
 
     expect(result).toEqual({
       ok: false,

@@ -92,4 +92,4 @@ Marks OutboxMessage.ProcessedAt
 - The outbox payload is JSON-serialized domain event data — deserialized by handlers
 - Consider: should processed messages be purged after N days, or kept permanently?
 - Consider: polling interval vs. change-notification (e.g., LISTEN/NOTIFY for PostgreSQL)
-- **Demo:** Create a customer account, check the outbox table — see the message, watch the background service process it
+- **Demo:** Create a user account, check the outbox table — see the message, watch the background service process it

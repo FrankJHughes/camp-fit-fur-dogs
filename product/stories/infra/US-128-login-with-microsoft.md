@@ -36,7 +36,7 @@ provider stories (Google, Apple, Amazon) layer on incrementally.
 - [ ] Login page displays available identity provider options as branded buttons alongside the email/password form
 - [ ] Provider abstraction supports adding new OIDC providers via configuration
 - [ ] Social login with a new provider links the external identity to an existing account if the email matches
-- [ ] Social login with an unrecognized email auto-provisions a customer account from OIDC claims (name, email)
+- [ ] Social login with an unrecognized email auto-provisions a user account from OIDC claims (name, email)
 - [ ] Login page is accessible (keyboard-navigable, screen-reader-friendly)
 
 ### Microsoft provider
