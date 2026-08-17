@@ -1,5 +1,5 @@
 
-[1m[30m[46m RUN [49m[39m[22m [36mv4.1.6 [39m[90mC:/Users/Frank/source/repos/camp-fit-fur-dogs/frontend[39m
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.6 [39m[90mfrontend[39m
 
 stderr | src/test/app/(auth)/create-account/CreateAccountPage.test.tsx > CreateAccountPage ΓÇö Slice 1 > disables the submit button while the form is submitting
 An update to CreateAccountPage inside a test was not wrapped in act(...).

@@ -1,5 +1,5 @@
 
-[1m[30m[46m RUN [49m[39m[22m [36mv4.1.6 [39m[90mC:/Users/Frank/source/repos/camp-fit-fur-dogs/frontend[39m
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.6 [39m[90mfrontend[39m
 
  [32mΓ£ô[39m src/test/lib/components/ConfirmDialog.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 835[2mms[22m[39m
      [33m[2mΓ£ô[22m[39m renders dialog content when open [33m 374[2mms[22m[39m
