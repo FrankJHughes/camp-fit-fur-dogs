@@ -47,9 +47,9 @@
     <!-- ⭐ REQUIRED for test discovery -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <!-- ⭐ REQUIRED: Testcontainers base package -->
-    <PackageVersion Include="Testcontainers" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers" Version="4.14.0" />
     <!-- PostgreSQL module -->
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.11.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.14.0" />
     <!-- xUnit -->
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />

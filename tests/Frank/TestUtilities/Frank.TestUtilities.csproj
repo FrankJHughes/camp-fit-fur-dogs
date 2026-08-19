@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Frank\Testing\Frank.Testing.csproj" />
-    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Api\CampFitFurDogs.Api.csproj" />
+    <ProjectReference Include="..\..\..\src\CampFitFurDogs\Host\CampFitFurDogs.Host.csproj" />
   </ItemGroup>
 
 </Project>

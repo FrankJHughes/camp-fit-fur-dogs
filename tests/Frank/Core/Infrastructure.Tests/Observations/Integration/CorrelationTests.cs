@@ -1,9 +1,9 @@
 using System.Net;
 using Frank.TestUtilities.Helpers;
 
-namespace Frank.Core.Infrastructure.Tests.Observability;
+namespace Frank.Core.Infrastructure.Tests.Observations.Integration;
 
-public class CorrelationTests : ObservabilityTestBase
+public class CorrelationTests : ObservationsTestBase
 {
     [Fact]
     public async Task Adds_CorrelationId_When_Missing()

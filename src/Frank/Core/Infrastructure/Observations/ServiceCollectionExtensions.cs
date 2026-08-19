@@ -73,7 +73,7 @@ public static class ServiceCollectionExtensions
                 var env = provider.GetRequiredService<IHostEnvironment>();
                 var clock = provider.GetRequiredService<IClock>();
 
-                return new DefaultRequestObservationContext(env, clock);
+                return new FallbackRequestObservationContext(env, clock);
             });
     }
 }

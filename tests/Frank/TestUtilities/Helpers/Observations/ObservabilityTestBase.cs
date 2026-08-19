@@ -6,13 +6,13 @@ using Frank.TestUtilities.Fakes.Observability;
 
 namespace Frank.TestUtilities.Helpers;
 
-public abstract class ObservabilityTestBase : IDisposable, IAsyncDisposable
+public abstract class ObservationsTestBase : IDisposable, IAsyncDisposable
 {
     protected readonly ApiContext Context;
     protected readonly ApiFactory Factory;
     protected readonly HttpClient Client;
 
-    protected ObservabilityTestBase()
+    protected ObservationsTestBase()
     {
         Context = new ApiContext()
             .WithFake<IObservationSink>(new FakeObservabilitySink())

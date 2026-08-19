@@ -1,17 +1,29 @@
+using System.Diagnostics;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Frank.Core.Application.Abstractions.Observations;
 
 namespace Frank.Core.Api.Routing.Validation;
 
 /// <summary>
-/// A reusable Minimal API endpoint filter that automatically validates request
-/// DTOs using FluentValidation before the endpoint handler executes.
+/// A Minimal API endpoint filter that performs FluentValidation-based request
+/// validation and emits structured observability events into the unified
+/// <see cref="IRequestObservationContext"/> envelope.
 /// <para>
 /// This filter runs after ASP.NET Core model binding has created the request
-/// object, but before the endpoint handler is invoked.
-/// If validation fails, a <see cref="FluentValidation.ValidationException"/> is
-/// thrown, allowing the API layer to translate the failure into a structured
-/// <c>400 Bad Request</c> response.
+/// DTO but before the endpoint handler executes. It provides API-level
+/// validation observability (US‑199), including:
+/// <list type="bullet">
+/// <item><description>Validation start and end events</description></item>
+/// <item><description>Validation duration measurement</description></item>
+/// <item><description>Structured validation failure diagnostics</description></item>
+/// <item><description>Correlation propagation via <see cref="IRequestObservationContext"/></description></item>
+/// </list>
+/// </para>
+/// <para>
+/// If validation fails, the filter emits a structured failure event and returns
+/// a <c>400 Bad Request</c> response containing validation errors.
 /// </para>
 /// </summary>
 /// <typeparam name="TRequest">
@@ -20,46 +32,94 @@ namespace Frank.Core.Api.Routing.Validation;
 public sealed class EndpointFilter<TRequest> : IEndpointFilter
 {
     private readonly IValidator<TRequest> _validator;
+    private readonly ILogger<EndpointFilter<TRequest>> _logger;
+    private readonly IRequestObservationContext _obs;
 
-    /// <summary>
-    /// Creates a new instance of the <see cref="EndpointFilter{TRequest}"/>.
-    /// </summary>
-    /// <param name="validator">
-    /// The FluentValidation validator responsible for validating the request DTO.
-    /// </param>
-    public EndpointFilter(IValidator<TRequest> validator)
+    public EndpointFilter(
+        IValidator<TRequest> validator,
+        ILogger<EndpointFilter<TRequest>> logger,
+        IRequestObservationContext obs)
     {
         _validator = validator;
+        _logger = logger;
+        _obs = obs;
     }
 
-    /// <summary>
-    /// Invokes the validation endpoint filter.
-    /// Extracts the request DTO from the endpoint invocation context, validates it,
-    /// and throws a <see cref="FluentValidation.ValidationException"/> if validation
-    /// fails.
-    /// If validation succeeds, the request is passed to the next filter or endpoint
-    /// handler.
-    /// </summary>
-    /// <param name="context">The endpoint invocation context.</param>
-    /// <param name="next">The next filter or endpoint handler in the pipeline.</param>
-    /// <returns>The result of the next filter or endpoint handler.</returns>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when the request DTO cannot be located in the endpoint arguments.
-    /// </exception>
     public async ValueTask<object?> InvokeAsync(
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
-        var request = context.Arguments.OfType<TRequest>().FirstOrDefault();
+        var http = context.HttpContext;
+        var route = http.GetEndpoint()?.DisplayName ?? "unknown";
+        var dtoType = typeof(TRequest).FullName ?? "unknown";
 
+        var request = context.Arguments.OfType<TRequest>().FirstOrDefault();
         if (request is null)
         {
             throw new InvalidOperationException(
                 $"Validation.EndpointFilter could not locate a request argument of type '{typeof(TRequest).Name}'.");
         }
 
-        await _validator.ValidateAndThrowAsync(request);
+        var sw = Stopwatch.StartNew();
 
+        // Emit validation start event
+        _logger.LogInformation(
+            new EventId(0, ApiValidationEvents.Start),
+            "API validation started for {Route} ({DtoType}) with correlation {CorrelationId}",
+            route,
+            dtoType,
+            _obs.CorrelationId);
+
+        // Perform validation
+        var result = await _validator.ValidateAsync(request);
+
+        sw.Stop();
+
+        // Emit validation end event
+        _logger.LogInformation(
+            new EventId(0, ApiValidationEvents.End),
+            "API validation completed for {Route} ({DtoType}) in {DurationMs} ms with correlation {CorrelationId}",
+            route,
+            dtoType,
+            sw.ElapsedMilliseconds,
+            _obs.CorrelationId);
+
+        // Handle validation failures
+        if (!result.IsValid)
+        {
+            var errorCodes = result.Errors
+                .Select(e => e.ErrorCode ?? e.PropertyName)
+                .ToArray();
+
+            var diagnostic = new ApiValidationDiagnostic
+            {
+                Route = route,
+                DtoType = dtoType,
+                ErrorCount = errorCodes.Length,
+                ErrorCodes = errorCodes,
+                DurationMs = sw.ElapsedMilliseconds
+            };
+
+            // Enrich unified observability envelope
+            _obs.AddMetadata(ObservationMetadataKeys.ApiValidation, diagnostic);
+
+            // Emit failure event
+            _logger.LogWarning(
+                new EventId(0, ApiValidationEvents.Failed),
+                "API validation failed for {Route} ({DtoType}) with {ErrorCount} errors and correlation {CorrelationId}. Errors: {ErrorCodes}",
+                route,
+                dtoType,
+                diagnostic.ErrorCount,
+                _obs.CorrelationId,
+                diagnostic.ErrorCodes);
+
+            // Return structured 400 response
+            return Results.ValidationProblem(
+                result.ToDictionary(),
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        // Continue pipeline
         return await next(context);
     }
 }

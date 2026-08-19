@@ -1,10 +1,10 @@
-using CampFitFurDogs.Api.Endpoints;
-using CampFitFurDogs.Api.Helpers;
-using CampFitFurDogs.Api.Platform;
 using Frank.Core.Api.Endpoints;
 using Frank.Core.Api.Platform;
 using Frank.Identity.Api.Endpoints;
 using Frank.Identity.Api.Platform;
+using CampFitFurDogs.Api.Endpoints;
+using CampFitFurDogs.Api.Platform;
+using CampFitFurDogs.Host.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 

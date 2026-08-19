@@ -12,4 +12,9 @@ public sealed class FakeObservabilityContext : IObservationContext
 
     public IReadOnlyDictionary<string, object?> Metadata { get; }
         = new Dictionary<string, object?>();
+
+    public void AddMetadata(string key, object? value)
+    {
+        throw new NotImplementedException();
+    }
 }

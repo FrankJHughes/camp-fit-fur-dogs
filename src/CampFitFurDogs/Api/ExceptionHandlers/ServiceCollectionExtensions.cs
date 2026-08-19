@@ -1,5 +1,6 @@
 using Frank.Core.Application.Registration;
 using Frank.Core.Infrastructure.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.ExceptionHandlers;
 

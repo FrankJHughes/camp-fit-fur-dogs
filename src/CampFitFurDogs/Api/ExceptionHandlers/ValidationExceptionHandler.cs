@@ -1,6 +1,7 @@
 using CampFitFurDogs.Application.Exceptions;
 using FluentValidation;
 using Frank.Core.Application.Abstractions.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace CampFitFurDogs.Api.ExceptionHandlers;
 

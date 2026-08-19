@@ -16,6 +16,11 @@ public class OutboundObservabilityContextHandlerTests
         public string Environment { get; init; } = "Testing";
         public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
         public IReadOnlyDictionary<string, object?> Metadata { get; init; } = new Dictionary<string, object?>();
+
+        public void AddMetadata(string key, object? value)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     private sealed class TestMessageHandler : HttpMessageHandler

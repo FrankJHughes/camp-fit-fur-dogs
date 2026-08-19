@@ -1,6 +1,7 @@
 using Frank.Core.Application.Abstractions.EnvironmentVariables;
 using Frank.Core.Application.Abstractions.Hosting;
 using Frank.Core.Infrastructure.EnvironmentVariables;
+using Microsoft.AspNetCore.Builder;
 
 namespace CampFitFurDogs.Api.HostingModules;
 

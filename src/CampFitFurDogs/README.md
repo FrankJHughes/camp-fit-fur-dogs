@@ -1,133 +1,121 @@
+# CampFitFurDogs.Host
 
-# CampFitFurDogs
+The **CampFitFurDogs.Host** project is the composition root of the Camp Fit Fur Dogs platform.  
+It contains the application’s entry point (`Program.cs`) and is responsible for configuring the web host, applying hosting‑environment logic, registering platform services, and activating all API endpoints.
 
-The `CampFitFurDogs` namespace represents the **root of the CampFitFurDogs application**, defining the overall architecture, boundaries, and conventions used throughout the system.  
-It is the entry point for understanding how the solution is organized into **Domain**, **Application**, **Infrastructure**, and **API** layers, each following strict vertical‑slice and DDD‑inspired principles.
-
-This namespace itself contains minimal code — its purpose is conceptual.  
-It defines the *system*, not the implementation.
+This project orchestrates the entire application; it does not define domain, application, or API behavior.
 
 ---
 
-## 🎯 Architectural Overview
+## Purpose
 
-CampFitFurDogs follows a **vertical slice architecture** with **clean layering**:
+The Host project provides:
 
-- **Domain Layer** — business rules, aggregates, invariants  
-- **Application Layer** — commands, queries, orchestrators, unit of work  
-- **Infrastructure Layer** — EF Core persistence, readers/writers, DbContexts  
-- **API Layer** — HTTP endpoints, DTOs, request/response models  
+- The executable entry point (`Program.cs`)  
+- Environment‑specific hosting adaptation  
+- WebApplicationBuilder configuration  
+- Registration of platform‑level services  
+- Activation of all API endpoints  
+- Middleware pipeline configuration  
+- The final call to `app.Run()`  
 
-Each slice (e.g., Dogs, Owners, Authentication) flows downward:
-
-**API → Application → Domain → Infrastructure**
-
-Explore the architecture:  
-**[Vertical slice overview](ca://s?q=Explain_vertical_slice_architecture)**
-
----
-
-## 🧩 Major Sub‑Namespaces
-
-### `CampFitFurDogs.Domain`
-The core of the business model.
-
-Contains:
-
-- Aggregates (`Dog`, `Owner`, etc.)  
-- Value objects (`DogName`, `Breed`, `OwnerId`)  
-- Invariants and business rules  
-- Domain events  
-
-Explore the domain:  
-**[Domain modeling](ca://s?q=Explain_domain_modeling_in_CampFitFurDogs)**
+All API behavior is delegated to `CampFitFurDogs.Api`.  
+All business logic is delegated to `CampFitFurDogs.Application` and `CampFitFurDogs.Domain`.
 
 ---
 
-### `CampFitFurDogs.Application`
-The orchestration layer.
+## Project Structure
 
-Contains:
-
-- Commands and queries  
-- Handlers  
-- Application services  
-- Unit of Work abstractions  
-- Vertical slice boundaries  
-
-Explore the application layer:  
-**[Application layer design](ca://s?q=Explain_application_layer_design)**
+```
+CampFitFurDogs.Host
+├── Program.cs
+├── appsettings.json
+├── appsettings.Development.json
+├── appsettings.Testing.json
+└── Properties
+    └── launchSettings.json
+```
 
 ---
 
-### `CampFitFurDogs.Infrastructure`
-The persistence and mechanical layer.
+## Responsibilities
 
-Contains:
+### **Startup Orchestration**
+The Host project adapts the application to its environment:
 
-- EF Core DbContexts  
-- Entity configurations  
-- Readers and writers  
-- Unit of Work implementation  
-- DI registration modules  
+```csharp
+await Hosting.AdaptToHostingEnvironment(builder);
+```
 
-Explore infrastructure:  
-**[Infrastructure overview](ca://s?q=Explain_CampFitFurDogs_Infrastructure)**
+This applies hosting modules defined in `CampFitFurDogs.Api.HostingModules`.
 
----
+### **Platform Registration**
+The Host composes all platform layers:
 
-### `CampFitFurDogs.Api`
-The HTTP interface layer.
+```csharp
+services
+    .AddCampFitFurDogsApiPlatform(configuration)
+    .AddFrankCoreApiPlatform(configuration)
+    .AddFrankIdentityApiPlatform(configuration);
+```
 
-Contains:
+### **Endpoint Activation**
+Endpoints are discovered and registered:
 
-- Controllers or minimal API endpoints  
-- Request/response DTOs  
-- Authentication and authorization boundaries  
-- API‑specific validation  
+```csharp
+services
+    .AddCampFitFurDogsApiEndpoints()
+    .AddFrankIdentityApiEndpoints();
+```
 
-Explore the API layer:  
-**[API layer design](ca://s?q=Explain_API_layer_design)**
+### **Middleware Pipeline**
+The Host applies platform‑level middleware:
 
----
+```csharp
+app
+    .UseFrankCoreApiPlatform()
+    .UseFrankIdentityApiPlatform();
+```
 
-## 🧭 Core Principles
+### **API Routing**
+All endpoints are grouped under `/api`:
 
-The CampFitFurDogs architecture follows strict rules:
-
-- **Vertical slices over horizontal layers**  
-- **Domain purity** — no EF Core or infrastructure concerns in domain types  
-- **Application orchestration** — commands/queries drive workflows  
-- **Infrastructure isolation** — persistence is mechanical, not logical  
-- **Explicit boundaries** — each slice owns its own readers/writers  
-- **Strong typing** — IDs, names, and value objects enforce correctness  
-
-Explore the philosophy:  
-**[Clean architecture principles](ca://s?q=Explain_clean_architecture_principles)**
-
----
-
-## 🚫 What Does *Not* Belong in the Root Namespace
-
-The root namespace must **not** contain:
-
-- Business logic  
-- Persistence logic  
-- Application orchestration  
-- API endpoints  
-- EF Core configurations  
-- DI modules  
-
-It is purely organizational.
+```csharp
+app.MapRegisteredApiEndpoints("/api");
+```
 
 ---
 
-## 📚 Related Documentation
+## Design Principles
 
-- `CampFitFurDogs.Infrastructure` — persistence, DbContexts, unit of work  
-- `CampFitFurDogs.Domain` — aggregates and invariants  
-- `CampFitFurDogs.Application` — commands, queries, orchestrators  
-- `CampFitFurDogs.Api` — HTTP endpoints and DTOs  
+- **Single responsibility** — the Host project only orchestrates startup  
+- **Separation of concerns** — hosting logic is isolated from API logic  
+- **Composability** — platform layers are composed, not hard‑coded  
+- **Environment awareness** — hosting modules adapt configuration dynamically  
+- **Predictability** — startup is centralized and consistent
 
 ---
 
+## What Does *Not* Belong Here
+
+Do **not** add:
+
+- Endpoints  
+- DTOs  
+- Validators  
+- Exception handlers  
+- Domain logic  
+- Application logic  
+- Infrastructure logic  
+- Hosting modules (they live in the Api assembly)
+
+---
+
+## Summary
+
+The **CampFitFurDogs.Host** project is the executable entry point of the platform.  
+It configures the host, applies environment‑specific behavior, registers platform services, activates endpoints, and runs the application.
+
+It is the top of the dependency chain:
+
+**Host → Api → Application → Domain → Infrastructure**

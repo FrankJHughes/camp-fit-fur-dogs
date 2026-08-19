@@ -1,9 +1,9 @@
 using System.Net;
 using Frank.TestUtilities.Helpers;
 
-namespace Frank.Core.Infrastructure.Tests.Observability;
+namespace Frank.Core.Infrastructure.Tests.Observations.Integration;
 
-public class ObservabilitySinkTests : ObservabilityTestBase
+public class ObservabilitySinkTests : ObservationsTestBase
 {
     [Fact]
     public async Task Emits_TraceEvents_On_Successful_Request()

@@ -1,8 +1,10 @@
 # CampFitFurDogs.Api
 
 The **CampFitFurDogs.Api** assembly defines the production HTTP boundary of the Camp Fit Fur Dogs platform.  
-It exposes all public API endpoints, configures routing, registers vertical slices, and applies API‑level middleware.  
-This assembly contains **no domain logic** and **no test endpoints**.
+It exposes all public API endpoints, request/response DTOs, validators, exception handlers, and API‑specific DI wiring.  
+This assembly contains **no hosting logic**, **no Program.cs**, and **no domain or application behavior**.
+
+The API layer is intentionally thin: it shapes the HTTP contract and delegates all real work to the Application and Domain layers.
 
 ---
 
@@ -10,14 +12,21 @@ This assembly contains **no domain logic** and **no test endpoints**.
 
 This project provides:
 
-- The production API surface for all vertical slices  
-- Endpoint registration via `IEndpoint` implementations  
-- API‑level middleware and exception handling  
-- Hosting modules for external integrations  
+- Production API endpoints for all vertical slices  
+- Request/response DTOs and syntactic validators  
+- API‑level exception handling  
+- API‑specific DI registration  
+- Hosting modules used by the Host project  
 - Assembly markers for endpoint discovery  
-- Service collection extensions for API‑specific DI wiring  
 
-All business logic is delegated to the Application and Domain layers.
+All business logic is delegated to:
+
+- `CampFitFurDogs.Application`  
+- `CampFitFurDogs.Domain`
+
+All persistence and mechanical concerns are delegated to:
+
+- `CampFitFurDogs.Infrastructure`
 
 ---
 
@@ -29,11 +38,14 @@ CampFitFurDogs.Api
 │   └── Endpoints
 │       └── Dogs
 │           ├── EditDogEndpointRequest.cs
+│           ├── EditDogEndpointRequestValidator.cs
 │           ├── GetDogEndpointResponse.cs
 │           ├── GetDogSummaryEndpointResponse.cs
 │           ├── ListDogsByCurrentUserEndpointResponse.cs
 │           ├── RegisterDogEndpointRequest.cs
+│           ├── RegisterDogEndpointRequestValidator.cs
 │           └── RegisterDogEndpointResponse.cs
+│
 ├── Endpoints
 │   ├── Dogs
 │   │   ├── EditDogEndpoint.cs
@@ -46,6 +58,7 @@ CampFitFurDogs.Api
 │   │   ├── GetHealthEndpoint.cs
 │   │   └── ServiceCollectionExtensions.cs
 │   └── ServiceCollectionExtensions.cs
+│
 ├── ExceptionHandlers
 │   ├── BadConfigurationExceptionHandler.cs
 │   ├── BadRequestExceptionHandler.cs
@@ -56,117 +69,55 @@ CampFitFurDogs.Api
 │   ├── UserIdClaimNotFoundExceptionHandler.cs
 │   ├── UserNotAuthenticatedExceptionHandler.cs
 │   └── ValidationExceptionHandler.cs
+│
 ├── HostingModules
+│   ├── RenderPrPreviewHostingModule.cs
 │   ├── GitHubArtifactClient.cs
 │   ├── IGitHubArtifactClient.cs
-│   ├── IRenderPrParser.cs
 │   ├── RenderPrParser.cs
-│   └── RenderPrPreviewHostingModule.cs
+│   └── IRenderPrParser.cs
+│
 ├── Platform
 │   └── ServiceCollectionExtensions.cs
-├── Helpers
-│   └── Hosting.cs
+│
 ├── AssemblyMarker.cs
-└── Program.cs
+└── README.md
 ```
 
 ---
 
-## Key Components
-
-### **AssemblyMarker**
-
-A zero‑logic type used to anchor assembly scanning:
-
-```csharp
-public sealed class AssemblyMarker { }
-```
-
-This allows the framework to:
-
-- Discover endpoints in this assembly  
-- Apply API‑wide conventions  
-- Register vertical slices cleanly  
+## Responsibilities
 
 ### **Endpoints**
-
-Endpoints follow the Frank.Core model:
-
 - Implement `IEndpoint`  
 - Map routes using `RouteGroupBuilder`  
 - Contain no domain logic  
-- Return safe DTOs defined in `Abstractions/Endpoints`  
+- Return safe DTOs from `Abstractions/Endpoints`
 
-Vertical slices live under:
-
-- `Endpoints/Dogs`
-- `Endpoints/Health`
-
-Each slice has:
-
-- Request/response DTOs  
-- Endpoint implementations  
-- Slice‑specific DI extensions  
+### **DTOs & Validators**
+- Define the HTTP contract  
+- Enforce syntactic correctness only  
+- Never enforce domain rules
 
 ### **Exception Handlers**
-
-The `ExceptionHandlers` folder contains API‑level exception mapping:
-
-- Domain exceptions → HTTP responses  
-- Validation errors → structured payloads  
-- Authentication/authorization errors → safe responses  
-
-These handlers ensure consistent error semantics across the API.
+- Convert domain/application exceptions into consistent HTTP responses  
+- Ensure predictable error semantics across slices
 
 ### **Hosting Modules**
+Hosting modules live in the API assembly but are **executed by the Host project**.
 
-The `HostingModules` folder contains integrations used during hosting:
+They provide:
 
-- GitHub artifact retrieval  
-- Render PR preview parsing  
-- External hosting utilities  
-
-These modules are optional and environment‑specific.
+- Render PR Preview configuration overrides  
+- GitHub artifact integration  
+- Environment‑specific behavior
 
 ### **Platform Extensions**
+API‑level DI registration for:
 
-The `Platform` folder contains API‑level DI extensions for platform‑wide concerns.
-
----
-
-## Routing Model
-
-The API uses a single top‑level group:
-
-```csharp
-app.MapRegisteredApiEndpoints("/api");
-```
-
-All endpoints map **relative** to this group:
-
-- `/dogs/{id}` → `/api/dogs/{id}`
-- `/health` → `/api/health`
-
-No endpoint ever hard‑codes `/api`.
-
----
-
-## Design Principles
-
-### **Purity**
-Endpoints contain no domain logic.
-
-### **Delegation**
-Endpoints orchestrate; pipelines execute.
-
-### **Safety**
-Sensitive data is never returned.
-
-### **Minimalism**
-Endpoints return only what the client needs.
-
-### **Predictability**
-Routing, error handling, and DTO shape are consistent across slices.
+- Endpoint scanning  
+- Exception handler registration  
+- API conventions
 
 ---
 
@@ -174,24 +125,23 @@ Routing, error handling, and DTO shape are consistent across slices.
 
 Do **not** add:
 
-- Test endpoints (`/__test__/…`)  
+- Program.cs  
+- Hosting orchestration  
 - Domain logic  
 - Application pipelines  
 - Infrastructure concerns  
-- Business rules  
-
-Those belong in their respective layers or in `CampFitFurDogs.TestUtilities`.
+- Test endpoints
 
 ---
 
-## When to Add Code Here
+## Summary
 
-Add code to **CampFitFurDogs.Api** when:
+The **CampFitFurDogs.Api** assembly defines the HTTP boundary of the platform:
 
-- You are exposing a new production endpoint  
-- You are adding a new vertical slice  
-- You are configuring API‑level middleware  
-- You are wiring API‑specific DI  
+- Pure endpoints  
+- Pure DTOs  
+- Pure validators  
+- Pure exception handling  
+- Pure API DI
 
----
-
+It is host‑agnostic, environment‑agnostic, and free of startup logic.

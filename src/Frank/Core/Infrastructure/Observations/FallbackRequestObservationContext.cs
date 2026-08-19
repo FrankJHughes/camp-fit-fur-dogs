@@ -14,7 +14,7 @@ namespace Frank.Core.Infrastructure.Observations;
 /// workflows.
 /// </para>
 /// </summary>
-public sealed class DefaultRequestObservationContext : ObservationContextBase, IRequestObservationContext
+public sealed class FallbackRequestObservationContext : ObservationContextBase, IRequestObservationContext
 {
     /// <summary>
     /// Gets the user identifier associated with the request.
@@ -27,7 +27,7 @@ public sealed class DefaultRequestObservationContext : ObservationContextBase, I
 
     /// <summary>
     /// Initializes a new instance of the
-    /// <see cref="DefaultRequestObservationContext"/> class.
+    /// <see cref="FallbackRequestObservationContext"/> class.
     /// <para>
     /// A new correlation ID is generated for each request, and environment
     /// metadata is populated using the provided <see cref="IHostEnvironment"/>
@@ -40,7 +40,7 @@ public sealed class DefaultRequestObservationContext : ObservationContextBase, I
     /// <param name="clock">
     /// The clock abstraction used to obtain the current UTC timestamp.
     /// </param>
-    public DefaultRequestObservationContext(
+    public FallbackRequestObservationContext(
         IHostEnvironment environment,
         IClock clock)
         : base(

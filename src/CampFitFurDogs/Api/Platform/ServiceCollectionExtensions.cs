@@ -1,49 +1,57 @@
-using CampFitFurDogs.Api.ExceptionHandlers;
 using CampFitFurDogs.Application;
 using CampFitFurDogs.Infrastructure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Platform;
 
 /// <summary>
-/// Provides extension methods for registering the full Camp Fit Fur Dogs API
-/// platform, including application services, infrastructure components, and
-/// API‑level exception handlers.
+/// Provides dependency‑injection extensions for configuring the Camp Fit Fur Dogs
+/// API platform layer.
 /// <para>
-/// This extension method centralizes all platform‑level registrations so that
-/// <c>Program.cs</c> remains minimal and declarative.
-/// It composes the three major layers:
+/// This module composes the three major subsystems required for API operation:
 /// <list type="bullet">
-/// <item><description>Application layer</description></item>
-/// <item><description>Infrastructure layer</description></item>
-/// <item><description>API exception‑handling layer</description></item>
+/// <item><description><strong>Application</strong> — business logic, commands, handlers, and workflows.</description></item>
+/// <item><description><strong>Infrastructure</strong> — persistence, observability, identity, and external integrations.</description></item>
+/// <item><description><strong>API</strong> — endpoint abstractions, validators, exception handlers, and request pipelines.</description></item>
 /// </list>
+/// Calling this method ensures that all platform‑level services are registered
+/// consistently during application startup.
 /// </para>
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers all platform‑level services required by the Camp Fit Fur Dogs API.
+    /// Adds all Camp Fit Fur Dogs platform‑level services to the provided
+    /// <see cref="IServiceCollection"/>, including the Application layer,
+    /// Infrastructure layer, and API layer.
     /// <para>
-    /// This includes:
-    /// <list type="bullet">
-    /// <item><description>Application services (<see cref="AddCampFitFurDogsApplication"/>)</description></item>
-    /// <item><description>Infrastructure services (<see cref="AddCampFitFurDogsInfrastructure"/>)</description></item>
-    /// <item><description>API exception handlers (<see cref="AddCampFitFurDogsApiExceptionHandlers"/>)</description></item>
-    /// </list>
+    /// This method should be invoked once during application startup to ensure
+    /// that the API is fully composed and ready to process requests.
     /// </para>
     /// </summary>
-    /// <param name="services">The service collection to extend.</param>
-    /// <param name="configuration">The application configuration root.</param>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection"/> to configure.
+    /// </param>
+    /// <param name="configuration">
+    /// The application configuration used by the Infrastructure layer.
+    /// </param>
     /// <returns>
-    /// The updated <see cref="IServiceCollection"/> with all platform components registered.
+    /// The updated <see cref="IServiceCollection"/> containing all platform
+    /// services required for the Camp Fit Fur Dogs API.
     /// </returns>
     public static IServiceCollection AddCampFitFurDogsApiPlatform(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         return services
+            // Application layer (commands, handlers, workflows)
             .AddCampFitFurDogsApplication()
+
+            // Infrastructure layer (persistence, observability, identity, etc.)
             .AddCampFitFurDogsInfrastructure(configuration)
-            .AddCampFitFurDogsApiExceptionHandlers();
+
+            // API layer (validators, exception handlers, endpoint abstractions)
+            .AddCampFitFurDogsApi();
     }
 }

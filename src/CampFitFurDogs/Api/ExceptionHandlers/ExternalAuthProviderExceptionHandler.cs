@@ -2,6 +2,7 @@ using CampFitFurDogs.Application.Exceptions;
 using CampFitFurDogs.Domain.Exceptions;
 using Frank.Core.Application.Abstractions.Exceptions;
 using Frank.Identity.Application.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace CampFitFurDogs.Api.ExceptionHandlers;
 
