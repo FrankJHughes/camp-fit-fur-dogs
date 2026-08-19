@@ -1,8 +1,8 @@
-using CampFitFurDogs.Api.HostingModules;
-using Frank.Core.Api.HostingModules;
 using Frank.Core.Application.Abstractions.Hosting;
+using Frank.Core.Api.HostingModules;
+using CampFitFurDogs.Api.HostingModules;
 
-namespace CampFitFurDogs.Api.Helpers;
+namespace CampFitFurDogs.Host.Helpers;
 
 /// <summary>
 /// Provides helper methods for constructing and applying hosting‑module

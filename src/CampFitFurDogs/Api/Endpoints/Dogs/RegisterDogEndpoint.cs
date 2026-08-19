@@ -4,7 +4,10 @@ using CampFitFurDogs.Application.Abstractions.Dogs.RegisterDog;
 using Frank.Core.Application.Abstractions.Cqrs.Commands;
 using Frank.Core.Application.Abstractions.Endpoints;
 using Frank.Identity.Application.Abstractions.Users;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace CampFitFurDogs.Api.Endpoints.Dogs;
 

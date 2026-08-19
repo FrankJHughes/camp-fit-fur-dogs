@@ -1,5 +1,6 @@
 using Frank.Core.Api.Endpoints;
 using Frank.Core.Application.Registration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Endpoints.Health;
 

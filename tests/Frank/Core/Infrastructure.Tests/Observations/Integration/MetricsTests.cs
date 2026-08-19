@@ -1,9 +1,9 @@
 using System.Net;
 using Frank.TestUtilities.Helpers;
 
-namespace Frank.Core.Infrastructure.Tests.Observability;
+namespace Frank.Core.Infrastructure.Tests.Observations.Integration;
 
-public class MetricsTests : ObservabilityTestBase
+public class MetricsTests : ObservationsTestBase
 {
     [Fact]
     public async Task Records_Metrics_On_Successful_Request()

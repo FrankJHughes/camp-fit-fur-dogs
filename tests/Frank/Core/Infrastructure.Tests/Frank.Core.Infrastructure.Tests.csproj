@@ -2,6 +2,7 @@
   <Import Project="..\..\..\Project.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Frank\Core\Infrastructure\Frank.Core.Infrastructure.csproj" />
     <ProjectReference Include="..\..\TestUtilities\Frank.TestUtilities.csproj" />
   </ItemGroup>
 

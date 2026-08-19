@@ -1,5 +1,6 @@
 using CampFitFurDogs.Api.Endpoints.Dogs;
 using CampFitFurDogs.Api.Endpoints.Health;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampFitFurDogs.Api.Endpoints;
 

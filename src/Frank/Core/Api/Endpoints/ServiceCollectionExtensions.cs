@@ -18,7 +18,7 @@ namespace Frank.Core.Api.Endpoints;
 /// assemblies, applying the configured <see cref="DiscoveryOptions"/> filters.
 /// </para>
 /// </summary>
-public static class EndpointServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Discovers and registers all <see cref="IEndpoint"/> implementations found

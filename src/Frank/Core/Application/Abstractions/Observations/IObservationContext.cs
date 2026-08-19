@@ -82,4 +82,24 @@ public interface IObservationContext
     /// </para>
     /// </summary>
     IReadOnlyDictionary<string, object?> Metadata { get; }
+
+    /// <summary>
+    /// Adds or updates a metadata entry in the observation context.
+    ///
+    /// <para>
+    /// This method is used by instrumentation components (e.g., API validation,
+    /// error boundaries, routing diagnostics) to enrich the unified observability
+    /// envelope with structured, PII‑safe diagnostic information.
+    /// </para>
+    ///
+    /// <para>
+    /// Although observation contexts are conceptually immutable, controlled
+    /// metadata enrichment is permitted and required for subsystem observability
+    /// (US‑183, US‑199). Implementations must ensure thread‑safety and preserve
+    /// deterministic behavior.
+    /// </para>
+    /// </summary>
+    /// <param name="key">The metadata key to add or update.</param>
+    /// <param name="value">The metadata value to associate with the key.</param>
+    void AddMetadata(string key, object? value);
 }

@@ -5,7 +5,7 @@ using Frank.TestUtilities.Helpers;
 
 namespace Frank.Core.Api.Tests.Middleware.Observations;
 
-public class InboundObservabilityContextMiddlewareTests : ObservabilityTestBase
+public class InboundObservabilityContextMiddlewareTests : ObservationsTestBase
 {
     private sealed record CorrelationResponse(string CorrelationId);
 
